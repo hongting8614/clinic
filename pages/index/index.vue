@@ -38,9 +38,9 @@
 				<view class="clinic-cross-v"></view>
 				<view class="clinic-circle-bg"></view>
 			</view>
-		<view class="clinic-banner-content">
+			<view class="clinic-banner-content">
 			<view class="clinic-banner-title">门诊登记表</view>
-		</view>
+			</view>
 			<view class="clinic-banner-arrow">→</view>
 		</view>
 		
@@ -53,9 +53,9 @@
 					<view class="arrow-in">↓</view>
 				</view>
 			</view>
-		<view class="inbound-banner-content">
+			<view class="inbound-banner-content">
 			<view class="inbound-banner-title">新建入库单</view>
-		</view>
+			</view>
 			<view class="inbound-banner-badge">NEW</view>
 			<view class="inbound-banner-arrow">→</view>
 		</view>

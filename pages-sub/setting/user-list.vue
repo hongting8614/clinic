@@ -252,24 +252,24 @@
                 <text class="label-text">姓名</text>
                 <text class="required">*</text>
               </view>
-              <input 
-                v-model="form.name" 
+            <input 
+              v-model="form.name" 
                 class="form-input-new"
                 placeholder="输入姓名"
-              />
-            </view>
-            
+            />
+          </view>
+          
             <view class="form-group half">
               <view class="form-label-new">
                 <text class="label-text">实名</text>
                 <text class="required">*</text>
               </view>
-              <input 
+            <input 
                 v-model="form.realName" 
                 class="form-input-new"
                 placeholder="2-10个字"
                 maxlength="10"
-              />
+            />
             </view>
           </view>
           
@@ -306,8 +306,8 @@
                   <view class="role-info">
                     <text class="role-name">{{ form.roleText }}</text>
                     <text class="role-desc-short">{{ getRoleDescriptionShort(form.role) }}</text>
-                  </view>
-                </view>
+              </view>
+          </view>
                 <text class="select-arrow">▼</text>
               </view>
             </picker>
@@ -1403,7 +1403,7 @@ export default {
   padding-top: 24rpx;
   border-top: 2rpx solid #e9ecef;
   background: #fafbfc;
-  border-radius: 12rpx;
+      border-radius: 12rpx;
   padding: 24rpx;
   animation: slideDown 0.3s ease;
   
@@ -1430,7 +1430,7 @@ export default {
       
       .inline-label {
         display: block;
-        font-size: 28rpx;
+      font-size: 28rpx;
         font-weight: 600;
         color: #333;
         margin-bottom: 10rpx;

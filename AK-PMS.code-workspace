@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/unpackage": true
+    },
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.detectIndentation": true,
+    "files.eol": "\n",
+    "files.encoding": "utf8"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode"
+    ]
+  }
+}

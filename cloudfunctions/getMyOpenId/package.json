@@ -1,0 +1,38 @@
+{
+  "name": "getMyOpenId",
+  "version": "1.0.0",
+  "description": "临时云函数：获取OpenID",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

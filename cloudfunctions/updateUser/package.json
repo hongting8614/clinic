@@ -1,0 +1,38 @@
+{
+  "name": "updateUser",
+  "version": "1.0.0",
+  "description": "更新用户信息（仅管理员）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

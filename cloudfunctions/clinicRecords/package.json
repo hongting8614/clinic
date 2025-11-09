@@ -1,0 +1,11 @@
+{
+  "name": "clinicRecords",
+  "version": "1.0.0",
+  "description": "门诊用药登记云函数 - v3.2核心功能",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~3.0.0"
+  }
+}
+
+

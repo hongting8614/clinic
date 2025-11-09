@@ -1,0 +1,405 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "爱康医务室管理系统",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/stock/index",
+			"style": {
+				"navigationBarTitleText": "库存管理"
+			}
+		},
+		{
+			"path": "pages/record/index",
+			"style": {
+				"navigationBarTitleText": "数据报表"
+			}
+		},
+		{
+			"path": "pages/user/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/test/migration",
+			"style": {
+				"navigationBarTitleText": "数据迁移 v3.14"
+			}
+		},
+		{
+			"path": "pages/test/generate-data",
+			"style": {
+				"navigationBarTitleText": "生成测试数据"
+			}
+		},
+		{
+			"path": "pages/test/scan",
+			"style": {
+				"navigationBarTitleText": "扫码功能测试"
+			}
+		},
+		{
+			"path": "pages/test/inbound-test",
+			"style": {
+				"navigationBarTitleText": "入库模块测试",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/test/signature-test",
+			"style": {
+				"navigationBarTitleText": "签名组件测试",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/test/api-test",
+			"style": {
+				"navigationBarTitleText": "API接口测试",
+				"enablePullDownRefresh": false
+			}
+		}
+	],
+	
+	"subPackages": [
+		{
+			"root": "pages-sub/drug",
+			"pages": [
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "药品列表"
+					}
+				},
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "添加药品"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "药品详情"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/in",
+			"pages": [
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "入库单列表"
+					}
+				},
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建入库单"
+					}
+				},
+				{
+					"path": "review",
+					"style": {
+						"navigationBarTitleText": "入库单复核"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "入库单详情"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/out",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建出库单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "出库单列表"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "出库单详情"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/transfer",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建调拨单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "调拨单列表"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/consume",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "药房日消耗记录"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "消耗记录"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/requisition",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建请领单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "请领单列表"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/inventory",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建盘点单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "盘点单列表"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/damage",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建报损单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "报损记录"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/return",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "新建退货单"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "退货记录"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/stock",
+			"pages": [
+				{
+					"path": "query",
+					"style": {
+						"navigationBarTitleText": "库存查询",
+						"enablePullDownRefresh": true
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/report",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "数据报表"
+					}
+				},
+				{
+					"path": "inbound",
+					"style": {
+						"navigationBarTitleText": "入库单报表",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "stock",
+					"style": {
+						"navigationBarTitleText": "库存报表",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "daily",
+					"style": {
+						"navigationBarTitleText": "日统计"
+					}
+				},
+				{
+					"path": "weekly",
+					"style": {
+						"navigationBarTitleText": "周统计"
+					}
+				},
+				{
+					"path": "monthly",
+					"style": {
+						"navigationBarTitleText": "月统计"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/setting",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "系统设置"
+					}
+				},
+				{
+					"path": "user-list",
+					"style": {
+						"navigationBarTitleText": "用户管理"
+					}
+				},
+				{
+					"path": "change-password",
+					"style": {
+						"navigationBarTitleText": "修改密码"
+					}
+				},
+				{
+					"path": "edit-realname",
+					"style": {
+						"navigationBarTitleText": "修改实名"
+					}
+				},
+				{
+					"path": "reset-password",
+					"style": {
+						"navigationBarTitleText": "重置密码"
+					}
+				},
+				{
+					"path": "department",
+					"style": {
+						"navigationBarTitleText": "部门管理"
+					}
+				},
+				{
+					"path": "location",
+					"style": {
+						"navigationBarTitleText": "园区管理"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/clinic",
+			"pages": [
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "门诊登记表"
+					}
+				}
+			]
+		}
+	],
+	
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "爱康医务室管理系统",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F8F8F8"
+	},
+	
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/tabbar/home-active.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/stock/index",
+				"iconPath": "static/tabbar/stock.png",
+				"selectedIconPath": "static/tabbar/stock-active.png",
+				"text": "库存"
+			},
+			{
+				"pagePath": "pages/record/index",
+				"iconPath": "static/tabbar/record.png",
+				"selectedIconPath": "static/tabbar/record-active.png",
+				"text": "报表"
+			},
+			{
+				"pagePath": "pages/user/index",
+				"iconPath": "static/tabbar/user.png",
+				"selectedIconPath": "static/tabbar/user-active.png",
+				"text": "我的"
+			}
+		]
+	},
+	
+	"uniIdRouter": {}
+}
+
+

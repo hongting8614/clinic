@@ -636,28 +636,43 @@ export default {
 .clinic-quick-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 22rpx;
+	gap: 20rpx;
 	margin-bottom: 32rpx;
 }
 
 .clinic-card {
 	position: relative;
-	padding: 28rpx;
-	border-radius: 28rpx;
+	padding: 26rpx;
+	border-radius: 24rpx;
 	overflow: hidden;
 	color: #ffffff;
-	box-shadow: 0 18rpx 40rpx rgba(16, 24, 40, 0.24);
+	box-shadow: 0 16rpx 32rpx rgba(31, 41, 55, 0.22);
 	transform: translateY(0);
-	transition: transform 0.25s ease, box-shadow 0.25s ease;
+	transition: transform 0.18s ease, box-shadow 0.18s ease;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	gap: 12rpx;
+	justify-content: space-between;
+	gap: 10rpx;
+	min-height: 210rpx;
+}
+
+.clinic-card::after {
+	content: '';
+	position: absolute;
+	inset: -20%;
+	border-radius: 30rpx;
+	background: rgba(255,255,255,0.08);
+	opacity: 0;
+	transition: opacity 0.18s ease;
 }
 
 .clinic-card:active {
-	transform: translateY(4rpx);
-	box-shadow: 0 12rpx 24rpx rgba(15, 23, 42, 0.28);
+	transform: scale(0.97);
+	box-shadow: 0 10rpx 26rpx rgba(31, 41, 55, 0.26);
+}
+
+.clinic-card:active::after {
+	opacity: 1;
 }
 
 .clinic-card .clinic-card-glass {
@@ -673,22 +688,23 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 18rpx;
+	gap: 16rpx;
 	width: 100%;
 	z-index: 1;
 }
 
 .clinic-card-icon {
 	position: relative;
-	width: 72rpx;
-	height: 72rpx;
-	border-radius: 24rpx;
-	background: rgba(255, 255, 255, 0.2);
+	width: 74rpx;
+	height: 74rpx;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.18);
+	backdrop-filter: blur(14rpx);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
-	box-shadow: inset 0 0 0 3rpx rgba(255,255,255,0.22);
+	box-shadow: inset 0 0 0 2rpx rgba(255,255,255,0.28);
 }
 
 .clinic-card-icon::before,
@@ -782,16 +798,16 @@ export default {
 }
 
 .clinic-card-title {
-	font-size: 32rpx;
-	font-weight: 800;
-	letter-spacing: 1rpx;
+	font-size: 30rpx;
+	font-weight: 700;
+	letter-spacing: 0.6rpx;
 	text-shadow: 0 3rpx 12rpx rgba(0,0,0,0.25);
 }
 
 .clinic-card-desc {
-	font-size: 24rpx;
+	font-size: 22rpx;
 	font-weight: 500;
-	opacity: 0.92;
+	opacity: 0.85;
 	letter-spacing: 0.4rpx;
 }
 
@@ -811,35 +827,35 @@ export default {
 }
 
 .clinic-card.register {
-	background: linear-gradient(135deg, #f973b1 0%, #db2777 100%);
+	background: linear-gradient(135deg, #ff72a6 0%, #ff9264 100%);
 }
 .clinic-card.register .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 70%);
 }
 
 .clinic-card.inbound {
-	background: linear-gradient(135deg, #34d399 0%, #22c55e 50%, #0ea5e9 110%);
+	background: linear-gradient(135deg, #34d399 0%, #16c9c5 50%, #0ea5e9 100%);
 }
 .clinic-card.inbound .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
 }
 
 .clinic-card.review {
-	background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ec4899 100%);
+	background: linear-gradient(135deg, #ffb84d 0%, #ff5f73 100%);
 }
 .clinic-card.review .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.33) 0%, transparent 70%);
 }
 
 .clinic-card.daily {
-	background: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ef4444 100%);
+	background: linear-gradient(135deg, #ff9f5f 0%, #ff5f5f 100%);
 }
 .clinic-card.daily .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.38) 0%, transparent 70%);
 }
 
 .clinic-card.summary {
-	background: linear-gradient(135deg, #38bdf8 0%, #6366f1 60%, #8b5cf6 100%);
+	background: linear-gradient(135deg, #66a4ff 0%, #8b6bff 100%);
 }
 .clinic-card.summary .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.32) 0%, transparent 70%);
@@ -1250,19 +1266,24 @@ export default {
 .action-grid {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	gap: 15rpx;
+	gap: 20rpx;
 	margin-top: 20rpx;
 }
 
 .action-card {
 	background: #ffffff;
-	border-radius: 16rpx;
-	padding: 25rpx 15rpx;
-	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.06);
+	border-radius: 24rpx;
+	padding: 26rpx 18rpx;
+	box-shadow: 0 16rpx 32rpx rgba(31, 41, 55, 0.18);
 	position: relative;
 	overflow: hidden;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: transform 0.18s ease, box-shadow 0.18s ease;
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 210rpx;
 }
 
 .action-card::before {
@@ -1270,30 +1291,39 @@ export default {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 100rpx;
-	height: 100rpx;
+	width: 110rpx;
+	height: 110rpx;
 	border-radius: 50%;
-	opacity: 0.1;
-	transform: translate(30rpx, -30rpx);
+	opacity: 0.12;
+	transform: translate(26rpx, -36rpx);
 }
 
-.action-card.primary::before { background: #667eea; }
-.action-card.success::before { background: #10b981; }
-.action-card.warning::before { background: #f59e0b; }
-.action-card.info::before { background: #3b82f6; }
-.action-card.clinic::before { background: #ec4899; }
-.action-card.purple::before { background: #8b5cf6; }
-.action-card.teal::before { background: #14b8a6; }
+.action-card::after {
+	content: '';
+	position: absolute;
+	inset: -20%;
+	border-radius: 32rpx;
+	background: rgba(102,126,234,0.08);
+	opacity: 0;
+	transition: opacity 0.18s ease;
+}
 
 .action-card:active {
-	transform: scale(0.98);
-	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
+	transform: scale(0.97);
+	box-shadow: 0 10rpx 26rpx rgba(31, 41, 55, 0.22);
+}
+
+.action-card:active::after {
+	opacity: 1;
 }
 
 .action-icon-bg {
-	width: 70rpx;
-	height: 70rpx;
-	border-radius: 18rpx;
+	width: 74rpx;
+	height: 74rpx;
+	border-radius: 50%;
+	backdrop-filter: blur(14rpx);
+	background: rgba(255, 255, 255, 0.18);
+	border: 2rpx solid rgba(255, 255, 255, 0.32);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1305,18 +1335,36 @@ export default {
 .action-icon-bg::before {
 	content: '';
 	position: absolute;
-	width: 100%;
-	height: 100%;
-	background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 70%);
+	width: 120%;
+	height: 120%;
+	background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35) 0%, transparent 70%);
+	mix-blend-mode: screen;
 }
 
-.action-icon-bg.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.action-icon-bg.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-.action-icon-bg.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-.action-icon-bg.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-.action-icon-bg.clinic { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
-.action-icon-bg.purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-.action-icon-bg.teal { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+.action-icon-bg.primary { background: linear-gradient(135deg, rgba(108,123,255,0.85) 0%, rgba(99,102,241,0.95) 100%); }
+.action-icon-bg.success { background: linear-gradient(135deg, rgba(45,212,170,0.85) 0%, rgba(16,185,129,0.95) 100%); }
+.action-icon-bg.warning { background: linear-gradient(135deg, rgba(255,175,69,0.85) 0%, rgba(249,115,22,0.95) 100%); }
+.action-icon-bg.info    { background: linear-gradient(135deg, rgba(96,148,255,0.85) 0%, rgba(37,99,235,0.95) 100%); }
+.action-icon-bg.clinic  { background: linear-gradient(135deg, rgba(255,111,177,0.85) 0%, rgba(190,24,93,0.95) 100%); }
+.action-icon-bg.purple  { background: linear-gradient(135deg, rgba(162,118,255,0.85) 0%, rgba(124,58,237,0.95) 100%); }
+.action-icon-bg.teal    { background: linear-gradient(135deg, rgba(47,213,213,0.85) 0%, rgba(13,148,136,0.95) 100%); }
+
+.action-label {
+	display: block;
+	font-size: 30rpx;
+	font-weight: 700;
+	color: #2c3e50;
+	margin-bottom: 6rpx;
+	letter-spacing: 0.6rpx;
+}
+
+.action-desc {
+	display: block;
+	font-size: 22rpx;
+	color: rgba(47, 63, 96, 0.75);
+	font-weight: 500;
+	letter-spacing: 0.4rpx;
+}
 
 /* 自定义图标形状 */
 .icon-shape {
@@ -1474,20 +1522,6 @@ export default {
 	font-weight: 700;
 	color: rgba(255,255,255,0.4);
 	letter-spacing: 1rpx;
-}
-
-.action-label {
-	display: block;
-	font-size: 26rpx;
-	font-weight: bold;
-	color: #2c3e50;
-	margin-bottom: 6rpx;
-}
-
-.action-desc {
-	display: block;
-	font-size: 20rpx;
-	color: #7f8c8d;
 }
 
 /* 数据统计区 */

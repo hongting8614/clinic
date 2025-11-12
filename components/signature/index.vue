@@ -16,7 +16,7 @@
 	<view v-if="isFullScreen" class="signature-popup-mask" @click.stop="closeFullScreen">
 		<view class="fullscreen-signature" @click.stop>
 				<!-- 顶部工具栏 -->
-				<view class="signature-header">
+			<view class="signature-header">
 					<view class="header-left" @click="closeFullScreen">
 						<text class="header-icon">✕</text>
 						<text class="header-text">取消</text>
@@ -35,7 +35,6 @@
 				<canvas 
 					id="signatureCanvas"
 					canvas-id="signatureCanvas"
-					type="2d"
 					class="signature-canvas"
 					@touchstart="touchStart"
 					@touchmove="touchMove"
@@ -46,19 +45,18 @@
 			</view>
 				
 				<!-- 底部按钮 -->
-				<view class="signature-footer">
+			<view class="signature-footer">
 				<button 
 					class="btn-clear" 
-						@click="clearCanvas"
-				>清空重签</button>
+					@click="clearCanvas"
+				>清空</button>
 				<button 
-					class="btn-confirm" 
-						@click="confirmSign"
-						:disabled="!hasDrawn"
-				>✓ 确认签名</button>
-					</view>
+					class="btn-save" 
+					@click="confirmSign"
+				>确认签名</button>
 				</view>
 			</view>
+		</view>
 	</view>
 </template>
 
@@ -91,7 +89,9 @@ export default {
 			lastX: 0,
 			lastY: 0,
 			hasDrawn: false,
-			dpr: 1
+			dpr: 1,
+			canvasOffsetX: 0,  // Canvas 相对于页面的 X 偏移（初始化时使用）
+			canvasOffsetY: 0   // Canvas 相对于页面的 Y 偏移（初始化时使用）
 		}
 	},
 	
@@ -120,128 +120,191 @@ export default {
 			this.isFullScreen = false
 		},
 		
-		async initCanvas() {
-			try {
-				// 获取系统信息（使用新API）
-				const windowInfo = uni.getWindowInfo ? uni.getWindowInfo() : uni.getSystemInfoSync()
-				this.dpr = windowInfo.pixelRatio || 1
-				
-				// 获取canvas节点
-				const query = uni.createSelectorQuery().in(this)
-				const canvasNode = await new Promise((resolve) => {
-					query.select('#signatureCanvas')
-						.fields({ node: true, size: true })
-						.exec((res) => {
-							if (res && res[0]) {
-								resolve(res[0])
-							} else {
-								resolve(null)
-							}
-						})
+	async initCanvas() {
+		// ⚠️ 直接使用旧版API，更稳定可靠
+		console.log('🔧 使用旧版Canvas API以确保坐标准确')
+		this.initCanvasOld()
+	},
+		
+	initCanvasOld() {
+		console.log('使用旧版Canvas API')
+		// 获取系统信息（使用新API，避免弃用警告）
+		let windowInfo = {}
+		if (uni.getWindowInfo) {
+			windowInfo = uni.getWindowInfo()
+		} else if (uni.getSystemInfoSync) {
+			// 降级使用，但会显示警告
+			windowInfo = uni.getSystemInfoSync()
+		}
+		this.canvasWidth = windowInfo.windowWidth || 375
+		this.canvasHeight = (windowInfo.windowHeight || 667) - 200
+		
+		// 获取 canvas 的位置（用于计算相对坐标）
+		const positionQuery = uni.createSelectorQuery().in(this)
+		positionQuery.select('#signatureCanvas').boundingClientRect((rect) => {
+			if (rect) {
+				this.canvasOffsetX = rect.left
+				this.canvasOffsetY = rect.top
+				console.log('Canvas位置 (旧版API):', {
+					offsetX: this.canvasOffsetX,
+					offsetY: this.canvasOffsetY
 				})
-				
-				if (!canvasNode || !canvasNode.node) {
-					console.error('Canvas节点获取失败，使用旧版API')
-					this.initCanvasOld()
+			}
+		}).exec()
+		
+		// 创建canvas上下文（旧版API）
+		this.ctx = uni.createCanvasContext('signatureCanvas', this)
+		
+		// 设置画笔样式
+		this.ctx.setStrokeStyle('#000000')
+		this.ctx.setLineWidth(3)
+		this.ctx.setLineCap('round')
+		this.ctx.setLineJoin('round')
+		
+		console.log('Canvas初始化成功 (旧版API)')
+	},
+		
+	drawExistingSign() {
+		// TODO: 如果有已存在的签名图片，绘制到画布上
+		// 这里暂时跳过，因为小程序canvas绘制图片较复杂
+	},
+	
+	// 更新 canvas 位置（用于处理页面滚动等情况）
+	updateCanvasPosition() {
+		return new Promise((resolve) => {
+			try {
+				const query = uni.createSelectorQuery().in(this)
+				query.select('#signatureCanvas').boundingClientRect((rect) => {
+					if (rect) {
+						this.canvasOffsetX = rect.left
+						this.canvasOffsetY = rect.top
+						console.log('更新Canvas位置:', {
+							left: rect.left,
+							top: rect.top
+						})
+					}
+					resolve()
+				}).exec()
+			} catch (err) {
+				console.warn('更新Canvas位置失败:', err)
+				resolve()
+			}
+		})
+	},
+	
+	touchStart(e) {
+		if (!this.ctx) {
+			console.error('Canvas未初始化')
+			return
+		}
+		
+		// ✅ 简化方案：直接使用 touches[0] 的坐标，不做复杂转换
+		const touch = e.touches[0]
+		
+		// 使用最简单的方式：pageX/pageY（相对于页面）
+		// 然后实时获取 Canvas 位置来计算相对坐标
+		const pageX = touch.pageX || touch.x || touch.clientX || 0
+		const pageY = touch.pageY || touch.y || touch.clientY || 0
+		
+		console.log('👆 触摸开始:', { pageX, pageY })
+		
+		// 同步获取 Canvas 位置并立即绘制
+		uni.createSelectorQuery()
+			.in(this)
+			.select('#signatureCanvas')
+			.boundingClientRect()
+			.exec((res) => {
+				if (!res || !res[0]) {
+					console.error('❌ 获取Canvas失败')
 					return
 				}
 				
-				this.canvas = canvasNode.node
-				this.ctx = this.canvas.getContext('2d')
+				const rect = res[0]
 				
-				// 设置canvas实际大小（考虑设备像素比）
-				this.canvasWidth = canvasNode.width
-				this.canvasHeight = canvasNode.height
+				// 🎯 优先使用小程序提供的相对坐标（最准确）
+				let x = typeof touch.x === 'number' ? touch.x : undefined
+				let y = typeof touch.y === 'number' ? touch.y : undefined
 				
-				this.canvas.width = this.canvasWidth * this.dpr
-				this.canvas.height = this.canvasHeight * this.dpr
+				// 兜底：使用 pageX/pageY 与 rect 计算
+				if (x === undefined || y === undefined) {
+					x = pageX - rect.left
+					y = pageY - rect.top
+				}
 				
-				// 缩放上下文以匹配设备像素比
-				this.ctx.scale(this.dpr, this.dpr)
+				// 保存状态
+				this.isDrawing = true
+				this.lastX = x
+				this.lastY = y
 				
-				// 设置画笔样式
-				this.ctx.strokeStyle = '#000000'
-				this.ctx.lineWidth = 3
-				this.ctx.lineCap = 'round'
-				this.ctx.lineJoin = 'round'
-				
-				console.log('Canvas初始化成功 (新版API)', {
-					width: this.canvasWidth,
-					height: this.canvasHeight,
-					dpr: this.dpr
-				})
-			} catch (err) {
-				console.error('Canvas初始化失败:', err)
-				// 降级到旧版API
-				this.initCanvasOld()
-			}
-		},
-		
-		initCanvasOld() {
-			console.log('使用旧版Canvas API')
-			// 获取系统信息（使用新API）
-			const windowInfo = uni.getWindowInfo ? uni.getWindowInfo() : uni.getSystemInfoSync()
-			this.canvasWidth = windowInfo.windowWidth
-			this.canvasHeight = windowInfo.windowHeight - 200
-			
-			// 创建canvas上下文（旧版API）
-			this.ctx = uni.createCanvasContext('signatureCanvas', this)
-			
-			// 设置画笔样式
-			this.ctx.setStrokeStyle('#000000')
-			this.ctx.setLineWidth(3)
-			this.ctx.setLineCap('round')
-			this.ctx.setLineJoin('round')
-			
-			console.log('Canvas初始化成功 (旧版API)')
-		},
-		
-		drawExistingSign() {
-			// TODO: 如果有已存在的签名图片，绘制到画布上
-			// 这里暂时跳过，因为小程序canvas绘制图片较复杂
-		},
-		
-		touchStart(e) {
-			if (!this.ctx) {
-				console.error('Canvas未初始化')
-				return
-			}
-			
-			const touch = e.touches[0]
-			this.isDrawing = true
-			this.lastX = touch.x
-			this.lastY = touch.y
-			
+			// 开始绘制
 			this.ctx.beginPath()
-			this.ctx.moveTo(touch.x, touch.y)
+			this.ctx.moveTo(x, y)
 			
-			console.log('开始绘制:', { x: touch.x, y: touch.y })
-		},
-		
-		touchMove(e) {
-			if (!this.isDrawing || !this.ctx) return
-			
-			const touch = e.touches[0]
-			this.ctx.lineTo(touch.x, touch.y)
-			this.ctx.stroke()
-			
-			// 新版API不需要调用draw()
-			if (this.canvas) {
-				// Canvas 2D API 自动渲染
-			} else {
-				// 旧版API需要调用draw()
+			// 旧版API需要调用draw()
+			if (!this.canvas) {
 				this.ctx.draw(true)
 			}
 			
-			this.lastX = touch.x
-			this.lastY = touch.y
-			this.hasDrawn = true
-		},
+			console.log('✅ 开始绘制:', { 
+				pageX, 
+				pageY, 
+				rectLeft: rect.left, 
+				rectTop: rect.top,
+				touchX: touch.x,
+				touchY: touch.y,
+				x, 
+				y,
+				canvasWidth: rect.width,
+				canvasHeight: rect.height,
+				使用旧版API: !this.canvas
+			})
+		})
+},
+	
+	touchMove(e) {
+		if (!this.isDrawing || !this.ctx) return
 		
-		touchEnd(e) {
-			this.isDrawing = false
-			console.log('结束绘制')
-		},
+		const touch = e.touches[0]
+		const pageX = touch.pageX || touch.x || touch.clientX || 0
+		const pageY = touch.pageY || touch.y || touch.clientY || 0
+		
+		// 🎯 实时获取 Canvas 位置（防止滚动影响）
+		uni.createSelectorQuery()
+			.in(this)
+			.select('#signatureCanvas')
+			.boundingClientRect()
+			.exec((res) => {
+				if (!res || !res[0] || !this.isDrawing) return
+				
+				const rect = res[0]
+				// 优先使用相对坐标 touch.x/touch.y
+				let x = typeof touch.x === 'number' ? touch.x : undefined
+				let y = typeof touch.y === 'number' ? touch.y : undefined
+				if (x === undefined || y === undefined) {
+					x = pageX - rect.left
+					y = pageY - rect.top
+				}
+				
+			// 绘制线条
+			this.ctx.lineTo(x, y)
+			this.ctx.stroke()
+			
+			// 旧版API需要调用draw()
+			if (!this.canvas) {
+				this.ctx.draw(true)
+			}
+			
+			// 更新状态
+			this.lastX = x
+			this.lastY = y
+			this.hasDrawn = true
+		})
+},
+		
+	touchEnd(e) {
+		this.isDrawing = false
+		console.log('✅ 结束绘制')
+	},
 		
 		clearCanvas() {
 			if (!this.ctx) return
@@ -263,6 +326,7 @@ export default {
 			this.signData = ''
 			this.hasDrawn = false
 			this.$emit('input', '')
+			this.$emit('update:value', '')
 			this.$emit('change', '')
 		},
 		
@@ -288,10 +352,11 @@ export default {
 				
 				this.signData = fileID
 				this.$emit('input', fileID)
+				this.$emit('update:value', fileID)
 				this.$emit('change', fileID)
 			
 			console.log('✅ 签名保存成功:', fileID)
-			console.log('✅ 已触发input和change事件')
+			console.log('✅ 已触发input/update:value/change事件')
 				
 				uni.hideLoading()
 				uni.showToast({
@@ -356,7 +421,7 @@ export default {
 // ==================== 非全屏签名区域 ====================
 .signature-container {
 	width: 100%;
-	height: 120rpx;
+	height: 60rpx;
 	background-color: #F8F8F8;
 	border: 2rpx dashed #CCCCCC;
 	border-radius: 12rpx;
@@ -371,14 +436,14 @@ export default {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	gap: 12rpx;
+	gap: 6rpx;
 
 .placeholder-icon {
-		font-size: 40rpx;
+		font-size: 24rpx;
 }
 
 .placeholder-text {
-		font-size: 24rpx;
+		font-size: 20rpx;
 	color: #999999;
 	}
 }
@@ -390,15 +455,15 @@ export default {
 
 .signature-actions {
 	position: absolute;
-	bottom: 20rpx;
-	right: 20rpx;
+	bottom: 8rpx;
+	right: 12rpx;
 	
 	.btn-resign {
-		padding: 8rpx 20rpx;
+		padding: 4rpx 16rpx;
 		background-color: #FF976A;
 		color: #FFFFFF;
-		font-size: 24rpx;
-		border-radius: 20rpx;
+		font-size: 20rpx;
+		border-radius: 16rpx;
 		border: none;
 		
 		&::after {
@@ -417,16 +482,22 @@ export default {
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 9999;
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	justify-content: center;
 }
 
 .fullscreen-signature {
 	width: 100%;
-	height: 100%;
+	height: 100vh;
+	max-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	background-color: #FFFFFF;
+	padding: calc(env(safe-area-inset-top) + 20rpx) 20rpx calc(env(safe-area-inset-bottom) + 220rpx) 20rpx;
+	box-sizing: border-box;
+	overflow: hidden;
+	gap: 20rpx;
+	position: relative;
 }
 
 // 顶部工具栏
@@ -438,6 +509,7 @@ export default {
 	justify-content: space-between;
 	padding: 0 30rpx;
 	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	flex-shrink: 0;
 
 .header-left,
 .header-right {
@@ -471,8 +543,9 @@ export default {
 // 签名画布
 .signature-canvas-wrapper {
 	flex: 1;
+	min-height: 0;
 	background-color: #FFFFFF;
-	margin: 20rpx;
+	margin: 0;
 	border-radius: 20rpx;
 	position: relative;
 	overflow: hidden;
@@ -504,7 +577,9 @@ export default {
 	padding: 0 30rpx;
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 	gap: 20rpx;
-	
+	flex-shrink: 0;
+	border-radius: 24rpx;
+
 	button {
 		flex: 1;
 		height: 80rpx;
@@ -522,7 +597,7 @@ export default {
 		color: #646566;
 	}
 	
-	.btn-confirm {
+	.btn-save {
 		background-color: #07C160;
 		color: #FFFFFF;
 		

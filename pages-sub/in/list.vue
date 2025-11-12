@@ -266,18 +266,24 @@ export default {
 	},
 	
 	methods: {
-		initPage() {
-			// 获取当前用户ID
-			const userInfo = uni.getStorageSync('userInfo')
-			this.currentUserId = userInfo?._id || ''
-			
-			// 设置当前时间
-			this.updateCurrentTime()
-			
-			this.loadRecords()
-			this.loadCounts()
-			this.loadStats()
-		},
+	initPage() {
+		// 获取当前用户ID（兼容 userId 和 _id）
+		const userInfo = uni.getStorageSync('userInfo')
+		this.currentUserId = userInfo?.userId || userInfo?._id || ''
+		
+		console.log('📋 入库列表页初始化:', {
+			hasUserInfo: !!userInfo,
+			currentUserId: this.currentUserId,
+			userRole: userInfo?.role
+		})
+		
+		// 设置当前时间
+		this.updateCurrentTime()
+		
+		this.loadRecords()
+		this.loadCounts()
+		this.loadStats()
+	},
 		
 		updateCurrentTime() {
 			const now = new Date()
@@ -513,17 +519,32 @@ export default {
 			return statusMap[status] || status
 		},
 		
-		canReview(item) {
-			// 待复核的单据，且不是自己创建的，且当前用户有复核权限
-			if (item.status !== 'pending_review' || item.operatorId === this.currentUserId) {
-				return false
-			}
-			
-			// 检查用户角色是否有复核权限（管理员或项目经理）
-			const userInfo = uni.getStorageSync('userInfo')
-			const userRole = userInfo?.role || ''
-			return userRole === 'admin' || userRole === 'project_manager'
-		},
+	canReview(item) {
+		// 待复核的单据，且不是自己创建的，且当前用户有复核权限
+		console.log('🔍 复核权限检查:', {
+			itemStatus: item.status,
+			operatorId: item.operatorId,
+			currentUserId: this.currentUserId,
+			isSameUser: item.operatorId === this.currentUserId
+		})
+		
+		if (item.status !== 'pending_review' || item.operatorId === this.currentUserId) {
+			console.log('❌ 不能复核: 状态不对或是自己创建的')
+			return false
+		}
+		
+		// 检查用户角色是否有复核权限（管理员或项目经理）
+		const userInfo = uni.getStorageSync('userInfo')
+		const userRole = userInfo?.role || ''
+		const hasPermission = userRole === 'admin' || userRole === 'project_manager'
+		
+		console.log('✅ 复核权限结果:', {
+			userRole,
+			hasPermission
+		})
+		
+		return hasPermission
+	},
 		
 		goDetail(id, item) {
 			// 如果是待复核状态且可以复核，跳转到复核页面

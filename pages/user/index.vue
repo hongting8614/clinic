@@ -1,23 +1,33 @@
 <template>
-	<view class="page">
+	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
 		<!-- 用户信息卡片 - 科技风格 -->
 		<view class="user-profile">
 			<view class="profile-bg">
 				<view class="bg-pattern"></view>
 			</view>
 			<view class="profile-content">
-				<view class="avatar-wrapper">
+				<view class="avatar-wrapper" @tap="showAvatarOptions">
 					<view class="avatar-circle">
-						<text class="avatar-icon">👤</text>
+						<!-- 显示真实头像或默认图标 -->
+						<image 
+							v-if="displayAvatar" 
+							:src="displayAvatar" 
+							class="avatar-img"
+							mode="aspectFill"
+							@error="onAvatarError"
+						/>
+						<text v-else class="avatar-icon">👤</text>
 					</view>
 					<view class="online-indicator"></view>
+					<!-- 相机图标提示可点击 -->
+					<view v-if="isLoggedIn" class="camera-icon">📷</view>
 				</view>
 				<view class="user-details">
 					<text class="user-name">{{ userInfo.name }}</text>
-					<text class="user-role">{{ userInfo.role }}</text>
+					<text class="user-role">{{ userInfo.roleText }}</text>
 					<view class="user-dept-tag">
 						<text class="dept-icon">🏥</text>
-						<text class="dept-text">{{ userInfo.department }}</text>
+						<text class="dept-text">医务室</text>
 					</view>
 					<!-- 登录按钮 -->
 					<view v-if="!isLoggedIn" class="login-btn-wrapper">
@@ -180,20 +190,38 @@
 
 <script>
 import { login, checkLogin, getUserInfo } from '@/utils/auth.js'
+import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
+	mixins: [createTabSwipeMixin(3)],
 	data() {
 		return {
 			userInfo: {
 				name: '未登录',
 				role: '请先登录',
-				department: '北京欢乐谷医务室'
+				roleText: '请先登录',
+				department: '北京欢乐谷医务室',
+				avatarUrl: '',
+				wechatAvatarUrl: ''
 			},
 			lastUpdateTime: '',
 			isLoading: false,
-			isLoggedIn: false
+			isLoggedIn: false,
+			avatarLoadError: false
 		}
 	},
+	
+	computed: {
+		// 计算显示的头像
+		displayAvatar() {
+			if (this.avatarLoadError) {
+				return ''
+			}
+			// 优先级：自定义头像 > 微信头像
+			return this.userInfo.avatarUrl || this.userInfo.wechatAvatarUrl || ''
+		}
+	},
+	
 	onLoad() {
 		console.log('===== 我的页面 onLoad =====')
 		this.updateTime()
@@ -374,6 +402,124 @@ export default {
 				confirmText: '确定',
 				confirmColor: '#667eea'
 			})
+		},
+		
+		// 显示头像选项
+		showAvatarOptions() {
+			if (!this.isLoggedIn) {
+				uni.showToast({
+					title: '请先登录',
+					icon: 'none'
+				})
+				return
+			}
+			
+			uni.showActionSheet({
+				itemList: ['从相册选择', '拍照'],
+				success: (res) => {
+					if (res.tapIndex === 0) {
+						this.chooseImageFromAlbum()
+					} else if (res.tapIndex === 1) {
+						this.takePhoto()
+					}
+				}
+			})
+		},
+		
+		// 从相册选择
+		async chooseImageFromAlbum() {
+			await this.chooseAndUploadImage(['album'])
+		},
+		
+		// 拍照
+		async takePhoto() {
+			await this.chooseAndUploadImage(['camera'])
+		},
+		
+		// 选择并上传图片
+		async chooseAndUploadImage(sourceType) {
+			try {
+				const res = await uni.chooseImage({
+					count: 1,
+					sizeType: ['compressed'],
+					sourceType: sourceType
+				})
+				
+				uni.showLoading({
+					title: '上传中...'
+				})
+				
+				const tempFilePath = res.tempFilePaths[0]
+				
+				// 上传到云存储
+				const cloudPath = await this.uploadToCloud(tempFilePath)
+				
+				// 更新数据库
+				await this.updateAvatar(cloudPath, 'custom')
+				
+				uni.hideLoading()
+				uni.showToast({
+					title: '头像已更新',
+					icon: 'success'
+				})
+			} catch (err) {
+				console.error('上传失败：', err)
+				uni.hideLoading()
+				if (err.errMsg && !err.errMsg.includes('cancel')) {
+					uni.showToast({
+						title: '上传失败',
+						icon: 'error'
+					})
+				}
+			}
+		},
+		
+		// 上传到云存储
+		async uploadToCloud(filePath) {
+			const cloudPath = `avatars/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`
+			
+			const result = await wx.cloud.uploadFile({
+				cloudPath: cloudPath,
+				filePath: filePath
+			})
+			
+			return result.fileID
+		},
+		
+		// 更新头像
+		async updateAvatar(avatarUrl, type) {
+			const res = await wx.cloud.callFunction({
+				name: 'updateMyInfo',
+				data: {
+					[type === 'wechat' ? 'wechatAvatarUrl' : 'avatarUrl']: avatarUrl
+				}
+			})
+			
+			// 更新本地
+			if (type === 'wechat') {
+				this.userInfo.wechatAvatarUrl = avatarUrl
+			} else {
+				this.userInfo.avatarUrl = avatarUrl
+			}
+			
+			this.avatarLoadError = false
+			
+			// 更新缓存
+			const storedUserInfo = uni.getStorageSync('userInfo')
+			if (storedUserInfo) {
+				if (type === 'wechat') {
+					storedUserInfo.wechatAvatarUrl = avatarUrl
+				} else {
+					storedUserInfo.avatarUrl = avatarUrl
+				}
+				uni.setStorageSync('userInfo', storedUserInfo)
+			}
+		},
+		
+		// 头像加载失败
+		onAvatarError() {
+			console.log('头像加载失败')
+			this.avatarLoadError = true
 		}
 	}
 }
@@ -438,12 +584,35 @@ export default {
 	justify-content: center;
 	box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
 	border: 5rpx solid #ffffff;
+	overflow: hidden;
+}
+
+.avatar-img {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
 }
 
 .avatar-icon {
 	font-size: 50rpx;
 	color: #ffffff;
 	filter: drop-shadow(0 2rpx 4rpx rgba(0,0,0,0.2));
+}
+
+.camera-icon {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 30rpx;
+	height: 30rpx;
+	background: #ffffff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18rpx;
+	box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+	z-index: 2;
 }
 
 .online-indicator {

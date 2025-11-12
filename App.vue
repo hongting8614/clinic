@@ -26,9 +26,23 @@ export default {
 	methods: {
 		checkLogin() {
 			const userInfo = uni.getStorageSync('userInfo')
+			const isLogin = uni.getStorageSync('isLogin')
+			
+			console.log('🔍 检查登录状态:', {
+				hasUserInfo: !!userInfo,
+				isLogin: isLogin,
+				userInfo: userInfo
+			})
+			
 			if (!userInfo) {
 				// 跳转到登录页
 				console.log('用户未登录')
+			} else {
+				console.log('✅ 用户已登录:', {
+					name: userInfo.name,
+					role: userInfo.role,
+					userId: userInfo.userId || userInfo._id
+				})
 			}
 		}
 	}

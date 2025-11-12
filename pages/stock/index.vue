@@ -1,5 +1,5 @@
 <template>
-	<view class="page">
+	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
 		<!-- 顶部专业搜索栏 -->
 		<view class="search-header">
 			<view class="search-wrapper">
@@ -134,8 +134,10 @@
 
 <script>
 import { callFunction } from '@/utils/api.js'
+import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
+	mixins: [createTabSwipeMixin(1)],
 	data() {
 		return {
 			drugList: [],

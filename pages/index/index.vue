@@ -1,5 +1,5 @@
 <template>
-	<view class="page">
+	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
 		<!-- 顶部渐变背景卡片 -->
 		<view class="header-card">
 			<view class="header-content">
@@ -31,34 +31,64 @@
 				<text class="section-title">快捷操作</text>
 				<text class="section-subtitle">Quick Actions</text>
 			</view>
-		<!-- 门诊登记 - 占满整行 -->
-		<view class="clinic-banner" @tap="goToPage('/pages-sub/clinic/add')">
-			<view class="clinic-banner-icon">
-				<view class="clinic-cross-h"></view>
-				<view class="clinic-cross-v"></view>
-				<view class="clinic-circle-bg"></view>
-			</view>
-			<view class="clinic-banner-content">
-			<view class="clinic-banner-title">门诊登记表</view>
-			</view>
-			<view class="clinic-banner-arrow">→</view>
-		</view>
-		
-		<!-- 新建入库单 - 快捷入口 -->
-		<view class="inbound-banner" @tap="goToPage('/pages-sub/in/add')">
-			<view class="inbound-banner-icon">
-				<view class="inbound-box">
-					<view class="box-top"></view>
-					<view class="box-front"></view>
-					<view class="arrow-in">↓</view>
+	<view class="clinic-quick-grid">
+		<view class="clinic-card register" @tap="goToPage('/pages-sub/clinic/add')">
+			<view class="clinic-card-glass"></view>
+			<view class="clinic-card-content">
+				<view class="clinic-card-icon register"></view>
+				<view class="clinic-card-text">
+					<text class="clinic-card-title">门诊登记表</text>
+					<text class="clinic-card-desc">快速登记 · 信息完整</text>
 				</view>
 			</view>
-			<view class="inbound-banner-content">
-			<view class="inbound-banner-title">新建入库单</view>
-			</view>
-			<view class="inbound-banner-badge">NEW</view>
-			<view class="inbound-banner-arrow">→</view>
 		</view>
+		
+		<view v-if="showInboundButton" class="clinic-card inbound" @tap="goToPage('/pages-sub/in/add')">
+			<view class="clinic-card-glass"></view>
+			<view class="clinic-card-content">
+				<view class="clinic-card-icon inbound"></view>
+				<view class="clinic-card-text">
+					<text class="clinic-card-title">新建入库单</text>
+					<text class="clinic-card-desc">一键入库 · 高效办理</text>
+				</view>
+				<view class="clinic-card-tag">NEW</view>
+			</view>
+		</view>
+		
+		<view v-if="showReviewEntry" class="clinic-card review" @tap="goToPage('/pages-sub/in/list?tab=review')">
+			<view class="clinic-card-glass"></view>
+			<view class="clinic-card-content">
+				<view class="clinic-card-icon review"></view>
+				<view class="clinic-card-text">
+					<text class="clinic-card-title">待复核入库单</text>
+					<text class="clinic-card-desc">待办提醒 · 即刻处理</text>
+				</view>
+				<view class="clinic-card-tag">{{ pendingReviewCount || 0 }}</view>
+			</view>
+		</view>
+		
+		<view class="clinic-card daily" @tap="goToPage('/pages-sub/report/daily')">
+			<view class="clinic-card-glass"></view>
+			<view class="clinic-card-content">
+				<view class="clinic-card-icon daily"></view>
+				<view class="clinic-card-text">
+					<text class="clinic-card-title">门诊日报</text>
+					<text class="clinic-card-desc">当日接诊 · 用药速览</text>
+				</view>
+			</view>
+		</view>
+		
+		<view class="clinic-card summary" @tap="goToPage('/pages-sub/report/index')">
+			<view class="clinic-card-glass"></view>
+			<view class="clinic-card-content">
+				<view class="clinic-card-icon summary"></view>
+				<view class="clinic-card-text">
+					<text class="clinic-card-title">门诊报表</text>
+					<text class="clinic-card-desc">趋势分析 · 深度洞察</text>
+				</view>
+			</view>
+		</view>
+	</view>
 		
 		<view class="action-grid">
 				<!-- 入库 -->
@@ -258,8 +288,11 @@
 
 <script>
 import { callFunction } from '@/utils/api.js'
+import { hasPermission, canReview } from '@/utils/permission.js'
+import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
+	mixins: [createTabSwipeMixin(0)],
 	data() {
 		return {
 			todayStats: {
@@ -268,22 +301,87 @@ export default {
 				totalDrugs: 0,
 				lowStockCount: 0
 			},
-			lastUpdateTime: ''
+		lastUpdateTime: '',
+		userInfo: null,
+		canCreateIn: false,  // 是否可以创建入库单
+		canReviewIn: false,  // 是否可以复核入库单
+		pendingReviewCount: 0  // 待复核数量
+	}
+	},
+	
+	computed: {
+		// 是否显示新建入库单按钮
+		showInboundButton() {
+			return this.canCreateIn
+		},
+		// 是否显示待复核入口
+		showReviewEntry() {
+			return this.canReviewIn
 		}
 	},
 	onLoad() {
 		console.log('===== 首页 onLoad =====')
+		this.checkPermissions()
 		this.updateLastUpdateTime()
 		this.loadTodayStats()
 	},
 	onShow() {
 		console.log('===== 首页 onShow =====')
+		this.checkPermissions()
 		this.loadTodayStats()
+		this.loadPendingReviewCount()
 	},
 	onReady() {
 		console.log('===== 首页 onReady =====')
 	},
 	methods: {
+		// 检查权限
+		checkPermissions() {
+			this.userInfo = uni.getStorageSync('userInfo')
+			if (this.userInfo && this.userInfo.role) {
+				// 检查是否可以创建入库单
+				this.canCreateIn = hasPermission(this.userInfo.role, 'in.create')
+				// 检查是否可以复核入库单
+				this.canReviewIn = canReview(this.userInfo.role)
+				
+				console.log('权限检查:', {
+					role: this.userInfo.role,
+					canCreateIn: this.canCreateIn,
+					canReviewIn: this.canReviewIn
+				})
+			} else {
+				this.canCreateIn = false
+				this.canReviewIn = false
+			}
+		},
+		
+		// 加载待复核数量
+		async loadPendingReviewCount() {
+			if (!this.canReviewIn) {
+				this.pendingReviewCount = 0
+				return
+			}
+			
+			try {
+				const result = await callFunction('inRecords', {
+					action: 'getCounts',
+					data: {}
+				})
+				
+				if (result) {
+					const pendingCount =
+						result.pendingReview ??
+						result.pending_review ??
+						result.pending ??
+						0
+					this.pendingReviewCount = pendingCount
+				}
+			} catch (err) {
+				console.error('获取待复核数量失败:', err)
+				this.pendingReviewCount = 0
+			}
+		},
+		
 		// 更新最后更新时间
 		updateLastUpdateTime() {
 			const now = new Date()
@@ -534,6 +632,248 @@ export default {
 	padding: 30rpx;
 }
 
+/* 门诊快捷入口（四宫格） */
+.clinic-quick-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 22rpx;
+	margin-bottom: 32rpx;
+}
+
+.clinic-card {
+	position: relative;
+	padding: 28rpx;
+	border-radius: 28rpx;
+	overflow: hidden;
+	color: #ffffff;
+	box-shadow: 0 18rpx 40rpx rgba(16, 24, 40, 0.24);
+	transform: translateY(0);
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12rpx;
+}
+
+.clinic-card:active {
+	transform: translateY(4rpx);
+	box-shadow: 0 12rpx 24rpx rgba(15, 23, 42, 0.28);
+}
+
+.clinic-card .clinic-card-glass {
+	position: absolute;
+	inset: 0;
+	background: rgba(255,255,255,0.08);
+	backdrop-filter: blur(20rpx);
+	z-index: 0;
+}
+
+.clinic-card-content {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18rpx;
+	width: 100%;
+	z-index: 1;
+}
+
+.clinic-card-icon {
+	position: relative;
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 24rpx;
+	background: rgba(255, 255, 255, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	box-shadow: inset 0 0 0 3rpx rgba(255,255,255,0.22);
+}
+
+.clinic-card-icon::before,
+.clinic-card-icon::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	background: #ffffff;
+	border-radius: 999rpx;
+}
+
+.clinic-card-icon.register::before {
+	width: 40rpx;
+	height: 6rpx;
+}
+
+.clinic-card-icon.register::after {
+	width: 6rpx;
+	height: 40rpx;
+}
+
+.clinic-card-icon.review::before {
+	content: none;
+}
+
+.clinic-card-icon.review::after {
+	content: '';
+	width: 32rpx;
+	height: 18rpx;
+	border-left: 4rpx solid #ffffff;
+	border-bottom: 4rpx solid #ffffff;
+	border-radius: 4rpx;
+	transform: rotate(-40deg);
+}
+
+.clinic-card-icon.inbound::before {
+	width: 6rpx;
+	height: 34rpx;
+	top: 32%;
+}
+
+.clinic-card-icon.inbound::after {
+	width: 0;
+	height: 0;
+	border-left: 10rpx solid transparent;
+	border-right: 10rpx solid transparent;
+	border-top: 14rpx solid #ffffff;
+	bottom: 10rpx;
+}
+
+.clinic-card-icon.daily::before {
+	width: 46rpx;
+	height: 46rpx;
+	border-radius: 50%;
+	border: 4rpx solid rgba(255,255,255,0.8);
+	background: transparent;
+	animation: quick-pulse 2.2s ease-in-out infinite;
+}
+
+.clinic-card-icon.daily::after {
+	width: 16rpx;
+	height: 16rpx;
+	border-radius: 50%;
+	box-shadow: 0 0 12rpx rgba(255,255,255,0.7);
+}
+
+.clinic-card-icon.summary::before {
+	width: 48rpx;
+	height: 24rpx;
+	border-radius: 12rpx;
+	background: rgba(255,255,255,0.32);
+	transform: rotate(-18deg);
+}
+
+.clinic-card-icon.summary::after {
+	width: 18rpx;
+	height: 18rpx;
+	border-radius: 50%;
+	right: 10rpx;
+	top: 16rpx;
+	box-shadow: 0 0 10rpx rgba(255,255,255,0.6);
+}
+
+.clinic-card-text {
+	display: flex;
+	flex-direction: column;
+	gap: 6rpx;
+	flex: 1;
+}
+
+.clinic-card-title {
+	font-size: 32rpx;
+	font-weight: 800;
+	letter-spacing: 1rpx;
+	text-shadow: 0 3rpx 12rpx rgba(0,0,0,0.25);
+}
+
+.clinic-card-desc {
+	font-size: 24rpx;
+	font-weight: 500;
+	opacity: 0.92;
+	letter-spacing: 0.4rpx;
+}
+
+.card-tag,
+.card-badge {
+	position: absolute;
+	top: 24rpx;
+	right: 26rpx;
+	padding: 10rpx 18rpx;
+	border-radius: 999rpx;
+	font-size: 22rpx;
+	font-weight: 700;
+	background: rgba(255,255,255,0.22);
+	color: #ffffff;
+	backdrop-filter: blur(12rpx);
+	box-shadow: 0 6rpx 18rpx rgba(15,23,42,0.18);
+}
+
+.clinic-card.register {
+	background: linear-gradient(135deg, #f973b1 0%, #db2777 100%);
+}
+.clinic-card.register .clinic-card-glass {
+	background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 70%);
+}
+
+.clinic-card.inbound {
+	background: linear-gradient(135deg, #34d399 0%, #22c55e 50%, #0ea5e9 110%);
+}
+.clinic-card.inbound .clinic-card-glass {
+	background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
+}
+
+.clinic-card.review {
+	background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ec4899 100%);
+}
+.clinic-card.review .clinic-card-glass {
+	background: radial-gradient(circle, rgba(255,255,255,0.33) 0%, transparent 70%);
+}
+
+.clinic-card.daily {
+	background: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ef4444 100%);
+}
+.clinic-card.daily .clinic-card-glass {
+	background: radial-gradient(circle, rgba(255,255,255,0.38) 0%, transparent 70%);
+}
+
+.clinic-card.summary {
+	background: linear-gradient(135deg, #38bdf8 0%, #6366f1 60%, #8b5cf6 100%);
+}
+.clinic-card.summary .clinic-card-glass {
+	background: radial-gradient(circle, rgba(255,255,255,0.32) 0%, transparent 70%);
+}
+
+.clinic-card-text {
+	display: flex;
+	flex-direction: column;
+	gap: 6rpx;
+	flex: 1;
+}
+
+.clinic-card-tag {
+	position: relative;
+	padding: 10rpx 22rpx;
+	border-radius: 999rpx;
+	background: rgba(255,255,255,0.24);
+	font-size: 22rpx;
+	font-weight: 700;
+	color: #ffffff;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.22);
+}
+
+@keyframes quick-pulse {
+	0% {
+		transform: scale(0.6);
+		opacity: 0.8;
+	}
+	100% {
+		transform: scale(1.05);
+		opacity: 0;
+	}
+}
+
 /* 门诊登记长标签 Banner */
 .clinic-banner {
 	margin: 0 0 20rpx 0;
@@ -772,6 +1112,120 @@ export default {
 	font-weight: bold;
 	z-index: 1;
 }
+
+// 待复核入口样式（与入库单样式类似，但使用绿色主题）
+.review-banner {
+	margin: 0 0 20rpx 0;
+	padding: 30rpx 35rpx;
+	background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+	border-radius: 24rpx;
+	display: flex;
+	align-items: center;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0 8rpx 24rpx rgba(76, 175, 80, 0.3);
+	transition: all 0.3s ease;
+}
+
+.review-banner::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	right: -20%;
+	width: 200rpx;
+	height: 200rpx;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+	border-radius: 50%;
+	z-index: 0;
+}
+
+.review-banner:active {
+	transform: scale(0.98);
+	box-shadow: 0 4rpx 20rpx rgba(76, 175, 80, 0.5);
+}
+
+.review-banner-icon {
+	position: relative;
+	width: 80rpx;
+	height: 80rpx;
+	z-index: 1;
+}
+
+.review-check {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.check-circle {
+	position: absolute;
+	width: 70rpx;
+	height: 70rpx;
+	border: 4rpx solid rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	animation: pulse-circle 2s ease-in-out infinite;
+}
+
+.check-mark {
+	font-size: 48rpx;
+	color: #ffffff;
+	font-weight: bold;
+	z-index: 1;
+}
+
+@keyframes pulse-circle {
+	0%, 100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.1);
+		opacity: 0.8;
+	}
+}
+
+.review-banner-content {
+	flex: 1;
+	margin-left: 25rpx;
+	z-index: 1;
+}
+
+.review-banner-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #ffffff;
+	letter-spacing: 1rpx;
+	text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.review-banner-badge {
+	min-width: 48rpx;
+	height: 48rpx;
+	padding: 0 12rpx;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 24rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28rpx;
+	font-weight: bold;
+	color: #4caf50;
+	margin-right: 15rpx;
+	z-index: 1;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.review-banner-arrow {
+	font-size: 48rpx;
+	color: rgba(255, 255, 255, 0.8);
+	font-weight: bold;
+	z-index: 1;
+}
+
+/* 门诊报表双卡 */
 
 .section-header {
 	margin-bottom: 25rpx;

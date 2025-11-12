@@ -1,0 +1,11 @@
+{
+  "name": "clearInRecords",
+  "version": "1.0.0",
+  "description": "清空所有入库单（测试用）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
+
+

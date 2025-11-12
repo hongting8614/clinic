@@ -114,12 +114,15 @@
 			</view>
 			
 			<!-- 操作员签名（已签） -->
-			<view class="signature-card">
+			<view class="signature-card operator-card">
 				<view class="signature-header">
-					<text class="signature-label">操作员签名</text>
+					<view class="header-left">
+						<text class="signature-icon">✍️</text>
+						<text class="signature-label">{{ getOperatorRoleText() }}签名</text>
+					</view>
 					<view class="signature-status completed">已签名</view>
 				</view>
-				<view class="signature-display">
+				<view class="signature-display-box">
 					<image 
 						v-if="record.operatorSign" 
 						:src="record.operatorSign" 
@@ -127,29 +130,54 @@
 						class="signature-img"
 					></image>
 					<view v-else class="no-signature">
-						<text>暂无签名</text>
+						<text class="no-sig-icon">✍️</text>
+						<text class="no-sig-text">暂无签名</text>
 					</view>
 				</view>
-				<view class="signature-info">
-					<text class="info-text">{{ record.operator }}</text>
-					<text class="info-text">{{ record.operatorSignTime || record.createTime }}</text>
+			<view class="signature-footer">
+				<view class="footer-item">
+					<text class="footer-label">签名人</text>
+					<text class="footer-value">{{ record.operator }}（{{ getOperatorRoleText() }}）</text>
+				</view>
+				<view class="footer-divider"></view>
+				<view class="footer-item">
+					<text class="footer-label">签名时间</text>
+					<text class="footer-value">{{ formatTime(record.operatorSignTime || record.createTime) }}</text>
 				</view>
 			</view>
+			</view>
 			
-		</view>
-
-		<!-- 复核人签名 -->
-			<view class="signature-card">
+			<!-- 复核人签名 -->
+			<view class="signature-card reviewer-card">
 				<view class="signature-header">
-					<text class="signature-label">复核人签名</text>
+					<view class="header-left">
+						<text class="signature-icon">✓</text>
+						<text class="signature-label">复核人签名</text>
+					</view>
 					<view :class="['signature-status', reviewerSign ? 'completed' : 'pending']">
 						{{ reviewerSign ? '已签名' : '待签名' }}
 					</view>
 				</view>
-			<signature 
-				v-model="reviewerSign"
-				title="复核人签名"
-			></signature>
+				<view class="signature-display-box">
+					<signature 
+						v-model="reviewerSign"
+						title=""
+						:showTitle="false"
+					></signature>
+				</view>
+			<view v-if="reviewerSign" class="signature-footer">
+				<view class="footer-item">
+					<text class="footer-label">签名人</text>
+					<text class="footer-value">{{ (userInfo && userInfo.name) || '未登录' }}（{{ getRoleText(userInfo && userInfo.role) }}）</text>
+				</view>
+				<view class="footer-divider"></view>
+				<view class="footer-item">
+					<text class="footer-label">签名时间</text>
+					<text class="footer-value">{{ getCurrentTime() }}</text>
+				</view>
+			</view>
+			</view>
+			
 		</view>
 
 		<!-- 驳回原因（如果需要驳回） -->
@@ -205,7 +233,8 @@ export default {
 			},
 			reviewerSign: '',
 			showRejectReason: false,
-			rejectReason: ''
+			rejectReason: '',
+			userInfo: null
 		}
 	},
 	
@@ -231,6 +260,7 @@ export default {
 		if (options.id) {
 			this.recordId = options.id
 		}
+		this.userInfo = uni.getStorageSync('userInfo') || null
 		this.initPage()
 	},
 	
@@ -257,8 +287,11 @@ export default {
 				
 				uni.hideLoading()
 				
-				if (result && result.success && result.data) {
-					this.record = result.data
+				// 兼容不同的返回格式
+				const data = result.data || result
+				
+				if (data && data._id) {
+					this.record = data
 					
 					// 计算效期
 					this.record.items.forEach(item => {
@@ -346,6 +379,44 @@ export default {
 			})
 		},
 		
+		// 获取操作员角色文本（根据操作员姓名从用户列表中查找）
+		getOperatorRoleText() {
+			// 如果有operatorRole字段，直接使用
+			if (this.record.operatorRole) {
+				return this.getRoleText(this.record.operatorRole)
+			}
+			// 否则默认显示"操作员"
+			return '操作员'
+		},
+		
+		// 获取角色文本
+		getRoleText(role) {
+			const roleMap = {
+				'admin': '管理员',
+				'project_manager': '项目经理',
+				'doctor': '医生',
+				'pharmacy': '药师',
+				'viewer': '查看者'
+			}
+			return roleMap[role] || '操作员'
+		},
+		
+		// 格式化时间
+		formatTime(timeStr) {
+			if (!timeStr) return '--'
+			const date = new Date(timeStr)
+			const month = String(date.getMonth() + 1).padStart(2, '0')
+			const day = String(date.getDate()).padStart(2, '0')
+			const hours = String(date.getHours()).padStart(2, '0')
+			const minutes = String(date.getMinutes()).padStart(2, '0')
+			return `${month}-${day} ${hours}:${minutes}`
+		},
+		
+		// 获取当前时间
+		getCurrentTime() {
+			return this.formatTime(new Date().toISOString())
+		},
+		
 		async submitReview(action) {
 			// 如果是驳回，检查驳回原因
 			if (action === 'reject' && !this.rejectReason.trim()) {
@@ -359,14 +430,36 @@ export default {
 			uni.showLoading({ title: '提交中...', mask: true })
 			
 			try {
-				const userInfo = uni.getStorageSync('userInfo')
+				const cachedUser = this.userInfo || uni.getStorageSync('userInfo') || null
+				if (cachedUser && !this.userInfo) {
+					this.userInfo = cachedUser
+				}
+				const reviewerId = cachedUser && (cachedUser.userId || cachedUser._id || '')
+				const reviewerName = cachedUser && cachedUser.name ? cachedUser.name : ''
+				
+				// 登录校验（避免云函数因 reviewerId 为空而提示“先登录”）
+				if (!cachedUser || !reviewerName || !reviewerId) {
+					uni.hideLoading()
+					uni.showModal({
+						title: '请先登录',
+						content: '复核提交需要登录账号，请前往“我的”完成登录后再试。',
+						confirmText: '前往登录',
+						cancelText: '取消',
+						success: (res) => {
+							if (res.confirm) {
+								uni.switchTab({ url: '/pages/mine/index' })
+							}
+						}
+					})
+					return
+				}
 				
 				const result = await this.$api.callFunction('inRecords', {
 					action: action === 'approve' ? 'approve' : 'reject',
 					data: {
 						_id: this.recordId,
-						reviewer: userInfo?.name || '未知',
-						reviewerId: userInfo?._id || '',
+						reviewer: reviewerName,
+						reviewerId: reviewerId,
 						reviewerSign: this.reviewerSign,
 						reviewerSignTime: new Date().toISOString(),
 						rejectReason: action === 'reject' ? this.rejectReason : ''
@@ -607,7 +700,7 @@ export default {
 	}
 }
 
-// 双签名区域（合并）
+// 双签名区域（重新设计）
 .dual-signature-section {
 	padding: 0 30rpx;
 	margin-top: 30rpx;
@@ -616,7 +709,7 @@ export default {
 		display: flex;
 		align-items: center;
 		gap: 10rpx;
-		margin-bottom: 20rpx;
+		margin-bottom: 25rpx;
 		
 		.title-text {
 			font-size: 32rpx;
@@ -626,111 +719,179 @@ export default {
 	}
 	
 	.signature-card {
-		background: white;
-		border-radius: 16rpx;
+		background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+		border-radius: 20rpx;
 		padding: 30rpx;
-		margin-bottom: 20rpx;
-		box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+		margin-bottom: 25rpx;
+		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+		border: 2rpx solid #f0f0f0;
+		position: relative;
+		overflow: hidden;
+		
+		// 装饰性背景
+		&::before {
+			content: '';
+			position: absolute;
+			top: -50rpx;
+			right: -50rpx;
+			width: 150rpx;
+			height: 150rpx;
+			background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+			border-radius: 50%;
+		}
+		
+		// 操作员卡片主题色
+		&.operator-card {
+			border-left: 4rpx solid #667eea;
+		}
+		
+		// 复核人卡片主题色
+	&.reviewer-card {
+		border-left: 4rpx solid #4caf50;
+		
+		// 覆盖 signature 组件的样式，让它在复核页面中更大
+		::v-deep .signature-container {
+			height: 160rpx !important;
+		}
+		
+		::v-deep .placeholder-icon {
+			font-size: 40rpx !important;
+		}
+		
+		::v-deep .placeholder-text {
+			font-size: 28rpx !important;
+		}
+		
+		::v-deep .signature-preview {
+			height: 160rpx !important;
+		}
+	}
 		
 		.signature-header {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			margin-bottom: 20rpx;
+			margin-bottom: 25rpx;
+			position: relative;
+			z-index: 1;
 			
+			.header-left {
+				display: flex;
+				align-items: center;
+				gap: 12rpx;
+				
+			.signature-icon {
+				width: 56rpx;
+				height: 56rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 30rpx;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+					border-radius: 50%;
+					box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+				}
+				
 			.signature-label {
-				font-size: 28rpx;
+				font-size: 36rpx;
 				font-weight: bold;
 				color: #323233;
 			}
+			}
 			
-			.signature-status {
-				padding: 6rpx 20rpx;
-				border-radius: 20rpx;
-				font-size: 22rpx;
-				font-weight: 500;
+		.signature-status {
+			padding: 10rpx 28rpx;
+			border-radius: 32rpx;
+			font-size: 30rpx;
+			font-weight: 600;
 				
 				&.completed {
-					background: #e8f5e9;
-					color: #4caf50;
+					background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+					color: #2e7d32;
+					box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.2);
 				}
 				
 				&.pending {
-					background: #fff3e0;
-					color: #ff9800;
+					background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+					color: #e65100;
+					box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.2);
 				}
 			}
 		}
 		
-		.signature-display {
-			height: 200rpx;
+	// 签名显示区域（统一高度和样式）
+	.signature-display-box {
+		height: 160rpx;
+		background: #ffffff;
+		border-radius: 16rpx;
+		padding: 0;
+		margin-bottom: 20rpx;
+		border: 2rpx solid #e8e8e8;
+		position: relative;
+		z-index: 1;
+		overflow: hidden;
+		
+		.signature-img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			padding: 10rpx;
+		}
+		
+		.no-signature {
+			height: 100%;
 			display: flex;
+			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			background: #f7f8fa;
-			border-radius: 12rpx;
-			padding: 20rpx;
+			gap: 15rpx;
 			
-			.signature-img {
-				width: 100%;
-				height: 100%;
+			.no-sig-icon {
+				font-size: 60rpx;
+				opacity: 0.3;
 			}
 			
-			.no-signature {
+			.no-sig-text {
 				font-size: 24rpx;
 				color: #c8c9cc;
 			}
 		}
+	}
 		
-		.signature-info {
-			display: flex;
-			justify-content: space-between;
-			margin-top: 15rpx;
-			padding: 0 10rpx;
-			
-			.info-text {
-				font-size: 24rpx;
-				color: #969799;
-			}
-		}
-		
-		.signature-box {
-			height: 200rpx;
+		// 签名信息底部
+		.signature-footer {
 			display: flex;
 			align-items: center;
-			justify-content: center;
-			background: #f7f8fa;
+			background: rgba(102, 126, 234, 0.04);
 			border-radius: 12rpx;
 			padding: 20rpx;
-			border: 2rpx dashed #ebedf0;
+			position: relative;
+			z-index: 1;
 			
-			.signature-img {
-				width: 100%;
-				height: 100%;
+			.footer-item {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				gap: 8rpx;
+				
+				.footer-label {
+					font-size: 22rpx;
+					color: #969799;
+				}
+				
+				.footer-value {
+					font-size: 26rpx;
+					color: #323233;
+					font-weight: 600;
+				}
 			}
 			
-			.signature-placeholder {
-				width: 100%;
-				height: 100%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				
-				.placeholder-content {
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					gap: 15rpx;
-					
-					.placeholder-icon {
-						font-size: 60rpx;
-					}
-					
-					.placeholder-text {
-						font-size: 24rpx;
-						color: #c8c9cc;
-					}
-				}
+			.footer-divider {
+				width: 2rpx;
+				height: 40rpx;
+				background: #e0e0e0;
+				margin: 0 20rpx;
 			}
 		}
 	}

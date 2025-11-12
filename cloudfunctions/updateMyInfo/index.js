@@ -9,28 +9,10 @@ const db = cloud.database()
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
-  const { realName } = event
+  const { realName, avatarUrl, wechatAvatarUrl, updates } = event
   
   try {
-    // 1. 验证参数
-    if (!realName) {
-      return {
-        code: 400,
-        success: false,
-        message: '实名不能为空'
-      }
-    }
-    
-    // 2. 验证实名格式（中文姓名，2-10个字符）
-    if (!/^[\u4e00-\u9fa5]{2,10}$/.test(realName)) {
-      return {
-        code: 400,
-        success: false,
-        message: '实名格式不正确，请输入2-10个中文字符'
-      }
-    }
-    
-    // 3. 查询用户
+    // 查询用户
     const userRes = await db.collection('users')
       .where({ openid, status: 'active' })
       .get()
@@ -45,25 +27,63 @@ exports.main = async (event, context) => {
     
     const user = userRes.data[0]
     
-    // 4. 更新实名
-    await db.collection('users').doc(user._id).update({
-      data: {
-        realName,
-        updateTime: db.serverDate()
+    // 准备更新数据
+    const updateData = {
+      updateTime: db.serverDate()
+    }
+    
+    let action = 'update_info'
+    let details = {}
+    
+    // 处理实名更新
+    if (realName !== undefined) {
+      // 验证实名格式（中文姓名，2-10个字符）
+      if (realName && !/^[\u4e00-\u9fa5]{2,10}$/.test(realName)) {
+        return {
+          code: 400,
+          success: false,
+          message: '实名格式不正确，请输入2-10个中文字符'
+        }
       }
+      updateData.realName = realName
+      action = 'update_realname'
+      details.oldRealName = user.realName || ''
+      details.newRealName = realName
+    }
+    
+    // 处理头像更新
+    if (avatarUrl !== undefined) {
+      updateData.avatarUrl = avatarUrl
+      updateData.avatarUpdateTime = db.serverDate()
+      action = 'update_avatar'
+      details.avatarType = 'custom'
+    }
+    
+    if (wechatAvatarUrl !== undefined) {
+      updateData.wechatAvatarUrl = wechatAvatarUrl
+      updateData.avatarUpdateTime = db.serverDate()
+      action = 'update_avatar'
+      details.avatarType = 'wechat'
+    }
+    
+    // 处理批量更新
+    if (updates && typeof updates === 'object') {
+      Object.assign(updateData, updates)
+    }
+    
+    // 更新用户信息
+    await db.collection('users').doc(user._id).update({
+      data: updateData
     })
     
-    // 5. 记录操作日志
+    // 记录操作日志
     await db.collection('operation_logs').add({
       data: {
         operator: openid,
         operatorName: user.name,
-        action: 'update_realname',
+        action: action,
         target: user._id,
-        details: {
-          oldRealName: user.realName || '',
-          newRealName: realName
-        },
+        details: details,
         timestamp: db.serverDate()
       }
     })
@@ -71,14 +91,14 @@ exports.main = async (event, context) => {
     return {
       code: 0,
       success: true,
-      message: '实名修改成功'
+      message: '信息更新成功'
     }
   } catch (err) {
-    console.error('修改实名失败:', err)
+    console.error('更新信息失败:', err)
     return {
       code: -1,
       success: false,
-      message: '修改实名失败',
+      message: '更新信息失败',
       error: err.message
     }
   }

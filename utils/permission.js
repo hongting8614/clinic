@@ -55,12 +55,12 @@ const PERMISSIONS = {
   'drug.import': [ROLES.ADMIN],
   
   // 入库管理
-  'in.create': [ROLES.ADMIN, ROLES.PROJECT_MANAGER, ROLES.PHARMACY],
-  'in.sign': [ROLES.ADMIN, ROLES.PROJECT_MANAGER, ROLES.PHARMACY],
-  'in.review': [ROLES.ADMIN, ROLES.PROJECT_MANAGER], // 入库复核：管理员和项目经理
-  'in.reject': [ROLES.ADMIN, ROLES.PROJECT_MANAGER], // 驳回：管理员和项目经理
+  'in.create': [ROLES.ADMIN, ROLES.DOCTOR, ROLES.PHARMACY], // 创建：管理员、医生、药房
+  'in.sign': [ROLES.ADMIN, ROLES.DOCTOR, ROLES.PHARMACY], // 签名：管理员、医生、药房
+  'in.review': [ROLES.ADMIN, ROLES.PROJECT_MANAGER], // 复核：管理员、项目经理
+  'in.reject': [ROLES.ADMIN, ROLES.PROJECT_MANAGER], // 驳回：管理员、项目经理
   'in.read': [ROLES.ADMIN, ROLES.PROJECT_MANAGER, ROLES.DOCTOR, ROLES.PHARMACY, ROLES.VIEWER],
-  'in.delete': [ROLES.ADMIN, ROLES.PROJECT_MANAGER, ROLES.PHARMACY], // 仅草稿可删除
+  'in.delete': [ROLES.ADMIN, ROLES.DOCTOR, ROLES.PHARMACY], // 删除草稿：管理员、医生、药房
   
   // 出库管理
   'out.create': [ROLES.ADMIN, ROLES.PHARMACY],

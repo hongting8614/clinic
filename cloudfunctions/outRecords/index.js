@@ -496,9 +496,43 @@ async function getDetail(data, wxContext) {
     throw new Error('记录不存在')
   }
   
+  const record = result.data
+  
+  // 转换签名图片URL（云函数有权限访问云存储）
+  try {
+    const fileIds = []
+    
+    if (record.dispenserSign && record.dispenserSign.startsWith('cloud://')) {
+      fileIds.push(record.dispenserSign)
+    }
+    if (record.receiverSign && record.receiverSign.startsWith('cloud://')) {
+      fileIds.push(record.receiverSign)
+    }
+    
+    if (fileIds.length > 0) {
+      const res = await cloud.getTempFileURL({
+        fileList: fileIds
+      })
+      
+      if (res.fileList) {
+        res.fileList.forEach(item => {
+          if (item.fileID === record.dispenserSign && item.tempFileURL) {
+            record.dispenserSign = item.tempFileURL
+          }
+          if (item.fileID === record.receiverSign && item.tempFileURL) {
+            record.receiverSign = item.tempFileURL
+          }
+        })
+      }
+    }
+  } catch (err) {
+    console.error('转换签名图片URL失败:', err)
+    // 转换失败不影响返回数据
+  }
+  
   return {
     success: true,
-    data: result.data
+    data: record
   }
 }
 

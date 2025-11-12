@@ -223,6 +223,36 @@ export default class Common {
 			}
 		}
 	}
+	
+	/**
+	 * 获取系统信息（兼容新旧API）
+	 * @returns {Object} 系统信息对象
+	 */
+	static getSystemInfo() {
+		try {
+			// 优先使用新API
+			if (uni.getWindowInfo) {
+				return uni.getWindowInfo()
+			}
+			// 降级到旧API（会显示警告但功能正常）
+			if (uni.getSystemInfoSync) {
+				return uni.getSystemInfoSync()
+			}
+			// 最后降级
+			return {
+				windowWidth: 375,
+				windowHeight: 667,
+				pixelRatio: 1
+			}
+		} catch (e) {
+			console.warn('获取系统信息失败:', e)
+			return {
+				windowWidth: 375,
+				windowHeight: 667,
+				pixelRatio: 1
+			}
+		}
+	}
 }
 
 

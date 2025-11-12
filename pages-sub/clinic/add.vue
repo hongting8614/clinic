@@ -1,15 +1,15 @@
 <template>
   <view class="clinic-add">
-    <!-- 🏥 顶部标题 -->
+    <!-- 顶部标题 -->
     <view class="page-header">
-      <view class="title">🏥 爱康医务室管理系统</view>
+      <view class="title">爱康医务室管理系统</view>
       <view class="subtitle">北京欢乐谷医务室 · 门诊登记表</view>
       <view class="date-time">{{ currentDateTime }}</view>
     </view>
 
     <view class="form-section">
       <!-- 基本信息 -->
-      <view class="section-title">👤 患者基本信息</view>
+      <view class="section-title">患者基本信息</view>
       
       <!-- 就诊日期时间 -->
       <view class="form-item">
@@ -82,34 +82,57 @@
 
     <!-- 就诊信息 -->
     <view class="form-section">
-      <view class="section-title">🏥 就诊信息</view>
+      <view class="section-title">就诊信息</view>
 
-      <!-- 受伤地点 -->
-      <view class="form-item">
-        <view class="label">受伤地点</view>
-        <input v-model="form.injuryLocation" type="text" placeholder="例如：机动游戏区、餐饮区（可选）" class="input-uniform" />
+      <!-- 是否出诊 + 受伤地点 -->
+      <view class="form-row">
+        <view class="form-item half">
+          <view class="label required">是否出诊</view>
+          <view class="identity-selector visit-type-selector">
+            <view
+              v-for="item in visitTypeOptions"
+              :key="item.value"
+              class="identity-item"
+              :class="{ active: form.visitType === item.value }"
+              @click="form.visitType = item.value"
+            >
+              <text class="visit-type-text">{{ item.label }}</text>
+            </view>
           </view>
+        </view>
+        <view class="form-item half">
+          <view class="label" :class="{ required: form.visitType === 'outcall' }">受伤地点</view>
+          <input
+            v-model="form.injuryLocation"
+            type="text"
+            :placeholder="form.visitType === 'outcall' ? '请输入受伤地点（必填）' : '例如：机动游戏区、餐饮区（可选）'"
+            class="input-uniform"
+          />
+        </view>
+      </view>
 
       <!-- 主诉 -->
       <view class="form-item">
         <view class="label required">主诉</view>
-        <textarea
+        <input
           v-model="form.chiefComplaint"
+          type="text"
           placeholder="请输入患者自述症状，例如：头部外伤伴头晕"
           maxlength="100"
-          class="textarea-small textarea-uniform"
-        ></textarea>
-        </view>
+          class="input-uniform input-compact"
+        />
+      </view>
 
       <!-- 诊断 -->
       <view class="form-item">
         <view class="label required">诊断</view>
-        <textarea
+        <input
           v-model="form.diagnosis"
+          type="text"
           placeholder="请输入初步诊断结果，例如：轻度头部挫伤"
           maxlength="100"
-          class="textarea-small textarea-uniform"
-        ></textarea>
+          class="input-uniform input-compact"
+        />
       </view>
 
       <!-- 疾病名称（带下拉列表） -->
@@ -154,7 +177,7 @@
 
     <!-- 用药信息 -->
     <view class="form-section">
-      <view class="section-title">💊 用药信息（可选）</view>
+      <view class="section-title">用药信息（可选）</view>
 
       <!-- 药品选择 - 只手动输入 -->
       <view class="form-item">
@@ -171,7 +194,7 @@
           <!-- 下拉列表 -->
           <view v-if="showDrugList && filteredDrugs.length > 0" class="drug-dropdown">
             <view class="dropdown-header">
-              <text class="dropdown-title">{{ form.location === 'land_park' ? '🏞️ 陆园' : '🌊 水园' }}库存药品</text>
+              <text class="dropdown-title">{{ form.location === 'land_park' ? '陆园' : '水园' }}库存药品</text>
               <text class="dropdown-count">({{ filteredDrugs.length }}种)</text>
             </view>
             <scroll-view scroll-y class="drug-scroll">
@@ -192,9 +215,9 @@
           </view>
         </view>
         <view v-if="selectedDrug" class="drug-info">
-          <text class="spec">✅ {{ selectedDrug.name }} - {{ selectedDrug.specification }}</text>
+          <text class="spec">{{ selectedDrug.name }} - {{ selectedDrug.specification }}</text>
           <text class="stock">
-            {{ form.location === 'land_park' ? '🏞️ 陆园' : '🌊 水园' }}库存：{{ availableStock }} {{ selectedDrug.minUnit }}
+            {{ form.location === 'land_park' ? '陆园' : '水园' }}库存：{{ availableStock }} {{ selectedDrug.minUnit }}
           </text>
         </view>
       </view>
@@ -203,7 +226,6 @@
       <view v-if="selectedDrug" class="drug-quick-info">
         <!-- 药品名称大卡片 -->
         <view class="drug-name-card">
-          <view class="drug-icon">💊</view>
           <view class="drug-details">
             <view class="drug-main-name">{{ selectedDrug.name }}</view>
             <view class="drug-spec-text">{{ selectedDrug.specification }}</view>
@@ -213,15 +235,12 @@
         <!-- 快速信息栏 -->
         <view class="quick-info-bar">
           <view class="info-tag park-tag">
-            <text class="tag-icon">{{ form.location === 'land_park' ? '🏞️' : '🌊' }}</text>
             <text class="tag-text">{{ form.location === 'land_park' ? '陆园' : '水园' }}</text>
           </view>
           <view class="info-tag stock-tag" :class="{ 'stock-warning': availableStock < 10 }">
-            <text class="tag-icon">📦</text>
             <text class="tag-text">库存 {{ availableStock }} {{ selectedDrug.minUnit }}</text>
           </view>
           <view class="info-tag unit-tag">
-            <text class="tag-icon">📏</text>
             <text class="tag-text">{{ selectedDrug.minUnit }}</text>
           </view>
         </view>
@@ -229,7 +248,6 @@
         <!-- 数量输入大卡片 -->
         <view class="quantity-card">
           <view class="quantity-label">
-            <text class="label-icon">🔢</text>
             <text class="label-text">用药数量</text>
             <text class="required-star">*</text>
           </view>
@@ -244,7 +262,6 @@
           </view>
           <!-- 库存不足警告 -->
           <view v-if="form.quantity > availableStock" class="quantity-warning">
-            <text class="warning-icon">⚠️</text>
             <text class="warning-text">库存不足！当前库存：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
           </view>
         </view>
@@ -272,7 +289,7 @@
 
     <!-- 备注 -->
     <view class="form-section">
-      <view class="section-title">📝 备注</view>
+      <view class="section-title">备注</view>
       <view class="form-item">
         <textarea
           v-model="form.remark"
@@ -285,10 +302,9 @@
 
     <!-- 接诊医生签名 -->
     <view class="form-section">
-      <view class="section-title">✍️ 接诊医生签名</view>
-      <view class="signature-info">
-        <view class="signature-tip">
-          <text class="tip-icon">ℹ️</text>
+      <view class="section-title">接诊医生签名</view>
+        <view class="signature-info">
+          <view class="signature-tip">
           <text class="tip-text">请医生在下方签名确认本次就诊信息</text>
         </view>
       </view>
@@ -297,10 +313,10 @@
           <view class="signature-label">医生签名：</view>
           <image :src="form.doctorSign" mode="aspectFit" class="signature-image" />
           <view class="signature-time">签名时间：{{ form.signTime || currentDateTime }}</view>
-          <button class="re-sign-btn" @click="openSignature">✏️ 重新签名</button>
+          <button class="re-sign-btn" @click="openSignature">重新签名</button>
         </view>
         <button v-else class="sign-btn" @click="openSignature">
-          ✍️ 点击此处进行签名
+          点击此处进行签名
         </button>
       </view>
     </view>
@@ -309,7 +325,7 @@
     <view class="submit-section">
       <button class="cancel-btn" @click="goBack">取消</button>
       <button class="submit-btn" :loading="submitting" @click="handleSubmit">
-        💾 保存登记
+        保存登记
       </button>
     </view>
 
@@ -320,7 +336,7 @@
           <checkbox :checked="continueAfterSubmit" />
         </view>
         <view class="continue-text">
-          <view class="continue-title">💡 连续登记模式</view>
+          <view class="continue-title">连续登记模式</view>
           <view class="continue-desc">提交后自动清空表单，继续登记下一位患者</view>
         </view>
       </view>
@@ -352,12 +368,16 @@ export default {
   data() {
     return {
       locations: [
-        { label: '陆园', value: 'land_park', icon: '🏞️' },
-        { label: '水园', value: 'water_park', icon: '🌊' }
+        { label: '陆园', value: 'land_park' },
+        { label: '水园', value: 'water_park' }
       ],
       identityOptions: [
-        { label: '游客', value: '游客', icon: '🎫' },
-        { label: '员工', value: '员工', icon: '👔' }
+        { label: '游客', value: '游客' },
+        { label: '员工', value: '员工' }
+      ],
+      visitTypeOptions: [
+        { label: '否', value: 'clinic' },
+        { label: '是', value: 'outcall' }
       ],
       form: {
         visitDateTime: '',
@@ -366,6 +386,7 @@ export default {
         age: null,
         identity: '游客',
         location: 'land_park',
+        visitType: 'clinic',
         injuryLocation: '',
         chiefComplaint: '',
         diseaseName: '',
@@ -789,6 +810,14 @@ export default {
         uni.showToast({ title: '请选择身份', icon: 'none' });
         return;
       }
+      if (!this.form.visitType) {
+        uni.showToast({ title: '请选择接诊类型', icon: 'none' });
+        return;
+      }
+      if (this.form.visitType === 'outcall' && (!this.form.injuryLocation || this.form.injuryLocation.trim() === '')) {
+        uni.showToast({ title: '出诊时需填写受伤地点', icon: 'none' });
+        return;
+      }
       if (!this.form.chiefComplaint || this.form.chiefComplaint.trim() === '') {
         uni.showToast({ title: '请输入主诉', icon: 'none' });
         return;
@@ -839,7 +868,9 @@ export default {
           gender: this.form.gender,
           age: this.form.age,
           identity: this.form.identity,
-          location: this.form.location,  // 🏞️ 园区（陆园/水园）
+          location: this.form.location,  // 园区（陆园/水园）
+          visitType: this.form.visitType,
+          isOutcall: this.form.visitType === 'outcall',
           injuryLocation: this.form.injuryLocation.trim(),
           chiefComplaint: this.form.chiefComplaint.trim(),
           diseaseName: this.form.diseaseName.trim(),
@@ -896,7 +927,7 @@ export default {
           if (this.continueAfterSubmit) {
             // 连续登记模式：立即清空表单
           uni.showToast({
-              title: '✅ 登记成功！可继续登记',
+              title: '登记成功，可继续登记',
               icon: 'success',
               duration: 2000
           });
@@ -946,6 +977,7 @@ export default {
         age: null,
         identity: '游客',
         location: this.form.location,  // 保留园区选择
+        visitType: 'clinic',
         injuryLocation: '',
         chiefComplaint: '',
         diseaseName: '',
@@ -1009,7 +1041,7 @@ export default {
   padding: 20rpx 20rpx 140rpx;
 }
 
-// 🏥 顶部标题
+// 顶部标题
 .page-header {
   background: white;
   border-radius: 20rpx;
@@ -1146,6 +1178,30 @@ export default {
   }
 }
 
+.input-compact {
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  background: #f9fafb;
+  font-size: 28rpx;
+  color: #333;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: #1890ff;
+    background: #ffffff;
+    box-shadow: 0 0 0 4rpx rgba(24, 144, 255, 0.1);
+  }
+  
+  &::placeholder {
+    color: #999;
+    font-size: 26rpx;
+  }
+}
+
 .form-row {
   display: flex;
   gap: 20rpx;
@@ -1198,6 +1254,16 @@ export default {
       transform: scale(1.05);
     }
   }
+}
+
+.visit-type-selector {
+  .identity-item {
+    justify-content: center;
+  }
+}
+
+.visit-type-text {
+  font-size: 26rpx;
 }
 
 .gender-selector {
@@ -1479,13 +1545,6 @@ export default {
   box-shadow: 0 6rpx 20rpx rgba(251, 191, 36, 0.25);
   border: 3rpx solid #fbbf24;
   margin-bottom: 20rpx;
-  
-  .drug-icon {
-    font-size: 56rpx;
-    margin-right: 20rpx;
-    filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.1));
-  }
-  
   .drug-details {
     flex: 1;
   }
@@ -1522,12 +1581,6 @@ export default {
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
   flex: 1;
   min-width: 0;
-  
-  .tag-icon {
-    font-size: 26rpx;
-    margin-right: 10rpx;
-  }
-  
   .tag-text {
     font-size: 24rpx;
     font-weight: 600;
@@ -1583,12 +1636,6 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 20rpx;
-    
-    .label-icon {
-    font-size: 28rpx;
-      margin-right: 12rpx;
-    }
-    
     .label-text {
       font-size: 28rpx;
       font-weight: bold;
@@ -1731,12 +1778,6 @@ export default {
   border: 2rpx solid #fca5a5;
   margin-top: 16rpx;
   animation: shake 0.5s ease-in-out;
-  
-  .warning-icon {
-    font-size: 32rpx;
-    margin-right: 12rpx;
-  }
-  
   .warning-text {
     color: #dc2626;
     font-size: 26rpx;
@@ -1763,11 +1804,6 @@ export default {
   background: #e6f7ff;
   border-left: 4rpx solid #1890ff;
   border-radius: 8rpx;
-  
-  .tip-icon {
-    margin-right: 12rpx;
-    font-size: 28rpx;
-  }
   
   .tip-text {
     font-size: 24rpx;

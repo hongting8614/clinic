@@ -282,6 +282,11 @@ export default {
 				
 				this.record = data
 				
+				// 云函数已经转换了URL，前端不需要再转换
+				console.log('✅ 数据加载成功')
+				console.log('操作员签名URL:', this.record.operatorSign)
+				console.log('复核员签名URL:', this.record.reviewerSign)
+				
 				uni.hideLoading()
 			} catch (err) {
 				console.error('加载失败:', err)
@@ -290,6 +295,69 @@ export default {
 					title: '加载失败',
 					icon: 'none'
 				})
+			}
+		},
+		
+		// 转换签名图片URL
+		async convertSignatureUrls() {
+			try {
+				console.log('🔍 开始转换签名图片URL')
+				console.log('操作员签名路径:', this.record.operatorSign)
+				console.log('复核员签名路径:', this.record.reviewerSign)
+				
+				const fileIds = []
+				
+				// 收集需要转换的云存储路径
+				if (this.record.operatorSign && this.record.operatorSign.startsWith('cloud://')) {
+					fileIds.push(this.record.operatorSign)
+					console.log('✅ 添加操作员签名到转换列表')
+				}
+				if (this.record.reviewerSign && this.record.reviewerSign.startsWith('cloud://')) {
+					fileIds.push(this.record.reviewerSign)
+					console.log('✅ 添加复核员签名到转换列表')
+				}
+				
+				if (fileIds.length === 0) {
+					console.log('ℹ️ 没有需要转换的云存储图片')
+					return // 没有需要转换的图片
+				}
+				
+				console.log('📋 需要转换的文件列表:', fileIds)
+				
+				// 检查云开发是否可用
+				const cloud = wx.cloud || uni.cloud
+				if (!cloud || !cloud.getTempFileURL) {
+					console.warn('⚠️ 云开发API不可用，无法转换签名图片URL')
+					return
+				}
+				
+				// 批量获取临时URL
+				console.log('🔄 正在调用 getTempFileURL...')
+				const res = await cloud.getTempFileURL({
+					fileList: fileIds
+				})
+				
+				console.log('📦 getTempFileURL 返回结果:', res)
+				
+				// 更新签名图片URL
+				if (res && res.fileList) {
+					res.fileList.forEach((item) => {
+						console.log('处理文件:', item)
+						if (item.fileID === this.record.operatorSign && item.tempFileURL) {
+							this.record.operatorSign = item.tempFileURL
+							console.log('✅ 操作员签名URL转换成功:', item.tempFileURL)
+						}
+						if (item.fileID === this.record.reviewerSign && item.tempFileURL) {
+							this.record.reviewerSign = item.tempFileURL
+							console.log('✅ 复核员签名URL转换成功:', item.tempFileURL)
+						}
+					})
+				}
+				
+				console.log('✅ 签名图片URL转换完成')
+			} catch (err) {
+				console.error('❌ 转换签名图片URL失败:', err)
+				// 转换失败不影响页面显示，只是图片可能无法加载
 			}
 		},
 		
@@ -799,7 +867,7 @@ export default {
 
 .signature-image {
 	width: 100%;
-	height: 200rpx;
+	height: 110rpx;
 	border: 2rpx dashed #cbd5e1;
 	border-radius: 12rpx;
 	background: #f8fafc;

@@ -79,7 +79,13 @@ export default {
         if (res && res[0]) {
           this.canvasWidth = res[0].width;
           this.canvasHeight = res[0].height;
-          this.pixelRatio = uni.getSystemInfoSync().pixelRatio || 1;
+          // 使用新API获取像素比
+          try {
+            const windowInfo = uni.getWindowInfo ? uni.getWindowInfo() : (uni.getSystemInfoSync ? uni.getSystemInfoSync() : {})
+            this.pixelRatio = windowInfo.pixelRatio || 1
+          } catch (e) {
+            this.pixelRatio = 1
+          }
           
           this.ctx = uni.createCanvasContext(this.canvasId, this);
           this.drawChart();

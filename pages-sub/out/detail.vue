@@ -333,6 +333,9 @@ export default {
 				
 				this.record = data
 				
+				// 转换签名图片URL（如果是云存储路径）
+				await this.convertSignatureUrls()
+				
 				uni.hideLoading()
 			} catch (err) {
 				console.error('加载失败:', err)
@@ -341,6 +344,54 @@ export default {
 					title: '加载失败',
 					icon: 'none'
 				})
+			}
+		},
+		
+		// 转换签名图片URL
+		async convertSignatureUrls() {
+			try {
+				const fileIds = []
+				
+				// 收集需要转换的云存储路径
+				if (this.record.dispenserSign && this.record.dispenserSign.startsWith('cloud://')) {
+					fileIds.push(this.record.dispenserSign)
+				}
+				if (this.record.receiverSign && this.record.receiverSign.startsWith('cloud://')) {
+					fileIds.push(this.record.receiverSign)
+				}
+				
+				if (fileIds.length === 0) {
+					return // 没有需要转换的图片
+				}
+				
+				// 检查云开发是否可用
+				const cloud = wx.cloud || uni.cloud
+				if (!cloud || !cloud.getTempFileURL) {
+					console.warn('云开发API不可用，无法转换签名图片URL')
+					return
+				}
+				
+				// 批量获取临时URL
+				const res = await cloud.getTempFileURL({
+					fileList: fileIds
+				})
+				
+				// 更新签名图片URL
+				if (res && res.fileList) {
+					res.fileList.forEach((item) => {
+						if (item.fileID === this.record.dispenserSign && item.tempFileURL) {
+							this.record.dispenserSign = item.tempFileURL
+							console.log('✅ 发放人签名URL转换成功')
+						}
+						if (item.fileID === this.record.receiverSign && item.tempFileURL) {
+							this.record.receiverSign = item.tempFileURL
+							console.log('✅ 接收人签名URL转换成功')
+						}
+					})
+				}
+			} catch (err) {
+				console.error('❌ 转换签名图片URL失败:', err)
+				// 转换失败不影响页面显示，只是图片可能无法加载
 			}
 		},
 		
@@ -975,7 +1026,7 @@ export default {
 
 .signature-image {
 	width: 100%;
-	height: 200rpx;
+	height: 110rpx;
 	border: 2rpx dashed #cbd5e1;
 	border-radius: 12rpx;
 	background: #f8fafc;

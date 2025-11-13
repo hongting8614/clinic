@@ -41,6 +41,7 @@ exports.main = async (event, context) => {
 // 添加门诊用药记录
 async function addRecord(data, wxContext) {
   const {
+    // 用药相关字段
     drugId,
     drugName,
     specification,
@@ -51,14 +52,39 @@ async function addRecord(data, wxContext) {
     packUnit,
     conversionRate,
     patient,
-    symptom
+    symptom,
+    // 完整门诊登记信息
+    visitDateTime,
+    name,
+    gender,
+    age,
+    identity,
+    visitType,
+    isOutcall,
+    injuryLocation,
+    chiefComplaint,
+    diseaseName,
+    diagnosis,
+    treatment,
+    remark,
+    doctorSign,
+    signTime,
+    drugInfo
   } = data;
   
-  // 参数验证
-  if (!drugId || !location || !quantityMin || !patient) {
+  // 参数验证（支持无用药的门诊登记）
+  if (!location) {
     return {
       success: false,
-      error: '缺少必填参数'
+      error: '缺少必填参数：园区'
+    };
+  }
+  
+  // 如果有用药信息，验证必填字段
+  if (drugId && (!quantityMin || (!patient && !name))) {
+    return {
+      success: false,
+      error: '用药登记缺少必填参数'
     };
   }
   
@@ -71,66 +97,72 @@ async function addRecord(data, wxContext) {
     };
   }
   
-  // 计算包装单位数量
-  const quantityPack = quantityMin / conversionRate;
+  // 如果有用药信息，处理药品相关逻辑
+  let drug = null;
+  let batch = null;
+  let quantityPack = 0;
   
-  // 获取药品信息
-  const drugRes = await db.collection('drugs').doc(drugId).get();
-  if (!drugRes.data) {
-    return {
-      success: false,
-      error: '药品不存在'
-    };
-  }
-  const drug = drugRes.data;
-  
-  // 选择批次（FIFO：按有效期最早）
-  let batch;
-  if (batchId) {
-    // 指定批次
-    const batchRes = await db.collection('stock')
-      .where({
-        drugId: drugId,
-        _id: batchId,
-        location: location,
-        quantity: _.gt(0)
-      })
-      .get();
+  if (drugId && quantityMin) {
+    // 计算包装单位数量
+    quantityPack = quantityMin / (conversionRate || 1);
     
-    if (!batchRes.data.length) {
+    // 获取药品信息
+    const drugRes = await db.collection('drugs').doc(drugId).get();
+    if (!drugRes.data) {
       return {
         success: false,
-        error: '指定批次不存在或库存不足'
+        error: '药品不存在'
       };
     }
-    batch = batchRes.data[0];
-  } else {
-    // 自动选择批次（FIFO）
-    const batchesRes = await db.collection('stock')
-      .where({
-        drugId: drugId,
-        location: location,
-        quantity: _.gt(0)
-      })
-      .orderBy('expiryDate', 'asc')  // 🔥 FIFO：先进先出
-      .limit(1)
-      .get();
+    drug = drugRes.data;
     
-    if (!batchesRes.data.length) {
+    // 选择批次（FIFO：按有效期最早）
+    if (batchId) {
+      // 指定批次
+      const batchRes = await db.collection('stock')
+        .where({
+          drugId: drugId,
+          _id: batchId,
+          location: location,
+          quantity: _.gt(0)
+        })
+        .get();
+      
+      if (!batchRes.data.length) {
+        return {
+          success: false,
+          error: '指定批次不存在或库存不足'
+        };
+      }
+      batch = batchRes.data[0];
+    } else {
+      // 自动选择批次（FIFO）
+      const batchesRes = await db.collection('stock')
+        .where({
+          drugId: drugId,
+          location: location,
+          quantity: _.gt(0)
+        })
+        .orderBy('expiryDate', 'asc')  // 🔥 FIFO：先进先出
+        .limit(1)
+        .get();
+      
+      if (!batchesRes.data.length) {
+        return {
+          success: false,
+          error: '该园区该药品库存不足'
+        };
+      }
+      batch = batchesRes.data[0];
+    }
+    
+    // 验证园区库存是否充足（最小单位）
+    if (batch.quantity < quantityMin) {
       return {
         success: false,
-        error: '该园区该药品库存不足'
+        error: `库存不足，当前库存：${batch.quantity}${minUnit}，需要：${quantityMin}${minUnit}`
       };
     }
-    batch = batchesRes.data[0];
-  }
-  
-  // 验证园区库存是否充足（最小单位）
-  if (batch.quantity < quantityMin) {
-    return {
-      success: false,
-      error: `库存不足，当前库存：${batch.quantity}${minUnit}，需要：${quantityMin}${minUnit}`
-    };
   }
   
   // 生成ID
@@ -141,47 +173,93 @@ async function addRecord(data, wxContext) {
   
   // 开始事务
   try {
-    // 1. 创建门诊登记记录
-    await db.collection('clinic_usage').add({
-      data: {
-        _id: recordId,
-        drugId: drugId,
-        drugName: drugName || drug.name,
-        specification: specification || drug.specification,
-        batchId: batch._id,
-        batch: batch.batch,
-        location: location,          // 🔥 园区字段
-        quantityMin: quantityMin,
-        quantityPack: quantityPack,
-        minUnit: minUnit || drug.minUnit,
-        packUnit: packUnit || drug.packUnit,
-        patient: patient,
-        symptom: symptom || '',
-        operatorId: wxContext.OPENID,
-        createTime: now
-      }
+    // 1. 创建门诊登记记录（完整信息）
+    const clinicRecordData = {
+      _id: recordId,
+      visitDateTime: visitDateTime || now,
+      name: name || patient || '',
+      gender: gender || '',
+      age: age || null,
+      identity: identity || '游客',
+      location: location,          // 🔥 园区字段
+      visitType: visitType || 'clinic',
+      isOutcall: isOutcall || (visitType === 'outcall'),
+      injuryLocation: injuryLocation || '',
+      chiefComplaint: chiefComplaint || symptom || '',
+      diseaseName: diseaseName || '',
+      diagnosis: diagnosis || '',
+      treatment: treatment || '',
+      remark: remark || '',
+      doctorSign: doctorSign || '',
+      signTime: signTime || '',
+      operatorId: wxContext.OPENID,
+      createTime: now
+    };
+
+    // 如果有用药信息，添加到记录中
+    if (drugId && quantityMin) {
+      clinicRecordData.drugId = drugId;
+      clinicRecordData.drugName = drugName || drug.name;
+      clinicRecordData.specification = specification || drug.specification;
+      clinicRecordData.batchId = batch._id;
+      clinicRecordData.batch = batch.batch;
+      clinicRecordData.quantityMin = quantityMin;
+      clinicRecordData.quantityPack = quantityPack;
+      clinicRecordData.minUnit = minUnit || drug.minUnit;
+      clinicRecordData.packUnit = packUnit || drug.packUnit;
+      clinicRecordData.patient = patient || name || '';
+      clinicRecordData.symptom = symptom || chiefComplaint || '';
+    }
+
+    // 保存到 clinic_records 集合（完整门诊登记信息）
+    await db.collection('clinic_records').add({
+      data: clinicRecordData
     });
+
+    // 2. 如果有用药信息，同时保存到 clinic_usage 集合（用于用药统计）
+    if (drugId && quantityMin) {
+      await db.collection('clinic_usage').add({
+        data: {
+          _id: recordId,
+          drugId: drugId,
+          drugName: drugName || drug.name,
+          specification: specification || drug.specification,
+          batchId: batch._id,
+          batch: batch.batch,
+          location: location,          // 🔥 园区字段
+          quantityMin: quantityMin,
+          quantityPack: quantityPack,
+          minUnit: minUnit || drug.minUnit,
+          packUnit: packUnit || drug.packUnit,
+          patient: patient || name || '',
+          symptom: symptom || chiefComplaint || '',
+          operatorId: wxContext.OPENID,
+          createTime: now
+        }
+      });
     
-    // 2. 扣减园区库存（最小单位）
-    // 园区库存已经是最小单位，直接扣减quantityMin
-    await db.collection('stock').doc(batch._id).update({
-      data: {
-        quantity: _.inc(-quantityMin),  // 直接扣减最小单位数量
-        updateTime: now
-      }
-    });
+    // 3. 如果有用药信息，扣减园区库存（最小单位）
+    if (drugId && quantityMin) {
+      // 园区库存已经是最小单位，直接扣减quantityMin
+      await db.collection('stock').doc(batch._id).update({
+        data: {
+          quantity: _.inc(-quantityMin),  // 直接扣减最小单位数量
+          updateTime: now
+        }
+      });
+    }
     
-    // 3. 记录操作日志
+    // 4. 记录操作日志
     await db.collection('operation_logs').add({
       data: {
-        type: 'clinic_usage',
+        type: 'clinic_records',
         action: 'add',
         recordId: recordId,
-        drugId: drugId,
-        drugName: drugName || drug.name,
+        drugId: drugId || null,
+        drugName: drugName || (drug ? drug.name : null) || null,
         location: location,
-        quantity: quantityMin,
-        unit: minUnit || drug.minUnit,
+        quantity: quantityMin || null,
+        unit: minUnit || (drug ? drug.minUnit : null) || null,
         operator: wxContext.OPENID,
         createTime: now
       }
@@ -212,10 +290,12 @@ async function getList(data) {
     startDate,
     endDate,
     page = 1,
-    pageSize = 20
+    pageSize = 20,
+    useClinicRecords = false  // 是否查询完整的门诊登记记录
   } = data;
   
   let whereCondition = {};
+  const collectionName = useClinicRecords ? 'clinic_records' : 'clinic_usage';
   
   // 园区筛选
   if (location && location !== 'all') {
@@ -245,12 +325,12 @@ async function getList(data) {
   }
   
   // 查询总数
-  const countRes = await db.collection('clinic_usage')
+  const countRes = await db.collection(collectionName)
     .where(whereCondition)
     .count();
   
   // 查询列表
-  const listRes = await db.collection('clinic_usage')
+  const listRes = await db.collection(collectionName)
     .where(whereCondition)
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)

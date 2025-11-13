@@ -282,7 +282,10 @@
 				{
 					"path": "daily",
 					"style": {
-						"navigationBarTitleText": "日统计"
+						"navigationBarTitleText": "门诊日报",
+						"navigationBarBackgroundColor": "#667eea",
+						"navigationBarTextStyle": "white",
+						"enablePullDownRefresh": false
 					}
 				},
 				{

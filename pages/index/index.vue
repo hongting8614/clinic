@@ -31,6 +31,26 @@
 				<text class="section-title">快捷操作</text>
 				<text class="section-subtitle">Quick Actions</text>
 			</view>
+			<!-- 与用户权限相关的标签单独一行，保持整体布局稳定 -->
+			<view v-if="showInboundButton || showReviewEntry" class="role-row">
+				<view v-if="showInboundButton" class="role-badge inbound" @tap="goToPage('/pages-sub/in/add')">
+					<view class="role-badge-icon inbound"></view>
+					<view class="role-badge-text">
+						<text class="role-badge-title">新建入库单</text>
+						<text class="role-badge-desc">入库权限已开通</text>
+					</view>
+					<view class="role-badge-tag">可用</view>
+				</view>
+				
+				<view v-if="showReviewEntry" class="role-badge review" @tap="goToPage('/pages-sub/in/list?tab=review')">
+					<view class="role-badge-icon review"></view>
+					<view class="role-badge-text">
+						<text class="role-badge-title">待复核入库单</text>
+						<text class="role-badge-desc">需要您审核</text>
+					</view>
+					<view class="role-badge-tag count">{{ pendingReviewCount || 0 }}</view>
+				</view>
+			</view>
 	<view class="clinic-quick-grid">
 		<view class="clinic-card register" @tap="goToPage('/pages-sub/clinic/add')">
 			<view class="clinic-card-glass"></view>
@@ -43,31 +63,7 @@
 			</view>
 		</view>
 		
-		<view v-if="showInboundButton" class="clinic-card inbound" @tap="goToPage('/pages-sub/in/add')">
-			<view class="clinic-card-glass"></view>
-			<view class="clinic-card-content">
-				<view class="clinic-card-icon inbound"></view>
-				<view class="clinic-card-text">
-					<text class="clinic-card-title">新建入库单</text>
-					<text class="clinic-card-desc">一键入库 · 高效办理</text>
-				</view>
-				<view class="clinic-card-tag">NEW</view>
-			</view>
-		</view>
-		
-		<view v-if="showReviewEntry" class="clinic-card review" @tap="goToPage('/pages-sub/in/list?tab=review')">
-			<view class="clinic-card-glass"></view>
-			<view class="clinic-card-content">
-				<view class="clinic-card-icon review"></view>
-				<view class="clinic-card-text">
-					<text class="clinic-card-title">待复核入库单</text>
-					<text class="clinic-card-desc">待办提醒 · 即刻处理</text>
-				</view>
-				<view class="clinic-card-tag">{{ pendingReviewCount || 0 }}</view>
-			</view>
-		</view>
-		
-		<view class="clinic-card daily" @tap="goToPage('/pages-sub/report/daily')">
+		<view class="clinic-card daily" @tap="generateDailyReport">
 			<view class="clinic-card-glass"></view>
 			<view class="clinic-card-content">
 				<view class="clinic-card-icon daily"></view>
@@ -78,16 +74,6 @@
 			</view>
 		</view>
 		
-		<view class="clinic-card summary" @tap="goToPage('/pages-sub/report/index')">
-			<view class="clinic-card-glass"></view>
-			<view class="clinic-card-content">
-				<view class="clinic-card-icon summary"></view>
-				<view class="clinic-card-text">
-					<text class="clinic-card-title">门诊报表</text>
-					<text class="clinic-card-desc">趋势分析 · 深度洞察</text>
-				</view>
-			</view>
-		</view>
 	</view>
 		
 		<view class="action-grid">
@@ -183,7 +169,14 @@
 				<text class="section-title">今日数据</text>
 				<text class="section-subtitle">Today's Statistics</text>
 			</view>
-			<view class="stats-grid">
+			<view v-if="isLoadingStats" class="stats-grid">
+				<view class="stat-card skeleton" v-for="i in 4" :key="i">
+					<view class="skeleton-icon shimmer"></view>
+					<view class="skeleton-line shimmer"></view>
+					<view class="skeleton-line short shimmer"></view>
+				</view>
+			</view>
+			<view v-else class="stats-grid">
 				<!-- 入库统计 -->
 				<view class="stat-card">
 					<view class="stat-icon-wrapper blue">
@@ -305,7 +298,8 @@ export default {
 		userInfo: null,
 		canCreateIn: false,  // 是否可以创建入库单
 		canReviewIn: false,  // 是否可以复核入库单
-		pendingReviewCount: 0  // 待复核数量
+		pendingReviewCount: 0,  // 待复核数量
+		isLoadingStats: true
 	}
 	},
 	
@@ -392,64 +386,186 @@ export default {
 		
 		// 加载今日统计数据
 		async loadTodayStats() {
+			this.isLoadingStats = true
 			try {
-				// 获取今日入库统计
-				const inData = await callFunction('inRecords', {
-					action: 'getCounts',
-					data: {}
-				}, false)
-				
-				// 获取今日出库统计
-				const outData = await callFunction('outRecords', {
-					action: 'getCounts',
-					data: {}
-				}, false)
-				
-				// 获取药品总数
-				let totalDrugs = 0
-				try {
-					const drugData = await callFunction('drugManage', {
-						action: 'getList',
-						data: {
-							pageSize: 1,
-							pageNum: 1
-						}
-					}, false)
-					totalDrugs = drugData.data?.total || 0
-				} catch (e) {
-					console.log('获取药品总数失败', e)
-				}
-				
-				// 获取库存预警数
-				let lowStockCount = 0
-				try {
-					const stockData = await callFunction('stockManage', {
-						action: 'getLowStockList',
-						data: {}
-					}, false)
-					lowStockCount = stockData.data?.length || 0
-				} catch (e) {
-					console.log('获取库存预警失败', e)
-				}
+				const [inData, outData, drugData, stockData] = await Promise.all([
+					callFunction('inRecords', { action: 'getCounts', data: {} }, false),
+					callFunction('outRecords', { action: 'getCounts', data: {} }, false),
+					callFunction('drugManage', { action: 'getList', data: { pageSize: 1, pageNum: 1 } }, false).catch(e => {
+						console.log('获取药品总数失败', e)
+					 return { data: { total: 0 } }
+					}),
+					callFunction('stockManage', { action: 'getLowStockList', data: {} }, false).catch(e => {
+						console.log('获取库存预警失败', e)
+					 return { data: [] }
+					})
+				])
 				
 				this.todayStats = {
-					inCount: inData.today || 0,
-					outCount: outData.today || 0,
-					totalDrugs: totalDrugs,
-					lowStockCount: lowStockCount
+					inCount: inData?.today || 0,
+					outCount: outData?.today || 0,
+					totalDrugs: drugData?.data?.total || 0,
+					lowStockCount: stockData?.data?.length || 0
 				}
-				
+				this.updateLastUpdateTime()
 				console.log('今日统计加载成功:', this.todayStats)
 			} catch (err) {
 				console.error('加载统计数据失败:', err)
-				// 使用默认值，不显示错误提示
-				this.todayStats = {
-					inCount: 0,
-					outCount: 0,
-					totalDrugs: 0,
-					lowStockCount: 0
-				}
+				this.todayStats = { inCount: 0, outCount: 0, totalDrugs: 0, lowStockCount: 0 }
+			} finally {
+				this.isLoadingStats = false
 			}
+		},
+		
+		// 生成当日门诊日报并跳转
+		async generateDailyReport() {
+			try {
+				uni.showLoading({ title: '生成中...' })
+				
+				// 日期与园区
+				const today = new Date()
+				const year = today.getFullYear()
+				const month = String(today.getMonth() + 1).padStart(2, '0')
+				const day = String(today.getDate()).padStart(2, '0')
+				const dateStr = `${year}-${month}-${day}`
+				
+				let location = 'land_park'
+				try {
+					const last = uni.getStorageSync('clinic_last_location')
+					if (last === 'land_park' || last === 'water_park') location = last
+				} catch (e) {}
+				const locationName = location === 'land_park' ? '陆园' : '水园'
+				
+				// 查询完整门诊记录
+				const res = await callFunction('clinicRecords', {
+					action: 'list',
+					data: {
+						location,
+						startDate: dateStr,
+						endDate: dateStr,
+						pageSize: 1000,
+						useClinicRecords: true
+					}
+				})
+				const records = res?.data?.list || res?.result?.data?.list || []
+				
+				// 若无数据
+				if (!records || records.length === 0) {
+					uni.hideLoading()
+					uni.showToast({ title: '当日无门诊记录', icon: 'none' })
+					return
+				}
+				
+				// 复用登记页算法：在本页实现轻量版
+				const reportPkg = this.$options.methods._buildDailyReport(records, dateStr, locationName)
+				
+				uni.hideLoading()
+				uni.navigateTo({
+					url: `/pages-sub/report/daily?content=${encodeURIComponent(reportPkg.report)}&date=${encodeURIComponent(`${year}年${month}月${day}日`)}&location=${encodeURIComponent(locationName)}&stats=${encodeURIComponent(JSON.stringify(reportPkg.stats))}&tableData=${encodeURIComponent(JSON.stringify(reportPkg.tableData))}`
+				})
+			} catch (err) {
+				console.error('生成日报失败:', err)
+				uni.hideLoading()
+				uni.showToast({ title: '生成失败', icon: 'none' })
+			}
+		},
+		
+		// 私有：在首页也构建日报（与登记页口径一致）
+		_buildDailyReport(records, dateStr, locationName) {
+			const date = new Date(dateStr)
+			const year = date.getFullYear()
+			const month = date.getMonth() + 1
+			const day = date.getDate()
+			const dateFormatted = `${year}年${month}月${day}日`
+			
+			const statsAgg = {
+				total: records.length,
+				visitor: [],
+				employee: [],
+				outcall: []
+			}
+			
+			records.forEach(r => {
+				const identity = r.identity || '游客'
+				const disease = r.diseaseName || r.diagnosis || r.chiefComplaint || '未知'
+				const loc = r.injuryLocation || ''
+				const isOut = r.isOutcall || r.visitType === 'outcall'
+				
+				if (isOut && loc) {
+					const found = statsAgg.outcall.find(i => i.location === loc)
+					found ? found.count++ : statsAgg.outcall.push({ location: loc, count: 1 })
+				}
+				const bucket = identity === '员工' ? 'employee' : 'visitor'
+				const arr = statsAgg[bucket]
+				const ex = arr.find(i => i.disease === disease)
+				if (ex) {
+					ex.total++
+					if (bucket === 'visitor' && loc) {
+						const l = ex.locations.find(x => x.name === loc)
+						l ? l.count++ : ex.locations.push({ name: loc, count: 1 })
+					}
+				} else {
+					arr.push({
+						disease,
+						total: 1,
+						locations: bucket === 'visitor' && loc ? [{ name: loc, count: 1 }] : []
+					})
+				}
+			})
+			
+			let report = `${dateFormatted}欢乐谷医务室（${locationName}）当日接诊${statsAgg.total}人。`
+			if (statsAgg.visitor.length) {
+				const vt = statsAgg.visitor.reduce((s, i) => s + i.total, 0)
+				const parts = statsAgg.visitor.map(i => {
+					if (i.locations?.length) {
+						const lps = i.locations.map(l => `${l.name}${l.count}人`).join('，')
+						return `${i.disease}${i.total}人（${lps}）`
+					}
+					return `${i.disease}${i.total}人`
+				})
+				report += `\n游客${vt}人：${parts.join('，')}。`
+			}
+			if (statsAgg.employee.length) {
+				const et = statsAgg.employee.reduce((s, i) => s + i.total, 0)
+				report += `\n员工${et}人：${statsAgg.employee.map(i => `${i.disease}${i.total}人`).join('，')}。`
+			}
+			if (statsAgg.outcall.length) {
+				const ot = statsAgg.outcall.reduce((s, i) => s + i.count, 0)
+				report += `\n出诊${ot}次：${statsAgg.outcall.map(i => `${i.location}${i.count}次`).join('，')}。`
+			}
+			
+			// 构造表数据（按登记页逻辑）
+			let doctorName = ''
+			try {
+				const u = uni.getStorageSync('userInfo'); doctorName = u?.name || ''
+			} catch(e){}
+			const tableData = {
+				visitor: records.filter(r => (r.identity || '游客') === '游客').map(r => ({
+					name: r.name || '',
+					diseaseName: r.diseaseName || r.diagnosis || r.chiefComplaint || '未知',
+					location: r.injuryLocation || '',
+					visitTime: r.visitDateTime || r.createTime || '',
+					isOutcall: r.isOutcall || r.visitType === 'outcall',
+					doctorName
+				})),
+				employee: records.filter(r => r.identity === '员工').map(r => ({
+					name: r.name || '',
+					diseaseName: r.diseaseName || r.diagnosis || r.chiefComplaint || '未知',
+					location: r.injuryLocation || '',
+					visitTime: r.visitDateTime || r.createTime || '',
+					isOutcall: r.isOutcall || r.visitType === 'outcall',
+					doctorName
+				}))
+			}
+			
+			const statsSimple = {
+				total: statsAgg.total,
+				visitorTotal: tableData.visitor.length,
+				employeeTotal: tableData.employee.length,
+				outcallTotal: statsAgg.outcall.reduce((s,i)=>s+i.count,0)
+			}
+			
+			return { report, stats: statsSimple, tableData }
 		},
 		
 		// 页面跳转
@@ -464,6 +580,15 @@ export default {
 					})
 				}
 			})
+		},
+		
+		// 触摸事件处理（用于底部导航栏）
+		onTabTouchStart(e) {
+			// 触摸开始，可以添加触觉反馈等
+		},
+		
+		onTabTouchEnd(e) {
+			// 触摸结束
 		}
 	}
 }
@@ -473,7 +598,9 @@ export default {
 .page {
 	min-height: 100vh;
 	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
-	padding-bottom: 30rpx;
+	/* 兼容底部安全区，避免被 Tab 覆盖 */
+	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
 /* 顶部渐变卡片 */
@@ -632,12 +759,146 @@ export default {
 	padding: 30rpx;
 }
 
+/* 用户权限相关标签单独一行 */
+.role-row {
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+	margin-bottom: 20rpx;
+	/* 与父容器 .quick-actions 的 30rpx 内边距对齐 */
+	padding: 0;
+}
+.role-badge {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 14rpx;
+	padding: 24rpx 26rpx;
+	border-radius: 22rpx;
+	color: #ffffff;
+	box-shadow: 0 12rpx 26rpx rgba(31,41,55,0.18);
+	position: relative;
+	overflow: hidden;
+	border: 1rpx solid rgba(255,255,255,0.18);
+	/* 边框纳入宽度，防止右侧溢出 1rpx 导致看似不对齐 */
+	box-sizing: border-box;
+	min-height: 120rpx;
+}
+.role-badge:active { transform: scale(0.98); }
+.role-badge.inbound { background: linear-gradient(135deg, #00e0c3 0%, #00c6ff 55%, #0088ff 100%); }
+.role-badge.review { background: linear-gradient(135deg, #a78bfa 0%, #7c5cf4 55%, #4f46e5 100%); }
+.role-badge::before {
+	content: '';
+	position: absolute;
+	left: -30%;
+	top: -20%;
+	width: 40%;
+	height: 160%;
+	background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+	transform: rotate(15deg);
+	animation: sweep 3.2s ease-in-out infinite;
+	pointer-events: none;
+}
+.role-badge::after {
+	content: '';
+	position: absolute;
+	right: -18%;
+	top: -40%;
+	width: 240rpx;
+	height: 240rpx;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+}
+.role-badge-icon {
+	width: 68rpx;
+	height: 68rpx;
+	border-radius: 50%;
+	background: rgba(255,255,255,0.22);
+	backdrop-filter: blur(10rpx);
+	border: 2rpx solid rgba(255,255,255,0.35);
+	box-shadow: inset 0 0 0 2rpx rgba(255,255,255,0.2);
+	position: relative;
+	flex-shrink: 0;
+}
+/* 简化的图形：入库箭头/复核勾 */
+.role-badge-icon.inbound::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 16rpx;
+	transform: translateX(-50%);
+	width: 4rpx;
+	height: 20rpx;
+	background: #ffffff;
+	border-radius: 2rpx;
+}
+.role-badge-icon.inbound::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: 10rpx;
+	transform: translateX(-50%);
+	width: 0;
+	height: 0;
+	border-left: 8rpx solid transparent;
+	border-right: 8rpx solid transparent;
+	border-top: 10rpx solid #ffffff;
+}
+.role-badge-icon.review::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%) rotate(-40deg);
+	width: 26rpx;
+	height: 14rpx;
+	border-left: 4rpx solid #ffffff;
+	border-bottom: 4rpx solid #ffffff;
+	border-radius: 3rpx;
+}
+.role-badge-text { flex: 1; display: flex; flex-direction: column; gap: 4rpx; }
+.role-badge-title { font-size: 34rpx; font-weight: 800; text-shadow: 0 2rpx 10rpx rgba(0,0,0,0.22); letter-spacing: 0.5rpx; }
+.role-badge-desc { font-size: 22rpx; opacity: 0.9; }
+.role-badge-tag {
+	padding: 8rpx 16rpx;
+	border-radius: 999rpx;
+	background: rgba(255,255,255,0.28);
+	font-size: 22rpx;
+	font-weight: 700;
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(15,23,42,0.18);
+}
+.role-badge-tag.count {
+	min-width: 56rpx;
+	height: 56rpx;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999rpx;
+	background: linear-gradient(135deg, #ff6b6b 0%, #ff3b3b 100%);
+	border: 3rpx solid rgba(255,255,255,0.6);
+	box-shadow: 0 6rpx 16rpx rgba(255, 59, 59, 0.35);
+	animation: countPulse 2.4s ease-in-out infinite;
+	font-size: 44rpx;
+}
+@keyframes sweep {
+	0% { transform: translateX(0) rotate(15deg); opacity: 0.9; }
+	50% { transform: translateX(260%) rotate(15deg); opacity: 0.7; }
+	100% { transform: translateX(0) rotate(15deg); opacity: 0.9; }
+}
+@keyframes countPulse {
+	0%, 100% { transform: scale(1); }
+	50% { transform: scale(1.06); }
+}
+
 /* 门诊快捷入口（四宫格） */
 .clinic-quick-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 20rpx;
 	margin-bottom: 32rpx;
+	padding: 0;
 }
 
 .clinic-card {
@@ -691,6 +952,25 @@ export default {
 	gap: 16rpx;
 	width: 100%;
 	z-index: 1;
+}
+
+/* 快捷卡片：“门诊登记表”和“门诊日报”采用上下布局（上图标，下文字） */
+.clinic-card.register .clinic-card-content,
+.clinic-card.daily .clinic-card-content {
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12rpx;
+	padding-top: 8rpx;
+	height: 100%;
+	width: 100%;
+}
+
+.clinic-card.register .clinic-card-title,
+.clinic-card.daily .clinic-card-title {
+	text-align: center;
+	width: 100%;
+	align-self: center;
 }
 
 .clinic-card-icon {
@@ -796,19 +1076,15 @@ export default {
 	gap: 6rpx;
 	flex: 1;
 }
-
 .clinic-card-title {
-	font-size: 30rpx;
+	font-size: 34rpx;
 	font-weight: 700;
 	letter-spacing: 0.6rpx;
 	text-shadow: 0 3rpx 12rpx rgba(0,0,0,0.25);
 }
 
 .clinic-card-desc {
-	font-size: 22rpx;
-	font-weight: 500;
-	opacity: 0.85;
-	letter-spacing: 0.4rpx;
+	display: none;
 }
 
 .card-tag,
@@ -859,13 +1135,6 @@ export default {
 }
 .clinic-card.summary .clinic-card-glass {
 	background: radial-gradient(circle, rgba(255,255,255,0.32) 0%, transparent 70%);
-}
-
-.clinic-card-text {
-	display: flex;
-	flex-direction: column;
-	gap: 6rpx;
-	flex: 1;
 }
 
 .clinic-card-tag {
@@ -1268,6 +1537,8 @@ export default {
 	grid-template-columns: repeat(3, 1fr);
 	gap: 20rpx;
 	margin-top: 20rpx;
+	/* 与父容器 .quick-actions 的 30rpx 内边距对齐 */
+	padding: 0;
 }
 
 .action-card {
@@ -1351,7 +1622,7 @@ export default {
 
 .action-label {
 	display: block;
-	font-size: 30rpx;
+	font-size: 32rpx;
 	font-weight: 700;
 	color: #2c3e50;
 	margin-bottom: 6rpx;
@@ -1359,11 +1630,7 @@ export default {
 }
 
 .action-desc {
-	display: block;
-	font-size: 22rpx;
-	color: rgba(47, 63, 96, 0.75);
-	font-weight: 500;
-	letter-spacing: 0.4rpx;
+	display: none;
 }
 
 /* 自定义图标形状 */
@@ -1543,6 +1810,40 @@ export default {
 	position: relative;
 	overflow: hidden;
 	text-align: center;
+}
+
+/* 统计骨架屏 */
+.stat-card.skeleton {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14rpx;
+}
+.skeleton-icon {
+	width: 65rpx;
+	height: 65rpx;
+	border-radius: 16rpx;
+	background: #eef2f7;
+}
+.skeleton-line {
+	width: 60%;
+	height: 24rpx;
+	border-radius: 12rpx;
+	background: #eef2f7;
+}
+.skeleton-line.short {
+	width: 40%;
+	height: 20rpx;
+}
+.shimmer {
+	background: linear-gradient(90deg, #eef2f7 25%, #f7f9fb 37%, #eef2f7 63%);
+	background-size: 400% 100%;
+	animation: shimmerMove 1.2s ease-in-out infinite;
+}
+@keyframes shimmerMove {
+	0% { background-position: 100% 0; }
+	100% { background-position: 0 0; }
 }
 
 .stat-icon-wrapper {

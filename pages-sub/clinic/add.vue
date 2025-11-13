@@ -5,6 +5,11 @@
       <view class="title">爱康医务室管理系统</view>
       <view class="subtitle">北京欢乐谷医务室 · 门诊登记表</view>
       <view class="date-time">{{ currentDateTime }}</view>
+      <!-- 生成日报按钮 -->
+      <view class="generate-report-btn" @click="generateDailyReport">
+        <text class="btn-icon">📄</text>
+        <text class="btn-text">生成日报</text>
+      </view>
     </view>
 
     <view class="form-section">
@@ -42,7 +47,19 @@
                 女
               </view>
             </view>
-            <input v-model.number="form.age" type="number" placeholder="年龄" class="age-input" />
+            <input
+              v-model.number="form.age"
+              type="number"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              :maxlength="3"
+              :focus="ageFocus"
+              @tap="ageFocus = true"
+              @blur="ageFocus = false"
+              confirm-type="done"
+              placeholder="年龄"
+              class="age-input"
+            />
           </view>
         </view>
       </view>
@@ -53,13 +70,13 @@
           <view class="label required">身份</view>
           <view class="identity-selector">
             <view 
-              v-for="identity in identityOptions"
-              :key="identity.value"
+              v-for="idOpt in identityOptions"
+              :key="idOpt.value"
               class="identity-item" 
-              :class="{ active: form.identity === identity.value }"
-              @click="form.identity = identity.value"
+              :class="{ active: form.identity === idOpt.value }"
+              @click="setIdentity(idOpt.value)"
             >
-              {{ identity.label }}
+              {{ idOpt.label }}
             </view>
           </view>
         </view>
@@ -90,24 +107,41 @@
           <view class="label required">是否出诊</view>
           <view class="identity-selector visit-type-selector">
             <view
-              v-for="item in visitTypeOptions"
-              :key="item.value"
+              v-for="vt in visitTypeOptions"
+              :key="vt.value"
               class="identity-item"
-              :class="{ active: form.visitType === item.value }"
-              @click="form.visitType = item.value"
+              :class="{ active: form.visitType === vt.value }"
+              @click="setVisitType(vt.value)"
             >
-              <text class="visit-type-text">{{ item.label }}</text>
+              <text class="visit-type-text">{{ vt.label }}</text>
             </view>
           </view>
         </view>
         <view class="form-item half">
           <view class="label" :class="{ required: form.visitType === 'outcall' }">受伤地点</view>
-          <input
-            v-model="form.injuryLocation"
-            type="text"
-            :placeholder="form.visitType === 'outcall' ? '请输入受伤地点（必填）' : '例如：机动游戏区、餐饮区（可选）'"
-            class="input-uniform"
-          />
+          <view class="location-input-wrapper">
+            <input
+              v-model="form.injuryLocation"
+              type="text"
+              :placeholder="form.visitType === 'outcall' ? '请输入受伤地点（必填）' : '例如：机动游戏区、餐饮区（可选）'"
+              class="input-uniform"
+              @focus="onLocationFocus"
+              @input="onLocationInput"
+            />
+            <!-- 地点下拉列表 -->
+            <view v-if="showLocationList && filteredLocations.length > 0" class="location-dropdown">
+              <scroll-view scroll-y class="location-scroll">
+                <view
+                  v-for="loc in filteredLocations"
+                  :key="loc"
+                  class="location-item"
+                  @click="selectLocationFromList(loc)"
+                >
+                  {{ loc }}
+                </view>
+              </scroll-view>
+            </view>
+          </view>
         </view>
       </view>
 
@@ -439,6 +473,25 @@ export default {
       ],
       filteredDiseases: [],
       showDiseaseList: false,
+      // 年龄输入焦点（用于强制弹出数字键盘）
+      ageFocus: false,
+      // 园区常用地点词库（来自园区运营文件与现场点位）
+      allLocations: [
+        // 大区
+        '欢乐时光区','甜品王国区','香格里拉区','失落玛雅区','爱琴港区','峡湾深林区',
+        // 典型点位/场所
+        '欢乐广场','星闪舞台','旱喷泉','环道','树屋打卡点','情人廊','外广场','停车场','闸口','水公园闸口','大剧院正门',
+        // 乐园入口/屏幕
+        '香格里拉大屏幕','二期舞台屏幕','太空盒子外屏幕','海洋馆小舞台','奇幻海洋馆',
+        // 餐饮/店铺/项目口
+        '乐迪历险记门口','超飞主题餐厅','克罗索斯餐厅','家庭过山车入口','玛雅天灾入口',
+        // 糖果摊位
+        '甜蜜蜜','牛角包','太阳',
+        // 大型景观/设备标识
+        '水晶神翼大山','音乐过山车提升段','雪域金翅提升段','大剧院'
+      ],
+      filteredLocations: [],
+      showLocationList: false,
       
       showDrugSelector: false,
       showSignature: false,
@@ -462,6 +515,14 @@ export default {
   },
 
   methods: {
+    setIdentity(val) {
+      if (!this.form) return
+      this.form.identity = val
+    },
+    setVisitType(val) {
+      if (!this.form) return
+      this.form.visitType = val
+    },
     updateDateTime() {
       const now = new Date();
       const year = now.getFullYear();
@@ -670,6 +731,33 @@ export default {
         });
         this.loadBatches();
       }
+    },
+    // 地点输入框：获得焦点
+    onLocationFocus() {
+      const text = (this.form.injuryLocation || '').trim().toLowerCase();
+      if (!text) {
+        // 展示全部常用地点
+        this.filteredLocations = Array.from(new Set(this.allLocations));
+      } else {
+        this.onLocationInput();
+      }
+      this.showLocationList = true;
+    },
+    // 地点输入：过滤
+    onLocationInput() {
+      const text = (this.form.injuryLocation || '').trim().toLowerCase();
+      const src = Array.from(new Set(this.allLocations));
+      if (!text) {
+        this.filteredLocations = src;
+      } else {
+        this.filteredLocations = src.filter(name => name.toLowerCase().includes(text));
+      }
+      this.showLocationList = true;
+    },
+    // 选择地点
+    selectLocationFromList(name) {
+      this.form.injuryLocation = name;
+      this.showLocationList = false;
     },
 
 
@@ -1029,6 +1117,271 @@ export default {
 
     goBack() {
       uni.navigateBack();
+    },
+
+    // 生成日报
+    async generateDailyReport() {
+      try {
+        uni.showLoading({ title: '生成中...' });
+
+        // 获取当前日期和园区
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        const location = this.form.location;
+        const locationName = location === 'land_park' ? '陆园' : '水园';
+
+        // 查询当日的所有门诊记录
+        // 查询 clinic_records 集合（完整门诊登记信息）
+        let records = [];
+        try {
+          // 使用 clinicRecords 云函数查询完整的门诊登记记录
+          const res = await wx.cloud.callFunction({
+            name: 'clinicRecords',
+            data: {
+              action: 'list',
+              data: {
+                location: location,
+                startDate: dateStr,
+                endDate: dateStr,
+                pageSize: 1000,
+                useClinicRecords: true  // 查询完整的门诊登记记录
+              }
+            }
+          });
+
+          if (res.result && res.result.success && res.result.data && res.result.data.list) {
+            records = res.result.data.list;
+          }
+        } catch (err) {
+          console.error('查询门诊记录失败:', err);
+        }
+
+        if (records.length === 0) {
+          uni.hideLoading();
+          uni.showToast({
+            title: '当日无门诊记录',
+            icon: 'none',
+            duration: 2000
+          });
+          return;
+        }
+
+        // 生成文档和统计信息
+        const report = this.formatDailyReport(records, dateStr, locationName);
+        const stats = this.calculateStats(records);
+        
+        // 准备详细的表格数据
+        const tableData = this.prepareTableData(records);
+
+        uni.hideLoading();
+
+        // 跳转到日报显示页面
+        const reportDate = `${year}年${month}月${day}日`;
+        uni.navigateTo({
+          url: `/pages-sub/report/daily?content=${encodeURIComponent(report)}&date=${encodeURIComponent(reportDate)}&location=${encodeURIComponent(locationName)}&stats=${encodeURIComponent(JSON.stringify(stats))}&tableData=${encodeURIComponent(JSON.stringify(tableData))}`,
+          fail: (err) => {
+            console.error('跳转失败:', err);
+            // 如果跳转失败，复制到剪贴板
+            uni.setClipboardData({
+              data: report,
+              success: () => {
+                uni.showToast({
+                  title: '已复制到剪贴板',
+                  icon: 'success'
+                });
+              }
+            });
+          }
+        });
+      } catch (err) {
+        console.error('生成日报失败:', err);
+        uni.hideLoading();
+        uni.showToast({
+          title: '生成失败：' + (err.message || '未知错误'),
+          icon: 'none',
+          duration: 3000
+        });
+      }
+    },
+
+    // 格式化日报
+    formatDailyReport(records, dateStr, locationName) {
+      // 解析日期
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const dateFormatted = `${year}年${month}月${day}日`;
+
+      // 统计信息
+      const stats = {
+        total: records.length,
+        visitor: [],
+        employee: [],
+        outcall: []
+      };
+
+      // 按身份和疾病分类统计
+      records.forEach(record => {
+        const identity = record.identity || '游客';
+        const diseaseName = record.diseaseName || '未知';
+        const injuryLocation = record.injuryLocation || '';
+        const isOutcall = record.isOutcall || record.visitType === 'outcall';
+
+        if (isOutcall && injuryLocation) {
+          // 统计出诊
+          const existing = stats.outcall.find(item => item.location === injuryLocation);
+          if (existing) {
+            existing.count++;
+          } else {
+            stats.outcall.push({ location: injuryLocation, count: 1 });
+          }
+        }
+
+        if (identity === '游客') {
+          // 游客统计
+          const existing = stats.visitor.find(item => item.disease === diseaseName);
+          if (existing) {
+            if (injuryLocation && injuryLocation.trim()) {
+              const loc = existing.locations.find(l => l.name === injuryLocation);
+              if (loc) {
+                loc.count++;
+              } else {
+                existing.locations.push({ name: injuryLocation, count: 1 });
+              }
+            }
+            existing.total++;
+          } else {
+            stats.visitor.push({
+              disease: diseaseName,
+              total: 1,
+              locations: (injuryLocation && injuryLocation.trim()) ? [{ name: injuryLocation, count: 1 }] : []
+            });
+          }
+        } else if (identity === '员工') {
+          // 员工统计
+          const existing = stats.employee.find(item => item.disease === diseaseName);
+          if (existing) {
+            existing.total++;
+          } else {
+            stats.employee.push({
+              disease: diseaseName,
+              total: 1
+            });
+          }
+        }
+      });
+
+      // 生成文档内容
+      let report = `${dateFormatted}欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
+
+      // 游客统计
+      if (stats.visitor.length > 0) {
+        const visitorTotal = stats.visitor.reduce((sum, item) => sum + item.total, 0);
+        report += `游客${visitorTotal}人：`;
+        
+        const visitorParts = [];
+        stats.visitor.forEach(item => {
+          if (item.locations && item.locations.length > 0) {
+            // 有地点的疾病：疾病X人（地点1X人，地点2X人）
+            const locationParts = item.locations.map(loc => `${loc.name}${loc.count}人`);
+            visitorParts.push(`${item.disease}${item.total}人（${locationParts.join('，')}）`);
+          } else {
+            // 无地点的疾病：疾病X人
+            visitorParts.push(`${item.disease}${item.total}人`);
+          }
+        });
+        report += visitorParts.join('，') + '。\n';
+      }
+
+      // 员工统计
+      if (stats.employee.length > 0) {
+        const employeeTotal = stats.employee.reduce((sum, item) => sum + item.total, 0);
+        report += `员工${employeeTotal}人：`;
+        const employeeParts = stats.employee.map(item => `${item.disease}${item.total}人`);
+        report += employeeParts.join('，') + '。\n';
+      }
+
+      // 出诊统计
+      if (stats.outcall.length > 0) {
+        const outcallTotal = stats.outcall.reduce((sum, item) => sum + item.count, 0);
+        report += `出诊${outcallTotal}次：`;
+        const outcallParts = stats.outcall.map(item => `${item.location}${item.count}次`);
+        report += outcallParts.join('，') + '。\n';
+      }
+
+      return report.trim();
+    },
+
+    // 计算统计信息
+    calculateStats(records) {
+      const stats = {
+        total: records.length,
+        visitorTotal: 0,
+        employeeTotal: 0,
+        outcallTotal: 0
+      };
+
+      records.forEach(record => {
+        const identity = record.identity || '游客';
+        const isOutcall = record.isOutcall || record.visitType === 'outcall';
+
+        if (identity === '游客') {
+          stats.visitorTotal++;
+        } else if (identity === '员工') {
+          stats.employeeTotal++;
+        }
+
+        if (isOutcall) {
+          stats.outcallTotal++;
+        }
+      });
+
+      return stats;
+    },
+
+    // 准备表格数据
+    prepareTableData(records) {
+      const visitorData = [];
+      const employeeData = [];
+      let doctorName = '';
+      try {
+        const userInfo = uni.getStorageSync('userInfo');
+        doctorName = userInfo?.name || '';
+      } catch (err) {
+        console.error('获取用户信息失败:', err);
+      }
+
+      records.forEach(record => {
+        const identity = record.identity || '游客';
+        const diseaseName =
+          record.diseaseName ||
+          record.diagnosis ||
+          record.chiefComplaint ||
+          '未知';
+        const data = {
+          name: record.name || '',
+          diseaseName,
+          location: record.injuryLocation || '',
+          visitTime: record.visitDateTime || record.createTime || '',
+          isOutcall: record.isOutcall || record.visitType === 'outcall',
+          doctorName: doctorName
+        };
+
+        if (identity === '游客') {
+          visitorData.push(data);
+        } else if (identity === '员工') {
+          employeeData.push(data);
+        }
+      });
+
+      return {
+        visitor: visitorData,
+        employee: employeeData
+      };
     }
   }
 };
@@ -1072,6 +1425,34 @@ export default {
     font-size: 28rpx;
     color: #666;
     margin-top: 16rpx;
+  }
+
+  .generate-report-btn {
+    margin-top: 20rpx;
+    padding: 16rpx 32rpx;
+    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10rpx;
+    box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
+    transition: all 0.3s;
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0 2rpx 8rpx rgba(82, 196, 26, 0.4);
+    }
+
+    .btn-icon {
+      font-size: 32rpx;
+    }
+
+    .btn-text {
+      font-size: 28rpx;
+      color: #ffffff;
+      font-weight: bold;
+    }
   }
 }
 
@@ -1525,6 +1906,54 @@ export default {
       &:last-child {
         border-bottom: none;
       }
+    }
+  }
+}
+
+// 受伤地点输入包装器
+.location-input-wrapper {
+  position: relative;
+  width: 100%;
+
+  input {
+    height: 80rpx;
+    line-height: 1.6;
+    font-size: 26rpx;
+    padding: 20rpx 24rpx;
+  }
+
+  .location-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8rpx;
+    background: white;
+    border: 2rpx solid #e0e0e0;
+    border-radius: 12rpx;
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 400rpx;
+    overflow: hidden;
+  }
+
+  .location-scroll {
+    max-height: 400rpx;
+  }
+
+  .location-item {
+    padding: 24rpx 20rpx;
+    border-bottom: 1rpx solid #f0f0f0;
+    font-size: 26rpx;
+    color: #333;
+    transition: background 0.2s;
+
+    &:active {
+      background: #e6f7ff;
+    }
+
+    &:last-child {
+      border-bottom: none;
     }
   }
 }

@@ -1,19 +1,34 @@
 <template>
 	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
-		<!-- 顶部专业搜索栏 -->
-		<view class="search-header">
-			<view class="search-wrapper">
-				<text class="search-icon-left">🔍</text>
-				<input 
-					class="search-input" 
-					placeholder="搜索药品名称、规格、拼音..." 
-					v-model="searchKeyword"
-					@input="onSearchInput"
-					placeholder-class="search-placeholder"
-				/>
-				<text v-if="searchKeyword" class="search-clear" @tap="clearSearch">✕</text>
+		<!-- 统一页面头部 -->
+		<view class="page-header">
+			<view>
+				<text class="page-title">库存总览</text>
+				<text class="page-subtitle">Inventory Overview</text>
+			</view>
+			<view class="header-actions">
+				<view class="header-btn" @tap="goToPage('/pages-sub/in/list')">
+					<text class="btn-icon">📝</text>
+					<text class="btn-text">入库管理</text>
+				</view>
+				<view class="header-btn" @tap="goToPage('/pages-sub/report/stock')">
+					<text class="btn-icon">📄</text>
+					<text class="btn-text">库存报表</text>
+				</view>
 			</view>
 		</view>
+		
+		<filter-panel
+			class="panel-wrapper"
+			:keyword="searchKeyword"
+			keyword-placeholder="搜索药品名称/规格/拼音"
+			:quick-filters="statusOptions"
+			:active-quick-filter="statusFilter"
+			:show-date="false"
+			:show-search-button="false"
+			@update:keyword="onKeywordChange"
+			@quick-filter="onStatusFilter"
+		/>
 		
 		<!-- 数据统计仪表板 -->
 		<view class="dashboard">
@@ -135,9 +150,13 @@
 <script>
 import { callFunction } from '@/utils/api.js'
 import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
+import FilterPanel from '@/components/filter-panel/index.vue'
 
 export default {
 	mixins: [createTabSwipeMixin(1)],
+	components: {
+		FilterPanel
+	},
 	data() {
 		return {
 			drugList: [],
@@ -147,20 +166,37 @@ export default {
 				expiredCount: 0
 			},
 			searchKeyword: '',
+			statusFilter: 'all',
+			statusOptions: [
+				{ label: '全部', value: 'all' },
+				{ label: '充足', value: 'sufficient' },
+				{ label: '预警', value: 'warning' },
+				{ label: '缺货', value: 'empty' }
+			],
 			loading: false
 		}
 	},
 	computed: {
 		filteredDrugList() {
-			if (!this.searchKeyword) {
-				return this.drugList
+			let list = this.drugList
+			const keyword = (this.searchKeyword || '').toLowerCase()
+			if (keyword) {
+				list = list.filter(item => 
+					item.name.toLowerCase().includes(keyword) ||
+					item.spec.toLowerCase().includes(keyword) ||
+					(item.pinyin && item.pinyin.toLowerCase().includes(keyword))
+				)
 			}
-			const keyword = this.searchKeyword.toLowerCase()
-			return this.drugList.filter(item => 
-				item.name.toLowerCase().includes(keyword) ||
-				item.spec.toLowerCase().includes(keyword) ||
-				(item.pinyin && item.pinyin.toLowerCase().includes(keyword))
-			)
+			if (this.statusFilter === 'sufficient') {
+				return list.filter(item => (item.totalQuantity || 0) > (item.reorderLevel || 100))
+			}
+			if (this.statusFilter === 'warning') {
+				return list.filter(item => (item.totalQuantity || 0) > 0 && (item.totalQuantity || 0) <= (item.reorderLevel || 100))
+			}
+			if (this.statusFilter === 'empty') {
+				return list.filter(item => (item.totalQuantity || 0) === 0)
+			}
+			return list
 		}
 	},
 	onLoad() {
@@ -212,8 +248,12 @@ export default {
 			}
 		},
 		
-		onSearchInput() {
-			// 实时搜索
+		onKeywordChange(val) {
+			this.searchKeyword = val
+		},
+		
+		onStatusFilter(val) {
+			this.statusFilter = val
 		},
 		
 		clearSearch() {
@@ -227,9 +267,18 @@ export default {
 		},
 		
 		goToDetail(item) {
-			uni.showToast({
-				title: '详情页开发中',
-				icon: 'none'
+			uni.navigateTo({
+				url: `/pages-sub/stock/detail?id=${item.drugId || item._id || ''}`,
+				fail: () => {
+					uni.showToast({ title: '详情开发中', icon: 'none' })
+				}
+			})
+		},
+		
+		goToPage(url) {
+			uni.navigateTo({
+				url,
+				fail: () => uni.showToast({ title: '页面开发中', icon: 'none' })
 			})
 		}
 	}
@@ -243,61 +292,51 @@ export default {
 	padding-bottom: 30rpx;
 }
 
-/* 专业搜索栏 */
-.search-header {
-	background: #ffffff;
-	padding: 30rpx;
-	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
-}
-
-.search-wrapper {
-	position: relative;
-	background: #f8fafc;
-	border-radius: 50rpx;
-	padding: 20rpx 50rpx 20rpx 60rpx;
-	border: 2rpx solid #e2e8f0;
-	transition: all 0.3s;
-}
-
-.search-wrapper:focus-within {
-	background: #ffffff;
-	border-color: #667eea;
-	box-shadow: 0 0 0 6rpx rgba(102, 126, 234, 0.1);
-}
-
-.search-icon-left {
-	position: absolute;
-	left: 25rpx;
-	top: 50%;
-	transform: translateY(-50%);
-	font-size: 28rpx;
-	color: #94a3b8;
-}
-
-.search-input {
-	font-size: 28rpx;
-	color: #2c3e50;
-}
-
-.search-placeholder {
-	color: #cbd5e1;
-}
-
-.search-clear {
-	position: absolute;
-	right: 25rpx;
-	top: 50%;
-	transform: translateY(-50%);
-	width: 36rpx;
-	height: 36rpx;
-	background: #cbd5e1;
-	border-radius: 50%;
-	color: #ffffff;
-	font-size: 20rpx;
+.page-header {
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	line-height: 1;
+	justify-content: space-between;
+	padding: 30rpx;
+}
+
+.page-title {
+	display: block;
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #1f2937;
+}
+
+.page-subtitle {
+	display: block;
+	font-size: 22rpx;
+	color: #94a3b8;
+	margin-top: 4rpx;
+	text-transform: uppercase;
+	letter-spacing: 2rpx;
+}
+
+.header-actions {
+	display: flex;
+	gap: 12rpx;
+}
+
+.header-btn {
+	display: flex;
+	align-items: center;
+	gap: 6rpx;
+	padding: 12rpx 20rpx;
+	border-radius: 999rpx;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #ffffff;
+	font-size: 24rpx;
+}
+
+.btn-icon {
+	font-size: 28rpx;
+}
+
+.panel-wrapper {
+	padding: 0 30rpx 10rpx;
 }
 
 /* 数据仪表板 */

@@ -1,18 +1,19 @@
 <template>
-  <view class="signature-modal" @tap="closeModal">
-    <view class="modal-content" @tap.stop>
+  <view class="signature-modal" @tap="closeModal" @touchmove.stop.prevent>
+    <view class="modal-content" @tap.stop @touchmove.stop.prevent>
       <view class="modal-header">
         <view class="header-title">✍️ 电子签名</view>
         <view class="header-desc">请在下方签名板上签名</view>
       </view>
 
-      <view class="canvas-wrapper">
+      <view class="canvas-wrapper" @touchmove.stop.prevent>
         <canvas 
           canvas-id="signatureCanvas" 
           class="signature-canvas"
           @touchstart="touchStart"
           @touchmove="touchMove"
           @touchend="touchEnd"
+          @touchmove.stop.prevent
         ></canvas>
       </view>
 
@@ -135,6 +136,8 @@ export default {
   z-index: 9999;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* 防止在签名时滚动穿透 */
+  touch-action: none; /* 禁止浏览器手势滚动/缩放 */
 }
 
 .modal-content {
@@ -178,6 +181,8 @@ export default {
   border-radius: 16rpx;
   border: 3rpx dashed #d9d9d9;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  touch-action: none; /* 降低手势对布局的影响，避免晃动 */
+  user-select: none;
 }
 
 .modal-actions {

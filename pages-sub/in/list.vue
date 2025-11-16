@@ -1,66 +1,55 @@
 <template>
 	<view class="container">
-		<!-- 统计面板 -->
-		<view class="stats-panel">
-			<view class="stats-header">
-				<text class="stats-title">入库记录</text>
-				<text class="stats-subtitle">{{ currentTime }}</text>
+		<!-- 页面头部 -->
+		<view class="page-header">
+			<view>
+				<text class="page-title">入库管理</text>
+				<text class="page-subtitle">{{ currentTime }}</text>
 			</view>
-			<view class="stats-grid">
-				<view class="stat-card">
-					<text class="stat-value">{{ statsData.today }}</text>
-					<text class="stat-label">今日入库</text>
-					<view class="stat-icon today">📦</view>
-				</view>
-				<view class="stat-card">
-					<text class="stat-value">{{ statsData.thisWeek }}</text>
-					<text class="stat-label">本周入库</text>
-					<view class="stat-icon week">📊</view>
-				</view>
-				<view class="stat-card">
-					<text class="stat-value">{{ statsData.thisMonth }}</text>
-					<text class="stat-label">本月入库</text>
-					<view class="stat-icon month">📈</view>
-				</view>
-				<view class="stat-card">
-					<text class="stat-value">{{ statsData.pending }}</text>
-					<text class="stat-label">待复核</text>
-					<view class="stat-icon pending">⏳</view>
-				</view>
+			<view class="page-actions">
+				<view class="header-btn ghost" @tap="refreshList">刷新</view>
+				<view class="header-btn primary" @tap="goAdd">新建入库单</view>
 			</view>
 		</view>
 		
-		<!-- 搜索栏 -->
-		<view class="search-bar">
-			<view class="search-wrapper">
-				<view class="search-icon">🔍</view>
-				<input 
-					class="search-input" 
-					v-model="searchKeyword"
-					placeholder="搜索单号/药品名称"
-					placeholder-class="placeholder"
-					@input="onSearchInput"
-					@confirm="onSearch"
-				/>
-				<view v-if="searchKeyword" class="clear-icon" @tap="clearSearch">✕</view>
+		<filter-panel
+			class="panel-wrapper"
+			:keyword="searchKeyword"
+			keyword-placeholder="搜索单号/药品名称"
+			:show-date="true"
+			:start-date="startDate"
+			:end-date="endDate"
+			:quick-filters="quickFilters"
+			:active-quick-filter="selectedQuickFilter"
+			:show-search-button="false"
+			@update:keyword="onKeywordUpdate"
+			@update:startDate="onStartDateUpdate"
+			@update:endDate="onEndDateUpdate"
+			@quick-filter="selectQuickFilter"
+			@date-change="onDateRangeChange"
+			@search="generateList"
+		>
+			<view class="filter-extra">
+				<view class="extra-item selectable" @tap="showStatusPicker = true">
+					<text class="extra-label">状态</text>
+					<text class="extra-value">{{ statusLabel }}</text>
+				</view>
 			</view>
-			<view class="date-filter" @tap="showDatePicker = true">
-				<text class="date-text">{{ dateFilterText }}</text>
-				<text class="date-icon">📅</text>
-			</view>
+		</filter-panel>
+		
+		<view class="filter-action-bar">
+			<view class="action-btn ghost" @tap="resetFilters">重置</view>
+			<view class="action-btn primary" @tap="generateList">查询</view>
 		</view>
 		
-		<!-- 筛选标签 -->
-		<view class="filter-tabs">
-			<view 
-				v-for="(tab, index) in tabs" 
-				:key="index"
-				:class="['tab-item', { active: currentTab === tab.value }]"
-				@click="switchTab(tab.value)"
-			>
-				<text class="tab-text">{{ tab.label }}</text>
-				<text v-if="tab.count > 0" class="tab-badge">{{ tab.count }}</text>
-			</view>
+		<view class="result-meta">
+			<text class="meta-item">记录数：{{ recordList.length }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">待复核：{{ statusSummary.pending_review }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">已完成：{{ statusSummary.completed }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">驳回：{{ statusSummary.rejected }}</text>
 		</view>
 		
 		<!-- 列表 -->
@@ -118,7 +107,9 @@
 			<!-- 空状态 -->
 			<view v-if="recordList.length === 0" class="empty-state">
 				<text class="empty-icon">📋</text>
-				<text class="empty-text">暂无{{ getTabName() }}单据</text>
+				<text class="empty-text">
+					暂无{{ statusLabel === '全部' ? '' : statusLabel }}入库单
+				</text>
 			</view>
 			
 			<!-- 加载更多 -->
@@ -130,43 +121,42 @@
 			</view>
 		</view>
 		
-		<!-- 新建按钮 -->
-		<view class="fab-button" @click="goAdd">
-			<text class="fab-icon">+</text>
-		</view>
-		
-		<!-- 日期选择器 -->
-		<u-popup v-model="showDatePicker" mode="bottom">
-			<view class="date-picker-popup">
+		<!-- 状态选择 -->
+		<u-popup v-model="showStatusPicker" mode="bottom">
+			<view class="status-picker">
 				<view class="picker-header">
-					<text class="picker-cancel" @tap="showDatePicker = false">取消</text>
-					<text class="picker-title">选择日期范围</text>
-					<text class="picker-confirm" @tap="confirmDateFilter">确定</text>
-				</view>
-				<view class="picker-body">
-					<view class="quick-filters">
-						<view 
-							v-for="(item, index) in quickFilters" 
-							:key="index"
-							:class="['quick-filter-item', { active: selectedQuickFilter === item.value }]"
-							@tap="selectQuickFilter(item.value)"
-						>
-							{{ item.label }}
-						</view>
+					<view>
+						<text class="picker-title">筛选入库状态</text>
+						<text class="picker-subtitle">选择后点击“应用”立即更新列表</text>
 					</view>
-					<view class="custom-date-range">
-						<view class="date-range-item">
-							<text class="date-label">开始日期</text>
-							<picker mode="date" :value="startDate" @change="onStartDateChange">
-								<view class="date-value">{{ startDate || '请选择' }}</view>
-							</picker>
+					<text class="picker-close" @tap="showStatusPicker = false">✕</text>
+				</view>
+				
+				<view class="status-grid">
+					<view 
+						v-for="item in statusOptions" 
+						:key="item.value"
+						:class="['status-chip', item.value, { active: tempStatus === item.value }]"
+						@tap="tempStatus = item.value"
+					>
+						<view class="chip-left">
+							<text class="chip-icon">{{ item.icon }}</text>
 						</view>
-						<view class="date-range-item">
-							<text class="date-label">结束日期</text>
-							<picker mode="date" :value="endDate" @change="onEndDateChange">
-								<view class="date-value">{{ endDate || '请选择' }}</view>
-							</picker>
+						<view class="chip-center">
+							<text class="chip-label">{{ item.label }}</text>
+							<text class="chip-desc">{{ item.desc }}</text>
 						</view>
+						<text v-if="tempStatus === item.value" class="chip-check">✓</text>
+					</view>
+				</view>
+				
+				<view class="status-footer">
+					<view class="footer-info">
+						<text>当前选择：{{ tempStatusLabel }}</text>
+					</view>
+					<view class="footer-actions">
+						<view class="action ghost" @tap="resetTempStatus">重置</view>
+						<view class="action primary" @tap="confirmStatus">应用</view>
 					</view>
 				</view>
 			</view>
@@ -175,39 +165,50 @@
 </template>
 
 <script>
-import { callFunction } from '@/utils/request.js'
+import FilterPanel from '@/components/filter-panel/index.vue'
 
 export default {
+	components: {
+		FilterPanel
+	},
 	data() {
 		return {
-			currentTab: 'all',
 			currentTime: '',
-			tabs: [
-				{ label: '全部', value: 'all', count: 0 },
-				{ label: '草稿', value: 'draft', count: 0 },
-				{ label: '待复核', value: 'pending_review', count: 0 },
-				{ label: '已完成', value: 'completed', count: 0 },
-				{ label: '已驳回', value: 'rejected', count: 0 }
-			],
 			recordList: [],
 			page: 1,
 			pageSize: 10,
 			hasMore: true,
 			currentUserId: '',
+			statusFilter: 'all',
+			tempStatus: 'all',
+			showStatusPicker: false,
+			statusOptions: [
+				{ label: '全部', value: 'all', icon: '🌐', desc: '展示全部记录' },
+				{ label: '草稿', value: 'draft', icon: '📝', desc: '尚未提交的草稿单' },
+				{ label: '待复核', value: 'pending_review', icon: '👁️', desc: '等待复核确认' },
+				{ label: '已完成', value: 'completed', icon: '✅', desc: '复核通过并入库' },
+				{ label: '已驳回', value: 'rejected', icon: '⚠️', desc: '存在问题被退回' }
+			],
 			statsData: {
 				today: 0,
 				thisWeek: 0,
 				thisMonth: 0,
 				pending: 0
 			},
+			statusSummary: {
+				all: 0,
+				draft: 0,
+				pending_review: 0,
+				completed: 0,
+				rejected: 0
+			},
 			// 搜索相关
 			searchKeyword: '',
 			searchTimer: null,
 			// 日期筛选相关
-			showDatePicker: false,
 			startDate: '',
 			endDate: '',
-			selectedQuickFilter: '',
+			selectedQuickFilter: 'month',
 			quickFilters: [
 				{ label: '全部', value: 'all' },
 				{ label: '今天', value: 'today' },
@@ -223,6 +224,14 @@ export default {
 	},
 	
 	computed: {
+		statusLabel() {
+			const found = this.statusOptions.find(item => item.value === this.statusFilter)
+			return found ? found.label : '全部'
+		},
+		tempStatusLabel() {
+			const found = this.statusOptions.find(item => item.value === this.tempStatus)
+			return found ? found.label : '全部'
+		},
 		dateFilterText() {
 			if (!this.startDate && !this.endDate) {
 				return '全部时间'
@@ -280,8 +289,7 @@ export default {
 		// 设置当前时间
 		this.updateCurrentTime()
 		
-		this.loadRecords()
-		this.loadCounts()
+		this.selectQuickFilter('month')
 		this.loadStats()
 	},
 		
@@ -293,22 +301,6 @@ export default {
 			this.currentTime = `${year}年${month}月${day}日`
 		},
 		
-		switchTab(value) {
-			if (this.currentTab === value) return
-			
-			this.currentTab = value
-			this.page = 1
-			this.recordList = []
-			this.hasMore = true
-			// 切换标签时加载数据（会判断是否首次加载）
-			this.loadRecords()
-		},
-		
-		getTabName() {
-			const tab = this.tabs.find(t => t.value === this.currentTab)
-			return tab ? tab.label : ''
-		},
-		
 	async loadRecords() {
 		// 首次加载显示 loading，刷新时不显示
 		const isFirstLoad = this.page === 1 && this.recordList.length === 0
@@ -318,7 +310,7 @@ export default {
 			const result = await this.$api.callFunction('inRecords', {
 				action: 'getList',
 				data: {
-					status: this.currentTab === 'all' ? 'all' : this.currentTab,
+					status: this.statusFilter,
 					page: this.page,
 					pageSize: this.pageSize,
 					keyword: this.searchKeyword,
@@ -389,35 +381,21 @@ export default {
 			}, false)  // 不显示 loading
 			
 			if (result && result.success) {
-				// 更新各标签的数量
-				this.tabs.forEach(tab => {
-					if (tab.value === 'all') {
-						tab.count = result.all || 0
-					} else if (tab.value === 'draft') {
-						tab.count = result.draft || 0
-					} else if (tab.value === 'pending_review') {
-						tab.count = result.pending_review || 0
-					} else if (tab.value === 'completed') {
-						tab.count = result.completed || 0
-					} else if (tab.value === 'rejected') {
-						tab.count = result.rejected || 0
-					}
-				})
+				this.statusSummary = {
+					all: result.all || 0,
+					draft: result.draft || 0,
+					pending_review: result.pending_review || 0,
+					completed: result.completed || 0,
+					rejected: result.rejected || 0
+				}
 			} else if (result) {
-				// 兼容直接返回数据的情况
-				this.tabs.forEach(tab => {
-					if (tab.value === 'all') {
-						tab.count = result.all || 0
-					} else if (tab.value === 'draft') {
-						tab.count = result.draft || 0
-					} else if (tab.value === 'pending_review') {
-						tab.count = result.pending_review || 0
-					} else if (tab.value === 'completed') {
-						tab.count = result.completed || 0
-					} else if (tab.value === 'rejected') {
-						tab.count = result.rejected || 0
-					}
-				})
+				this.statusSummary = {
+					all: result.all || 0,
+					draft: result.draft || 0,
+					pending_review: result.pending_review || 0,
+					completed: result.completed || 0,
+					rejected: result.rejected || 0
+				}
 			}
 		} catch (err) {
 			console.error('加载数量失败:', err)
@@ -484,6 +462,38 @@ export default {
 			// 保持默认值 0
 		}
 	},
+		
+		resetFilters() {
+			this.searchKeyword = ''
+			this.startDate = ''
+			this.endDate = ''
+			this.selectedQuickFilter = 'month'
+			this.statusFilter = 'all'
+			this.tempStatus = 'all'
+			this.page = 1
+			this.recordList = []
+			this.hasMore = true
+			this.selectQuickFilter('month')
+			this.generateList()
+		},
+		
+		generateList() {
+			this.page = 1
+			this.recordList = []
+			this.hasMore = true
+			this.loadRecords()
+			this.loadCounts()
+		},
+		
+		confirmStatus() {
+			this.statusFilter = this.tempStatus
+			this.showStatusPicker = false
+			this.generateList()
+		},
+		
+		resetTempStatus() {
+			this.tempStatus = 'all'
+		},
 		
 		refreshList() {
 			this.page = 1
@@ -570,29 +580,23 @@ export default {
 	},
 	
 	// ========== 搜索相关 ==========
-	onSearchInput(e) {
-		// 防抖搜索
-		if (this.searchTimer) {
-			clearTimeout(this.searchTimer)
-		}
-		this.searchTimer = setTimeout(() => {
-			this.onSearch()
-		}, 500)
+	onKeywordUpdate(val) {
+		this.searchKeyword = val
+		if (this.searchTimer) clearTimeout(this.searchTimer)
+		this.searchTimer = setTimeout(() => this.generateList(), 400)
 	},
-	
-	onSearch() {
-		this.page = 1
-		this.recordList = []
-		this.hasMore = true
-		this.loadRecords()
+	onStartDateUpdate(val) {
+		this.startDate = val
 	},
-	
-	clearSearch() {
-		this.searchKeyword = ''
-		this.onSearch()
+	onEndDateUpdate(val) {
+		this.endDate = val
 	},
-	
-	// ========== 日期筛选相关 ==========
+	onDateRangeChange({ start, end }) {
+		this.startDate = start || ''
+		this.endDate = end || ''
+		this.generateList()
+	},
+
 	selectQuickFilter(value) {
 		this.selectedQuickFilter = value
 		const today = new Date()
@@ -618,27 +622,12 @@ export default {
 				this.endDate = this.formatDate(today)
 				break
 			case 'custom':
-				// 保持当前日期不变，让用户自己选择
+				// 自定义由日期选择器回调控制
 				break
 		}
-	},
-	
-	onStartDateChange(e) {
-		this.startDate = e.detail.value
-		this.selectedQuickFilter = 'custom'
-	},
-	
-	onEndDateChange(e) {
-		this.endDate = e.detail.value
-		this.selectedQuickFilter = 'custom'
-	},
-	
-	confirmDateFilter() {
-		this.showDatePicker = false
-		this.page = 1
-		this.recordList = []
-		this.hasMore = true
-		this.loadRecords()
+		if (value !== 'custom') {
+			this.generateList()
+		}
 	},
 	
 	formatDate(date) {
@@ -709,11 +698,11 @@ export default {
 				}
 			]
 			
-			// 根据当前标签筛选
-			if (this.currentTab === 'all') {
+			// 根据状态筛选
+			if (this.statusFilter === 'all') {
 				return mockList
 			}
-			return mockList.filter(item => item.status === this.currentTab)
+			return mockList.filter(item => item.status === this.statusFilter)
 		}
 	}
 }
@@ -722,193 +711,137 @@ export default {
 <style lang="scss" scoped>
 .container {
 	min-height: 100vh;
-	background-color: #F8F8F8;
-	padding-bottom: 100rpx;
+	background-color: #f5f7fb;
+	padding-bottom: 60rpx;
 }
 
-// 搜索栏
-.search-bar {
+.page-header {
 	display: flex;
 	align-items: center;
-	gap: 20rpx;
-	padding: 20rpx 30rpx;
-	background: white;
-	margin-bottom: 10rpx;
-	
-	.search-wrapper {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		height: 70rpx;
-		background: #f5f5f5;
-		border-radius: 35rpx;
-		padding: 0 30rpx;
-		
-		.search-icon {
-			font-size: 32rpx;
-			margin-right: 15rpx;
-		}
-		
-		.search-input {
-			flex: 1;
-			font-size: 28rpx;
-			color: #323233;
-		}
-		
-		.placeholder {
-			color: #999;
-		}
-		
-		.clear-icon {
-			width: 40rpx;
-			height: 40rpx;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 28rpx;
-			color: #999;
-			background: #e0e0e0;
-			border-radius: 50%;
-		}
-	}
-	
-	.date-filter {
-		display: flex;
-		align-items: center;
-		gap: 10rpx;
-		padding: 0 25rpx;
-		height: 70rpx;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		border-radius: 35rpx;
-		
-		.date-text {
-			font-size: 24rpx;
-			color: white;
-			white-space: nowrap;
-		}
-		
-		.date-icon {
-			font-size: 28rpx;
-		}
-	}
+	justify-content: space-between;
+	padding: 40rpx 30rpx 20rpx;
 }
 
-.stats-panel {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding: 30rpx;
-	margin-bottom: 10rpx;
+.page-title {
+	display: block;
+	font-size: 36rpx;
+	font-weight: 700;
+	color: #111827;
 }
 
-.stats-header {
-	margin-bottom: 25rpx;
+.page-subtitle {
+	font-size: 24rpx;
+	color: #94a3b8;
+	margin-top: 6rpx;
+}
+
+.page-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.header-btn {
+	min-width: 150rpx;
+	padding: 18rpx 30rpx;
+	border-radius: 999rpx;
+	font-size: 26rpx;
+	font-weight: 600;
 	text-align: center;
 }
 
-.stats-title {
-	display: block;
-	font-size: 34rpx;
-	font-weight: bold;
+.header-btn.ghost {
+	background: #ffffff;
+	color: #475569;
+	border: 1rpx solid #e2e8f0;
+}
+
+.header-btn.primary {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: #ffffff;
-	margin-bottom: 8rpx;
-	text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.3);
 }
 
-.stats-subtitle {
-	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.9);
+.panel-wrapper {
+	margin: 0 30rpx 10rpx;
 }
 
-.stats-grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 20rpx;
+.filter-extra {
+	margin-top: 12rpx;
+	display: flex;
+	gap: 12rpx;
 }
 
-.stat-card {
-	position: relative;
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(10rpx);
-	border-radius: 20rpx;
-	padding: 30rpx 25rpx;
+.extra-item {
+	flex: 1;
+	background: #f8fafc;
+	border-radius: 12rpx;
+	padding: 16rpx 20rpx;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	overflow: hidden;
-	border: 1rpx solid rgba(255, 255, 255, 0.2);
+	gap: 4rpx;
 }
 
-.stat-value {
-	font-size: 48rpx;
-	font-weight: bold;
-	color: #ffffff;
-	margin-bottom: 8rpx;
-	text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
-	font-family: 'DIN Alternate', 'Arial', sans-serif;
+.extra-item.selectable {
+	border: 1rpx solid #e2e8f0;
 }
 
-.stat-label {
+.extra-label {
 	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.9);
+	color: #94a3b8;
 }
 
-.stat-icon {
-	position: absolute;
-	right: 15rpx;
-	top: 15rpx;
-	font-size: 40rpx;
-	opacity: 0.3;
-}
-
-.filter-tabs {
-	display: flex;
-	background-color: #FFFFFF;
-	padding: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-	position: sticky;
-	top: 0;
-	z-index: 100;
-}
-
-.tab-item {
-	flex: 1;
-	text-align: center;
-	padding: 15rpx 10rpx;
-	position: relative;
-}
-
-.tab-item.active .tab-text {
-	color: #667eea;
-	font-weight: bold;
-}
-
-.tab-item.active::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 40rpx;
-	height: 4rpx;
-	background-color: #667eea;
-	border-radius: 2rpx;
-}
-
-.tab-text {
+.extra-value {
 	font-size: 28rpx;
-	color: #666666;
+	color: #1f2937;
 }
 
-.tab-badge {
-	position: absolute;
-	top: 5rpx;
-	right: 10rpx;
-	background-color: #FF6B6B;
-	color: #FFFFFF;
-	font-size: 20rpx;
-	padding: 2rpx 8rpx;
-	border-radius: 10rpx;
-	min-width: 30rpx;
-	text-align: center;
+.filter-action-bar {
+	display: flex;
+	gap: 16rpx;
+	margin: 0 30rpx 16rpx;
+}
+
+.action-btn {
+	flex: 1;
+	height: 82rpx;
+	border-radius: 999rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28rpx;
+	font-weight: 600;
+}
+
+.action-btn.ghost {
+	background: #ffffff;
+	color: #475569;
+	border: 1rpx solid #e2e8f0;
+}
+
+.action-btn.primary {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+.result-meta {
+	margin: 0 30rpx 10rpx;
+	padding: 16rpx 20rpx;
+	background: #ffffff;
+	border-radius: 16rpx;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8rpx;
+	font-size: 26rpx;
+	color: #475569;
+}
+
+.meta-item {
+	color: #1f2937;
+}
+
+.meta-dot {
+	color: #cbd5e1;
 }
 
 .list-container {
@@ -1023,98 +956,129 @@ export default {
 	color: #999999;
 }
 
-.fab-button {
-	position: fixed;
-	right: 30rpx;
-	bottom: 100rpx;
-	width: 100rpx;
-	height: 100rpx;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	border-radius: 50%;
+.status-picker {
+	background: #ffffff;
+	border-top-left-radius: 24rpx;
+	border-top-right-radius: 24rpx;
+	padding: 32rpx 30rpx 40rpx;
+	min-height: 520rpx;
+}
+
+.picker-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 24rpx;
+}
+
+.picker-header .picker-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #111827;
+	display: block;
+}
+
+.picker-subtitle {
+	font-size: 24rpx;
+	color: #9CA3AF;
+}
+
+.picker-close {
+	font-size: 28rpx;
+	color: #cbd5e1;
+	padding: 6rpx 12rpx;
+}
+
+.status-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.status-chip {
+	display: flex;
+	align-items: center;
+	padding: 18rpx 20rpx;
+	border-radius: 18rpx;
+	background: #f8fafc;
+	border: 2rpx solid transparent;
+}
+
+.status-chip .chip-left {
+	margin-right: 16rpx;
+}
+
+.chip-icon {
+	font-size: 34rpx;
+}
+
+.chip-center {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.chip-label {
+	font-size: 28rpx;
+	color: #1f2937;
+	font-weight: 600;
+}
+
+.chip-desc {
+	font-size: 22rpx;
+	color: #94a3b8;
+	margin-top: 4rpx;
+}
+
+.chip-check {
+	font-size: 30rpx;
+	color: #5B77F9;
+}
+
+.status-chip.active {
+	background: rgba(91, 119, 249, 0.08);
+	border-color: #5B77F9;
+}
+
+.status-footer {
+	margin-top: 28rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.footer-info {
+	font-size: 26rpx;
+	color: #4b5563;
+}
+
+.footer-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.footer-actions .action {
+	flex: 1;
+	height: 80rpx;
+	border-radius: 999rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.4);
-	z-index: 1000;
+	font-size: 28rpx;
+	font-weight: 600;
 }
 
-.fab-icon {
-	font-size: 60rpx;
-	color: #FFFFFF;
-	font-weight: 300;
+.footer-actions .action.ghost {
+	background: #f8fafc;
+	color: #475569;
+	border: 1rpx solid #e2e8f0;
 }
 
-// 日期选择器弹窗
-.date-picker-popup {
-	background: white;
-	border-radius: 32rpx 32rpx 0 0;
-	
-	.picker-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 30rpx 40rpx;
-		border-bottom: 1rpx solid #ebedf0;
-		
-		.picker-cancel, .picker-confirm {
-			font-size: 28rpx;
-			color: #667eea;
-		}
-		
-		.picker-title {
-			font-size: 32rpx;
-			font-weight: bold;
-			color: #323233;
-		}
-	}
-	
-	.picker-body {
-		padding: 40rpx;
-		
-		.quick-filters {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 20rpx;
-			margin-bottom: 40rpx;
-			
-			.quick-filter-item {
-				padding: 15rpx 30rpx;
-				background: #f5f5f5;
-				border-radius: 40rpx;
-				font-size: 26rpx;
-				color: #646566;
-				
-				&.active {
-					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-					color: white;
-				}
-			}
-		}
-		
-		.custom-date-range {
-			.date-range-item {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 25rpx 0;
-				border-bottom: 1rpx solid #ebedf0;
-				
-				&:last-child {
-					border-bottom: none;
-				}
-				
-				.date-label {
-					font-size: 28rpx;
-					color: #323233;
-				}
-				
-				.date-value {
-					font-size: 28rpx;
-					color: #667eea;
-				}
-			}
-		}
-	}
+.footer-actions .action.primary {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.35);
 }
+
 </style>
 

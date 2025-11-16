@@ -102,6 +102,8 @@ exports.main = async (event, context) => {
         return await getCounts(data, wxContext)
       case 'getStats':
         return await getStats(data, wxContext)
+      case 'simulateBulk':
+        return await simulateBulk(data, wxContext)
       default:
         return {
           success: false,
@@ -115,6 +117,59 @@ exports.main = async (event, context) => {
       message: err.message || '操作失败'
     }
   }
+}
+
+// 批量模拟写入（用于测试）——允许自定义时间与完成状态，并更新库存
+async function simulateBulk(data, wxContext) {
+  const { records = [] } = data || {}
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error('records 不能为空')
+  }
+  const inserted = []
+  for (const r of records) {
+    const now = r.createTime ? new Date(r.createTime) : new Date()
+    const record = {
+      recordNo: r.recordNo,
+      status: r.status || 'completed',
+      items: r.items || [],
+      supplier: r.supplier || '',
+      operator: r.operator || '',
+      operatorId: r.operatorId || '',
+      operatorRole: r.operatorRole || '',
+      operatorSign: r.operatorSign || r.operator || '',
+      operatorSignTime: r.operatorSignTime ? new Date(r.operatorSignTime) : now,
+      reviewer: r.reviewer || '',
+      reviewerId: r.reviewerId || '',
+      reviewerSign: r.reviewerSign || r.reviewer || '',
+      reviewerSignTime: r.reviewerSignTime ? new Date(r.reviewerSignTime) : now,
+      rejectReason: '',
+      createTime: now,
+      updateTime: now,
+      completeTime: r.completeTime ? new Date(r.completeTime) : now
+    }
+    const res = await db.collection('in_records').add({ data: record })
+    inserted.push(res._id)
+    // 更新库存
+    for (const item of record.items) {
+      const specInfo = UnitConverter.parseSpecification(item.specification || item.spec)
+      await updateStock({
+        drugId: item.drugId,
+        drugName: item.drugName,
+        specification: item.specification || item.spec,
+        unit: item.unit,
+        manufacturer: item.manufacturer,
+        batch: item.batch,
+        productionDate: item.productionDate,
+        expireDate: item.expireDate,
+        quantity: item.quantity,
+        price: item.price || 0,
+        location: 'drug_storage',
+        action: 'in',
+        specInfo
+      })
+    }
+  }
+  return { success: true, message: '模拟入库完成', count: inserted.length, ids: inserted }
 }
 
 // 创建入库单

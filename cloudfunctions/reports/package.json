@@ -1,0 +1,12 @@
+{
+  "name": "reports",
+  "version": "1.0.0",
+  "description": "Reports generator for AK-PMS",
+  "main": "index.js",
+  "dependencies": {
+    "pdfkit": "^0.13.0"
+  }
+}
+
+
+

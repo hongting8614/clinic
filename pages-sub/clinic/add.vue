@@ -160,13 +160,29 @@
       <!-- 诊断 -->
       <view class="form-item">
         <view class="label required">诊断</view>
-        <input
-          v-model="form.diagnosis"
-          type="text"
-          placeholder="请输入初步诊断结果，例如：轻度头部挫伤"
-          maxlength="100"
-          class="input-uniform input-compact"
-        />
+        <view class="disease-input-wrapper">
+          <input
+            v-model="form.diagnosis"
+            type="text"
+            placeholder="请输入初步诊断结果，例如：轻度头部挫伤"
+            maxlength="100"
+            class="input-uniform input-compact"
+            @focus="onDiagnosisFocus"
+            @input="onDiagnosisInput"
+          />
+          <view v-if="showDiagnosisList && filteredDiagnosis.length > 0" class="disease-dropdown">
+            <scroll-view scroll-y class="disease-scroll">
+              <view 
+                v-for="it in filteredDiagnosis" 
+                :key="it"
+                class="disease-item"
+                @click="selectDiagnosis(it)"
+              >
+                {{ it }}
+              </view>
+            </scroll-view>
+          </view>
+        </view>
       </view>
 
       <!-- 疾病名称（带下拉列表） -->
@@ -200,12 +216,28 @@
       <!-- 处置 -->
       <view class="form-item">
         <view class="label required">处置</view>
-        <textarea
-          v-model="form.treatment"
-          placeholder="请输入处理措施，例如：伤口清洗消毒、冷敷"
-          maxlength="100"
-          class="textarea-small textarea-uniform"
-        ></textarea>
+        <view class="disease-input-wrapper">
+          <textarea
+            v-model="form.treatment"
+            placeholder="请输入处理措施，例如：伤口清洗消毒、冷敷"
+            maxlength="120"
+            class="textarea-small textarea-uniform"
+            @focus="onTreatmentFocus"
+            @input="onTreatmentInput"
+          ></textarea>
+          <view v-if="showTreatmentList && filteredTreatments.length > 0" class="disease-dropdown">
+            <scroll-view scroll-y class="disease-scroll">
+              <view 
+                v-for="it in filteredTreatments" 
+                :key="it"
+                class="disease-item"
+                @click="selectTreatment(it)"
+              >
+                {{ it }}
+              </view>
+            </scroll-view>
+          </view>
+        </view>
       </view>
       </view>
 
@@ -413,6 +445,95 @@ export default {
         { label: '否', value: 'clinic' },
         { label: '是', value: 'outcall' }
       ],
+      // 疾病→诊断与处置模板
+      diseaseTemplates: {
+        '扭伤': ['踝关节扭伤','腕关节扭伤','膝关节扭伤','肩关节扭伤','颈部肌肉拉伤','腰部肌筋膜拉伤','外侧副韧带拉伤'],
+        '擦伤': ['皮肤表浅擦伤','肘部擦伤','膝部擦伤','手掌擦伤','面部擦伤','小腿擦伤','躯干擦伤'],
+        '烫伤': ['Ⅰ度热烫伤','手部轻度烫伤','前臂轻度烫伤','躯干轻度烫伤','热液烫伤（表浅）','蒸汽烫伤（表浅）'],
+        '磕伤': ['软组织挫伤','头皮挫伤','膝部挫伤','前臂挫伤','小腿挫伤','肩部挫伤','足背挫伤'],
+        '冻伤': ['末端轻度冻伤','面部轻度冻伤','手指冻伤（表浅）','耳廓冻伤（表浅）','足趾冻伤（表浅）'],
+        '腹泻': ['急性胃肠炎','受凉所致腹泻','饮食不洁所致腹泻','功能性腹泻','旅游者腹泻'],
+        '头晕': ['体位性低血压','中暑轻型后遗症','疲劳性头晕','低血糖相关头晕','颈源性头晕可能'],
+        '头痛': ['紧张性头痛','外伤后轻度头痛','偏头痛样头痛（既往史）','感冒相关头痛','鼻窦炎相关头痛可能'],
+        '感冒': ['上呼吸道感染（轻）','风寒感冒','暑湿感冒','咽喉炎伴感冒','腺样体样症状可能'],
+        '脱臼': ['手指小关节脱位（已复位）','肩关节轻度半脱位（建议转诊）','髌骨半脱位可能'],
+        '骨折': ['疑似骨折（建议影像学检查）','手指末节疑似骨折','前臂疑似骨折','锁骨疑似骨折'],
+        '过敏': ['荨麻疹样皮疹','接触性皮炎','虫咬后过敏反应','花粉过敏样反应','食物相关过敏可能'],
+        '痛经': ['原发性痛经','寒凝血瘀型痛经','气滞血瘀型痛经'],
+        '测血压': ['血压偏高待复测','血压偏低伴轻度头晕','血压正常记录观察'],
+        '其他': ['一般外伤处理','非特异性不适，建议观察','情绪紧张相关不适']
+      },
+      treatmentTemplates: {
+        '扭伤': ['冷敷+弹性绷带加压包扎','制动抬高24-48h','必要时外固定并转诊','48小时后热敷功能锻炼'],
+        '擦伤': ['清创冲洗（盐水/3%双氧水）','碘伏消毒+无菌敷贴','必要时外用湿润烧伤膏','换药观察渗出感染'],
+        '烫伤': ['冷水冲洗15-20分钟','碘伏/湿润烧伤膏外用','无菌敷贴覆盖','避免刺破水疱并观察'],
+        '磕伤': ['局部冷敷+弹力绷带','碘伏消毒处理','必要时观察肿胀变化','超过48小时改热敷促进吸收'],
+        '冻伤': ['温水复温（37-40℃）','干燥保暖与保护','避免摩擦与再次受冷','必要时外用保护性敷贴'],
+        '腹泻': ['口服补液/葡萄糖粉剂一次','饮食清淡+观察','必要时解痉止泻','注意补盐与复诊提示'],
+        '头晕': ['测血压、观察休息','口服葡萄糖粉剂一次','必要时对症处理','避免剧烈运动与久站'],
+        '头痛': ['对症止痛（布洛芬一次）','补液与休息','观察诱因与复诊建议','避免强光久屏使用'],
+        '感冒': ['藿香正气水一次','对症退热镇痛（布洛芬一次）','多饮水休息','含服草珊瑚/板蓝根冲剂'],
+        '脱臼': ['制动固定+冷敷','建议影像学及专科处理','避免自行反复活动'],
+        '骨折': ['制动固定+冷敷','立即转诊影像学检查','必要时止痛处理'],
+        '过敏': ['口服氯雷他定一次','外用红肿冷敷','观察呼吸道症状','避免继续接触可疑过敏原'],
+        '痛经': ['热敷腹部、休息','必要时对症解痉','注意保暖与规律作息'],
+        '测血压': ['复测并记录','异常者建议随访或转诊','生活方式指导'],
+        '其他': ['对症观察+健康教育','必要时随访']
+      },
+      // 主诉（症状）模板
+      complaintTemplates: {
+        '扭伤': '扭伤后局部疼痛肿胀，活动受限',
+        '擦伤': '皮肤表浅擦伤，轻度渗血/疼痛',
+        '烫伤': '热液/蒸汽烫伤，局部红肿灼痛',
+        '磕伤': '碰撞致局部疼痛肿胀',
+        '冻伤': '受寒后局部麻木疼痛，皮肤颜色改变',
+        '腹泻': '近一天腹泻多次，伴轻度腹痛/乏力',
+        '头晕': '阵发性头晕，伴乏力/站立不稳',
+        '头痛': '持续性头痛，紧张诱发明显',
+        '感冒': '咳嗽流涕咽痛，乏力/低热',
+        '脱臼': '外伤后关节畸形疼痛，活动受限',
+        '骨折': '外伤后局部肿胀疼痛，活动受限',
+        '过敏': '全身/局部皮疹瘙痒，接触史阳性',
+        '痛经': '经期下腹阵发性疼痛',
+        '测血压': '测血压复查，无明显不适',
+        '中暑': '户外暴晒后头晕乏力出汗增多',
+        '咽喉痛': '咽部疼痛，吞咽不适',
+        '皮疹': '皮疹伴瘙痒，抓挠后加重',
+        '牙痛': '患牙疼痛，冷热刺激明显',
+        '关节痛': '关节活动痛，活动后加重'
+      },
+      // 注意事项/复诊提示（按疾病自动附加到处置）
+      treatmentCautions: {
+        '腹泻': [
+          '补液：小口频饮，注意补盐',
+          '清淡饮食，避免油腻辛辣',
+          '48小时未缓解或伴高热/血便请及时复诊'
+        ],
+        '头晕': [
+          '休息，避免久站/剧烈运动',
+          '监测血压与症状变化',
+          '症状持续或加重请复诊'
+        ],
+        '头痛': [
+          '注意休息与补水',
+          '减少长时间屏幕与强光刺激',
+          '频繁发作或伴呕吐/视物模糊请复诊'
+        ],
+        '感冒': [
+          '多饮水休息，注意保暖与口罩礼仪',
+          '对症用药后观察',
+          '发热＞38.5℃或持续超过3天请复诊'
+        ]
+      },
+      // 常用药品（口服/外用一次）
+      drugSuggestionList: [
+        '棉签','碘伏','海诺创可贴','云南白药创可贴','一次性乳胶手套','纱布块','3%过氧化氢消毒液',
+        '余氯试纸','葡萄糖粉剂','利多卡因气雾剂','消旋山莨菪碱片','甲氧氯普胺片','诺氟沙星胶囊',
+        '维U颠茄铝胶囊','草珊瑚含片','氯芬黄敏片','布洛芬缓释胶囊','多潘立酮片','速效救心丸',
+        '脱敏胶带','盐水清洗液','一次性吸氧管','氧气袋','红霉素眼膏','左氧氟沙星滴眼液',
+        '藿香正气水','板蓝根颗粒','无菌敷贴','外科口罩','湿润烧伤膏','氯雷他定片（开瑞坦）',
+        '金士康和盐水清洗液'
+      ],
       form: {
         visitDateTime: '',
         name: '',
@@ -473,6 +594,11 @@ export default {
       ],
       filteredDiseases: [],
       showDiseaseList: false,
+      // 诊断/处置下拉
+      filteredDiagnosis: [],
+      showDiagnosisList: false,
+      filteredTreatments: [],
+      showTreatmentList: false,
       // 年龄输入焦点（用于强制弹出数字键盘）
       ageFocus: false,
       // 园区常用地点词库（来自园区运营文件与现场点位）
@@ -680,12 +806,140 @@ export default {
       if (this.filteredDiseases.length > 0) {
         this.showDiseaseList = true;
       }
+      // 精确匹配时载入模板
+      const exact = this.diseaseOptions.find(d => d === this.form.diseaseName);
+      if (exact) {
+        this.loadTemplatesForDisease(exact);
+      }
     },
 
     // 选择疾病
     selectDisease(disease) {
       this.form.diseaseName = disease;
       this.showDiseaseList = false;  // 选择后隐藏列表
+      this.loadTemplatesForDisease(disease);
+      this.autoFillByDisease(disease);
+    },
+    // 依据疾病载入诊断与处置模板
+    loadTemplatesForDisease(disease) {
+      const diag = this.diseaseTemplates?.[disease] || [];
+      const treat = this.treatmentTemplates?.[disease] || [];
+      this.filteredDiagnosis = diag;
+      this.filteredTreatments = treat;
+    },
+    // 自动按疾病填入主诉/诊断/处置（可编辑）
+    autoFillByDisease(disease) {
+      const complaint = this.complaintTemplates?.[disease];
+      const diag = (this.diseaseTemplates?.[disease] || [])[0];
+      const treats = (this.treatmentTemplates?.[disease] || []).slice(0, 2);
+      // 附加注意事项/复诊提示
+      const cautions = this.treatmentCautions?.[disease] || [];
+      const merged = [];
+      const pushUnique = (arr) => {
+        arr.forEach(t => {
+          if (t && !merged.includes(t)) merged.push(t);
+        });
+      };
+      pushUnique(treats);
+      pushUnique(cautions);
+      if (complaint) this.form.chiefComplaint = complaint;
+      if (diag) this.form.diagnosis = diag;
+      if (merged.length) this.form.treatment = merged.join('；');
+    },
+    // 诊断输入与选择
+    onDiagnosisFocus() {
+      if (!this.form.diagnosis || this.form.diagnosis.trim() === '') {
+        const src = this.diseaseTemplates?.[this.form.diseaseName] || [];
+        this.filteredDiagnosis = src;
+        this.showDiagnosisList = src.length > 0;
+      }
+    },
+    onDiagnosisInput() {
+      const src = this.diseaseTemplates?.[this.form.diseaseName] || [];
+      const text = (this.form.diagnosis || '').trim().toLowerCase();
+      if (!text) {
+        this.filteredDiagnosis = src;
+        this.showDiagnosisList = src.length > 0;
+        return;
+      }
+      this.filteredDiagnosis = src.filter(s => s.toLowerCase().includes(text));
+      this.showDiagnosisList = this.filteredDiagnosis.length > 0;
+    },
+    selectDiagnosis(text) {
+      this.form.diagnosis = text;
+      this.showDiagnosisList = false;
+    },
+    // 处置输入与选择
+    onTreatmentFocus() {
+      if (!this.form.treatment || this.form.treatment.trim() === '') {
+        const src = this.treatmentTemplates?.[this.form.diseaseName] || [];
+        this.filteredTreatments = src;
+        this.showTreatmentList = src.length > 0;
+      }
+    },
+    onTreatmentInput() {
+      const src = this.treatmentTemplates?.[this.form.diseaseName] || [];
+      const text = (this.form.treatment || '').trim().toLowerCase();
+      if (!text) {
+        this.filteredTreatments = src;
+        this.showTreatmentList = src.length > 0;
+        return;
+      }
+      this.filteredTreatments = src.filter(s => s.toLowerCase().includes(text));
+      this.showTreatmentList = this.filteredTreatments.length > 0;
+    },
+    selectTreatment(text) {
+      this.form.treatment = text;
+      this.showTreatmentList = false;
+    },
+    appendTreatment(token) {
+      const base = (this.form.treatment || '').trim();
+      this.form.treatment = base ? `${base}；${token}` : token;
+    },
+    // —— 药品标签：与园区库存联动 —— //
+    normalizeText(text) {
+      try {
+        return String(text || '').toLowerCase().replace(/\\s+/g, '');
+      } catch (e) {
+        return '';
+      }
+    },
+    async ensureStockLoaded() {
+      if (!this.filteredDrugs || this.filteredDrugs.length === 0) {
+        try {
+          await this.loadLocationDrugs();
+        } catch (e) {}
+      }
+    },
+    findDrugByName(name) {
+      const target = this.normalizeText(name);
+      const inList = (list) => {
+        return (list || []).find(d => {
+          const n1 = this.normalizeText(d.name || d.drugName);
+          const n2 = this.normalizeText(d.specification || d.spec);
+          return n1.includes(target) || target.includes(n1) || n2.includes(target);
+        });
+      };
+      let found = inList(this.filteredDrugs);
+      if (!found) found = inList(this.allDrugs);
+      return found;
+    },
+    async onDrugChip(name) {
+      // 1) 先附加“（一次）”到处置文本
+      this.appendTreatment(`${name}（一次）`);
+      // 2) 加载当前园区库存，并尝试选中对应药品
+      await this.ensureStockLoaded();
+      const drug = this.findDrugByName(name);
+      if (drug && drug._id) {
+        try {
+          await this.onDrugSelect(drug);
+          uni.showToast({ title: `已选中药品：${drug.name}`, icon: 'none' });
+        } catch (e) {
+          // 选中失败不影响处置文本
+        }
+      } else {
+        uni.showToast({ title: '当前园区暂无该药库存', icon: 'none' });
+      }
     },
 
     // 恢复上次选择的园区
@@ -1035,6 +1289,8 @@ export default {
               icon: 'success'
             });
             setTimeout(() => {
+              // 确保离开页面前也重置一次，避免热更新或返回后残留
+              this.resetForm();
               uni.navigateBack();
             }, 1500);
           }
@@ -1908,6 +2164,22 @@ export default {
       }
     }
   }
+}
+
+// 处置药品建议 chips
+.drug-chip-list {
+  margin-top: 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+.drug-chip {
+  padding: 10rpx 14rpx;
+  background: #f4f7ff;
+  border: 2rpx solid #c7d2fe;
+  color: #334155;
+  border-radius: 999rpx;
+  font-size: 24rpx;
 }
 
 // 受伤地点输入包装器

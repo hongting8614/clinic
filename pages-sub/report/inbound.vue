@@ -1,60 +1,67 @@
 <template>
 	<view class="container">
-		<!-- 报表头部 -->
-		<view class="report-header">
-			<view class="header-title">入库单报表</view>
-			<view class="header-subtitle">{{ currentDate }}</view>
-		</view>
-		
-		<!-- 筛选条件 -->
-		<view class="filter-section">
-			<view class="filter-row">
-				<view class="filter-item" @tap="showDatePicker = true">
-					<text class="filter-label">📅 时间范围</text>
-					<text class="filter-value">{{ dateRangeText }}</text>
-				</view>
+		<!-- 页面头部 -->
+		<view class="page-header">
+			<view>
+				<text class="page-title">入库统计报表</text>
+				<text class="page-subtitle">Inbound Report Overview</text>
 			</view>
-			<view class="filter-row">
-				<view class="filter-item half" @tap="showSupplierPicker = true">
-					<text class="filter-label">供应商</text>
-					<text class="filter-value">{{ selectedSupplier || '全部' }}</text>
+			<view class="page-actions">
+				<view class="header-btn" @tap="simulateInboundData">
+					<text class="btn-icon">⚙️</text>
+					<text class="btn-text">生成模拟数据</text>
 				</view>
-				<view class="filter-item half" @tap="showOperatorPicker = true">
-					<text class="filter-label">操作人</text>
-					<text class="filter-value">{{ selectedOperator || '全部' }}</text>
-				</view>
-			</view>
-			<view class="filter-actions">
-				<view class="action-btn reset" @tap="resetFilters">
-					<text>重置</text>
-				</view>
-				<view class="action-btn search" @tap="generateReport">
-					<text>生成报表</text>
+				<view class="header-btn primary" @tap="generateReport">
+					<text class="btn-icon">🔄</text>
+					<text class="btn-text">刷新报表</text>
 				</view>
 			</view>
 		</view>
 		
-		<!-- 统计汇总 -->
-		<view v-if="reportData" class="summary-section">
-			<view class="summary-title">📊 统计汇总</view>
-			<view class="summary-grid">
-				<view class="summary-card">
-					<text class="summary-value">{{ reportData.totalRecords }}</text>
-					<text class="summary-label">入库单数</text>
+		<filter-panel
+			class="filter-panel-wrapper"
+			:show-date="true"
+			:start-date="startDate"
+			:end-date="endDate"
+			:quick-filters="quickFilters"
+			:active-quick-filter="selectedQuickFilter"
+			:show-search-button="false"
+			@update:startDate="onStartDateUpdate"
+			@update:endDate="onEndDateUpdate"
+			@quick-filter="selectQuickFilter"
+			@date-change="onDateChange"
+			@search="generateReport"
+		>
+			<view class="filter-extra">
+				<view class="extra-item">
+					<text class="extra-label">药品名称</text>
+					<input class="extra-input" v-model="drugName" placeholder="输入药品名称" @confirm="generateReport" />
 				</view>
-				<view class="summary-card">
-					<text class="summary-value">{{ reportData.totalDrugs }}</text>
-					<text class="summary-label">药品种类</text>
-				</view>
-				<view class="summary-card">
-					<text class="summary-value">{{ reportData.totalQuantity }}</text>
-					<text class="summary-label">总数量</text>
-				</view>
-				<view class="summary-card">
-					<text class="summary-value">¥{{ reportData.totalAmount }}</text>
-					<text class="summary-label">总金额</text>
-				</view>
+				<view class="extra-item selectable" @tap="showSupplierPicker = true">
+					<text class="extra-label">供应商</text>
+					<text class="extra-value">{{ selectedSupplier || '全部' }}</text>
 			</view>
+				<view class="extra-item selectable" @tap="showOperatorPicker = true">
+					<text class="extra-label">操作人</text>
+					<text class="extra-value">{{ selectedOperator || '全部' }}</text>
+				</view>
+				</view>
+		</filter-panel>
+		
+		<view class="filter-action-bar">
+			<view class="action-btn ghost" @tap="resetFilters">重置</view>
+			<view class="action-btn primary" @tap="generateReport">生成报表</view>
+			</view>
+		
+		<!-- 精简统计 -->
+		<view v-if="reportData" class="result-meta">
+			<text class="meta-item">记录数：{{ reportData.totalRecords }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">药品种类：{{ reportData.totalDrugs }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">总数量：{{ reportData.totalQuantity }}</text>
+			<text class="meta-dot">•</text>
+			<text class="meta-item">总金额：¥{{ reportData.totalAmount }}</text>
 		</view>
 		
 		<!-- 报表表格 -->
@@ -91,6 +98,7 @@
 			<text class="empty-icon">📊</text>
 			<text class="empty-text">暂无数据</text>
 			<text class="empty-hint">请选择筛选条件后生成报表</text>
+			<view class="mock-btn" @tap="simulateInboundData">生成模拟入库数据</view>
 		</view>
 		
 		<!-- 导出按钮 -->
@@ -109,42 +117,6 @@
 			</view>
 		</view>
 		
-		<!-- 日期选择器 -->
-		<u-popup v-model="showDatePicker" mode="bottom">
-			<view class="date-picker-popup">
-				<view class="picker-header">
-					<text class="picker-cancel" @tap="showDatePicker = false">取消</text>
-					<text class="picker-title">选择时间范围</text>
-					<text class="picker-confirm" @tap="confirmDateRange">确定</text>
-				</view>
-				<view class="picker-body">
-					<view class="quick-filters">
-						<view 
-							v-for="(item, index) in quickFilters" 
-							:key="index"
-							:class="['quick-filter-item', { active: selectedQuickFilter === item.value }]"
-							@tap="selectQuickFilter(item.value)"
-						>
-							{{ item.label }}
-						</view>
-					</view>
-					<view class="custom-date-range">
-						<view class="date-range-item">
-							<text class="date-label">开始日期</text>
-							<picker mode="date" :value="startDate" @change="onStartDateChange">
-								<view class="date-value">{{ startDate || '请选择' }}</view>
-							</picker>
-						</view>
-						<view class="date-range-item">
-							<text class="date-label">结束日期</text>
-							<picker mode="date" :value="endDate" @change="onEndDateChange">
-								<view class="date-value">{{ endDate || '请选择' }}</view>
-							</picker>
-						</view>
-					</view>
-				</view>
-			</view>
-		</u-popup>
 		
 		<!-- 供应商选择器 -->
 		<u-popup v-model="showSupplierPicker" mode="bottom">
@@ -191,7 +163,12 @@
 </template>
 
 <script>
+import FilterPanel from '@/components/filter-panel/index.vue'
+
 export default {
+	components: {
+		FilterPanel
+	},
 	data() {
 		return {
 			currentDate: '',
@@ -200,12 +177,12 @@ export default {
 			// 筛选条件
 			startDate: '',
 			endDate: '',
+			drugName: '',
 			selectedSupplier: '',
 			selectedOperator: '',
 			selectedQuickFilter: 'month',
 			
 			// 选择器显示状态
-			showDatePicker: false,
 			showSupplierPicker: false,
 			showOperatorPicker: false,
 			
@@ -223,38 +200,25 @@ export default {
 		}
 	},
 	
-	computed: {
-		dateRangeText() {
-			if (!this.startDate && !this.endDate) {
-				return '请选择'
-			}
-			if (this.selectedQuickFilter === 'today') {
-				return '今天'
-			}
-			if (this.selectedQuickFilter === 'week') {
-				return '本周'
-			}
-			if (this.selectedQuickFilter === 'month') {
-				return '本月'
-			}
-			if (this.selectedQuickFilter === 'quarter') {
-				return '本季度'
-			}
-			if (this.selectedQuickFilter === 'year') {
-				return '本年'
-			}
-			if (this.startDate && this.endDate) {
-				return `${this.startDate} ~ ${this.endDate}`
-			}
-			return '请选择'
-		}
-	},
-	
 	onLoad() {
 		this.initPage()
 	},
 	
 	methods: {
+		onStartDateUpdate(val) {
+			this.startDate = val
+		},
+
+		onEndDateUpdate(val) {
+			this.endDate = val
+		},
+
+		onDateChange({ start, end }) {
+			this.startDate = start || ''
+			this.endDate = end || ''
+			this.selectedQuickFilter = 'custom'
+		},
+
 		initPage() {
 			const now = new Date()
 			this.currentDate = this.formatDateTime(now)
@@ -264,6 +228,78 @@ export default {
 			
 			// 自动生成报表
 			this.generateReport()
+		},
+			
+			// 批量模拟数据（今天/近7天/近30天/本月）
+			async simulateRange(range = 'week') {
+				const userInfo = uni.getStorageSync('userInfo') || { name: '测试用户', _id: 'tester' }
+				const operators = ['张三','李四','王五','赵六', userInfo.name]
+				const reviewers = ['复核A','复核B','复核C']
+				const drugs = [
+					{ id: 'd1', name: '布洛芬缓释胶囊', spec: '0.3g×20粒/盒', unit: '盒', m: 'XX药业', price: 16 },
+					{ id: 'd2', name: '感冒灵颗粒', spec: '10g×10袋/盒', unit: '盒', m: 'YY药业', price: 12 },
+					{ id: 'd3', name: '阿莫西林胶囊', spec: '0.25g×24粒/盒', unit: '盒', m: 'ZZ医药', price: 15 },
+					{ id: 'd4', name: '维生素C片', spec: '0.1g×100片/瓶', unit: '瓶', m: '健益制药', price: 8 }
+				]
+				const suppliers = ['XX医药公司','YY药业','ZZ医药','健益制药']
+				
+				const today = new Date()
+				let start = new Date(today)
+				if (range === 'week') start.setDate(today.getDate() - 6)
+				else if (range === 'month') start = new Date(today.getFullYear(), today.getMonth(), 1)
+				else if (range === '30') start.setDate(today.getDate() - 29)
+				
+				const records = []
+				for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+					const count = 1 + Math.floor(Math.random() * 3)
+					for (let i = 0; i < count; i++) {
+						const op = operators[Math.floor(Math.random()*operators.length)]
+						const rv = reviewers[Math.floor(Math.random()*reviewers.length)]
+						const rNo = `SIM${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${String(i+1).padStart(2,'0')}`
+						const itemCount = 1 + Math.floor(Math.random()*3)
+						const items = []
+						for (let j = 0; j < itemCount; j++) {
+							const dd = drugs[Math.floor(Math.random()*drugs.length)]
+							items.push({
+								drugId: dd.id,
+								drugName: dd.name,
+								specification: dd.spec,
+								unit: dd.unit,
+								manufacturer: dd.m,
+								batch: `B${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`,
+								expireDate: `${d.getFullYear()+1}-12-31`,
+								quantity: 10 + Math.floor(Math.random()*30),
+								price: dd.price
+							})
+						}
+						records.push({
+							recordNo: rNo,
+							supplier: suppliers[Math.floor(Math.random()*suppliers.length)],
+							operator: op,
+							operatorId: op,
+							operatorSign: `签名-${op}`,
+							operatorSignTime: d.toISOString(),
+							reviewer: rv,
+							reviewerId: rv,
+							reviewerSign: `签名-${rv}`,
+							reviewerSignTime: d.toISOString(),
+							createTime: d.toISOString(),
+							completeTime: d.toISOString(),
+							status: 'completed',
+							items
+						})
+					}
+				}
+				try {
+					uni.showLoading({ title: '生成模拟数据...', mask: true })
+					await this.$api.callFunction('inRecords', { action: 'simulateBulk', data: { records } })
+					uni.hideLoading()
+					uni.showToast({ title: '已生成', icon: 'success' })
+					this.generateReport()
+				} catch (e) {
+					uni.hideLoading()
+					uni.showToast({ title: '生成失败', icon: 'none' })
+				}
 		},
 		
 		// 日期筛选
@@ -276,46 +312,39 @@ export default {
 					this.startDate = this.formatDate(today)
 					this.endDate = this.formatDate(today)
 					break
-				case 'week':
+				case 'week': {
 					const weekStart = new Date(today)
 					weekStart.setDate(today.getDate() - today.getDay())
 					this.startDate = this.formatDate(weekStart)
 					this.endDate = this.formatDate(today)
 					break
-				case 'month':
+				}
+				case 'month': {
 					const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
 					this.startDate = this.formatDate(monthStart)
 					this.endDate = this.formatDate(today)
 					break
-				case 'quarter':
+				}
+				case 'quarter': {
 					const quarter = Math.floor(today.getMonth() / 3)
 					const quarterStart = new Date(today.getFullYear(), quarter * 3, 1)
 					this.startDate = this.formatDate(quarterStart)
 					this.endDate = this.formatDate(today)
 					break
-				case 'year':
+				}
+				case 'year': {
 					const yearStart = new Date(today.getFullYear(), 0, 1)
 					this.startDate = this.formatDate(yearStart)
 					this.endDate = this.formatDate(today)
 					break
+				}
 				case 'custom':
-					// 保持当前日期不变
+					// 自定义区间由日期选择回调控制
 					break
 			}
-		},
-		
-		onStartDateChange(e) {
-			this.startDate = e.detail.value
-			this.selectedQuickFilter = 'custom'
-		},
-		
-		onEndDateChange(e) {
-			this.endDate = e.detail.value
-			this.selectedQuickFilter = 'custom'
-		},
-		
-		confirmDateRange() {
-			this.showDatePicker = false
+			if (value !== 'custom') {
+				this.generateReport()
+			}
 		},
 		
 		confirmSupplier() {
@@ -327,9 +356,11 @@ export default {
 		},
 		
 		resetFilters() {
-			this.selectQuickFilter('month')
+			this.drugName = ''
 			this.selectedSupplier = ''
 			this.selectedOperator = ''
+			this.selectQuickFilter('month')
+			this.generateReport()
 		},
 		
 		// 生成报表
@@ -350,6 +381,7 @@ export default {
 					data: {
 						startDate: this.startDate,
 						endDate: this.endDate,
+						drugName: (this.drugName || '').trim(),
 						supplier: this.selectedSupplier === '全部' ? '' : this.selectedSupplier,
 						operator: this.selectedOperator === '全部' ? '' : this.selectedOperator
 					}
@@ -373,17 +405,58 @@ export default {
 		
 		// 导出功能
 		exportExcel() {
-			uni.showToast({
-				title: '导出Excel功能开发中',
-				icon: 'none'
+			if (!this.reportData) return
+			// 表头：北京欢乐谷医务室药材入库表
+			let csv = `北京欢乐谷医务室药材入库表\n`
+			csv += `时间范围,${this.startDate}~${this.endDate}\n`
+			csv += `入库单号,日期,供应商,操作人(签名),品种,数量,金额\n`
+			this.reportData.records.forEach(r => {
+				const sign = r.operatorSignText || r.operator || ''
+				csv += `${r.recordNo},${this.formatDate(new Date(r.createTime))},${r.supplier || ''},${sign},${r.drugCount},${r.totalQuantity},${r.totalAmount}\n`
 			})
+			
+			try {
+				const fs = wx.getFileSystemManager()
+				const filePath = `${wx.env.USER_DATA_PATH}/入库报表_${Date.now()}.csv`
+				fs.writeFile({
+					filePath, data: csv, encoding: 'utf8',
+					success: () => wx.openDocument({ filePath, fileType: 'csv', showMenu: true })
+				})
+			} catch (e) {
+				uni.setClipboardData({ data: csv, success: () => uni.showToast({ title: '已复制CSV文本', icon: 'success' }) })
+			}
 		},
 		
-		exportPDF() {
-			uni.showToast({
-				title: '导出PDF功能开发中',
-				icon: 'none'
-			})
+		async exportPDF() {
+			if (!this.reportData) return
+			try {
+				uni.showLoading({ title: '导出中...', mask: true })
+				const res = await this.$api.callFunction('reports', {
+					action: 'exportInboundPDF',
+					data: {
+						title: '北京欢乐谷医务室药材入库表',
+						startDate: this.startDate,
+						endDate: this.endDate,
+						drugName: (this.drugName || '').trim(),
+						supplier: this.selectedSupplier === '全部' ? '' : this.selectedSupplier,
+						operator: this.selectedOperator === '全部' ? '' : this.selectedOperator
+					}
+				})
+				uni.hideLoading()
+				if (res && res.success && res.fileID) {
+					const dl = await wx.cloud.downloadFile({ fileID: res.fileID })
+					if (dl && dl.tempFilePath) {
+						wx.openDocument({ filePath: dl.tempFilePath, fileType: 'pdf', showMenu: true })
+					} else {
+						uni.showToast({ title: '下载失败', icon: 'none' })
+					}
+				} else {
+					uni.showToast({ title: '生成失败', icon: 'none' })
+				}
+			} catch (err) {
+				uni.hideLoading()
+				uni.showToast({ title: '导出失败', icon: 'none' })
+			}
 		},
 		
 		printReport() {
@@ -391,6 +464,35 @@ export default {
 				title: '打印功能开发中',
 				icon: 'none'
 			})
+		},
+		
+		// 生成模拟数据（测试用：签名使用登录名文本）
+		async simulateInboundData() {
+			try {
+				const userInfo = uni.getStorageSync('userInfo') || { name: '测试用户', _id: 'tester' }
+				const now = new Date()
+				const recordNo = `SIM${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${now.getTime().toString().slice(-4)}`
+				await this.$api.callFunction('inRecords', {
+					action: 'create',
+					data: {
+						recordNo,
+						supplier: '模拟供应商',
+						operator: userInfo.name,
+						operatorId: userInfo._id,
+						operatorSign: userInfo.name, // 测试时用登录名替代签名
+						operatorSignTime: new Date(),
+						status: 'completed',
+						items: [
+							{ drugId: 'd1', drugName: '布洛芬缓释胶囊', specification: '0.3g×20粒/盒', unit: '盒', manufacturer: 'XX药业', batch: 'B202501', expireDate: '2026-12-31', quantity: 20, price: 16 },
+							{ drugId: 'd2', drugName: '感冒灵颗粒', specification: '10g×10袋/盒', unit: '盒', manufacturer: 'YY药业', batch: 'C202501', expireDate: '2026-06-30', quantity: 30, price: 12 }
+						]
+					}
+				})
+				uni.showToast({ title: '已生成模拟入库', icon: 'success' })
+			} catch (e) {
+				console.error(e)
+				uni.showToast({ title: '生成失败', icon: 'none' })
+			}
 		},
 		
 		viewDetail(id) {
@@ -421,6 +523,14 @@ export default {
 				totalDrugs: 45,
 				totalQuantity: 1250,
 				totalAmount: 58600.00,
+				byOperator: [
+					{ operator: '张三', totalAmount: 23000 },
+					{ operator: '李四', totalAmount: 18000 }
+				],
+				bySupplier: [
+					{ supplier: 'XX医药公司', totalAmount: 21000 },
+					{ supplier: 'YY药业', totalAmount: 16000 }
+				],
 				records: [
 					{
 						_id: 'in_001',
@@ -467,133 +577,152 @@ export default {
 }
 
 // 报表头部
-.report-header {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding: 40rpx 30rpx;
-	
-	.header-title {
+.page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 40rpx 30rpx 20rpx;
+	margin: 0 0 10rpx;
+	background: linear-gradient(120deg, #eef2ff 0%, #fdf2ff 100%);
+}
+
+.page-title {
 		font-size: 40rpx;
 		font-weight: bold;
-		color: white;
-		margin-bottom: 10rpx;
-	}
-	
-	.header-subtitle {
+	color: #111827;
+	display: block;
+}
+
+.page-subtitle {
+	font-size: 24rpx;
+	color: #94a3b8;
+	margin-top: 6rpx;
+	text-transform: uppercase;
+	letter-spacing: 2rpx;
+}
+
+.page-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.header-btn {
+	display: flex;
+	align-items: center;
+	gap: 6rpx;
+	padding: 16rpx 26rpx;
+	border-radius: 999rpx;
+	border: 1rpx solid rgba(102,126,234,0.4);
+	color: #4c1d95;
 		font-size: 26rpx;
-		color: rgba(255, 255, 255, 0.8);
+	background: #ffffff;
+	
+	&.primary {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: #ffffff;
+		border: none;
 	}
 }
 
-// 筛选条件
-.filter-section {
-	background: white;
-	padding: 30rpx;
-	margin: 20rpx 30rpx;
+.btn-icon {
+	font-size: 28rpx;
+}
+
+.btn-text {
+	font-size: 24rpx;
+}
+
+.result-meta {
+	margin: 0 30rpx 20rpx;
+	padding: 20rpx 24rpx;
 	border-radius: 16rpx;
-	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-	
-	.filter-row {
-		display: flex;
-		gap: 20rpx;
-		margin-bottom: 20rpx;
-		
-		&:last-child {
-			margin-bottom: 0;
-		}
-		
-		.filter-item {
-			flex: 1;
+	background: #f8fafc;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8rpx;
+	font-size: 26rpx;
+	color: #475569;
+}
+
+.meta-item {
+	color: #1f2937;
+}
+
+.meta-dot {
+	color: #cbd5e1;
+}
+
+// 统计汇总
+.filter-panel-wrapper {
+	margin: 0 30rpx 20rpx;
+}
+
+.filter-extra {
+	margin-top: 14rpx;
 			display: flex;
+	flex-wrap: wrap;
+	gap: 12rpx;
 			align-items: center;
-			justify-content: space-between;
-			padding: 25rpx;
+}
+
+.extra-item {
+	flex: 1;
+	min-width: 200rpx;
 			background: #f7f8fa;
+	padding: 18rpx 20rpx;
 			border-radius: 12rpx;
-			
-			&.half {
-				flex: 1;
-			}
-			
-			.filter-label {
+	display: flex;
+	flex-direction: column;
+	gap: 6rpx;
+}
+
+.extra-item.selectable {
+	border: 1rpx solid #e2e8f0;
+}
+
+.extra-label {
+	font-size: 24rpx;
+	color: #94a3b8;
+}
+
+.extra-input,
+.extra-value {
 				font-size: 28rpx;
-				color: #646566;
-			}
-			
-			.filter-value {
-				font-size: 28rpx;
-				color: #323233;
-			}
-		}
+	color: #1f2937;
 	}
 	
-	.filter-actions {
+.filter-action-bar {
 		display: flex;
-		gap: 20rpx;
-		margin-top: 30rpx;
+	gap: 16rpx;
+	margin: 0 30rpx 20rpx;
+}
 		
 		.action-btn {
 			flex: 1;
 			height: 80rpx;
+	border-radius: 999rpx;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border-radius: 40rpx;
 			font-size: 28rpx;
-			
-			&.reset {
-				background: #f7f8fa;
-				color: #646566;
-			}
-			
-			&.search {
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-				color: white;
-			}
-		}
-	}
+	font-weight: 600;
 }
 
-// 统计汇总
-.summary-section {
-	background: white;
-	padding: 30rpx;
-	margin: 0 30rpx 20rpx;
-	border-radius: 16rpx;
-	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-	
-	.summary-title {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #323233;
-		margin-bottom: 25rpx;
-	}
-	
-	.summary-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 20rpx;
-		
-		.summary-card {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 30rpx;
-			background: linear-gradient(135deg, #f7f8ff 0%, #f0f1ff 100%);
-			border-radius: 12rpx;
-			
-			.summary-value {
-				font-size: 36rpx;
-				font-weight: bold;
-				color: #667eea;
-				margin-bottom: 10rpx;
-			}
-			
-			.summary-label {
-				font-size: 24rpx;
-				color: #969799;
-			}
-		}
-	}
+.action-btn.ghost {
+	background: #f8fafc;
+	color: #475569;
+	border: 1rpx solid #e2e8f0;
+}
+
+.action-btn.primary {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.25);
+}
+
+.summary-section,
+.quick-stats {
+	display: none;
 }
 
 // 报表表格
@@ -675,6 +804,15 @@ export default {
 	.empty-hint {
 		font-size: 26rpx;
 		color: #c8c9cc;
+	}
+	
+	.mock-btn {
+		margin-top: 20rpx;
+		padding: 16rpx 24rpx;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: white;
+		border-radius: 12rpx;
+		font-size: 26rpx;
 	}
 }
 

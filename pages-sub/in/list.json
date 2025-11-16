@@ -1,0 +1,9 @@
+{
+	"navigationBarTitleText": "入库单列表",
+	"enablePullDownRefresh": false,
+	"usingComponents": {
+		"filter-panel": "../../components/filter-panel/index"
+	}
+}
+
+

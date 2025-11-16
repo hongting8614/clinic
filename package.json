@@ -1,5 +1,27 @@
 {
   "dependencies": {
+    "pngjs": "^7.0.0",
     "uview-plus": "^3.6.4"
-  }
+  },
+  "name": "ak-pms",
+  "version": "1.0.0",
+  "description": "> **北京欢乐谷医务室药品智能管理系统**   > Amusement park-Klinik Pharmacy Management System   > **版本**: v2.0 Final | **状态**: ✅ 100% 完成",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hongting8614/---.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hongting8614/---/issues"
+  },
+  "homepage": "https://github.com/hongting8614/---#readme"
 }

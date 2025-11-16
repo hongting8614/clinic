@@ -300,17 +300,53 @@ export default {
 		
 		// 导出功能
 		exportExcel() {
-			uni.showToast({
-				title: '导出Excel功能开发中',
-				icon: 'none'
+			if (!this.reportData) return
+			let csv = `北京欢乐谷医务室现库存表\n`
+			csv += `导出时间,${this.currentDate}\n`
+			csv += `药品名称,规格,库存,单位,状态,价值\n`
+			this.reportData.items.forEach(i => {
+				const status = this.getStatusText(i)
+				csv += `${i.drugName},${i.specification},${i.quantity},${i.unit},${status},${i.totalValue}\n`
 			})
+			try {
+				const fs = wx.getFileSystemManager()
+				const filePath = `${wx.env.USER_DATA_PATH}/现库存表_${Date.now()}.csv`
+				fs.writeFile({
+					filePath, data: csv, encoding: 'utf8',
+					success: () => wx.openDocument({ filePath, fileType: 'csv', showMenu: true })
+				})
+			} catch (e) {
+				uni.setClipboardData({ data: csv, success: () => uni.showToast({ title: '已复制CSV文本', icon: 'success' }) })
+			}
 		},
 		
-		exportPDF() {
-			uni.showToast({
-				title: '导出PDF功能开发中',
-				icon: 'none'
-			})
+		async exportPDF() {
+			if (!this.reportData) return
+			try {
+				uni.showLoading({ title: '导出中...', mask: true })
+				const res = await this.$api.callFunction('reports', {
+					action: 'exportStockPDF',
+					data: {
+						category: this.selectedCategory === '全部' ? '' : this.selectedCategory,
+						stockFilter: this.selectedStockFilter,
+						expiryFilter: this.selectedExpiryFilter
+					}
+				})
+				uni.hideLoading()
+				if (res && res.success && res.fileID) {
+					const dl = await wx.cloud.downloadFile({ fileID: res.fileID })
+					if (dl && dl.tempFilePath) {
+						wx.openDocument({ filePath: dl.tempFilePath, fileType: 'pdf', showMenu: true })
+					} else {
+						uni.showToast({ title: '下载失败', icon: 'none' })
+					}
+				} else {
+					uni.showToast({ title: '生成失败', icon: 'none' })
+				}
+			} catch (err) {
+				uni.hideLoading()
+				uni.showToast({ title: '导出失败', icon: 'none' })
+			}
 		},
 		
 		printReport() {

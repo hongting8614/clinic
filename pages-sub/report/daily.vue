@@ -186,7 +186,7 @@
           </view>
         </view>
         <view class="summary-grid">
-          <view class="summary-row" v-for="name in diseaseList" :key="'v-'+name">
+          <view class="summary-row" v-for="name in diseaseList" :key="name">
             <text class="summary-disease">{{ name }}</text>
             <text class="summary-count">{{ (visitorSummary && visitorSummary[name]) || 0 }}</text>
           </view>
@@ -203,7 +203,7 @@
           </view>
         </view>
         <view class="summary-grid">
-          <view class="summary-row" v-for="name in diseaseList" :key="'e-'+name">
+          <view class="summary-row" v-for="name in diseaseList" :key="name">
             <text class="summary-disease">{{ name }}</text>
             <text class="summary-count">{{ (employeeSummary && employeeSummary[name]) || 0 }}</text>
           </view>

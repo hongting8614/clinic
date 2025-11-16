@@ -19,41 +19,16 @@
 					<text class="label">操作人</text>
 					<text class="value">{{ operator }}</text>
 				</view>
-			</view>
+		</view>
 		<view class="info-row">
 			<view class="info-item full">
-				<text class="label">供应商</text>
-				<view class="supplier-input-wrapper">
-					<input 
-						class="input-value" 
-						v-model="supplier" 
-						placeholder="请输入供应商（选填）"
-						placeholder-class="placeholder"
-						@focus="onSupplierFocus"
-						@blur="onSupplierBlur"
-						@input="onSupplierInput"
-					/>
-					<!-- 供应商搜索结果 -->
-					<view v-if="showSupplierResult && supplierResults.length > 0" class="supplier-results">
-						<view 
-							v-for="(item, index) in supplierResults" 
-							:key="index"
-							class="supplier-result-item"
-							@tap="selectSupplier(item)"
-						>
-							<text class="supplier-name">{{ item.name }}</text>
-							<text class="supplier-arrow">›</text>
-						</view>
-					</view>
-					<!-- 未找到供应商 -->
-					<view v-if="showSupplierResult && supplier && supplierResults.length === 0" class="supplier-no-result">
-						<text class="no-result-text">未找到"{{ supplier }}"</text>
-						<view class="create-supplier-btn" @tap="createSupplier">
-							<text class="create-icon">+</text>
-							<text class="create-text">创建供应商档案</text>
-						</view>
-					</view>
-				</view>
+				<text class="label">备注</text>
+				<input 
+					class="input-value" 
+					v-model="remark" 
+					placeholder="请输入备注信息（选填）"
+					placeholder-class="placeholder"
+				/>
 			</view>
 		</view>
 		</view>
@@ -367,26 +342,21 @@ export default {
 	
 	data() {
 		return {
-			// 基本信息
-			recordNo: '',
-			currentDate: '',
-			operator: '',
-			supplier: '',
-			drugList: [],
-			operatorSign: '',
-			
-			// 药品搜索相关
-			searchKeyword: '',
-			searchFocused: false,
-			showSearchResult: false,
-			searchResults: [],
-			searchTimer: null,
-			isSearchingAPI: false,
-			
-			// 供应商搜索相关
-			showSupplierResult: false,
-			supplierResults: [],
-			supplierTimer: null,
+		// 基本信息
+		recordNo: '',
+		currentDate: '',
+		operator: '',
+		remark: '',
+		drugList: [],
+		operatorSign: '',
+		
+		// 药品搜索相关
+		searchKeyword: '',
+		searchFocused: false,
+		showSearchResult: false,
+		searchResults: [],
+		searchTimer: null,
+		isSearchingAPI: false,
 			
 			// 新建药品（内联表单）
 			showCreateForm: false,
@@ -742,123 +712,11 @@ export default {
 				icon: 'success',
 				duration: 1000
 			})
-			
-			// 振动反馈
-			wx.vibrateShort({ type: 'light' })
-		})
-		},
 		
-		// ========== 供应商搜索相关 ==========
-		onSupplierFocus() {
-			if (this.supplier) {
-				this.showSupplierResult = true
-			}
-		},
-		
-		onSupplierBlur() {
-			// 延迟隐藏，以便点击搜索结果
-			setTimeout(() => {
-				this.showSupplierResult = false
-			}, 200)
-		},
-		
-		onSupplierInput(e) {
-			const keyword = e.detail.value.trim()
-			
-			if (!keyword) {
-				this.supplierResults = []
-				this.showSupplierResult = false
-				return
-			}
-			
-			// 防抖搜索
-			if (this.supplierTimer) {
-				clearTimeout(this.supplierTimer)
-			}
-			
-			this.supplierTimer = setTimeout(() => {
-				this.searchSuppliers(keyword)
-			}, 300)
-		},
-		
-		async searchSuppliers(keyword) {
-			try {
-				const db = wx.cloud.database()
-				const result = await db.collection('suppliers')
-					.where({
-						name: db.RegExp({
-							regexp: keyword,
-							options: 'i'
-						})
-					})
-					.limit(10)
-					.get()
-				
-				this.supplierResults = result.data
-				this.showSupplierResult = true
-				
-			} catch (err) {
-				console.error('搜索供应商失败:', err)
-				this.supplierResults = []
-			}
-		},
-		
-		selectSupplier(item) {
-			this.supplier = item.name
-			this.supplierResults = []
-			this.showSupplierResult = false
-			
-			uni.showToast({
-				title: '已选择',
-				icon: 'success',
-				duration: 1000
-			})
-		},
-		
-		async createSupplier() {
-			if (!this.supplier) {
-				uni.showToast({
-					title: '请输入供应商名称',
-					icon: 'none'
-				})
-				return
-			}
-			
-			uni.showModal({
-				title: '创建供应商档案',
-				content: `确认创建供应商"${this.supplier}"吗？`,
-				confirmText: '确定',
-				cancelText: '取消',
-				success: async (res) => {
-					if (res.confirm) {
-						try {
-							const db = wx.cloud.database()
-							await db.collection('suppliers').add({
-								data: {
-									name: this.supplier,
-									createTime: new Date(),
-									createBy: this.operator
-								}
-							})
-							
-							this.showSupplierResult = false
-							
-							uni.showToast({
-								title: '创建成功',
-								icon: 'success'
-							})
-							
-						} catch (err) {
-							console.error('创建供应商失败:', err)
-							uni.showToast({
-								title: '创建失败',
-								icon: 'none'
-							})
-						}
-					}
-				}
-			})
-		},
+		// 振动反馈
+		wx.vibrateShort({ type: 'light' })
+	})
+	},
 		
 		// ========== 扫码相关 ==========
 		async scanBarcode() {
@@ -1170,14 +1028,14 @@ export default {
 			try {
 				const userInfo = uni.getStorageSync('userInfo')
 				
-				const result = await wx.cloud.callFunction({
-					name: 'inRecords',
+			const result = await wx.cloud.callFunction({
+				name: 'inRecords',
+				data: {
+					action: 'create',
 					data: {
-						action: 'create',
-						data: {
-							recordNo: this.recordNo,
-							supplier: this.supplier,
-							items: this.drugList.map(item => ({
+						recordNo: this.recordNo,
+						remark: this.remark,
+						items: this.drugList.map(item => ({
 								drugId: item.drugId,
 								drugName: item.drugName,
 								specification: item.specification,
@@ -1301,87 +1159,6 @@ export default {
 				color: #323233;
 				border-bottom: 1rpx solid #ebedf0;
 				padding: 8rpx 0;
-			}
-			
-			.supplier-input-wrapper {
-				position: relative;
-				
-				.supplier-results {
-					position: absolute;
-					top: 100%;
-					left: 0;
-					right: 0;
-					background: white;
-					border-radius: 8rpx;
-					margin-top: 8rpx;
-					box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-					max-height: 400rpx;
-					overflow-y: auto;
-					z-index: 100;
-					
-					.supplier-result-item {
-						display: flex;
-						align-items: center;
-						justify-content: space-between;
-						padding: 20rpx 24rpx;
-						border-bottom: 1rpx solid #ebedf0;
-						
-						&:last-child {
-							border-bottom: none;
-						}
-						
-						&:active {
-							background: #f7f8fa;
-						}
-						
-						.supplier-name {
-							flex: 1;
-							font-size: 28rpx;
-							color: #323233;
-						}
-						
-						.supplier-arrow {
-							font-size: 32rpx;
-							color: #c8c9cc;
-						}
-					}
-				}
-				
-				.supplier-no-result {
-					position: absolute;
-					top: 100%;
-					left: 0;
-					right: 0;
-					background: white;
-					border-radius: 8rpx;
-					margin-top: 8rpx;
-					padding: 30rpx 24rpx;
-					box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-					text-align: center;
-					z-index: 100;
-					
-					.no-result-text {
-						display: block;
-						font-size: 26rpx;
-						color: #969799;
-						margin-bottom: 20rpx;
-					}
-					
-					.create-supplier-btn {
-						display: inline-flex;
-						align-items: center;
-						gap: 8rpx;
-						padding: 12rpx 24rpx;
-						background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
-						border-radius: 50rpx;
-						color: white;
-						font-size: 24rpx;
-						
-						.create-icon {
-							font-size: 24rpx;
-						}
-					}
-				}
 			}
 		}
 	}

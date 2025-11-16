@@ -1,56 +1,62 @@
 <template>
 	<view class="container">
-		<!-- 页面头部 -->
-		<view class="page-header">
-			<view>
-				<text class="page-title">入库管理</text>
-				<text class="page-subtitle">{{ currentTime }}</text>
-			</view>
-			<view class="page-actions">
-				<view class="header-btn ghost" @tap="refreshList">刷新</view>
-				<view class="header-btn primary" @tap="goAdd">新建入库单</view>
-			</view>
+	<!-- 页面头部 -->
+	<view class="page-header">
+		<view>
+			<text class="page-title">入库管理</text>
+			<text class="page-subtitle">{{ currentTime }}</text>
 		</view>
-		
-		<filter-panel
-			class="panel-wrapper"
-			:keyword="searchKeyword"
-			keyword-placeholder="搜索单号/药品名称"
-			:show-date="true"
-			:start-date="startDate"
-			:end-date="endDate"
-			:quick-filters="quickFilters"
-			:active-quick-filter="selectedQuickFilter"
-			:show-search-button="false"
-			@update:keyword="onKeywordUpdate"
-			@update:startDate="onStartDateUpdate"
-			@update:endDate="onEndDateUpdate"
-			@quick-filter="selectQuickFilter"
-			@date-change="onDateRangeChange"
-			@search="generateList"
+		<view class="page-actions">
+			<view class="header-btn ghost" @tap="refreshList">刷新</view>
+			<view class="header-btn primary" @tap="goAdd">新建入库单</view>
+		</view>
+	</view>
+	
+	<!-- 状态筛选Tab栏（新设计）-->
+	<view class="status-tabs">
+		<view 
+			v-for="status in statusList" 
+			:key="status.value"
+			class="status-tab"
+			:class="{ active: statusFilter === status.value }"
+			@tap="changeStatusFilter(status.value)"
 		>
-			<view class="filter-extra">
-				<view class="extra-item selectable" @tap="showStatusPicker = true">
-					<text class="extra-label">状态</text>
-					<text class="extra-value">{{ statusLabel }}</text>
-				</view>
-			</view>
-		</filter-panel>
-		
-		<view class="filter-action-bar">
-			<view class="action-btn ghost" @tap="resetFilters">重置</view>
-			<view class="action-btn primary" @tap="generateList">查询</view>
+			<text class="status-name">{{ status.label }}</text>
+			<text class="count" v-if="statusCounts[status.value] !== undefined">
+				{{ statusCounts[status.value] }}
+			</text>
 		</view>
-		
-		<view class="result-meta">
-			<text class="meta-item">记录数：{{ recordList.length }}</text>
-			<text class="meta-dot">•</text>
-			<text class="meta-item">待复核：{{ statusSummary.pending_review }}</text>
-			<text class="meta-dot">•</text>
-			<text class="meta-item">已完成：{{ statusSummary.completed }}</text>
-			<text class="meta-dot">•</text>
-			<text class="meta-item">驳回：{{ statusSummary.rejected }}</text>
-		</view>
+	</view>
+	
+	<filter-panel
+		class="panel-wrapper"
+		:keyword="searchKeyword"
+		keyword-placeholder="搜索单号/药品名称"
+		:show-date="true"
+		:start-date="startDate"
+		:end-date="endDate"
+		:quick-filters="quickFilters"
+		:active-quick-filter="selectedQuickFilter"
+		:show-search-button="false"
+		@update:keyword="onKeywordUpdate"
+		@update:startDate="onStartDateUpdate"
+		@update:endDate="onEndDateUpdate"
+		@quick-filter="selectQuickFilter"
+		@date-change="onDateRangeChange"
+		@search="generateList"
+	>
+	</filter-panel>
+	
+	<view class="filter-action-bar">
+		<view class="action-btn ghost" @tap="resetFilters">重置</view>
+		<view class="action-btn primary" @tap="generateList">查询</view>
+	</view>
+	
+	<view class="result-meta">
+		<text class="meta-item">已选择 {{ recordList.length }} 笔</text>
+		<text class="meta-dot">•</text>
+		<text class="meta-item">共计 {{ totalDrugs }} 种药品</text>
+	</view>
 		
 		<!-- 列表 -->
 		<view class="list-container">
@@ -76,14 +82,10 @@
 					</view>
 					<view class="info-item">
 						<text class="info-label">创建时间：</text>
-						<text class="info-value">{{ item.createTime }}</text>
-					</view>
-					<view class="info-item" v-if="item.supplier">
-						<text class="info-label">供应商：</text>
-						<text class="info-value">{{ item.supplier }}</text>
-					</view>
-					<view class="info-item">
-						<text class="info-label">药品种类：</text>
+					<text class="info-value">{{ item.createTime }}</text>
+				</view>
+				<view class="info-item">
+					<text class="info-label">药品种类：</text>
 						<text class="info-value">{{ item.items.length }} 种</text>
 					</view>
 				</view>
@@ -112,55 +114,14 @@
 				</text>
 			</view>
 			
-			<!-- 加载更多 -->
-			<view v-if="hasMore" class="load-more" @click="loadMore">
-				<text>加载更多</text>
-			</view>
-			<view v-else-if="recordList.length > 0" class="no-more">
-				<text>没有更多了</text>
-			</view>
-		</view>
-		
-		<!-- 状态选择 -->
-		<u-popup v-model="showStatusPicker" mode="bottom">
-			<view class="status-picker">
-				<view class="picker-header">
-					<view>
-						<text class="picker-title">筛选入库状态</text>
-						<text class="picker-subtitle">选择后点击“应用”立即更新列表</text>
-					</view>
-					<text class="picker-close" @tap="showStatusPicker = false">✕</text>
-				</view>
-				
-				<view class="status-grid">
-					<view 
-						v-for="item in statusOptions" 
-						:key="item.value"
-						:class="['status-chip', item.value, { active: tempStatus === item.value }]"
-						@tap="tempStatus = item.value"
-					>
-						<view class="chip-left">
-							<text class="chip-icon">{{ item.icon }}</text>
-						</view>
-						<view class="chip-center">
-							<text class="chip-label">{{ item.label }}</text>
-							<text class="chip-desc">{{ item.desc }}</text>
-						</view>
-						<text v-if="tempStatus === item.value" class="chip-check">✓</text>
-					</view>
-				</view>
-				
-				<view class="status-footer">
-					<view class="footer-info">
-						<text>当前选择：{{ tempStatusLabel }}</text>
-					</view>
-					<view class="footer-actions">
-						<view class="action ghost" @tap="resetTempStatus">重置</view>
-						<view class="action primary" @tap="confirmStatus">应用</view>
-					</view>
-				</view>
-			</view>
-		</u-popup>
+	<!-- 加载更多 -->
+	<view v-if="hasMore" class="load-more" @click="loadMore">
+		<text>加载更多</text>
+	</view>
+	<view v-else-if="recordList.length > 0" class="no-more">
+		<text>没有更多了</text>
+	</view>
+</view>
 	</view>
 </template>
 
@@ -180,15 +141,24 @@ export default {
 			hasMore: true,
 			currentUserId: '',
 			statusFilter: 'all',
-			tempStatus: 'all',
-			showStatusPicker: false,
-			statusOptions: [
-				{ label: '全部', value: 'all', icon: '🌐', desc: '展示全部记录' },
-				{ label: '草稿', value: 'draft', icon: '📝', desc: '尚未提交的草稿单' },
-				{ label: '待复核', value: 'pending_review', icon: '👁️', desc: '等待复核确认' },
-				{ label: '已完成', value: 'completed', icon: '✅', desc: '复核通过并入库' },
-				{ label: '已驳回', value: 'rejected', icon: '⚠️', desc: '存在问题被退回' }
+			
+			// 状态列表配置（新设计）
+			statusList: [
+				{ label: '全部', value: 'all' },
+				{ label: '草稿', value: 'draft' },
+				{ label: '待复核', value: 'pending_review' },
+				{ label: '已完成', value: 'completed' },
+				{ label: '已驳回', value: 'rejected' }
 			],
+			
+			// 各状态数量统计
+			statusCounts: {
+				all: 0,
+				draft: 0,
+				pending_review: 0,
+				completed: 0,
+				rejected: 0
+			},
 			statsData: {
 				today: 0,
 				thisWeek: 0,
@@ -223,15 +193,24 @@ export default {
 		this.initPage()
 	},
 	
-	computed: {
-		statusLabel() {
-			const found = this.statusOptions.find(item => item.value === this.statusFilter)
-			return found ? found.label : '全部'
-		},
-		tempStatusLabel() {
-			const found = this.statusOptions.find(item => item.value === this.tempStatus)
-			return found ? found.label : '全部'
-		},
+computed: {
+	// 当前状态标签
+	statusLabel() {
+		const found = this.statusList.find(item => item.value === this.statusFilter)
+		return found ? found.label : '全部'
+	},
+	// 计算总药品种类数
+	totalDrugs() {
+		const drugSet = new Set()
+		this.recordList.forEach(record => {
+			if (record.items && Array.isArray(record.items)) {
+				record.items.forEach(item => {
+					drugSet.add(item.drugName + item.specification)
+				})
+			}
+		})
+		return drugSet.size
+	},
 		dateFilterText() {
 			if (!this.startDate && !this.endDate) {
 				return '全部时间'
@@ -373,35 +352,39 @@ export default {
 		})
 	},
 	
-	async loadCounts() {
-		try {
-			const result = await this.$api.callFunction('inRecords', {
-				action: 'getCounts',
-				data: {}
-			}, false)  // 不显示 loading
-			
-			if (result && result.success) {
-				this.statusSummary = {
-					all: result.all || 0,
-					draft: result.draft || 0,
-					pending_review: result.pending_review || 0,
-					completed: result.completed || 0,
-					rejected: result.rejected || 0
-				}
-			} else if (result) {
-				this.statusSummary = {
-					all: result.all || 0,
-					draft: result.draft || 0,
-					pending_review: result.pending_review || 0,
-					completed: result.completed || 0,
-					rejected: result.rejected || 0
-				}
+async loadCounts() {
+	try {
+		const result = await this.$api.callFunction('inRecords', {
+			action: 'getCounts',
+			data: {}
+		}, false)  // 不显示 loading
+		
+		if (result && result.success) {
+			// 更新状态统计数量（新设计）
+			this.statusCounts = {
+				all: result.all || 0,
+				draft: result.draft || 0,
+				pending_review: result.pending_review || 0,
+				completed: result.completed || 0,
+				rejected: result.rejected || 0
 			}
-		} catch (err) {
-			console.error('加载数量失败:', err)
-			// request.js 已处理错误提示
+			// 保持原有的statusSummary兼容性
+			this.statusSummary = this.statusCounts
+		} else if (result) {
+			this.statusCounts = {
+				all: result.all || 0,
+				draft: result.draft || 0,
+				pending_review: result.pending_review || 0,
+				completed: result.completed || 0,
+				rejected: result.rejected || 0
+			}
+			this.statusSummary = this.statusCounts
 		}
-	},
+	} catch (err) {
+		console.error('加载数量失败:', err)
+		// request.js 已处理错误提示
+	}
+},
 	
 	async loadStats() {
 		// 不使用 loading，避免影响用户体验
@@ -483,19 +466,21 @@ export default {
 			this.hasMore = true
 			this.loadRecords()
 			this.loadCounts()
-		},
+	},
+	
+	// 切换状态筛选（新方法）
+	changeStatusFilter(status) {
+		this.statusFilter = status
+		this.page = 1
+		this.recordList = []
+		this.hasMore = true
+		this.loadRecords()
 		
-		confirmStatus() {
-			this.statusFilter = this.tempStatus
-			this.showStatusPicker = false
-			this.generateList()
-		},
-		
-		resetTempStatus() {
-			this.tempStatus = 'all'
-		},
-		
-		refreshList() {
+		// 振动反馈
+		uni.vibrateShort({ type: 'light' })
+	},
+	
+	refreshList() {
 			this.page = 1
 			this.recordList = []
 			this.hasMore = true
@@ -646,10 +631,9 @@ export default {
 					recordNo: 'RK20251028001',
 					status: 'pending_review',
 					operator: '张三',
-					operatorId: 'user_001',
-					createTime: '2025-10-28 09:30:00',
-					supplier: 'XX医药公司',
-					items: [
+				operatorId: 'user_001',
+				createTime: '2025-10-28 09:30:00',
+				items: [
 						{ drugName: '阿莫西林胶囊', spec: '0.25g*24粒', quantity: 100 },
 						{ drugName: '布洛芬缓释胶囊', spec: '0.3g*20粒', quantity: 50 }
 					]
@@ -662,10 +646,9 @@ export default {
 					operatorId: 'user_002',
 					reviewer: '王五',
 					reviewerId: 'user_003',
-					createTime: '2025-10-27 14:20:00',
-					completeTime: '2025-10-27 15:00:00',
-					supplier: 'YY药业',
-					items: [
+				createTime: '2025-10-27 14:20:00',
+				completeTime: '2025-10-27 15:00:00',
+				items: [
 						{ drugName: '感冒灵颗粒', spec: '10g*10袋', quantity: 200 }
 					]
 				},
@@ -674,10 +657,9 @@ export default {
 					recordNo: 'RK20251027001',
 					status: 'draft',
 					operator: '张三',
-					operatorId: 'user_001',
-					createTime: '2025-10-27 10:00:00',
-					supplier: '',
-					items: [
+				operatorId: 'user_001',
+				createTime: '2025-10-27 10:00:00',
+				items: [
 						{ drugName: '维生素C片', spec: '0.1g*100片', quantity: 50 }
 					]
 				},
@@ -689,10 +671,9 @@ export default {
 					operatorId: 'user_002',
 					reviewer: '张三',
 					reviewerId: 'user_001',
-					createTime: '2025-10-26 16:00:00',
-					rejectReason: '批号填写不规范',
-					supplier: 'ZZ医药',
-					items: [
+				createTime: '2025-10-26 16:00:00',
+				rejectReason: '批号填写不规范',
+				items: [
 						{ drugName: '阿司匹林肠溶片', spec: '25mg*100片', quantity: 100 }
 					]
 				}
@@ -759,6 +740,70 @@ export default {
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: #ffffff;
 	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+// 状态筛选Tab栏（新设计）
+.status-tabs {
+	display: flex;
+	padding: 16rpx 20rpx;
+	background: #f7f8fa;
+	gap: 8rpx;
+	overflow-x: auto;
+	white-space: nowrap;
+	justify-content: space-between;
+	
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.status-tab {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10rpx 16rpx;
+	background: white;
+	border-radius: 40rpx;
+	font-size: 24rpx;
+	color: #646566;
+	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	flex: 1;
+	min-width: 0;
+	border: 2rpx solid transparent;
+	
+	&.active {
+		background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
+		color: white;
+		font-weight: bold;
+		box-shadow: 0 4rpx 20rpx rgba(7, 193, 96, 0.3);
+		transform: scale(1.02);
+		border-color: #07C160;
+	}
+	
+	.status-name {
+		margin-right: 4rpx;
+		white-space: nowrap;
+	}
+	
+	.count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28rpx;
+		height: 28rpx;
+		padding: 0 6rpx;
+		background: rgba(0, 0, 0, 0.08);
+		border-radius: 14rpx;
+		font-size: 18rpx;
+		line-height: 1;
+		font-weight: bold;
+	}
+	
+	&.active .count {
+		background: rgba(255, 255, 255, 0.3);
+		color: white;
+	}
 }
 
 .panel-wrapper {
@@ -954,130 +999,6 @@ export default {
 	padding: 30rpx 0;
 	font-size: 26rpx;
 	color: #999999;
-}
-
-.status-picker {
-	background: #ffffff;
-	border-top-left-radius: 24rpx;
-	border-top-right-radius: 24rpx;
-	padding: 32rpx 30rpx 40rpx;
-	min-height: 520rpx;
-}
-
-.picker-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: 24rpx;
-}
-
-.picker-header .picker-title {
-	font-size: 32rpx;
-	font-weight: 600;
-	color: #111827;
-	display: block;
-}
-
-.picker-subtitle {
-	font-size: 24rpx;
-	color: #9CA3AF;
-}
-
-.picker-close {
-	font-size: 28rpx;
-	color: #cbd5e1;
-	padding: 6rpx 12rpx;
-}
-
-.status-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 16rpx;
-}
-
-.status-chip {
-	display: flex;
-	align-items: center;
-	padding: 18rpx 20rpx;
-	border-radius: 18rpx;
-	background: #f8fafc;
-	border: 2rpx solid transparent;
-}
-
-.status-chip .chip-left {
-	margin-right: 16rpx;
-}
-
-.chip-icon {
-	font-size: 34rpx;
-}
-
-.chip-center {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-}
-
-.chip-label {
-	font-size: 28rpx;
-	color: #1f2937;
-	font-weight: 600;
-}
-
-.chip-desc {
-	font-size: 22rpx;
-	color: #94a3b8;
-	margin-top: 4rpx;
-}
-
-.chip-check {
-	font-size: 30rpx;
-	color: #5B77F9;
-}
-
-.status-chip.active {
-	background: rgba(91, 119, 249, 0.08);
-	border-color: #5B77F9;
-}
-
-.status-footer {
-	margin-top: 28rpx;
-	display: flex;
-	flex-direction: column;
-	gap: 16rpx;
-}
-
-.footer-info {
-	font-size: 26rpx;
-	color: #4b5563;
-}
-
-.footer-actions {
-	display: flex;
-	gap: 16rpx;
-}
-
-.footer-actions .action {
-	flex: 1;
-	height: 80rpx;
-	border-radius: 999rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 28rpx;
-	font-weight: 600;
-}
-
-.footer-actions .action.ghost {
-	background: #f8fafc;
-	color: #475569;
-	border: 1rpx solid #e2e8f0;
-}
-
-.footer-actions .action.primary {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #ffffff;
-	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.35);
 }
 
 </style>

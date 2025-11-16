@@ -27,15 +27,12 @@ exports.main = async (event, context) => {
 }
 
 async function inboundReport(params) {
-  const { startDate, endDate, supplier, operator, recordNo, drugName } = params || {}
+  const { startDate, endDate, operator, recordNo, drugName } = params || {}
   let query = db.collection('in_records')
   if (startDate || endDate) {
     const start = startDate ? new Date(startDate + ' 00:00:00') : new Date('1970-01-01')
     const end = endDate ? new Date(endDate + ' 23:59:59') : new Date()
     query = query.where({ createTime: _.gte(start).and(_.lte(end)) })
-  }
-  if (supplier) {
-    query = query.where({ supplier })
   }
   if (operator) {
     query = query.where({ operator })
@@ -65,9 +62,8 @@ async function inboundReport(params) {
     return {
       _id: r._id,
       recordNo: r.recordNo,
-      createTime: r.createTime,
-      supplier: r.supplier || '',
-      operator: r.operator || '',
+    createTime: r.createTime,
+    operator: r.operator || '',
       operatorSign: r.operatorSign || '',
       operatorSignText: r.operatorSign && typeof r.operatorSign === 'string' ? r.operatorSign : (r.operator || ''),
       reviewer: r.reviewer || '',
@@ -81,10 +77,9 @@ async function inboundReport(params) {
   const totalDrugs = mapped.reduce((s, r) => s + r.drugCount, 0)
   const totalQuantity = mapped.reduce((s, r) => s + r.totalQuantity, 0)
   const totalAmount = Number(mapped.reduce((s, r) => s + r.totalAmount, 0).toFixed(2))
-  // 统计：按天、按操作人、按供应商
+  // 统计：按天、按操作人
   const dayMap = {}
   const operatorMap = {}
-  const supplierMap = {}
   mapped.forEach(r => {
     const d = formatDate(r.createTime)
     if (!dayMap[d]) dayMap[d] = { date: d, count: 0, totalAmount: 0, totalQuantity: 0 }
@@ -95,14 +90,9 @@ async function inboundReport(params) {
     if (!operatorMap[op]) operatorMap[op] = { operator: op, count: 0, totalAmount: 0 }
     operatorMap[op].count++
     operatorMap[op].totalAmount += r.totalAmount
-    const sp = r.supplier || '未知'
-    if (!supplierMap[sp]) supplierMap[sp] = { supplier: sp, count: 0, totalAmount: 0 }
-    supplierMap[sp].count++
-    supplierMap[sp].totalAmount += r.totalAmount
   })
   const byDay = Object.values(dayMap).sort((a, b) => a.date.localeCompare(b.date))
   const byOperator = Object.values(operatorMap).sort((a, b) => b.totalAmount - a.totalAmount).slice(0, 5)
-  const bySupplier = Object.values(supplierMap).sort((a, b) => b.totalAmount - a.totalAmount).slice(0, 5)
   return {
     success: true,
     data: {
@@ -111,7 +101,7 @@ async function inboundReport(params) {
       totalQuantity,
       totalAmount,
       records: mapped,
-      byDay, byOperator, bySupplier
+      byDay, byOperator
     }
   }
 }

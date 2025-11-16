@@ -50,14 +50,10 @@
 					<text class="item-value">{{ record.createTime }}</text>
 				</view>
 				<view class="grid-item">
-					<text class="item-label">操作人</text>
-					<text class="item-value">{{ record.operator }}</text>
-				</view>
-				<view class="grid-item" v-if="record.supplier">
-					<text class="item-label">供应商</text>
-					<text class="item-value">{{ record.supplier }}</text>
-				</view>
-			</view>
+			<text class="item-label">操作人</text>
+			<text class="item-value">{{ record.operator }}</text>
+		</view>
+	</view>
 		</view>
 		
 		<!-- 药品明细卡片 -->
@@ -241,7 +237,6 @@ export default {
 				reviewerId: '',
 				reviewerSign: '',
 				reviewerSignTime: '',
-				supplier: '',
 				items: [],
 				createTime: '',
 				completeTime: '',

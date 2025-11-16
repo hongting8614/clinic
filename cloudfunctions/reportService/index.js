@@ -120,7 +120,6 @@ async function getInboundReport(params) {
   const {
     startDate,
     endDate,
-    supplier,
     drugName,
     location,
     page = 1,
@@ -135,14 +134,6 @@ async function getInboundReport(params) {
   if (startDate && endDate) {
     whereCondition.createTime = _.gte(new Date(startDate))
       .and(_.lte(new Date(endDate + ' 23:59:59')));
-  }
-  
-  // 供应商筛选
-  if (supplier) {
-    whereCondition.supplier = db.RegExp({
-      regexp: supplier,
-      options: 'i'
-    });
   }
   
   // 园区筛选

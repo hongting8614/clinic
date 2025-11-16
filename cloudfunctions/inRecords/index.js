@@ -132,7 +132,6 @@ async function simulateBulk(data, wxContext) {
       recordNo: r.recordNo,
       status: r.status || 'completed',
       items: r.items || [],
-      supplier: r.supplier || '',
       operator: r.operator || '',
       operatorId: r.operatorId || '',
       operatorRole: r.operatorRole || '',
@@ -176,14 +175,14 @@ async function simulateBulk(data, wxContext) {
 async function createRecord(data, wxContext) {
   const { 
     recordNo, 
-    supplier, 
     items, 
     operator,
     operatorId,
     operatorRole,
     operatorSign,
     operatorSignTime,
-    status = 'pending_review'
+    status = 'pending_review',
+    remark
   } = data
   
   // 验证必填字段
@@ -197,7 +196,7 @@ async function createRecord(data, wxContext) {
     recordNo,
     status,
     items,
-    supplier: supplier || '',
+    remark: remark || '',
     operator,
     operatorId,
     operatorRole: operatorRole || '',

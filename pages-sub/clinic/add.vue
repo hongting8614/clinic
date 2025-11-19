@@ -64,6 +64,29 @@
         </view>
       </view>
 
+      <!-- 主诉模板（根据疾病联动） -->
+      <view v-if="templateChips.length" class="form-item">
+        <view class="label">主诉模板</view>
+        <view class="template-row">
+          <scroll-view scroll-x class="template-scroll" show-scrollbar="false">
+            <view
+              v-for="tpl in templateChips"
+              :key="tpl.key"
+              class="template-chip"
+              :class="{ custom: tpl.isCustom }"
+              @click="applyTemplate(tpl)"
+            >
+              {{ tpl.label }}
+            </view>
+          </scroll-view>
+          <view class="template-actions">
+            <view class="save-template-btn" @click="saveCurrentAsTemplate">
+              保存当前为模板
+            </view>
+          </view>
+        </view>
+      </view>
+
       <!-- 身份 + 就诊园区 -->
       <view class="form-row">
         <view class="form-item half">
@@ -155,6 +178,17 @@
           maxlength="100"
           class="input-uniform input-compact"
         />
+      </view>
+
+      <!-- 症状描述（可选，配合模板使用） -->
+      <view class="form-item">
+        <view class="label">症状描述</view>
+        <textarea
+          v-model="form.symptom"
+          placeholder="例如：某部位疼痛、肿胀，活动受限等（可由模板自动填入，可手动修改）"
+          maxlength="200"
+          class="textarea-uniform textarea-small"
+        ></textarea>
       </view>
 
       <!-- 诊断 -->
@@ -502,6 +536,8 @@ export default {
         '牙痛': '患牙疼痛，冷热刺激明显',
         '关节痛': '关节活动痛，活动后加重'
       },
+      // 当前疾病可用模板列表（chips）
+      templateChips: [],
       // 注意事项/复诊提示（按疾病自动附加到处置）
       treatmentCautions: {
         '腹泻': [
@@ -544,6 +580,7 @@ export default {
         visitType: 'clinic',
         injuryLocation: '',
         chiefComplaint: '',
+        symptom: '',
         diseaseName: '',
         diagnosis: '',
         treatment: '',
@@ -810,6 +847,7 @@ export default {
       const exact = this.diseaseOptions.find(d => d === this.form.diseaseName);
       if (exact) {
         this.loadTemplatesForDisease(exact);
+        this.updateTemplateChips(exact);
       }
     },
 
@@ -819,6 +857,7 @@ export default {
       this.showDiseaseList = false;  // 选择后隐藏列表
       this.loadTemplatesForDisease(disease);
       this.autoFillByDisease(disease);
+      this.updateTemplateChips(disease);
     },
     // 依据疾病载入诊断与处置模板
     loadTemplatesForDisease(disease) {
@@ -826,6 +865,45 @@ export default {
       const treat = this.treatmentTemplates?.[disease] || [];
       this.filteredDiagnosis = diag;
       this.filteredTreatments = treat;
+    },
+    // 根据疾病更新主诉/诊断/处置模板chips
+    updateTemplateChips(disease) {
+      const chips = [];
+
+      // 主诉模板
+      const complaint = this.complaintTemplates?.[disease];
+      if (complaint) {
+        chips.push({
+          key: `complaint-${disease}`,
+          type: 'complaint',
+          label: `主诉：${complaint}`,
+          isCustom: false
+        });
+      }
+
+      // 诊断模板（取前若干条）
+      const diagList = this.diseaseTemplates?.[disease] || [];
+      diagList.slice(0, 3).forEach((text, index) => {
+        chips.push({
+          key: `diag-${disease}-${index}`,
+          type: 'diagnosis',
+          label: `诊断：${text}`,
+          isCustom: false
+        });
+      });
+
+      // 处置模板（取前若干条）
+      const treatList = this.treatmentTemplates?.[disease] || [];
+      treatList.slice(0, 3).forEach((text, index) => {
+        chips.push({
+          key: `treat-${disease}-${index}`,
+          type: 'treatment',
+          label: `处置：${text}`,
+          isCustom: false
+        });
+      });
+
+      this.templateChips = chips;
     },
     // 自动按疾病填入主诉/诊断/处置（可编辑）
     autoFillByDisease(disease) {
@@ -843,8 +921,8 @@ export default {
       pushUnique(treats);
       pushUnique(cautions);
       if (complaint) this.form.chiefComplaint = complaint;
-      if (diag) this.form.diagnosis = diag;
-      if (merged.length) this.form.treatment = merged.join('；');
+      if (diag && !this.form.diagnosis) this.form.diagnosis = diag;
+      if (merged.length && !this.form.treatment) this.form.treatment = merged.join('；');
     },
     // 诊断输入与选择
     onDiagnosisFocus() {
@@ -895,6 +973,78 @@ export default {
     appendTreatment(token) {
       const base = (this.form.treatment || '').trim();
       this.form.treatment = base ? `${base}；${token}` : token;
+    },
+    // 点击模板chips，按类型填充主诉/诊断/处置
+    applyTemplate(tpl) {
+      if (!tpl || !tpl.type) return;
+
+      const text = (tpl.label || '').replace(/^主诉：|^诊断：|^处置：/, '');
+
+      switch (tpl.type) {
+        case 'complaint':
+          this.form.chiefComplaint = text;
+          break;
+        case 'diagnosis':
+          this.form.diagnosis = text;
+          break;
+        case 'treatment':
+          // 处置可以叠加
+          this.appendTreatment(text);
+          break;
+        default:
+          break;
+      }
+    },
+
+    // 将当前输入内容保存为自定义模板chips
+    saveCurrentAsTemplate() {
+      const disease = (this.form.diseaseName || '').trim();
+      if (!disease) {
+        uni.showToast({ title: '请先选择疾病名称', icon: 'none' });
+        return;
+      }
+
+      const complaint = (this.form.chiefComplaint || '').trim();
+      const diagnosis = (this.form.diagnosis || '').trim();
+      const treatment = (this.form.treatment || '').trim();
+
+      const newChips = [...this.templateChips];
+
+      if (complaint) {
+        newChips.push({
+          key: `custom-complaint-${Date.now()}`,
+          type: 'complaint',
+          label: `主诉：${complaint}`,
+          isCustom: true
+        });
+      }
+
+      if (diagnosis) {
+        newChips.push({
+          key: `custom-diagnosis-${Date.now() + 1}`,
+          type: 'diagnosis',
+          label: `诊断：${diagnosis}`,
+          isCustom: true
+        });
+      }
+
+      if (treatment) {
+        newChips.push({
+          key: `custom-treatment-${Date.now() + 2}`,
+          type: 'treatment',
+          label: `处置：${treatment}`,
+          isCustom: true
+        });
+      }
+
+      if (newChips.length === this.templateChips.length) {
+        uni.showToast({ title: '暂无可保存的内容', icon: 'none' });
+        return;
+      }
+
+      this.templateChips = newChips;
+
+      uni.showToast({ title: '已保存为模板', icon: 'success' });
     },
     // —— 药品标签：与园区库存联动 —— //
     normalizeText(text) {
@@ -1181,21 +1331,27 @@ export default {
         return;
       }
 
-      // 如果选择了药品，验证用量
+      // 用药信息为选填：仅当选择了药品且数量>0时，才视为用药登记
+      let hasValidDrugUsage = false;
       if (this.selectedDrug) {
-        if (!this.form.quantity || this.form.quantity <= 0) {
-          uni.showToast({ title: '请输入有效的用量', icon: 'none' });
-        return;
-      }
-
-      // 验证库存（园区使用最小单位，直接比较）
-        if (this.form.quantity > this.availableStock) {
-        uni.showToast({
-          title: `库存不足，最多${this.availableStock}${this.selectedDrug.minUnit}`,
-          icon: 'none',
-          duration: 3000
-        });
-        return;
+        if (this.form.quantity && this.form.quantity > 0) {
+          // 验证库存（园区使用最小单位，直接比较）
+          if (this.form.quantity > this.availableStock) {
+            uni.showToast({
+              title: `库存不足，最多${this.availableStock}${this.selectedDrug.minUnit}`,
+              icon: 'none',
+              duration: 3000
+            });
+            return;
+          }
+          hasValidDrugUsage = true;
+        } else {
+          // 选择了药品但未填写有效数量，视为本次不登记用药，清空用药相关状态
+          this.form.drugId = '';
+          this.form.quantity = null;
+          this.selectedDrug = null;
+          this.selectedBatch = null;
+          this.availableStock = 0;
         }
       }
 
@@ -1223,8 +1379,8 @@ export default {
           signTime: this.form.signTime
         };
 
-        // 如果有用药信息，云函数会从对应园区扣减库存
-        if (this.selectedDrug && this.form.quantity) {
+        // 如果有有效用药信息，云函数会从对应园区扣减库存
+        if (hasValidDrugUsage && this.selectedDrug && this.form.quantity) {
           // 确保数量是整数，避免小数
           const intQuantity = Math.floor(this.form.quantity);
           
@@ -1254,7 +1410,7 @@ export default {
           submitData.packUnit = this.selectedDrug.packUnit;
           submitData.conversionRate = this.selectedDrug.conversionRate;
           submitData.patient = this.form.name.trim();
-          submitData.symptom = this.form.chiefComplaint.trim();
+          submitData.symptom = (this.form.symptom || this.form.chiefComplaint || '').trim();
         }
 
         const res = await wx.cloud.callFunction({
@@ -1313,26 +1469,32 @@ export default {
     },
 
     resetForm() {
+      // 保留当前园区选择，其他信息全部重置
+      const currentLocation = this.form.location || 'land_park';
+
+      // 更新时间（就诊时间始终为当前时间）
       this.updateDateTime();
-      this.form = {
-        visitDateTime: this.form.visitDateTime,
-        name: '',
-        gender: '男',
-        age: null,
-        identity: '游客',
-        location: this.form.location,  // 保留园区选择
-        visitType: 'clinic',
-        injuryLocation: '',
-        chiefComplaint: '',
-        diseaseName: '',
-        diagnosis: '',
-        treatment: '',
-        drugId: '',
-        quantity: null,
-        remark: '',
-        doctorSign: '',
-        signTime: ''
-      };
+
+      // 逐字段重置，避免整体替换对象可能带来的响应式问题
+      this.form.name = '';
+      this.form.gender = '男';
+      this.form.age = null;
+      this.form.identity = '游客';
+      this.form.location = currentLocation; // 保留园区选择
+      this.form.visitType = 'clinic';
+      this.form.injuryLocation = '';
+      this.form.chiefComplaint = '';
+      this.form.symptom = '';
+      this.form.diseaseName = '';
+      this.form.diagnosis = '';
+      this.form.treatment = '';
+      this.form.drugId = '';
+      this.form.quantity = null;
+      this.form.remark = '';
+      this.form.doctorSign = '';
+      this.form.signTime = '';
+
+      // 用药与库存相关状态
       this.selectedDrug = null;
       this.selectedBatch = null;
       this.availableStock = 0;
@@ -1340,8 +1502,15 @@ export default {
       this.drugSearchText = '';
       this.filteredDrugs = [];
       this.showDrugList = false;
+
+      // 疾病/模板/下拉相关状态
       this.filteredDiseases = [];
       this.showDiseaseList = false;
+      this.filteredDiagnosis = [];
+      this.showDiagnosisList = false;
+      this.filteredTreatments = [];
+      this.showTreatmentList = false;
+      this.templateChips = [];
     },
 
     formatDate(dateStr) {

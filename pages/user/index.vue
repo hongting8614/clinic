@@ -528,8 +528,10 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-	padding-bottom: 30rpx;
+	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+	/* 兼容底部安全区，避免被 Tab 覆盖 */
+	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
 /* 用户信息卡片 - 科技风格 */
@@ -633,8 +635,8 @@ export default {
 
 .user-name {
 	display: block;
-	font-size: 36rpx;
-	font-weight: bold;
+	font-size: 34rpx;
+	font-weight: 700;
 	color: #1e293b;
 	margin-bottom: 10rpx;
 }
@@ -687,7 +689,7 @@ export default {
 
 .group-title {
 	font-size: 28rpx;
-	font-weight: bold;
+	font-weight: 600;
 	color: #2c3e50;
 }
 
@@ -745,7 +747,7 @@ export default {
 
 .menu-title {
 	display: block;
-	font-size: 30rpx;
+	font-size: 28rpx;
 	font-weight: 600;
 	color: #1e293b;
 	margin-bottom: 6rpx;

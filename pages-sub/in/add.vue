@@ -3,7 +3,7 @@
 		<!-- 页面头部 -->
 		<view class="page-header">
 			<view class="header-content">
-				<text class="header-title">药品入库</text>
+				<text class="header-title">药材入库</text>
 				<text class="header-subtitle">{{ currentDate }}</text>
 			</view>
 		</view>
@@ -42,7 +42,7 @@
 				<input 
 					class="search-input"
 					v-model="searchKeyword"
-					placeholder="扫码/搜索药品名称"
+					placeholder="扫码/搜索药材名称"
 					placeholder-class="placeholder"
 					@focus="onSearchFocus"
 					@blur="onSearchBlur"
@@ -84,14 +84,14 @@
 				</view>
 			</view>
 			
-			<!-- 创建药品表单（内联） -->
+			<!-- 创建药材表单（内联） -->
 			<view v-if="showCreateForm" class="create-form-inline">
 				<!-- 提示信息 -->
 				<view class="create-tip" :class="createFormSource === 'api' ? 'tip-success' : 'tip-warning'">
 					<text class="tip-icon">{{ createFormSource === 'api' ? '✅' : '💡' }}</text>
 					<view class="tip-content">
 						<text class="tip-title">
-							{{ createFormSource === 'api' ? '已从药监局获取数据' : '未找到相关药品' }}
+							{{ createFormSource === 'api' ? '已从药监局获取数据' : '未找到相关药材' }}
 						</text>
 						<text class="tip-subtitle">
 							{{ createFormSource === 'api' ? '确认信息后即可创建' : '请完善以下信息' }}
@@ -101,15 +101,15 @@
 				
 				<!-- 创建表单 -->
 				<view class="inline-form">
-					<view class="inline-form-title">📝 新建药品档案</view>
+					<view class="inline-form-title">📝 新建药材档案</view>
 					
-					<!-- 药品名称 -->
-					<view class="inline-form-item">
-						<text class="inline-label">药品名称 <text class="required">*</text></text>
-						<input 
-							class="inline-input" 
-							v-model="newDrug.name" 
-							placeholder="请输入药品名称"
+				<!-- 药材名称 -->
+				<view class="inline-form-item">
+					<text class="inline-label">药材名称 <text class="required">*</text></text>
+					<input 
+						class="inline-input" 
+						v-model="newDrug.name" 
+						placeholder="请输入药材名称"
 							placeholder-class="placeholder"
 						/>
 					</view>
@@ -156,14 +156,14 @@
 			</view>
 		</view>
 		
-		<!-- 药品列表 -->
+		<!-- 药材列表 -->
 		<view class="drug-list-section">
 			<view class="section-header">
 				<text class="section-title">入库明细</text>
 				<text class="section-count">{{ drugList.length }} 种</text>
 			</view>
 			
-			<!-- 药品卡片列表 -->
+			<!-- 药材卡片列表 -->
 			<view v-if="drugList.length > 0" class="drug-cards">
 				<view 
 					v-for="(item, index) in drugList" 

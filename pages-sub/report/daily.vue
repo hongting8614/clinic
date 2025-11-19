@@ -214,6 +214,7 @@
     <!-- 底部操作栏 -->
     <view class="bottom-actions">
       <button class="action-button secondary" @click="goBack">返回</button>
+      <button class="action-button secondary" @click="goClinic">门诊登记</button>
       <button class="action-button primary" @click="copyReport">复制全部</button>
       <button class="action-button primary" @click="exportCSV">导出CSV</button>
     </view>

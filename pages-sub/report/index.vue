@@ -32,6 +32,16 @@
 				</view>
 				<text class="menu-arrow">→</text>
 			</view>
+
+			<!-- 门诊登记报表入口 -->
+			<view class="menu-item" @tap="goToReport('clinic')">
+				<view class="menu-icon">🩺</view>
+				<view class="menu-content">
+					<text class="menu-title">门诊登记导出</text>
+					<text class="menu-desc">门诊登记Excel/PDF导出</text>
+				</view>
+				<text class="menu-arrow">→</text>
+			</view>
 		</view>
 	</view>
 </template>

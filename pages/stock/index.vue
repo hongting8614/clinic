@@ -288,8 +288,10 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-	padding-bottom: 30rpx;
+	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+	/* 兼容底部安全区，避免被 Tab 覆盖 */
+	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
 .page-header {
@@ -302,7 +304,7 @@ export default {
 .page-title {
 	display: block;
 	font-size: 36rpx;
-	font-weight: bold;
+	font-weight: 700;
 	color: #1f2937;
 }
 
@@ -371,7 +373,7 @@ export default {
 .dashboard-card.danger::before { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }
 
 .dashboard-icon {
-	font-size: 36rpx;
+	font-size: 32rpx;
 	margin-bottom: 15rpx;
 	filter: drop-shadow(0 2rpx 4rpx rgba(0,0,0,0.1));
 }

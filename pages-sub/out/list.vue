@@ -1,5 +1,14 @@
 <template>
 	<view class="container">
+		<!-- 页面头部：标题 + 报表入口 -->
+		<view class="page-header">
+			<view>
+				<text class="page-title">出库管理</text>
+			</view>
+			<view class="page-actions">
+				<view class="header-btn ghost" @click="goReport">出库报表</view>
+			</view>
+		</view>
 		<!-- 筛选标签 -->
 		<view class="filter-tabs">
 			<view 
@@ -299,6 +308,12 @@ export default {
 			})
 		},
 		
+		goReport() {
+			uni.navigateTo({
+				url: '/pages-sub/report/outbound'
+			})
+		},
+		
 		goAdd() {
 			uni.navigateTo({
 				url: '/pages-sub/out/add'
@@ -395,6 +410,40 @@ export default {
 	min-height: 100vh;
 	background-color: #F8F8F8;
 	padding-bottom: 100rpx;
+}
+
+.page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx 30rpx 10rpx;
+}
+
+.page-title {
+	display: block;
+	font-size: 36rpx;
+	font-weight: 700;
+	color: #111827;
+}
+
+.page-actions {
+	display: flex;
+	gap: 16rpx;
+}
+
+.header-btn {
+	min-width: 150rpx;
+	padding: 18rpx 30rpx;
+	border-radius: 999rpx;
+	font-size: 26rpx;
+	font-weight: 600;
+	text-align: center;
+}
+
+.header-btn.ghost {
+	background: #ffffff;
+	color: #475569;
+	border: 1rpx solid #e2e8f0;
 }
 
 .filter-tabs {

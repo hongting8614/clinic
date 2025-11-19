@@ -7,6 +7,7 @@
 			<text class="page-subtitle">{{ currentTime }}</text>
 		</view>
 		<view class="page-actions">
+			<view class="header-btn ghost" @tap="goReport">入库报表</view>
 			<view class="header-btn ghost" @tap="refreshList">刷新</view>
 			<view class="header-btn primary" @tap="goAdd">新建入库单</view>
 		</view>
@@ -557,6 +558,12 @@ async loadCounts() {
 			url: `/pages-sub/in/review?id=${id}`
 		})
 	},
+		
+		goReport() {
+			uni.navigateTo({
+				url: '/pages-sub/report/inbound'
+			})
+		},
 	
 	goAdd() {
 		uni.navigateTo({

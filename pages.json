@@ -24,45 +24,6 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
-		},
-		{
-			"path": "pages/test/migration",
-			"style": {
-				"navigationBarTitleText": "数据迁移 v3.14"
-			}
-		},
-		{
-			"path": "pages/test/generate-data",
-			"style": {
-				"navigationBarTitleText": "生成测试数据"
-			}
-		},
-		{
-			"path": "pages/test/scan",
-			"style": {
-				"navigationBarTitleText": "扫码功能测试"
-			}
-		},
-		{
-			"path": "pages/test/inbound-test",
-			"style": {
-				"navigationBarTitleText": "入库模块测试",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/test/signature-test",
-			"style": {
-				"navigationBarTitleText": "签名组件测试",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/test/api-test",
-			"style": {
-				"navigationBarTitleText": "API接口测试",
-				"enablePullDownRefresh": false
-			}
 		}
 	],
 	
@@ -298,6 +259,12 @@
 					"path": "monthly",
 					"style": {
 						"navigationBarTitleText": "月统计"
+					}
+				},
+				{
+					"path": "clinic",
+					"style": {
+						"navigationBarTitleText": "门诊登记报表"
 					}
 				}
 			]

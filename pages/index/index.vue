@@ -580,15 +580,6 @@ export default {
 					})
 				}
 			})
-		},
-		
-		// 触摸事件处理（用于底部导航栏）
-		onTabTouchStart(e) {
-			// 触摸开始，可以添加触觉反馈等
-		},
-		
-		onTabTouchEnd(e) {
-			// 触摸结束
 		}
 	}
 }
@@ -1398,7 +1389,7 @@ export default {
 	z-index: 1;
 }
 
-// 待复核入口样式（与入库单样式类似，但使用绿色主题）
+/* 待复核入口样式（与入库单样式类似，但使用绿色主题） */
 .review-banner {
 	margin: 0 0 20rpx 0;
 	padding: 30rpx 35rpx;

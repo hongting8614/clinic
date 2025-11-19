@@ -2,61 +2,15 @@
 	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
 		<!-- 专业头部 -->
 		<view class="page-header">
-			<view class="header-content">
-				<text class="page-title">数据分析报表</text>
-				<text class="page-subtitle">Data Analysis & Reports</text>
-			</view>
 			<view class="header-actions">
-				<view class="quick-btn primary" @tap="goToPage('/pages-sub/in/list')">
-					<text class="btn-icon">📊</text>
+				<view class="quick-btn primary" @tap="goToPage('/pages-sub/report/inbound')">
 					<text class="btn-text">入库报表</text>
 				</view>
 				<view class="quick-btn success" @tap="goToPage('/pages-sub/out/list')">
-					<text class="btn-icon">📈</text>
 					<text class="btn-text">出库报表</text>
 				</view>
-			</view>
-		</view>
-
-		<!-- 数据仪表盘 -->
-		<view class="stats-dashboard">
-			<view class="stat-card-large primary" @tap="goToPage('/pages-sub/in/list')">
-				<view class="stat-header">
-					<text class="stat-icon-large">📊</text>
-					<view class="stat-badge" v-if="recordStats.inPending > 0">
-						<text class="badge-text">{{ recordStats.inPending }}</text>
-					</view>
-				</view>
-				<view class="stat-body">
-					<text class="stat-number-large">{{ recordStats.inTotal }}</text>
-					<text class="stat-label-large">入库数据</text>
-				</view>
-				<view class="stat-footer">
-					<view class="stat-detail-item">
-						<text class="detail-label">待审核</text>
-						<text class="detail-value warning">{{ recordStats.inPending }}</text>
-					</view>
-					<text class="stat-arrow">→</text>
-				</view>
-			</view>
-			
-			<view class="stat-card-large success" @tap="goToPage('/pages-sub/out/list')">
-				<view class="stat-header">
-					<text class="stat-icon-large">📈</text>
-					<view class="stat-badge" v-if="recordStats.outPending > 0">
-						<text class="badge-text">{{ recordStats.outPending }}</text>
-					</view>
-				</view>
-				<view class="stat-body">
-					<text class="stat-number-large">{{ recordStats.outTotal }}</text>
-					<text class="stat-label-large">出库数据</text>
-				</view>
-				<view class="stat-footer">
-					<view class="stat-detail-item">
-						<text class="detail-label">待审核</text>
-						<text class="detail-value warning">{{ recordStats.outPending }}</text>
-					</view>
-					<text class="stat-arrow">→</text>
+				<view class="quick-btn" @tap="goToPage('/pages-sub/report/clinic')">
+					<text class="btn-text">门诊登记表</text>
 				</view>
 			</view>
 		</view>
@@ -69,7 +23,7 @@
 			</view>
 			
 			<view class="function-grid">
-				<view class="function-card" @tap="goToPage('/pages-sub/in/list')">
+				<view class="function-card" @tap="goToPage('/pages-sub/report/inbound')">
 					<view class="function-icon-bg blue">
 						<text class="function-icon">📊</text>
 					</view>
@@ -117,35 +71,6 @@
 					<text class="function-desc">年度汇总</text>
 				</view>
 			</view>
-		</view>
-
-		<!-- 数据概览时间线 -->
-		<view class="timeline-section" v-if="recentRecords.length > 0">
-			<view class="section-header">
-				<text class="section-title">数据概览</text>
-				<text class="section-subtitle">Data Overview</text>
-			</view>
-			
-			<view class="timeline">
-				<view 
-					class="timeline-item" 
-					v-for="(item, index) in recentRecords" 
-					:key="index"
-					@tap="goToDetail(item)"
-				>
-					<view class="timeline-marker" :class="'marker-' + item.status"></view>
-					<view class="timeline-content">
-						<view class="timeline-header">
-							<text class="timeline-type">{{ item.type === 'in' ? '入库' : '出库' }}</text>
-							<text class="timeline-status" :class="'status-' + item.status">
-								{{ getStatusText(item.status) }}
-							</text>
-						</view>
-						<text class="timeline-time">{{ item.createTime }}</text>
-					</view>
-					<text class="timeline-arrow">→</text>
-				</view>
-		</view>
 		</view>
 	</view>
 </template>
@@ -283,8 +208,10 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-	padding-bottom: 30rpx;
+	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+	/* 兼容底部安全区，避免被 Tab 覆盖 */
+	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
+	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
 /* 专业页面头部 */
@@ -300,8 +227,8 @@ export default {
 
 .page-title {
 	display: block;
-	font-size: 42rpx;
-	font-weight: bold;
+	font-size: 36rpx;
+	font-weight: 700;
 	color: #ffffff;
 	margin-bottom: 8rpx;
 	text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
@@ -392,7 +319,7 @@ export default {
 }
 
 .stat-icon-large {
-	font-size: 56rpx;
+	font-size: 40rpx;
 	filter: drop-shadow(0 4rpx 8rpx rgba(0,0,0,0.1));
 }
 

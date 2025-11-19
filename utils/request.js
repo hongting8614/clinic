@@ -27,18 +27,18 @@ export default class Request {
 				uni.hideLoading()
 			}
 			
-			// 适配新的云函数返回格式
-			if (res.result && res.result.success !== undefined) {
-				if (res.result.success) {
-					return res.result.data || res.result
-				} else {
-					uni.showToast({
-						title: res.result.message || '操作失败',
-						icon: 'none'
-					})
-					throw new Error(res.result.message)
-				}
+		// 适配新的云函数返回格式
+		if (res.result && res.result.success !== undefined) {
+			if (res.result.success) {
+				return res.result  // 返回完整的 result，包含 success 和 data
+			} else {
+				uni.showToast({
+					title: res.result.message || '操作失败',
+					icon: 'none'
+				})
+				throw new Error(res.result.message)
 			}
+		}
 			
 			// 兼容旧格式
 			if (res.result.code === 0) {

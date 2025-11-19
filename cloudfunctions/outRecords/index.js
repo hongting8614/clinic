@@ -80,7 +80,9 @@ class UnitConverter {
 }
 
 exports.main = async (event, context) => {
-  const { action, data } = event
+  const { action, ...params } = event;
+  if (action === 'query') return await queryOutRecords(params);
+  if (action === 'detail') return await outboundDetail(params.id);
   const wxContext = cloud.getWXContext()
   
   try {
@@ -112,6 +114,34 @@ exports.main = async (event, context) => {
       success: false,
       message: err.message || '操作失败'
     }
+  }
+}
+
+async function queryOutRecords({ search = '', dateRange = [], location, page = 1, pageSize = 20 }) {
+  const db = cloud.database();
+  const _ = db.command;
+  let cond = {};
+  if (dateRange.length === 2) {
+    cond.outboundTime = _.gte(new Date(dateRange[0])).and(_.lte(new Date(dateRange[1] + ' 23:59:59')));
+  }
+  if (location) cond.location = location;
+  if (search) cond['items.name'] = db.RegExp({ regexp: search, options: 'i' });
+  const res = await db.collection('out_records')
+    .where(cond)
+    .orderBy('outboundTime', 'desc')
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .get();
+  return { success: true, list: res.data };
+}
+
+async function outboundDetail(id) {
+  const db = cloud.database();
+  const res = await db.collection('out_records').doc(id).get();
+  if (res.data && res.data.length > 0) {
+    return { success: true, data: res.data[0] };
+  } else {
+    return { success: false, message: '未找到出库单' };
   }
 }
 

@@ -5,7 +5,7 @@
 			<view class="header-bg"></view>
 			<view class="header-content">
 				<text class="clinic-name">爱康医务室管理系统</text>
-				<text class="doc-type">北京欢乐谷医务室 · 药品入库单</text>
+				<text class="doc-type">北京欢乐谷医务室 · 药材入库单</text>
 				<text class="doc-type-en">DRUG RECEIPT FORM</text>
 			</view>
 		</view>
@@ -56,11 +56,11 @@
 	</view>
 		</view>
 		
-		<!-- 药品明细卡片 -->
+		<!-- 药材明细卡片 -->
 		<view class="info-card">
 			<view class="card-title">
 				<text class="title-icon">💊</text>
-				<text class="title-text">药品明细</text>
+				<text class="title-text">药材明细</text>
 				<text class="title-count">{{ record.items ? record.items.length : 0 }}种</text>
 			</view>
 			<view class="drug-list">
@@ -724,7 +724,7 @@ export default {
 	letter-spacing: 1rpx;
 }
 
-/* 药品明细列表 */
+/* 药材明细列表 */
 .drug-list {
 	display: flex;
 	flex-direction: column;
@@ -785,7 +785,7 @@ export default {
 	color: rgba(255,255,255,0.9);
 }
 
-/* 药品详细信息网格 */
+/* 药材详细信息网格 */
 .drug-details-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

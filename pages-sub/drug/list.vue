@@ -4,7 +4,7 @@
 		<view class="search-section">
 			<u-search 
 				v-model="keyword" 
-				placeholder="搜索药品名称或拼音"
+				placeholder="搜索药材名称或拼音"
 				:show-action="true"
 				action-text="搜索"
 				@search="onSearch"
@@ -37,7 +37,7 @@
 			>消化系统</u-button>
 		</view>
 		
-		<!-- 药品列表 -->
+		<!-- 药材列表 -->
 		<view class="drug-list">
 			<view 
 				v-for="item in drugList" 
@@ -91,7 +91,7 @@
 			
 			<!-- 空状态 -->
 			<view v-if="drugList.length === 0" class="empty-state">
-				<u-empty text="暂无药品数据" mode="data"></u-empty>
+				<u-empty text="暂无药材数据" mode="data"></u-empty>
 			</view>
 		</view>
 		
@@ -111,7 +111,7 @@
 		<view class="bottom-actions">
 			<u-button 
 				type="primary" 
-				text="+ 添加药品"
+				text="+ 添加药材"
 				@click="addDrug"
 			></u-button>
 			<u-button 
@@ -167,7 +167,7 @@ export default {
 			this.loading = true
 			
 			try {
-				// TODO: 从云数据库加载药品列表
+				// TODO: 从云数据库加载药材列表
 				// 模拟数据
 				const mockData = [
 					{
@@ -205,7 +205,7 @@ export default {
 						spec: '1ml:1mg',
 						unit: '支',
 						manufacturer: 'ZZ制药',
-						category: '急救药品',
+						category: '急救药材',
 						barcode: '6901234567892',
 						isHighValue: true,
 						isEmergency: true,
@@ -223,7 +223,7 @@ export default {
 				this.hasMore = mockData.length >= this.pageSize
 				
 			} catch (err) {
-				console.error('加载药品列表失败:', err)
+				console.error('加载药材列表失败:', err)
 				uni.showToast({
 					title: '加载失败',
 					icon: 'none'
@@ -257,10 +257,10 @@ export default {
 			this.loadDrugList()
 		},
 		
-		// 处理药品项点击
+		// 处理药材项点击
 		handleItemClick(item) {
 			if (this.mode === 'select') {
-				// 选择模式：返回选中的药品信息
+				// 选择模式：返回选中的药材信息
 				this.selectDrug(item)
 			} else {
 				// 正常模式：进入详情页
@@ -268,9 +268,9 @@ export default {
 			}
 		},
 		
-		// 选择药品
+		// 选择药材
 		selectDrug(item) {
-			// 使用全局事件总线传递选中的药品数据
+			// 使用全局事件总线传递选中的药材数据
 			uni.$emit('drugSelected', {
 				_id: item._id,
 				drugCode: item.barcode || '',
@@ -318,38 +318,46 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	padding: 20rpx;
-	padding-bottom: 150rpx;
-	background-color: #F8F8F8;
 	min-height: 100vh;
+	/* 使用统一的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 140rpx;
 }
 
 .search-section {
-	background-color: #FFFFFF;
-	border-radius: 20rpx;
-	padding: 20rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	background-color: #FFFFF0;
+	border-radius: 22rpx;
+	padding: 18rpx 20rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .filter-section {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 12rpx 16rpx 10rpx;
+	background-color: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 	display: flex;
-	gap: 15rpx;
-	margin-bottom: 20rpx;
 	flex-wrap: wrap;
+	gap: 10rpx;
 }
 
 .drug-list {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 15rpx;
+	gap: 8rpx;
 }
 
 .drug-item {
-	background-color: #FFFFFF;
-	border-radius: 15rpx;
-	padding: 25rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	background-color: #FFFFF0;
+	border-radius: 18rpx;
+	padding: 22rpx 24rpx 18rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .drug-header {

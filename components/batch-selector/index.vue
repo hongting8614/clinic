@@ -1,12 +1,23 @@
 <template>
 	<view>
-		<u-button 
+		<!-- 使用原生button和view确保事件能触发 -->
+		<view 
+			class="batch-selector-button" 
+			:class="['btn-' + buttonType, 'btn-' + buttonSize]"
+			@tap="showDialog"
+		>
+			<text v-if="loading">加载中...</text>
+			<text v-else>{{ buttonText }}</text>
+		</view>
+		
+		<!-- 备用：uView按钮 -->
+		<!-- <u-button 
 			:type="buttonType" 
 			:text="buttonText" 
 			:size="buttonSize"
 			@click="showDialog"
 			:loading="loading"
-		></u-button>
+		></u-button> -->
 		
 		<u-popup 
 			:show="visible" 
@@ -14,6 +25,11 @@
 			:round="20"
 			width="90%"
 			height="65%"
+			:closeable="true"
+			:overlay="true"
+			:closeOnClickOverlay="true"
+			:zIndex="9999"
+			:overlayStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
 			@close="handleClose"
 		>
 			<view class="batch-selector-popup">
@@ -25,15 +41,15 @@
 					</view>
 				</view>
 				
-				<!-- 药品信息 -->
+				<!-- 药材信息 -->
 				<view class="drug-info-bar" v-if="drugInfo">
 					<view class="info-row">
-						<text class="info-label">药品：</text>
+						<text class="info-label">药材：</text>
 						<text class="info-value">{{ drugInfo.name }}</text>
 					</view>
 					<view class="info-row">
 						<text class="info-label">规格：</text>
-						<text class="info-value">{{ drugInfo.spec }}</text>
+						<text class="info-value">{{ drugInfo.specification || drugInfo.spec }}</text>
 					</view>
 				</view>
 				
@@ -100,7 +116,7 @@
 					<!-- 空状态 -->
 					<view v-if="!loading && batchList.length === 0" class="empty-hint">
 						<text>📦</text>
-						<text>该药品暂无库存</text>
+						<text>该药材暂无库存</text>
 						<text class="empty-tip">请先进行入库操作</text>
 					</view>
 				</scroll-view>
@@ -128,12 +144,12 @@ export default {
 			type: String,
 			default: 'default'
 		},
-		// 药品ID
+		// 药材ID
 		drugId: {
 			type: String,
 			required: true
 		},
-		// 药品信息
+		// 药材信息
 		drugInfo: {
 			type: Object,
 			default: () => ({})
@@ -163,14 +179,26 @@ export default {
 	},
 	methods: {
 		showDialog() {
+			console.log('=== 批次选择器 showDialog 被调用 ===')
+			console.log('this.drugId:', this.drugId)
+			console.log('this.drugInfo:', this.drugInfo)
+			console.log('所有 props:', {
+				drugId: this.drugId,
+				drugInfo: this.drugInfo,
+				defaultLocation: this.defaultLocation,
+				enableFIFO: this.enableFIFO
+			})
+			
 			if (!this.drugId) {
+				console.error('❌ drugId 为空！无法加载批次')
 				uni.showToast({
-					title: '请先选择药品',
+					title: '请先选择药材',
 					icon: 'none'
 				})
 				return
 			}
 			
+			console.log('✅ drugId 存在，打开批次选择器')
 			this.visible = true
 			this.batchList = []
 			this.loadBatches()
@@ -182,6 +210,14 @@ export default {
 		
 		async loadBatches() {
 			this.loading = true
+			
+			// 调试日志
+			console.log('=== 批次选择器调试 ===')
+			console.log('药材ID (drugId):', this.drugId)
+			console.log('药材信息 (drugInfo):', this.drugInfo)
+			console.log('药材名称:', this.drugInfo?.name)
+			console.log('默认园区 (location):', this.defaultLocation)
+			console.log('启用FIFO:', this.enableFIFO)
 			
 			try {
 				const result = await wx.cloud.callFunction({
@@ -196,13 +232,26 @@ export default {
 					}
 				})
 				
+				console.log('云函数返回:', result.result)
+				console.log('批次数量:', result.result.data?.length || 0)
+				
 				if (result.result.success) {
 					this.batchList = result.result.data
+					
+					if (this.batchList.length === 0) {
+						console.warn('⚠️ 该药材暂无库存，但选择页面显示有库存')
+						console.warn('可能原因：')
+						console.warn('  1. drugId 不匹配')
+						console.warn('  2. 园区筛选导致无库存')
+						console.warn('  3. 库存已被其他操作消耗')
+					} else {
+						console.log('✅ 找到批次:', this.batchList)
+					}
 				} else {
 					throw new Error(result.result.message || '查询失败')
 				}
 			} catch (err) {
-				console.error('加载批次失败:', err)
+				console.error('❌ 加载批次失败:', err)
 				uni.showToast({
 					title: err.message || '加载失败',
 					icon: 'none'
@@ -261,12 +310,58 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 批次选择器按钮样式 */
+.batch-selector-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 30rpx;
+	height: 64rpx;
+	line-height: 64rpx;
+	border-radius: 6rpx;
+	font-size: 28rpx;
+	color: #fff;
+	background-color: #2979ff;
+	cursor: pointer;
+	transition: all 0.3s;
+	
+	&.btn-small {
+		height: 50rpx;
+		line-height: 50rpx;
+		padding: 0 20rpx;
+		font-size: 24rpx;
+	}
+	
+	&.btn-info {
+		background-color: #2979ff;
+	}
+	
+	&.btn-primary {
+		background-color: #3c9cff;
+	}
+	
+	&.btn-success {
+		background-color: #5ac725;
+	}
+	
+	&.btn-warning {
+		background-color: #f9ae3d;
+	}
+	
+	&:active {
+		opacity: 0.8;
+	}
+}
+
 .batch-selector-popup {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	background-color: #FFFFFF;
 	border-radius: 20rpx;
+	position: relative;
+	z-index: 1000;
+	overflow: hidden;
 }
 
 .popup-header {
@@ -453,23 +548,23 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	padding: 100rpx 0;
+	padding: 40rpx 0;
 	text-align: center;
 }
 
 .empty-hint text:first-child {
-	font-size: 100rpx;
-	margin-bottom: 20rpx;
+	font-size: 60rpx;
+	margin-bottom: 12rpx;
 }
 
 .empty-hint text:nth-child(2) {
-	font-size: 28rpx;
+	font-size: 26rpx;
 	color: #999999;
-	margin-bottom: 10rpx;
+	margin-bottom: 8rpx;
 }
 
 .empty-tip {
-	font-size: 24rpx;
+	font-size: 22rpx;
 	color: #CCCCCC;
 }
 </style>

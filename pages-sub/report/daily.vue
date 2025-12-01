@@ -29,123 +29,6 @@
         </view>
       </view>
 
-      <!-- 游客表格 -->
-      <view class="table-card" v-if="tableData && tableData.visitor && tableData.visitor.length > 0">
-        <view class="table-header">
-          <text class="table-title">游客接诊明细</text>
-          <view class="table-actions">
-            <view class="action-btn small" @click="toggleEditTable('visitor')">
-              <text class="action-icon">{{ isEditingVisitor ? '✓' : '✏️' }}</text>
-            </view>
-            <view class="action-btn small" @click="copyTable('visitor')">
-              <text class="action-icon">📋</text>
-            </view>
-          </view>
-        </view>
-        
-        <view class="table-wrapper">
-          <view class="table">
-            <!-- 表头 -->
-            <view class="table-row header-row">
-              <view class="table-cell header-cell">疾病名称</view>
-              <view class="table-cell header-cell">地点</view>
-              <view class="table-cell header-cell">出诊</view>
-              <view class="table-cell header-cell">接诊医生</view>
-            </view>
-            
-            <!-- 表格内容 -->
-            <view 
-              v-for="(item, index) in tableData.visitor" 
-              :key="index" 
-              class="table-row"
-            >
-              <view class="table-cell">
-                <input 
-                  v-if="isEditingVisitor"
-                  v-model="item.diseaseName" 
-                  class="table-input"
-                  placeholder="疾病名称"
-                />
-                <text v-else>{{ item.diseaseName || '-' }}</text>
-              </view>
-              <view class="table-cell">
-                <input 
-                  v-if="isEditingVisitor"
-                  v-model="item.location" 
-                  class="table-input"
-                  placeholder="地点"
-                />
-                <text v-else>{{ item.location || '-' }}</text>
-              </view>
-              <view class="table-cell">
-                <text>{{ item.isOutcall ? '是' : '否' }}</text>
-              </view>
-              <view class="table-cell">
-                <text>{{ item.doctorName || '-' }}</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 员工表格 -->
-      <view class="table-card" v-if="tableData && tableData.employee && tableData.employee.length > 0">
-        <view class="table-header">
-          <text class="table-title">员工接诊明细</text>
-          <view class="table-actions">
-            <view class="action-btn small" @click="toggleEditTable('employee')">
-              <text class="action-icon">{{ isEditingEmployee ? '✓' : '✏️' }}</text>
-            </view>
-            <view class="action-btn small" @click="copyTable('employee')">
-              <text class="action-icon">📋</text>
-            </view>
-          </view>
-        </view>
-        
-        <view class="table-wrapper">
-          <view class="table">
-            <!-- 表头 -->
-            <view class="table-row header-row">
-              <view class="table-cell header-cell">疾病名称</view>
-              <view class="table-cell header-cell">地点</view>
-              <view class="table-cell header-cell">出诊</view>
-              <view class="table-cell header-cell">接诊医生</view>
-            </view>
-            
-            <!-- 表格内容 -->
-            <view 
-              v-for="(item, index) in tableData.employee" 
-              :key="index" 
-              class="table-row"
-            >
-              <view class="table-cell">
-                <input 
-                  v-if="isEditingEmployee"
-                  v-model="item.diseaseName" 
-                  class="table-input"
-                  placeholder="疾病名称"
-                />
-                <text v-else>{{ item.diseaseName || '-' }}</text>
-              </view>
-              <view class="table-cell">
-                <input 
-                  v-if="isEditingEmployee"
-                  v-model="item.location" 
-                  class="table-input"
-                  placeholder="地点"
-                />
-                <text v-else>{{ item.location || '-' }}</text>
-              </view>
-              <view class="table-cell">
-                <text>{{ item.isOutcall ? '是' : '否' }}</text>
-              </view>
-              <view class="table-cell">
-                <text>{{ item.doctorName || '-' }}</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
 
       <!-- 统计信息 -->
       <view class="stats-card" v-if="stats">
@@ -176,44 +59,11 @@
         </view>
       </view>
 
-      <!-- 汇总报表：游客 -->
-      <view class="table-card">
-        <view class="table-header">
-          <text class="table-title">游客汇总报表</text>
-          <view class="table-actions">
-            <view class="action-btn small" @click="copySummary('visitor','horizontal')"><text class="action-icon">↔️</text></view>
-            <view class="action-btn small" @click="copySummary('visitor','vertical')"><text class="action-icon">↕️</text></view>
-          </view>
-        </view>
-        <view class="summary-grid">
-          <view class="summary-row" v-for="name in diseaseList" :key="name">
-            <text class="summary-disease">{{ name }}</text>
-            <text class="summary-count">{{ (visitorSummary && visitorSummary[name]) || 0 }}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 汇总报表：员工 -->
-      <view class="table-card">
-        <view class="table-header">
-          <text class="table-title">员工汇总报表</text>
-          <view class="table-actions">
-            <view class="action-btn small" @click="copySummary('employee','horizontal')"><text class="action-icon">↔️</text></view>
-            <view class="action-btn small" @click="copySummary('employee','vertical')"><text class="action-icon">↕️</text></view>
-          </view>
-        </view>
-        <view class="summary-grid">
-          <view class="summary-row" v-for="name in diseaseList" :key="name">
-            <text class="summary-disease">{{ name }}</text>
-            <text class="summary-count">{{ (employeeSummary && employeeSummary[name]) || 0 }}</text>
-          </view>
-        </view>
-      </view>
+      <!-- 下方仅保留统计信息卡片和底部操作栏，去掉明细与汇总表格 -->
     </view>
 
-    <!-- 底部操作栏 -->
+    <!-- 底部操作栏（统一使用顶部导航返回箭头） -->
     <view class="bottom-actions">
-      <button class="action-button secondary" @click="goBack">返回</button>
       <button class="action-button secondary" @click="goClinic">门诊登记</button>
       <button class="action-button primary" @click="copyReport">复制全部</button>
       <button class="action-button primary" @click="exportCSV">导出CSV</button>
@@ -799,21 +649,24 @@ export default {
 <style lang="scss" scoped>
 .daily-report-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
-  padding-top: 20rpx;
-  padding-bottom: 120rpx;
+  // 使用统一的蓝色渐变背景
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding-top: 24rpx;
+  padding-bottom: 130rpx;
 }
 
 .report-container {
-  padding: 30rpx;
+  max-width: 702rpx;
+  margin: 0 auto;
+  padding: 24rpx 24rpx 40rpx;
 }
 
 .report-card {
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 40rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-  margin-bottom: 30rpx;
+  border-radius: 26rpx;
+  padding: 32rpx 30rpx;
+  box-shadow: 0 22rpx 60rpx rgba(15, 23, 42, 0.18);
+  margin-bottom: 8rpx;
 
   .report-header {
     display: flex;
@@ -826,12 +679,12 @@ export default {
     .report-date {
       font-size: 32rpx;
       font-weight: bold;
-      color: #333333;
+      color: #0f172a;
     }
 
     .report-location {
       font-size: 28rpx;
-      color: #667eea;
+      color: #0d9488;
       font-weight: 500;
       margin-left: 20rpx;
     }
@@ -847,7 +700,7 @@ export default {
       display: block;
       font-size: 30rpx;
       line-height: 2;
-      color: #333333;
+      color: #111827;
       white-space: pre-wrap;
       word-break: break-all;
     }
@@ -857,7 +710,7 @@ export default {
       min-height: 200rpx;
       font-size: 30rpx;
       line-height: 2;
-      color: #333333;
+      color: #111827;
       padding: 20rpx;
       border: 2rpx solid #e0e0e0;
       border-radius: 12rpx;
@@ -868,10 +721,10 @@ export default {
 
 .table-card {
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-  margin-bottom: 30rpx;
+  border-radius: 24rpx;
+  padding: 28rpx 26rpx;
+  box-shadow: 0 20rpx 50rpx rgba(15, 23, 42, 0.16);
+  margin-bottom: 24rpx;
 
   .table-header {
     display: flex;
@@ -884,7 +737,7 @@ export default {
     .table-title {
       font-size: 32rpx;
       font-weight: bold;
-      color: #333333;
+      color: #0f172a;
     }
 
     .table-actions {
@@ -907,7 +760,7 @@ export default {
       border-bottom: 1rpx solid #f0f0f0;
 
       &.header-row {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #14b8a6 0%, #22c1c3 100%);
         border-radius: 8rpx 8rpx 0 0;
       }
 
@@ -915,7 +768,7 @@ export default {
         flex: 1;
         padding: 20rpx 12rpx;
         font-size: 26rpx;
-        color: #333333;
+        color: #111827;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -944,7 +797,7 @@ export default {
 
 .action-btn {
   padding: 8rpx 16rpx;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(20, 184, 166, 0.1);
   border-radius: 8rpx;
   display: flex;
   align-items: center;
@@ -961,9 +814,10 @@ export default {
 
 .stats-card {
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  border-radius: 30rpx;
+  padding: 28rpx 26rpx;
+  box-shadow: 0 25rpx 60rpx rgba(15, 23, 42, 0.20);
+  margin-bottom: 8rpx;
 
   .stats-title {
     font-size: 32rpx;
@@ -1051,19 +905,19 @@ export default {
 
   .action-button {
     flex: 1;
-    padding: 24rpx;
-    border-radius: 12rpx;
-    font-size: 32rpx;
+    padding: 20rpx 24rpx;
+    border-radius: 999rpx;
+    font-size: 28rpx;
     font-weight: bold;
     border: none;
 
     &.secondary {
-      background: #f5f5f5;
-      color: #666666;
+      background: linear-gradient(135deg, #00c9ff 0%, #00e0b8 100%);
+      color: #ffffff;
     }
 
     &.primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #00c9ff 0%, #00e0b8 100%);
       color: #ffffff;
     }
   }

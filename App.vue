@@ -52,8 +52,15 @@ export default {
 <style>
 /*每个页面公共css */
 
+/* 全局基础字号：统一再放大一档，提升手机端可读性 */
 page {
 	background-color: #F8F8F8;
+	font-size: 32rpx;
+}
+
+view,
+text {
+	font-size: 32rpx;
 }
 
 .container {
@@ -75,7 +82,7 @@ page {
 }
 
 .page-subtitle {
-	font-size: 28rpx;
+	font-size: 30rpx;
 	color: #666666;
 	margin-top: 10rpx;
 }
@@ -88,7 +95,7 @@ page {
 }
 
 .section-title {
-	font-size: 32rpx;
+	font-size: 34rpx;
 	font-weight: bold;
 	color: #333333;
 	margin-bottom: 20rpx;
@@ -99,7 +106,7 @@ page {
 }
 
 .form-label {
-	font-size: 28rpx;
+	font-size: 34rpx;
 	color: #666666;
 	margin-bottom: 10rpx;
 }
@@ -111,12 +118,19 @@ page {
 .btn-primary {
 	background-color: #3cc51f;
 	color: #FFFFFF;
+	font-size: 32rpx;
 }
 
 .btn-secondary {
 	background-color: #FFFFFF;
 	color: #3cc51f;
 	border: 1px solid #3cc51f;
+	font-size: 32rpx;
+}
+
+/* 原生按钮统一放大字号 */
+button {
+	font-size: 32rpx;
 }
 </style>
 

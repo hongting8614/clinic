@@ -1,7 +1,7 @@
 {
     "name" : "爱康医务室管理系统",
     "appid" : "__UNI__AKPMS",
-    "description" : "北京欢乐谷医务室 - 爱康药品管理系统",
+    "description" : "北京欢乐谷医务室 - 爱康药材管理系统",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,

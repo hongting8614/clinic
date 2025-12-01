@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "门诊登记表",
+  "usingComponents": {
+    "signature": "/components/signature/index"
+  }
+}

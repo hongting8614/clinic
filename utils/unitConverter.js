@@ -1,7 +1,7 @@
 /**
  * 单位转换工具类 v3.14 Ultimate
  * @file utils/unitConverter.js
- * @description 药品规格解析与单位转换工具
+ * @description 药材规格解析与单位转换工具
  * @version 3.14.0
  * @date 2025-11-06
  * 
@@ -35,7 +35,7 @@ export default class UnitConverter {
   }
   
   /**
-   * 解析药品规格
+   * 解析药材规格
    * @param {String} specification - 规格字符串
    * @returns {Object|null} 解析结果
    * @example

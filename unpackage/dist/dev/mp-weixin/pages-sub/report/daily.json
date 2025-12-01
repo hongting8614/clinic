@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "门诊日报",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": false,
+  "usingComponents": {}
+}

@@ -1,4 +1,4 @@
-// 云函数 - 药品管理
+// 云函数 - 药材管理
 const cloud = require('wx-server-sdk')
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
@@ -12,27 +12,27 @@ exports.main = async (event, context) => {
   
   try {
     switch (action) {
-      // 根据条码查询药品
+      // 根据条码查询药材
       case 'getByBarcode':
         return await getByBarcode(data)
       
-      // 获取药品列表
+      // 获取药材列表
       case 'getList':
         return await getList(data)
       
-      // 添加药品
+      // 添加药材
       case 'add':
         return await addDrug(data)
       
-      // 更新药品
+      // 更新药材
       case 'update':
         return await updateDrug(data)
       
-      // 删除药品
+      // 删除药材
       case 'delete':
         return await deleteDrug(data)
       
-      // 搜索药品（支持拼音）
+      // 搜索药材（支持拼音）
       case 'search':
         return await searchDrug(data)
       
@@ -51,7 +51,7 @@ exports.main = async (event, context) => {
   }
 }
 
-// 根据条码查询药品
+// 根据条码查询药材
 async function getByBarcode(data) {
   const { barcode } = data
   
@@ -76,13 +76,13 @@ async function getByBarcode(data) {
   } else {
     return {
       success: false,
-      message: '未找到该药品',
+      message: '未找到该药材',
       notFound: true
     }
   }
 }
 
-// 获取药品列表
+// 获取药材列表
 async function getList(data) {
   const { pageSize = 20, pageNum = 1, category = '', keyword = '' } = data
   
@@ -126,7 +126,7 @@ async function getList(data) {
   }
 }
 
-// 添加药品
+// 添加药材
 async function addDrug(data) {
   const { barcode, name, pinyin, spec, unit, manufacturer, category, isHighValue, isEmergency, remark } = data
   
@@ -152,7 +152,7 @@ async function addDrug(data) {
     }
   }
   
-  // 添加药品
+  // 添加药材
   const result = await db.collection('drugs').add({
     data: {
       barcode,
@@ -179,14 +179,14 @@ async function addDrug(data) {
   }
 }
 
-// 更新药品
+// 更新药材
 async function updateDrug(data) {
   const { _id, barcode, name, pinyin, spec, unit, manufacturer, category, isHighValue, isEmergency, remark } = data
   
   if (!_id) {
     return {
       success: false,
-      message: '药品ID不能为空'
+      message: '药材ID不能为空'
     }
   }
   
@@ -202,7 +202,7 @@ async function updateDrug(data) {
     if (existResult.total > 0) {
       return {
         success: false,
-        message: '该条码已被其他药品使用'
+        message: '该条码已被其他药材使用'
       }
     }
   }
@@ -235,14 +235,14 @@ async function updateDrug(data) {
   }
 }
 
-// 删除药品
+// 删除药材
 async function deleteDrug(data) {
   const { _id } = data
   
   if (!_id) {
     return {
       success: false,
-      message: '药品ID不能为空'
+      message: '药材ID不能为空'
     }
   }
   
@@ -256,7 +256,7 @@ async function deleteDrug(data) {
   }
 }
 
-// 搜索药品（支持拼音）
+// 搜索药材（支持拼音）
 async function searchDrug(data) {
   const { keyword, limit = 10 } = data
   

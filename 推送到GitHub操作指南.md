@@ -9,7 +9,7 @@
 ### 2. 创建新仓库
 - 点击右上角 `+` → `New repository`
 - 仓库名称：`AK-PMS`
-- 描述（可选）：`药品管理系统 - 微信小程序`
+- 描述（可选）：`药材管理系统 - 微信小程序`
 - 选择：**Private**（私有仓库，推荐）
 - **不要**勾选任何初始化选项（README、.gitignore、license）
 - 点击：`Create repository`

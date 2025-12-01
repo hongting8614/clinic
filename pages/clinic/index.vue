@@ -1,0 +1,394 @@
+<!-- pages/clinic/index.vue -->
+<template>
+  <view class="clinic-page">
+    <!-- 顶部标题区域 -->
+    <view class="header-card">
+      <view class="header-content">
+        <view class="clinic-title">门诊管理工作台</view>
+        <view class="clinic-subtitle">北京欢乐谷医务室</view>
+      </view>
+    </view>
+
+    <!-- 门诊功能入口 -->
+    <view class="quick-actions">
+      <view class="section-header">
+        <text class="section-title">门诊功能</text>
+      </view>
+
+      <view class="grid">
+        <!-- 门诊登记 -->
+        <view class="grid-card" @tap="goToPage('/pages-sub/clinic/add')">
+          <view class="card-icon register"></view>
+          <view class="card-text">
+            <text class="card-title">门诊登记</text>
+          </view>
+        </view>
+
+        <!-- 门诊查询 -->
+        <view class="grid-card" @tap="goToPage('/pages-sub/report/clinic')">
+          <view class="card-icon report"></view>
+          <view class="card-text">
+            <text class="card-title">门诊查询</text>
+          </view>
+        </view>
+
+        <!-- 门诊日报：跳转到专用日报页面，自动按当天+园区生成 -->
+        <view class="grid-card" @tap="goToPage('/pages-sub/report/daily')">
+          <view class="card-icon daily"></view>
+          <view class="card-text">
+            <text class="card-title">门诊日报</text>
+          </view>
+        </view>
+
+        <!-- 门诊统计分析 -->
+        <view class="grid-card" @tap="goToPage('/pages-sub/report/clinic-analysis')">
+          <view class="card-icon analysis"></view>
+          <view class="card-text">
+            <text class="card-title">门诊统计分析</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="export-actions">
+      <view class="section-header">
+        <text class="section-title">快速导出</text>
+      </view>
+      <view class="export-grid">
+        <view class="export-btn" @tap="exportClinicExcel">
+          <text class="export-icon">📄</text>
+          <text class="export-text">就诊人报表</text>
+        </view>
+        <view class="export-btn" @tap="exportUsageExcel">
+          <text class="export-icon">💊</text>
+          <text class="export-text">用药统计报表</text>
+        </view>
+        <view class="export-btn" @tap="exportStatsExcel">
+          <text class="export-icon">📑</text>
+          <text class="export-text">就诊+用药(双表)</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+export default {
+  methods: {
+    goToPage(url) {
+      uni.navigateTo({
+        url,
+        fail: () => {
+          uni.showToast({ title: '页面开发中', icon: 'none' })
+        }
+      })
+    },
+    showDevTip() {
+      uni.showToast({
+        title: '门诊分析功能开发中',
+        icon: 'none'
+      })
+    },
+    getTodayRange() {
+      const today = new Date()
+      const y = today.getFullYear()
+      const m = String(today.getMonth() + 1).padStart(2, '0')
+      const d = String(today.getDate()).padStart(2, '0')
+      const dateStr = `${y}-${m}-${d}`
+      return { startDate: dateStr, endDate: dateStr }
+    },
+    async exportClinicExcel() {
+      try {
+        const { startDate, endDate } = this.getTodayRange()
+        uni.showLoading({ title: '生成报表...', mask: true })
+        const res = await this.$api.callFunction('reports', {
+          action: 'exportClinicExcel',
+          data: {
+            startDate,
+            endDate,
+            location: 'all',
+            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
+          }
+        })
+        uni.hideLoading()
+        if (res?.success && res.fileID && res.filename) {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
+          if (fileUrl) {
+            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
+          } else {
+            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+          }
+        } else {
+          uni.showToast({ title: '生成报表失败', icon: 'none' })
+        }
+      } catch (err) {
+        uni.hideLoading()
+        uni.showToast({ title: '导出失败', icon: 'none' })
+      }
+    },
+    async exportUsageExcel() {
+      try {
+        const { startDate, endDate } = this.getTodayRange()
+        uni.showLoading({ title: '生成报表...', mask: true })
+        const res = await this.$api.callFunction('reports', {
+          action: 'exportClinicUsageExcel',
+          data: {
+            startDate,
+            endDate,
+            location: 'all',
+            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
+          }
+        })
+        uni.hideLoading()
+        if (res?.success && res.fileID && res.filename) {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
+          if (fileUrl) {
+            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
+          } else {
+            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+          }
+        } else {
+          uni.showToast({ title: '生成报表失败', icon: 'none' })
+        }
+      } catch (err) {
+        uni.hideLoading()
+        uni.showToast({ title: '导出失败', icon: 'none' })
+      }
+    },
+    async exportStatsExcel() {
+      try {
+        const { startDate, endDate } = this.getTodayRange()
+        uni.showLoading({ title: '生成报表...', mask: true })
+        const res = await this.$api.callFunction('reports', {
+          action: 'exportClinicStatsExcel',
+          data: {
+            startDate,
+            endDate,
+            location: 'all',
+            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
+          }
+        })
+        uni.hideLoading()
+        if (res?.success && res.fileID && res.filename) {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
+          if (fileUrl) {
+            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
+          } else {
+            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+          }
+        } else {
+          uni.showToast({ title: '生成报表失败', icon: 'none' })
+        }
+      } catch (err) {
+        uni.hideLoading()
+        uni.showToast({ title: '导出失败', icon: 'none' })
+      }
+    },
+    downloadAndSaveLocal(fileUrl, filename) {
+      const fs = wx.getFileSystemManager()
+      const folder = `${wx.env.USER_DATA_PATH}`
+      const savePath = `${folder}/${filename}`
+      try {
+        fs.mkdirSync(folder, true)
+      } catch (e) {}
+      uni.downloadFile({
+        url: fileUrl,
+        success: (res) => {
+          if (res.statusCode === 200) {
+            fs.saveFile({
+              tempFilePath: res.tempFilePath,
+              filePath: savePath,
+              success: () => {
+                const lower = (filename || '').toLowerCase()
+                let fileTypeExt = 'xlsx'
+                if (lower.endsWith('.pdf')) fileTypeExt = 'pdf'
+                wx.openDocument({
+                  filePath: savePath,
+                  fileType: fileTypeExt,
+                  showMenu: true,
+                  fail: () => {
+                    uni.showModal({
+                      title: '文件已保存',
+                      content: `文件已保存到：微信-我-服务-小程序-我的文件/${filename}`,
+                      showCancel: false,
+                      confirmText: '知道了'
+                    })
+                  }
+                })
+              },
+              fail: () => {
+                uni.showToast({ title: '保存失败', icon: 'none' })
+              }
+            })
+          } else {
+            uni.showToast({ title: '下载失败', icon: 'none' })
+          }
+        },
+        fail: () => {
+          uni.showToast({ title: '文件下载失败', icon: 'none' })
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style>
+.clinic-page {
+	min-height: 100vh;
+	/* 使用与首页/“我的”页相同的蓝色渐变背景，统一整体风格 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding-bottom: 40rpx;
+}
+
+.header-card {
+	/* 统一三张大卡片的上下间距：上 22rpx，下 16rpx */
+	margin: 22rpx auto 16rpx;
+	padding: 32rpx 28rpx;
+	max-width: 702rpx;
+	/* 顶部门诊工作台卡片：象牙白圆角卡片，与首页 header-card 一致 */
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+}
+
+.header-content {
+  color: #0f172a;
+}
+
+.clinic-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.clinic-subtitle {
+  font-size: 26rpx;
+  opacity: 0.85;
+}
+
+.quick-actions {
+	/* 与 header-card / export-actions 保持一致的下间距 */
+	margin: 0 auto 16rpx;
+	padding: 24rpx 20rpx 22rpx;
+	max-width: 702rpx;
+	border-radius: 24rpx;
+	/* 门诊功能入口整体为一张象牙白大卡片，与首页快捷操作一致 */
+	background: #FFFFF0;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+
+.section-header {
+  margin-bottom: 18rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+}
+
+.grid-card {
+  background: #ffffff;
+  border-radius: 22rpx;
+  padding: 24rpx 20rpx;
+  box-shadow: 0 14rpx 30rpx rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+}
+
+.grid-card.disabled {
+  opacity: 0.5;
+}
+
+.card-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 999rpx;
+  margin-right: 18rpx;
+}
+
+.card-icon.register {
+  background: linear-gradient(135deg, #34d399, #059669);
+}
+
+.card-icon.report {
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+}
+
+.card-icon.daily {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.card-icon.analysis {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.card-text {
+  flex: 1;
+}
+
+.card-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4rpx;
+}
+
+.card-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.export-actions {
+	/* 与前两张卡片保持统一的上下间距 */
+	margin: 0 auto 24rpx;
+	padding: 22rpx 20rpx 26rpx;
+	max-width: 702rpx;
+	border-radius: 24rpx;
+	/* 快速导出区同样使用象牙白卡片容器，统一视觉层级 */
+	background: #FFFFF0;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+
+.export-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.export-btn {
+  flex: 1;
+  min-width: 30%;
+  padding: 18rpx 22rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.export-icon {
+  font-size: 28rpx;
+}
+
+.export-text {
+  font-size: 26rpx;
+  color: #111827;
+}
+</style>

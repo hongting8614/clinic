@@ -52,7 +52,7 @@
 					<text class="function-icon">💹</text>
 				</view>
 				<text class="function-name">消耗分析</text>
-				<text class="function-desc">药品消耗统计</text>
+				<text class="function-desc">药材消耗统计</text>
 			</view>
 				
 				<view class="function-card" @tap="showComingSoon">

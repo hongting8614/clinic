@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "新建入库单",
+  "usingComponents": {
+    "signature": "/components/signature/index"
+  }
+}

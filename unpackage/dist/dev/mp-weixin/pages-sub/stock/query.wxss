@@ -1,0 +1,381 @@
+@charset "UTF-8";
+.container.data-v-39914319 {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 0 140rpx;
+}
+.content-column.data-v-39914319 {
+  max-width: 702rpx;
+  margin: 0 auto;
+  padding: 0 22rpx 8rpx;
+}
+.filter-section.data-v-39914319 {
+  background: #FFFFF0;
+  /* 与其它卡片保持相同上下间距 */
+  margin: 0 0 8rpx;
+  padding: 14rpx 22rpx 10rpx;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.filter-section .filter-row.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+.filter-section .category-row.data-v-39914319 {
+  justify-content: flex-start;
+  -webkit-column-gap: 8rpx;
+          column-gap: 8rpx;
+}
+.filter-section .filter-label.data-v-39914319 {
+  font-size: 26rpx;
+  color: #6b7280;
+  margin-right: 8rpx;
+}
+.filter-section .filter-chip-text.data-v-39914319 {
+  font-size: 26rpx;
+  color: #111827;
+}
+.filter-section .filter-arrow.data-v-39914319 {
+  margin-left: auto;
+  font-size: 26rpx;
+  color: #cbd5e1;
+}
+.filter-section .chips-row.data-v-39914319 {
+  align-items: center;
+  margin-bottom: 6rpx;
+}
+.filter-section .chips-label.data-v-39914319 {
+  font-size: 24rpx;
+  color: #9ca3af;
+  margin-right: 8rpx;
+}
+.filter-section .chips-group.data-v-39914319 {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 8rpx;
+  -webkit-column-gap: 10rpx;
+          column-gap: 10rpx;
+}
+.filter-section .chip.data-v-39914319 {
+  min-width: 120rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid #e5e7eb;
+  font-size: 24rpx;
+  color: #4b5563;
+  background: #f9fafb;
+  text-align: center;
+}
+.filter-section .chip.active.data-v-39914319 {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.35);
+}
+.search-section.data-v-39914319 {
+  /* 作为第一个卡片：底部统一留 8rpx 间距 */
+  padding: 0;
+  margin: 0 0 8rpx;
+}
+.search-wrapper.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 999rpx;
+  padding: 8rpx 16rpx;
+  box-shadow: 0 4rpx 10rpx rgba(15, 23, 42, 0.06);
+}
+.search-icon.data-v-39914319 {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+.search-input.data-v-39914319 {
+  flex: 1;
+  font-size: 26rpx;
+  color: #111827;
+}
+.clear-icon.data-v-39914319 {
+  font-size: 26rpx;
+  color: #9ca3af;
+  margin-left: 6rpx;
+}
+.stats-bar.data-v-39914319 {
+  display: flex;
+  /* 统计卡与上下卡片之间统一 8rpx 间距 */
+  margin: 0 auto 8rpx;
+  max-width: 702rpx;
+  padding: 18rpx 22rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.stats-bar .stat-item.data-v-39914319 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+.stats-bar .stat-item .stat-label.data-v-39914319 {
+  font-size: 24rpx;
+  color: #969799;
+}
+.stats-bar .stat-item .stat-value.data-v-39914319 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.stats-bar .stat-item .stat-value.warning.data-v-39914319 {
+  color: #ff976a;
+}
+.stats-bar .stat-item .stat-value.danger.data-v-39914319 {
+  color: #ee0a24;
+}
+.stock-list.data-v-39914319 {
+  /* 列表紧跟在统计卡或效期卡之后，不再额外增加间距 */
+  padding: 0;
+}
+.expiry-summary.data-v-39914319 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 16rpx 22rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+  text-align: center;
+  font-size: 30rpx;
+  color: #f97373;
+}
+.expiry-bar.data-v-39914319 {
+  /* 近效期模式下的卡片，也与其它卡片保持统一间距 */
+  margin: 0 auto 8rpx;
+  max-width: 702rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  padding: 18rpx 22rpx 14rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.expiry-bar .expiry-row.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14rpx;
+  -webkit-column-gap: 8rpx;
+          column-gap: 8rpx;
+}
+.expiry-bar .expiry-row .left-part.data-v-39914319 {
+  display: flex;
+  align-items: center;
+}
+.expiry-bar .expiry-row .expiry-label.data-v-39914319 {
+  font-size: 26rpx;
+  color: #646566;
+  margin-right: 0;
+}
+.expiry-bar .expiry-row .expiry-input.data-v-39914319 {
+  width: 120rpx;
+  height: 56rpx;
+  padding: 0 16rpx;
+  border-radius: 28rpx;
+  background: #f5f5f5;
+  font-size: 26rpx;
+  color: #323233;
+  text-align: center;
+  margin-right: 0;
+}
+.expiry-bar .expiry-row .expiry-unit.data-v-39914319 {
+  font-size: 26rpx;
+  color: #969799;
+  margin-left: 0;
+}
+.expiry-bar .expiry-row .expiry-apply.data-v-39914319 {
+  padding: 0 30rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 26rpx;
+  margin-left: 24rpx;
+}
+.expiry-bar .expiry-preset.data-v-39914319 {
+  display: flex;
+  justify-content: center;
+  margin-top: 6rpx;
+  -webkit-column-gap: 16rpx;
+          column-gap: 16rpx;
+}
+.expiry-bar .expiry-preset .preset-btn.data-v-39914319 {
+  padding: 8rpx 26rpx;
+  border-radius: 22rpx;
+  font-size: 24rpx;
+  color: #2563eb;
+  background: #eff6ff;
+}
+.stock-card.data-v-39914319 {
+  background: #fffff0;
+  border-radius: 18rpx;
+  padding: 16rpx 22rpx 14rpx;
+  /* 每个库存卡之间统一 8rpx 间距 */
+  margin: 0 0 8rpx;
+  box-shadow: 0 6rpx 18rpx rgba(15, 23, 42, 0.1);
+}
+.stock-card .card-header.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+}
+.stock-card .card-header .drug-name.data-v-39914319 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.stock-card .card-header .stock-badge.data-v-39914319 {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+}
+.stock-card .card-header .stock-badge.normal.data-v-39914319 {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.stock-card .card-header .stock-badge.warning.data-v-39914319 {
+  background: #fff3e0;
+  color: #ff9800;
+}
+.stock-card .card-header .stock-badge.empty.data-v-39914319 {
+  background: #ffebee;
+  color: #f44336;
+}
+.stock-card .drug-spec.data-v-39914319 {
+  font-size: 26rpx;
+  color: #969799;
+  margin-bottom: 20rpx;
+}
+.stock-card .stock-info .info-row.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.stock-card .stock-info .info-row .info-label.data-v-39914319 {
+  font-size: 26rpx;
+  color: #646566;
+}
+.stock-card .stock-info .info-row .info-value.data-v-39914319 {
+  font-size: 26rpx;
+  color: #323233;
+}
+.stock-card .batch-section.data-v-39914319 {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #ebedf0;
+}
+.stock-card .batch-section .batch-title.data-v-39914319 {
+  font-size: 26rpx;
+  color: #646566;
+  margin-bottom: 15rpx;
+}
+.stock-card .batch-section .batch-item.data-v-39914319 {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 15rpx 20rpx;
+  margin-bottom: 10rpx;
+}
+.stock-card .batch-section .batch-item .batch-row.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+.stock-card .batch-section .batch-item .batch-row.data-v-39914319:last-child {
+  margin-bottom: 0;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-label.data-v-39914319 {
+  font-size: 24rpx;
+  color: #969799;
+  width: 100rpx;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-value.data-v-39914319 {
+  flex: 1;
+  font-size: 24rpx;
+  color: #323233;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-value.normal.data-v-39914319 {
+  color: #323233;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-value.expiring.data-v-39914319 {
+  color: #ff9800;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-value.expiring-soon.data-v-39914319 {
+  color: #ff5722;
+}
+.stock-card .batch-section .batch-item .batch-row .batch-value.expired.data-v-39914319 {
+  color: #f44336;
+}
+.stock-card .batch-section .batch-more.data-v-39914319 {
+  font-size: 24rpx;
+  color: #667eea;
+  text-align: center;
+  padding: 10rpx 0;
+}
+.empty-state.data-v-39914319 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 24rpx 90rpx;
+}
+.empty-state .empty-icon.data-v-39914319 {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+.empty-state .empty-text.data-v-39914319 {
+  font-size: 32rpx;
+  color: #969799;
+  margin-bottom: 15rpx;
+}
+.empty-state .empty-hint.data-v-39914319 {
+  font-size: 26rpx;
+  color: #c8c9cc;
+}
+.load-more.data-v-39914319, .no-more.data-v-39914319 {
+  text-align: center;
+  padding: 26rpx 0 40rpx;
+  font-size: 26rpx;
+  color: #999999;
+}
+.picker-popup.data-v-39914319 {
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+}
+.picker-popup .picker-header.data-v-39914319 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #ebedf0;
+}
+.picker-popup .picker-header .picker-cancel.data-v-39914319, .picker-popup .picker-header .picker-confirm.data-v-39914319 {
+  font-size: 28rpx;
+  color: #667eea;
+}
+.picker-popup .picker-header .picker-title.data-v-39914319 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.picker-popup .picker-list.data-v-39914319 {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+.picker-popup .picker-list .picker-item.data-v-39914319 {
+  padding: 30rpx 40rpx;
+  font-size: 28rpx;
+  color: #323233;
+  border-bottom: 1rpx solid #f7f8fa;
+}
+.picker-popup .picker-list .picker-item.active.data-v-39914319 {
+  color: #667eea;
+  background: #f7f8ff;
+}

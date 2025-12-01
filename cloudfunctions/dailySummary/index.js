@@ -87,6 +87,23 @@ async function generateDailySummary(date, location) {
     })
     .end();
   
+  // 3.1 门诊按药材日消耗统计（基于 clinic_usage）
+  const clinicByDrugAgg = await db.collection('clinic_usage')
+    .aggregate()
+    .match({
+      location,
+      createTime: _.gte(startOfDay).and(_.lte(endOfDay))
+    })
+    .group({
+      _id: '$drugId',
+      drugName: _.first('$drugName'),
+      specification: _.first('$specification'),
+      totalQuantityMin: _.sum('$quantityMin'),
+      totalQuantityPack: _.sum('$quantityPack'),
+      patients: _.addToSet('$patient')
+    })
+    .end();
+  
   // 4. 消耗统计
   const consumeStats = await db.collection('consume_records')
     .aggregate()
@@ -145,6 +162,15 @@ async function generateDailySummary(date, location) {
         totalQuantity: clinicStats.list[0]?.totalQuantity || 0,
         patientCount: clinicStats.list[0]?.patients?.length || 0
       },
+      // 门诊按药材日消耗明细（仅当日，用于报表/分析）
+      clinicByDrug: (clinicByDrugAgg.list || []).map(item => ({
+        drugId: item._id,
+        drugName: item.drugName || '',
+        specification: item.specification || '',
+        totalQuantityMin: item.totalQuantityMin || 0,
+        totalQuantityPack: item.totalQuantityPack || 0,
+        patientCount: (item.patients || []).length
+      })),
       consume: consumeStats.list[0] || { count: 0, totalQuantity: 0 },
       stock: stockStats.list[0] || {
         totalValue: 0,

@@ -1,32 +1,88 @@
 <template>
   <view class="clinic-add">
+    <scroll-view
+      class="clinic-scroll"
+      scroll-y
+      :scroll-into-view="activeFieldId"
+    >
     <!-- 顶部标题 -->
     <view class="page-header">
-      <view class="title">爱康医务室管理系统</view>
-      <view class="subtitle">北京欢乐谷医务室 · 门诊登记表</view>
-      <view class="date-time">{{ currentDateTime }}</view>
-      <!-- 生成日报按钮 -->
-      <view class="generate-report-btn" @click="generateDailyReport">
-        <text class="btn-icon">📄</text>
-        <text class="btn-text">生成日报</text>
+      <view class="title">北京欢乐谷医务室</view>
+      <view class="subtitle">门诊登记表</view>
+    </view>
+
+    <!-- 功能按钮区域：选择园区 + 门诊日报 -->
+    <view class="top-actions-card">
+      <view class="top-buttons">
+        <button class="top-btn primary" @tap="openLocationSelector">
+          {{ locationLocked ? '选择园区' : currentLocationLabel }}
+        </button>
+        <button class="top-btn ghost" @tap="generateDailyReport">门诊日报</button>
       </view>
     </view>
 
-    <view class="form-section">
+    <!-- 园区选择提示弹窗（悬浮窗） -->
+    <view v-if="showLocationTip" class="location-modal-overlay">
+      <view class="location-modal">
+        <view class="modal-icon-row">
+          <view class="modal-icon-circle">园</view>
+        </view>
+        <view class="modal-title">请选择当前所在园区</view>
+        <view class="modal-subtitle">当前：{{ currentLocationLabel }}，用于统计门诊登记、日报等数据</view>
+
+        <view class="modal-location-buttons">
+          <button class="modal-loc-btn" :class="{ active: form.location === 'land_park' }" @tap="handleLocationSelect('land_park')">陆园</button>
+          <button class="modal-loc-btn" :class="{ active: form.location === 'water_park' }" @tap="handleLocationSelect('water_park')">水园</button>
+        </view>
+
+        <view class="modal-hint-text">后续可随时通过上方“选择园区”按钮切换，不影响已登记记录。</view>
+
+        <view class="modal-row" @tap="noTipNextTime = !noTipNextTime">
+          <checkbox :checked="noTipNextTime" />
+          <text class="modal-checkbox-text">下次不再提醒</text>
+        </view>
+
+        <button class="modal-close-btn" @tap="closeLocationTip">关闭提示</button>
+      </view>
+    </view>
+
+    <view id="field-remark" class="form-section">
       <!-- 基本信息 -->
       <view class="section-title">患者基本信息</view>
       
-      <!-- 就诊日期时间 -->
-      <view class="form-item">
-        <view class="label required">就诊日期时间</view>
-        <view class="datetime-display">{{ form.visitDateTime }}</view>
+      <!-- 就诊日期时间 + 身份 并排 -->
+      <view class="form-row">
+        <view id="field-name" class="form-item half">
+          <view class="label required">就诊日期时间</view>
+          <view class="datetime-display">{{ form.visitDateTime }}</view>
+        </view>
+        <view class="form-item half">
+          <view class="label required">身份</view>
+          <view class="identity-selector">
+            <view 
+              v-for="idOpt in identityOptions"
+              :key="idOpt.value"
+              class="identity-item" 
+              :class="{ active: form.identity === idOpt.value }"
+              @click="setIdentity(idOpt.value)"
+            >
+              {{ idOpt.label }}
+            </view>
+          </view>
+        </view>
       </view>
 
       <!-- 姓名 + 性别/年龄 -->
       <view class="form-row">
         <view class="form-item half">
           <view class="label required">姓名</view>
-          <input v-model="form.name" type="text" placeholder="请输入患者姓名" />
+          <input
+            v-model="form.name"
+            type="text"
+            placeholder="选园区后输入姓名"
+            :disabled="locationLocked"
+            cursor-spacing="80"
+          />
         </view>
         <view class="form-item half">
           <view class="label required">性别 / 年龄</view>
@@ -64,60 +120,36 @@
         </view>
       </view>
 
-      <!-- 主诉模板（根据疾病联动） -->
-      <view v-if="templateChips.length" class="form-item">
-        <view class="label">主诉模板</view>
-        <view class="template-row">
-          <scroll-view scroll-x class="template-scroll" show-scrollbar="false">
-            <view
-              v-for="tpl in templateChips"
-              :key="tpl.key"
-              class="template-chip"
-              :class="{ custom: tpl.isCustom }"
-              @click="applyTemplate(tpl)"
-            >
-              {{ tpl.label }}
-            </view>
-          </scroll-view>
-          <view class="template-actions">
-            <view class="save-template-btn" @click="saveCurrentAsTemplate">
-              保存当前为模板
-            </view>
+      <!-- 主诉 -->
+      <view id="field-chiefComplaint" class="form-item">
+        <view class="label required">主诉</view>
+        <view class="disease-input-wrapper">
+          <textarea
+            v-model="form.chiefComplaint"
+            placeholder="请输入患者自述症状，例如：头部外伤伴头晕"
+            maxlength="100"
+            :class="['textarea-uniform', 'textarea-auto', complaintFontSizeClass]"
+            :focus="complaintFocus"
+            @focus="onComplaintFocus(); onFieldFocus('field-chiefComplaint')"
+            @input="onComplaintInput"
+            @blur="onComplaintBlur"
+          />
+          <!-- 主诉下拉列表 -->
+          <view v-if="showComplaintList && filteredComplaints.length > 0" class="disease-dropdown">
+            <scroll-view scroll-y class="disease-scroll">
+              <view
+                v-for="opt in filteredComplaints"
+                :key="opt.key"
+                class="disease-item"
+                @click="selectComplaint(opt)"
+              >
+                {{ opt.label }}
+              </view>
+            </scroll-view>
           </view>
         </view>
       </view>
 
-      <!-- 身份 + 就诊园区 -->
-      <view class="form-row">
-        <view class="form-item half">
-          <view class="label required">身份</view>
-          <view class="identity-selector">
-            <view 
-              v-for="idOpt in identityOptions"
-              :key="idOpt.value"
-              class="identity-item" 
-              :class="{ active: form.identity === idOpt.value }"
-              @click="setIdentity(idOpt.value)"
-            >
-              {{ idOpt.label }}
-            </view>
-          </view>
-        </view>
-        <view class="form-item half">
-          <view class="label required">就诊园区</view>
-          <view class="location-selector">
-            <view
-              v-for="loc in locations"
-              :key="loc.value"
-              class="location-item"
-              :class="{ active: form.location === loc.value }"
-              @click="selectLocation(loc.value)"
-            >
-              {{ loc.label }}
-            </view>
-          </view>
-        </view>
-      </view>
     </view>
 
     <!-- 就诊信息 -->
@@ -148,7 +180,7 @@
               type="text"
               :placeholder="form.visitType === 'outcall' ? '请输入受伤地点（必填）' : '例如：机动游戏区、餐饮区（可选）'"
               class="input-uniform"
-              @focus="onLocationFocus"
+              @focus="onLocationFocus(); onFieldFocus('field-injuryLocation')"
               @input="onLocationInput"
             />
             <!-- 地点下拉列表 -->
@@ -168,40 +200,16 @@
         </view>
       </view>
 
-      <!-- 主诉 -->
-      <view class="form-item">
-        <view class="label required">主诉</view>
-        <input
-          v-model="form.chiefComplaint"
-          type="text"
-          placeholder="请输入患者自述症状，例如：头部外伤伴头晕"
-          maxlength="100"
-          class="input-uniform input-compact"
-        />
-      </view>
-
-      <!-- 症状描述（可选，配合模板使用） -->
-      <view class="form-item">
-        <view class="label">症状描述</view>
-        <textarea
-          v-model="form.symptom"
-          placeholder="例如：某部位疼痛、肿胀，活动受限等（可由模板自动填入，可手动修改）"
-          maxlength="200"
-          class="textarea-uniform textarea-small"
-        ></textarea>
-      </view>
-
       <!-- 诊断 -->
       <view class="form-item">
         <view class="label required">诊断</view>
         <view class="disease-input-wrapper">
-          <input
+          <textarea
             v-model="form.diagnosis"
-            type="text"
             placeholder="请输入初步诊断结果，例如：轻度头部挫伤"
             maxlength="100"
-            class="input-uniform input-compact"
-            @focus="onDiagnosisFocus"
+            :class="['textarea-uniform', 'textarea-auto', diagnosisFontSizeClass]"
+            @focus="onDiagnosisFocus(); onFieldFocus('field-diagnosis')"
             @input="onDiagnosisInput"
           />
           <view v-if="showDiagnosisList && filteredDiagnosis.length > 0" class="disease-dropdown">
@@ -219,6 +227,20 @@
         </view>
       </view>
 
+      <!-- 症状 -->
+      <view class="form-item">
+        <view class="label">症状</view>
+        <view class="disease-input-wrapper">
+          <textarea
+            v-model="form.symptom"
+            placeholder="可记录体征/检查所见等补充症状信息（可选）"
+            maxlength="150"
+            class="textarea-uniform textarea-auto"
+            @focus="onFieldFocus('field-symptom')"
+          />
+        </view>
+      </view>
+
       <!-- 疾病名称（带下拉列表） -->
       <view class="form-item">
         <view class="label required">疾病名称</view>
@@ -228,7 +250,8 @@
             type="text" 
             placeholder="例如：感冒、外伤、中暑等"
             @input="onDiseaseInput"
-            @focus="onDiseaseFocus"
+            @focus="onDiseaseFocus(); onFieldFocus('field-diseaseName')"
+            @blur="onDiseaseBlur"
             class="input-uniform"
           />
           <!-- 疾病下拉列表 -->
@@ -255,8 +278,8 @@
             v-model="form.treatment"
             placeholder="请输入处理措施，例如：伤口清洗消毒、冷敷"
             maxlength="120"
-            class="textarea-small textarea-uniform"
-            @focus="onTreatmentFocus"
+            class="textarea-uniform textarea-auto"
+            @focus="onTreatmentFocus(); onFieldFocus('field-treatment')"
             @input="onTreatmentInput"
           ></textarea>
           <view v-if="showTreatmentList && filteredTreatments.length > 0" class="disease-dropdown">
@@ -279,14 +302,14 @@
     <view class="form-section">
       <view class="section-title">用药信息（可选）</view>
 
-      <!-- 药品选择 - 只手动输入 -->
+      <!-- 药材选择 - 只手动输入 -->
       <view class="form-item">
-        <view class="label">药品名称</view>
+        <view class="label">药材名称</view>
         <view class="drug-input-wrapper">
           <input 
             v-model="drugSearchText" 
             type="text" 
-            placeholder="点击查看所有药品或输入搜索"
+            placeholder="点击查看所有药材或输入搜索"
             @input="onDrugSearch"
             @focus="onDrugInputFocus"
             class="input-uniform"
@@ -294,7 +317,7 @@
           <!-- 下拉列表 -->
           <view v-if="showDrugList && filteredDrugs.length > 0" class="drug-dropdown">
             <view class="dropdown-header">
-              <text class="dropdown-title">{{ form.location === 'land_park' ? '陆园' : '水园' }}库存药品</text>
+              <text class="dropdown-title">{{ form.location === 'land_park' ? '陆园' : '水园' }}库存药材</text>
               <text class="dropdown-count">({{ filteredDrugs.length }}种)</text>
             </view>
             <scroll-view scroll-y class="drug-scroll">
@@ -311,7 +334,7 @@
           </view>
           <!-- 无结果提示 -->
           <view v-if="showDrugList && drugSearchText && filteredDrugs.length === 0" class="no-result">
-            未找到匹配的药品
+            未找到匹配的药材
           </view>
         </view>
         <view v-if="selectedDrug" class="drug-info">
@@ -324,7 +347,7 @@
 
       <!-- 用药信息核心展示 - 快速登记版 -->
       <view v-if="selectedDrug" class="drug-quick-info">
-        <!-- 药品名称大卡片 -->
+        <!-- 药材名称大卡片 -->
         <view class="drug-name-card">
           <view class="drug-details">
             <view class="drug-main-name">{{ selectedDrug.name }}</view>
@@ -395,7 +418,8 @@
           v-model="form.remark"
           placeholder="其他说明或建议（可选）"
           maxlength="200"
-          class="textarea-uniform"
+          class="textarea-uniform textarea-auto"
+          @focus="onFieldFocus('field-remark')"
         ></textarea>
       </view>
     </view>
@@ -409,23 +433,48 @@
         </view>
       </view>
       <view class="signature-section">
-        <view v-if="form.doctorSign" class="signature-preview">
-          <view class="signature-label">医生签名：</view>
-          <image :src="form.doctorSign" mode="aspectFit" class="signature-image" />
-          <view class="signature-time">签名时间：{{ form.signTime || currentDateTime }}</view>
-          <button class="re-sign-btn" @click="openSignature">重新签名</button>
+        <view class="signature-label-row">
+          <view class="signature-label">医生签名</view>
+          <text class="required">*</text>
         </view>
-        <button v-else class="sign-btn" @click="openSignature">
-          点击此处进行签名
-        </button>
+        <Signature
+          v-model="form.doctorSign"
+          title="医生签名"
+          @change="onDoctorSignChange"
+        />
+        <view v-if="form.signTime" class="signature-time">
+          签名时间：{{ form.signTime }}
+        </view>
       </view>
     </view>
+
+    <!-- 继续登记选项 -->
+    <view class="continue-option">
+      <view class="continue-card" @click="toggleContinue">
+        <view class="continue-checkbox">
+          <checkbox :checked="continueAfterSubmit" />
+        </view>
+        <view class="continue-text">
+          <view class="continue-title">连续登记模式</view>
+          <view class="continue-desc">提交后自动清空表单，继续登记下一位患者</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 药材选择器 -->
+    <drug-selector
+      v-if="showDrugSelector"
+      @select="onDrugSelect"
+      @close="showDrugSelector = false"
+    />
+
+    </scroll-view>
 
     <!-- 提交按钮 -->
     <view class="submit-section">
       <button class="cancel-btn" @click="goBack">取消</button>
       <button class="submit-btn" :loading="submitting" @click="handleSubmit">
-        保存登记
+        保存
       </button>
     </view>
 
@@ -442,28 +491,22 @@
       </view>
     </view>
 
-    <!-- 药品选择器 -->
+    <!-- 药材选择器 -->
     <drug-selector
       v-if="showDrugSelector"
       @select="onDrugSelect"
       @close="showDrugSelector = false"
     />
 
-    <!-- 签名组件 -->
-    <signature
-      v-if="showSignature"
-      @confirm="onSignatureConfirm"
-      @close="showSignature = false"
-    />
   </view>
 </template>
 
 <script>
-import signature from '@/components/signature/signature.vue';
+import Signature from '@/components/signature/index.vue';
 
 export default {
   components: {
-    signature
+    Signature
   },
   data() {
     return {
@@ -536,8 +579,6 @@ export default {
         '牙痛': '患牙疼痛，冷热刺激明显',
         '关节痛': '关节活动痛，活动后加重'
       },
-      // 当前疾病可用模板列表（chips）
-      templateChips: [],
       // 注意事项/复诊提示（按疾病自动附加到处置）
       treatmentCautions: {
         '腹泻': [
@@ -561,7 +602,561 @@ export default {
           '发热＞38.5℃或持续超过3天请复诊'
         ]
       },
-      // 常用药品（口服/外用一次）
+      // 结构化疾病模板库：每个疾病下多条主诉，每条主诉有独立的症状/诊断/处置
+      // 后续可以扩展 drugs 字段
+      diseaseTemplateLib: {
+        '感冒': [
+          {
+            complaint: '咳嗽流涕咽痛，伴乏力低热',
+            symptoms: [
+              '近1～2日出现咳嗽、流涕、咽痛，体温不高于38.5℃',
+              '伴轻度乏力，无明显呼吸困难'
+            ],
+            diagnoses: [
+              '上呼吸道感染（轻型）',
+              '病毒性上呼吸道感染可能'
+            ],
+            treatments: [
+              '多饮水休息，注意保暖',
+              '口服对症药物（如退热镇痛药）',
+              '观察体温及症状变化，必要时复诊'
+            ]
+          },
+          {
+            complaint: '受凉后出现流涕咳嗽、咽痛，伴头痛乏力',
+            symptoms: [
+              '受凉后出现流涕、咳嗽、咽痛约1日',
+              '伴头痛乏力，无胸闷气促'
+            ],
+            diagnoses: [
+              '风寒感冒',
+              '急性上呼吸道感染'
+            ],
+            treatments: [
+              '口服感冒药物一次，注意用药间隔',
+              '注意保暖，减少户外暴露',
+              '嘱如体温持续升高或症状加重及时就诊'
+            ]
+          },
+          {
+            complaint: '游玩途中出现流涕、喷嚏、轻度咳嗽，伴乏力',
+            symptoms: [
+              '游玩途中出现流涕、喷嚏，偶有轻度咳嗽',
+              '体温基本正常或轻度升高'
+            ],
+            diagnoses: [
+              '普通感冒',
+              '上呼吸道感染待排'
+            ],
+            treatments: [
+              '暂时减少剧烈项目，多饮温水',
+              '根据需要给予含片或口服感冒药',
+              '嘱观察症状，如发热明显或精神状态差需就诊'
+            ]
+          }
+        ],
+        '扭伤': [
+          {
+            complaint: '行走时不慎扭伤踝关节，局部肿胀疼痛，活动受限',
+            symptoms: [
+              '踝关节局部肿胀疼痛，活动受限',
+              '皮肤完整，无明显畸形'
+            ],
+            diagnoses: [
+              '踝关节软组织扭伤',
+              '韧带拉伤可能'
+            ],
+            treatments: [
+              '24小时内局部冷敷',
+              '弹力绷带加压包扎，减少负重',
+              '抬高患肢，必要时转诊影像学检查'
+            ]
+          },
+          {
+            complaint: '运动时扭伤膝关节，行走困难',
+            symptoms: [
+              '膝关节局部肿胀疼痛，行走时加重',
+              '关节活动受限'
+            ],
+            diagnoses: [
+              '膝关节扭伤',
+              '内侧副韧带拉伤可能'
+            ],
+            treatments: [
+              '局部冷敷、制动休息',
+              '建议影像学检查，必要时转诊',
+              '避免剧烈运动及负重行走'
+            ]
+          },
+          {
+            complaint: '玩项目时不慎扭伤腕关节，局部疼痛肿胀',
+            symptoms: [
+              '腕关节局部压痛、轻度肿胀',
+              '活动时疼痛加重，静息时稍缓解'
+            ],
+            diagnoses: [
+              '腕关节软组织扭伤'
+            ],
+            treatments: [
+              '局部冷敷，抬高患肢',
+              '弹力绷带适度加压固定',
+              '嘱避免提重物，如疼痛明显或活动受限加重及时复诊'
+            ]
+          }
+        ],
+        '擦伤': [
+          {
+            complaint: '玩耍时摔倒致膝部皮肤擦伤，伴轻度渗血疼痛',
+            symptoms: [
+              '膝部皮肤表浅擦伤，少量渗血',
+              '局部疼痛，无明显肿胀'
+            ],
+            diagnoses: [
+              '膝部皮肤表浅擦伤'
+            ],
+            treatments: [
+              '清水/生理盐水冲洗创面',
+              '碘伏消毒后无菌敷贴覆盖',
+              '交代保持创面清洁干燥，观察感染迹象'
+            ],
+            suggestDrugs: ['碘伏', '无菌敷贴', '海诺创可贴']
+          },
+          {
+            complaint: '活动时摔倒致手掌擦伤，局部疼痛',
+            symptoms: [
+              '手掌皮肤表浅擦伤，少量渗血或渗液',
+              '局部疼痛，活动基本自如'
+            ],
+            diagnoses: [
+              '手掌皮肤表浅擦伤'
+            ],
+            treatments: [
+              '冲洗清洁创面',
+              '碘伏消毒后覆以创可贴或无菌敷贴',
+              '嘱避免频繁摩擦及浸水'
+            ],
+            suggestDrugs: ['碘伏', '海诺创可贴']
+          },
+          {
+            complaint: '滑倒致肘部擦伤，局部疼痛伴少量渗血',
+            symptoms: [
+              '肘部局部表浅皮肤擦伤，少量渗血或结痂',
+              '关节活动基本自如，可有轻微牵拉痛'
+            ],
+            diagnoses: [
+              '肘部皮肤表浅擦伤'
+            ],
+            treatments: [
+              '生理盐水或清水冲洗创面',
+              '碘伏消毒后敷贴无菌敷料',
+              '嘱保持伤口清洁干燥，避免剧烈活动'
+            ]
+          }
+        ],
+        '烫伤': [
+          {
+            complaint: '被热饮不慎泼洒致手部局部红肿灼痛',
+            symptoms: [
+              '手背/手掌局部皮肤潮红、水肿',
+              '疼痛明显，无大疱或少量小疱'
+            ],
+            diagnoses: [
+              '手部表浅Ⅰ度热烫伤'
+            ],
+            treatments: [
+              '流动冷水冲洗15～20分钟',
+              '外用湿润烧伤膏或同类药物',
+              '无菌敷料覆盖，嘱避免刺破水疱'
+            ],
+            suggestDrugs: ['湿润烧伤膏', '无菌敷贴']
+          },
+          {
+            complaint: '接触热汤/蒸汽后前臂烫伤，局部红肿疼痛',
+            symptoms: [
+              '前臂局部皮肤潮红，轻度水肿',
+              '疼痛明显，部分可见小疱'
+            ],
+            diagnoses: [
+              '前臂表浅热烫伤'
+            ],
+            treatments: [
+              '及时冷水冲洗降温',
+              '局部外用烧伤药物并覆盖敷料',
+              '交代观察感染迹象，如红肿加重及时复诊'
+            ]
+          },
+          {
+            complaint: '不慎接触热锅边缘致手指局部烫伤',
+            symptoms: [
+              '手指局部皮肤潮红或轻度水疱',
+              '局部灼痛明显，活动基本不受限'
+            ],
+            diagnoses: [
+              '手指轻度热烫伤'
+            ],
+            treatments: [
+              '冷水冲洗患处10～15分钟',
+              '外用湿润烧伤膏或同类药物',
+              '避免刺破水疱，注意保持患处清洁'
+            ]
+          }
+        ],
+        '中暑': [
+          {
+            complaint: '户外排队久站后出现头晕乏力出汗增多',
+            symptoms: [
+              '在高温环境中活动后出现头晕、乏力、出汗增多',
+              '皮肤潮红或湿冷，口渴'
+            ],
+            diagnoses: [
+              '中暑轻型'
+            ],
+            treatments: [
+              '转移至阴凉通风处休息',
+              '口服补液或葡萄糖溶液',
+              '物理降温（冷敷额头、颈部等）',
+              '观察症状变化，如加重及时转诊'
+            ],
+            suggestDrugs: ['藿香正气水', '葡萄糖粉剂']
+          },
+          {
+            complaint: '在阳光下玩耍后感到头痛、恶心、全身乏力',
+            symptoms: [
+              '户外暴晒后出现头痛、恶心、乏力',
+              '部分伴有轻度心悸'
+            ],
+            diagnoses: [
+              '中暑样反应'
+            ],
+            treatments: [
+              '立即脱离高温环境，卧床休息',
+              '口服补液，必要时给予对症药物',
+              '嘱家属/同伴观察，如出现意识改变立即送医'
+            ]
+          }
+        ],
+        '腹泻': [
+          {
+            complaint: '进食冷饮或不洁食物后出现腹泻，多次稀便',
+            symptoms: [
+              '近1日多次稀便，伴轻度腹痛',
+              '无明显高热或严重脱水表现'
+            ],
+            diagnoses: [
+              '急性胃肠炎（轻型）'
+            ],
+            treatments: [
+              '口服补液盐/葡萄糖溶液，小口多次',
+              '暂避油腻辛辣及生冷饮食',
+              '观察体温及大便次数，症状加重时及时就诊'
+            ],
+            suggestDrugs: ['诺氟沙星胶囊', '藿香正气水']
+          },
+          {
+            complaint: '游玩期间出现腹泻伴轻度腹痛乏力',
+            symptoms: [
+              '反复稀便，腹部隐痛或阵发性腹痛',
+              '伴乏力，食欲下降'
+            ],
+            diagnoses: [
+              '功能性腹泻可能',
+              '消化不良'
+            ],
+            treatments: [
+              '建议口服补液，注意休息',
+              '清淡饮食，避免刺激性食物',
+              '如出现血便、高热等需尽快就诊'
+            ]
+          }
+        ],
+        '过敏': [
+          {
+            complaint: '接触不明物后出现全身皮疹瘙痒',
+            symptoms: [
+              '全身或局部出现红色丘疹/风团样皮疹',
+              '瘙痒明显，无呼吸困难'
+            ],
+            diagnoses: [
+              '荨麻疹样皮疹',
+              '过敏反应'
+            ],
+            treatments: [
+              '口服抗组胺药一次',
+              '局部可外用止痒药物',
+              '避免继续接触可疑过敏原，观察症状变化'
+            ],
+            suggestDrugs: ['氯雷他定片（开瑞坦）']
+          },
+          {
+            complaint: '虫咬后局部红肿瘙痒不适',
+            symptoms: [
+              '局部红肿、皮疹，瘙痒明显',
+              '一般全身情况尚可'
+            ],
+            diagnoses: [
+              '虫咬性皮炎'
+            ],
+            treatments: [
+              '局部冷敷或外用止痒药膏',
+              '必要时口服抗过敏药',
+              '嘱避免搔抓，观察有无加重或全身反应'
+            ]
+          },
+          {
+            complaint: '食用某种食物后出现口唇轻度肿胀瘙痒',
+            symptoms: [
+              '食用可疑食物后短时间内出现口周或口唇轻度肿胀、瘙痒',
+              '无明显呼吸困难或胸闷气促'
+            ],
+            diagnoses: [
+              '食物相关轻度过敏反应'
+            ],
+            treatments: [
+              '口服抗组胺药一次',
+              '暂避可疑食物，嘱观察症状变化',
+              '如出现呼吸困难、胸闷或全身症状需立即就医'
+            ]
+          }
+        ],
+        '头晕': [
+          {
+            complaint: '在园区内长时间排队后出现头晕乏力',
+            symptoms: [
+              '长时间站立或排队后感到头晕、眼前发黑',
+              '伴轻度乏力，平卧休息后好转'
+            ],
+            diagnoses: [
+              '体位性低血压可能',
+              '疲劳相关头晕'
+            ],
+            treatments: [
+              '协助平卧或半卧休息',
+              '口服葡萄糖溶液或温水',
+              '嘱缓慢起身，短期内避免剧烈项目'
+            ]
+          },
+          {
+            complaint: '天气炎热时活动后出现头晕伴出汗乏力',
+            symptoms: [
+              '在高温环境下活动后出现头晕、乏力、大量出汗',
+              '皮肤潮红或湿冷，口渴'
+            ],
+            diagnoses: [
+              '中暑轻型',
+              '高温相关不适'
+            ],
+            treatments: [
+              '转移至阴凉通风处休息',
+              '口服补液盐或葡萄糖溶液',
+              '适当物理降温，观察症状变化'
+            ]
+          }
+        ],
+        '头痛': [
+          {
+            complaint: '久看手机或屏幕后出现头痛、眼胀',
+            symptoms: [
+              '长时间使用电子屏幕后出现额部或双侧头痛',
+              '伴眼胀、颈部酸痛，休息后可缓解'
+            ],
+            diagnoses: [
+              '紧张性头痛',
+              '视疲劳相关头痛'
+            ],
+            treatments: [
+              '建议暂时远离屏幕，闭目休息',
+              '根据需要口服对症止痛药一次',
+              '注意补水与颈肩放松练习'
+            ]
+          },
+          {
+            complaint: '户外活动后出现搏动性头痛，伴轻度恶心',
+            symptoms: [
+              '一侧或双侧搏动样头痛',
+              '可伴恶心、对强光和噪声敏感'
+            ],
+            diagnoses: [
+              '偏头痛样头痛可能'
+            ],
+            treatments: [
+              '安排在安静、光线柔和环境休息',
+              '根据情况口服止痛药物一次',
+              '如反复发作或伴有神经系统症状建议进一步检查'
+            ]
+          }
+        ],
+
+        // 低血糖相关
+        '低血糖': [
+          {
+            complaint: '空腹游玩后出现心慌出汗手抖',
+            symptoms: [
+              '长时间未进食后出现心慌、出冷汗、手抖',
+              '可伴轻度头晕、乏力'
+            ],
+            diagnoses: [
+              '低血糖样反应',
+              '空腹相关低血糖可能'
+            ],
+            treatments: [
+              '立即口服含糖饮料或葡萄糖溶液',
+              '短期观察症状变化，缓解后继续补充少量主食',
+              '提醒避免长时间空腹进行高强度活动，如症状不缓解建议就医'
+            ],
+            suggestDrugs: ['葡萄糖粉剂']
+          },
+          {
+            complaint: '测血糖结果偏低，伴头晕乏力',
+            symptoms: [
+              '血糖监测结果低于正常范围',
+              '伴有乏力、头晕、出汗等不适'
+            ],
+            diagnoses: [
+              '低血糖发作（轻型）'
+            ],
+            treatments: [
+              '立即补充糖分，口服葡萄糖或含糖饮料',
+              '复测血糖并观察症状变化',
+              '有糖尿病等基础疾病者建议回原随访医院评估用药'
+            ]
+          }
+        ],
+
+        // 发作/癫痫/晕厥相关
+        '发作': [
+          {
+            complaint: '既往有癫痫史，本次在园区内出现抽搐发作',
+            symptoms: [
+              '突发意识障碍，伴四肢抽动',
+              '发作后短暂嗜睡或意识模糊'
+            ],
+            diagnoses: [
+              '癫痫发作（既往癫痫史）'
+            ],
+            treatments: [
+              '发作期注意头偏向一侧，防止误吸，勿强行按压肢体',
+              '发作停止后侧卧位休息，保持呼吸道通畅',
+              '建议尽快联系家属并由神经专科进一步评估'
+            ]
+          },
+          {
+            complaint: '无明确既往史，本次突发抽搐样发作伴短暂意识丧失',
+            symptoms: [
+              '短暂意识障碍或意识丧失',
+              '四肢不自主抽动，事后记忆不清'
+            ],
+            diagnoses: [
+              '癫痫样发作待排'
+            ],
+            treatments: [
+              '发作期注意安全保护，防止跌落伤及头面部',
+              '发作后注意生命体征监测',
+              '建议尽快转诊神经专科完善检查'
+            ]
+          },
+          {
+            complaint: '短暂晕倒后自行苏醒，无持续神经功能缺损',
+            symptoms: [
+              '突发短暂意识丧失，倒地后很快清醒',
+              '事后可伴轻度乏力或头晕'
+            ],
+            diagnoses: [
+              '不明原因晕厥待排'
+            ],
+            treatments: [
+              '平卧抬高下肢，监测血压和心率',
+              '建议行心电图及相关检查',
+              '如反复发作或伴胸痛气促等症状应尽快就医'
+            ]
+          }
+        ],
+
+        // 测量/监测类
+        '测量监测': [
+          {
+            complaint: '因自觉不适前来测量血压',
+            symptoms: [
+              '主诉头晕、心慌或乏力等症状',
+              '血压监测结果在正常范围或略有波动'
+            ],
+            diagnoses: [
+              '血压监测（结果正常）'
+            ],
+            treatments: [
+              '记录血压结果，建议保持良好作息',
+              '如反复出现不适或血压明显波动，建议门诊随访'
+            ]
+          },
+          {
+            complaint: '因头晕来测血压，结果偏高',
+            symptoms: [
+              '血压监测结果偏高，伴轻度不适',
+              '可有头晕、头胀或耳鸣'
+            ],
+            diagnoses: [
+              '血压监测（结果偏高）',
+              '血压偏高待复测'
+            ],
+            treatments: [
+              '建议安静休息后复测血压',
+              '如多次测量均偏高，建议至门诊进一步评估',
+              '注意饮食和作息管理'
+            ]
+          },
+          {
+            complaint: '因乏力、心慌等不适来测血糖',
+            symptoms: [
+              '血糖监测结果偏低',
+              '伴有乏力、头晕、手抖等低血糖相关症状'
+            ],
+            diagnoses: [
+              '血糖监测（结果偏低）',
+              '低血糖样反应'
+            ],
+            treatments: [
+              '口服含糖饮料或葡萄糖溶液',
+              '短期内避免再次空腹高强度活动',
+              '如症状不缓解或反复发作应尽快就医'
+            ],
+            suggestDrugs: ['葡萄糖粉剂']
+          }
+        ],
+
+        // 劳损/慢性疼痛（主要面向员工）
+        '劳损/慢性疼痛': [
+          {
+            complaint: '长时间站立或弯腰后出现腰背酸痛',
+            symptoms: [
+              '腰背部酸胀不适',
+              '活动后疼痛加重，休息后可缓解'
+            ],
+            diagnoses: [
+              '腰背肌筋膜炎'
+            ],
+            treatments: [
+              '减少久坐久站，适当活动和拉伸腰背肌肉',
+              '可外用止痛贴等对症处理',
+              '如疼痛持续加重或伴下肢放射痛建议进一步检查'
+            ]
+          },
+          {
+            complaint: '长期伏案或低头工作后颈肩部酸痛不适',
+            symptoms: [
+              '颈肩部肌肉紧张酸痛',
+              '久坐或保持同一姿势后症状加重'
+            ],
+            diagnoses: [
+              '颈椎病可能'
+            ],
+            treatments: [
+              '注意工作姿势，每小时起身活动颈肩部',
+              '可行颈肩放松训练及局部热敷',
+              '如伴上肢放射痛或麻木应尽快就医'
+            ]
+          }
+        ]
+      },
+      // 常用药材（口服/外用一次）
       drugSuggestionList: [
         '棉签','碘伏','海诺创可贴','云南白药创可贴','一次性乳胶手套','纱布块','3%过氧化氢消毒液',
         '余氯试纸','葡萄糖粉剂','利多卡因气雾剂','消旋山莨菪碱片','甲氧氯普胺片','诺氟沙星胶囊',
@@ -570,13 +1165,14 @@ export default {
         '藿香正气水','板蓝根颗粒','无菌敷贴','外科口罩','湿润烧伤膏','氯雷他定片（开瑞坦）',
         '金士康和盐水清洗液'
       ],
+      rxDrugNames: ['诺氟沙星胶囊', '速效救心丸', '布洛芬缓释胶囊', '多潘立酮片', '甲氧氯普胺片'],
       form: {
         visitDateTime: '',
         name: '',
         gender: '男',
         age: null,
         identity: '游客',
-        location: 'land_park',
+        location: '',
         visitType: 'clinic',
         injuryLocation: '',
         chiefComplaint: '',
@@ -590,12 +1186,14 @@ export default {
         doctorSign: '',
         signTime: ''
       },
+      showLocationTip: true, // 控制园区提示弹框是否显示
+      noTipNextTime: false,  // 下次不再提醒
       currentDateTime: '',
       selectedDrug: null,
       selectedBatch: null,
       availableStock: 0,
       
-      // 药品搜索相关
+      // 药材搜索相关
       drugSearchText: '',
       allDrugs: [],
       filteredDrugs: [],
@@ -636,6 +1234,15 @@ export default {
       showDiagnosisList: false,
       filteredTreatments: [],
       showTreatmentList: false,
+      // 主诉下拉
+      filteredComplaints: [],
+      showComplaintList: false,
+      complaintSelectedMode: false,  // 主诉是否已选择（自由编辑模式）
+      complaintFocus: false,  // 控制主诉输入框聚焦
+      // 下拉隐藏延迟计时器
+      diseaseBlurTimer: null,
+      complaintBlurTimer: null,
+      diagnosisBlurTimer: null,
       // 年龄输入焦点（用于强制弹出数字键盘）
       ageFocus: false,
       // 园区常用地点词库（来自园区运营文件与现场点位）
@@ -657,27 +1264,241 @@ export default {
       showLocationList: false,
       
       showDrugSelector: false,
-      showSignature: false,
       submitting: false,
-      continueAfterSubmit: true  // 默认开启连续登记
+      continueAfterSubmit: true,  // 默认开启连续登记
+
+      // 当前聚焦字段的容器 id，用于配合 scroll-view 的 scroll-into-view，让输入框始终滚到键盘上方
+      activeFieldId: '',
+
+      // 定时器 ID：用于更新就诊时间，页面卸载时清理
+      dateTimeTimerId: null,
+
+      // 用户自定义疾病模板（本地持久化），按疾病名分组
+      // 结构示例：
+      // {
+      //   '扭伤': {
+      //      complaints: [ '行走时不慎扭伤踝关节，局部肿胀疼痛，活动受限', ... ],
+      //      diagnosis: [ '软组织扭伤（待进一步检查）', ... ],
+      //      treatments: [ '局部冷敷', '弹力绷带加压包扎', ... ]
+      //   },
+      //   ...
+      // }
+      userDiseaseTemplates: {},
+
+      // 多框搜索统一索引：汇总所有模板为 [{disease, complaint, diagnoses[], treatments[], symptoms[], source}]
+      templateIndex: [],
+      // 全局搜索关键词（用于跨字段联动）
+      globalSearchKeyword: ''
     };
+  },
+
+  computed: {
+    currentLocationLabel() {
+      const loc = this.form?.location
+      if (loc === 'land_park') return '陆园'
+      if (loc === 'water_park') return '水园'
+      return '未选择'
+    },
+
+    // 未选择合法园区时，锁定表单核心输入
+    locationLocked() {
+      const loc = this.form?.location
+      return !loc || (loc !== 'land_park' && loc !== 'water_park')
+    },
+    
+    // 根据主诉内容长度动态调整字号
+    complaintFontSizeClass() {
+      const length = (this.form.chiefComplaint || '').length;
+      if (length > 50) return 'font-small';
+      if (length > 30) return 'font-medium';
+      return '';
+    },
+    
+    // 根据诊断内容长度动态调整字号
+    diagnosisFontSizeClass() {
+      const length = (this.form.diagnosis || '').length;
+      if (length > 50) return 'font-small';
+      if (length > 30) return 'font-medium';
+      return '';
+    }
   },
 
   onLoad() {
     this.updateDateTime();
-    // 每分钟更新一次时间
-    setInterval(() => {
+    // 每分钟更新一次时间，并记录定时器 ID，便于卸载时清理
+    this.dateTimeTimerId = setInterval(() => {
       this.updateDateTime();
     }, 60000);
     
     // 恢复上次选择的园区
     this.restoreLastLocation();
     
-    // 加载药品列表
+    // 恢复用户自定义疾病模板
+    this.restoreUserDiseaseTemplates();
+
+    // 构建多框搜索统一索引
+    this.buildTemplateIndex();
+
+    // 加载药材列表
     this.loadAllDrugs();
   },
 
+  onUnload() {
+    // 页面卸载时清理定时器，避免多次进入页面产生重复计时
+    if (this.dateTimeTimerId) {
+      clearInterval(this.dateTimeTimerId);
+      this.dateTimeTimerId = null;
+    }
+  },
+
   methods: {
+    onFieldFocus(id) {
+      this.activeFieldId = id;
+    },
+    // 医生签名组件回调
+    onDoctorSignChange(value) {
+      // value 为签名图片的云文件ID或Base64，由 Signature 组件约定
+      this.form.doctorSign = value;
+      // 同时记录签名时间，便于在页面显示“签名时间”
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = (now.getMonth() + 1).toString().padStart(2, '0');
+      const d = now.getDate().toString().padStart(2, '0');
+      const hh = now.getHours().toString().padStart(2, '0');
+      const mm = now.getMinutes().toString().padStart(2, '0');
+      const ss = now.getSeconds().toString().padStart(2, '0');
+      this.form.signTime = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    },
+
+    // 恢复用户自定义疾病模板（本地存储）
+    restoreUserDiseaseTemplates() {
+      try {
+        const stored = uni.getStorageSync('clinic_user_disease_templates');
+        if (stored && typeof stored === 'object') {
+          this.userDiseaseTemplates = stored;
+        }
+      } catch (e) {
+        console.error('恢复用户疾病模板失败:', e);
+        this.userDiseaseTemplates = {};
+      }
+    },
+
+    // 构建多框搜索统一索引：汇总系统模板、结构化模板、用户自定义模板
+    buildTemplateIndex() {
+      const index = [];
+
+      // 1) 结构化模板库 diseaseTemplateLib
+      Object.keys(this.diseaseTemplateLib || {}).forEach(disease => {
+        const list = this.diseaseTemplateLib[disease] || [];
+        list.forEach((tpl, idx) => {
+          if (tpl && tpl.complaint) {
+            index.push({
+              disease,
+              complaint: tpl.complaint,
+              symptoms: tpl.symptoms || [],
+              diagnoses: tpl.diagnoses || [],
+              treatments: tpl.treatments || [],
+              source: 'structured',
+              idx
+            });
+          }
+        });
+      });
+
+      // 2) 旧版模板：complaintTemplates + diseaseTemplates + treatmentTemplates
+      Object.keys(this.complaintTemplates || {}).forEach(disease => {
+        const complaint = this.complaintTemplates[disease];
+        const diagnoses = this.diseaseTemplates?.[disease] || [];
+        const treatments = this.treatmentTemplates?.[disease] || [];
+        if (complaint) {
+          index.push({
+            disease,
+            complaint,
+            symptoms: [],
+            diagnoses,
+            treatments,
+            source: 'legacy'
+          });
+        }
+      });
+
+      // 3) 用户自定义模板 userDiseaseTemplates
+      Object.keys(this.userDiseaseTemplates || {}).forEach(disease => {
+        const userTpl = this.userDiseaseTemplates[disease];
+        if (!userTpl) return;
+        (userTpl.complaints || []).forEach((complaint, idx) => {
+          if (complaint) {
+            index.push({
+              disease,
+              complaint,
+              symptoms: [],
+              diagnoses: userTpl.diagnosis || [],
+              treatments: userTpl.treatments || [],
+              source: 'user',
+              userIdx: idx
+            });
+          }
+        });
+      });
+
+      this.templateIndex = index;
+      console.log(`构建模板索引完成，共 ${index.length} 条记录`);
+    },
+
+    // 全局搜索：多条件并列搜索(AND逻辑)，同时匹配疾病/主诉/诊断三个关键词
+    performGlobalSearch(diseaseKw, complaintKw, diagnosisKw) {
+      const dKw = (diseaseKw || '').trim().toLowerCase();
+      const cKw = (complaintKw || '').trim().toLowerCase();
+      const dgKw = (diagnosisKw || '').trim().toLowerCase();
+
+      // 如果三个关键词都为空，返回所有疾病和空列表
+      if (!dKw && !cKw && !dgKw) {
+        return {
+          diseases: this.diseaseOptions,
+          complaints: [],
+          diagnoses: []
+        };
+      }
+
+      // 多条件并列过滤：同时满足所有非空关键词
+      const matchedRecords = this.templateIndex.filter(rec => {
+        let match = true;
+        
+        // 疾病关键词匹配
+        if (dKw) {
+          match = match && rec.disease.toLowerCase().includes(dKw);
+        }
+        
+        // 主诉关键词匹配
+        if (cKw) {
+          match = match && rec.complaint.toLowerCase().includes(cKw);
+        }
+        
+        // 诊断关键词匹配
+        if (dgKw) {
+          match = match && (rec.diagnoses || []).some(d => d.toLowerCase().includes(dgKw));
+        }
+        
+        return match;
+      });
+
+      // 提取匹配的疾病、主诉、诊断（去重）
+      const diseases = Array.from(new Set(matchedRecords.map(r => r.disease)));
+      const complaints = matchedRecords.map((r, idx) => ({
+        key: `${r.disease}_${idx}`,  // 添加唯一 key
+        label: r.complaint,
+        disease: r.disease,
+        record: r
+      }));
+      const diagSet = new Set();
+      matchedRecords.forEach(r => {
+        (r.diagnoses || []).forEach(d => diagSet.add(d));
+      });
+      const diagnoses = Array.from(diagSet);
+
+      return { diseases, complaints, diagnoses };
+    },
+
     setIdentity(val) {
       if (!this.form) return
       this.form.identity = val
@@ -685,6 +1506,39 @@ export default {
     setVisitType(val) {
       if (!this.form) return
       this.form.visitType = val
+    },
+    openLocationSelector() {
+      const itemList = this.locations.map(l => l.label)
+      uni.showActionSheet({
+        itemList,
+        success: (res) => {
+          const idx = res.tapIndex
+          const target = this.locations[idx]
+          if (target) {
+            this.selectLocation(target.value)
+          }
+        }
+      })
+    },
+    // 关闭园区提示弹框
+    closeLocationTip() {
+      this.showLocationTip = false
+      try {
+        if (this.noTipNextTime) {
+          uni.setStorageSync('clinic_location_tip_closed', true)
+        }
+      } catch (e) {}
+    },
+
+    // 从弹框中选择园区
+    handleLocationSelect(location) {
+      this.selectLocation(location)
+      try {
+        if (this.noTipNextTime) {
+          uni.setStorageSync('clinic_location_tip_closed', true)
+        }
+      } catch (e) {}
+      this.showLocationTip = false
     },
     updateDateTime() {
       const now = new Date();
@@ -698,7 +1552,7 @@ export default {
       this.form.visitDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     },
 
-    // 加载所有药品
+    // 加载所有药材
     async loadAllDrugs() {
       try {
         const res = await wx.cloud.callFunction({
@@ -713,26 +1567,27 @@ export default {
           this.allDrugs = res.result.data.list || [];
         }
       } catch (err) {
-        console.error('加载药品列表失败:', err);
+        console.error('加载药材列表失败:', err);
       }
     },
 
-    // 药品输入框获得焦点
+    // 药材输入框获得焦点
     async onDrugInputFocus() {
       this.showDrugList = true;
       
-      // 如果没有输入内容，显示当前园区的所有药品
+      // 如果没有输入内容，显示当前园区的所有药材
       if (!this.drugSearchText || this.drugSearchText.trim() === '') {
-        await this.loadLocationDrugs();
+        // 没有输入内容，显示所有药材
+        this.filteredDrugs = this.allDrugs;
       } else {
         this.onDrugSearch();
       }
     },
 
-    // 加载当前园区的药品
+    // 加载当前园区的药材
     async loadLocationDrugs() {
       try {
-        uni.showLoading({ title: '加载药品...' });
+        uni.showLoading({ title: '加载药材...' });
         
         const res = await wx.cloud.callFunction({
           name: 'stockManage',
@@ -749,7 +1604,7 @@ export default {
 
         if (res.result.success) {
           const stockList = res.result.data.list || [];
-          // 过滤出有库存的药品
+          // 过滤出有库存的药材
           this.filteredDrugs = stockList
             .filter(item => item.quantity > 0)
             .map(item => ({
@@ -762,153 +1617,188 @@ export default {
               stock: item.quantity
             }));
           
-          console.log(`加载了${this.filteredDrugs.length}种药品`);
+          console.log(`加载了${this.filteredDrugs.length}种药材`);
         } else {
-          // 如果获取失败，显示所有药品
+          // 如果获取失败，显示所有药材
           this.filteredDrugs = this.allDrugs.slice(0, 50);
         }
       } catch (err) {
-        console.error('加载园区药品失败:', err);
+        console.error('加载园区药材失败:', err);
         uni.hideLoading();
-        // 失败时显示所有药品
+        // 失败时显示所有药材
         this.filteredDrugs = this.allDrugs.slice(0, 50);
       }
     },
 
-    // 药品搜索
+    // 药材搜索
     onDrugSearch() {
       if (!this.drugSearchText || this.drugSearchText.trim() === '') {
-        // 没有搜索内容时，加载当前园区药品
+        // 没有搜索内容时，加载当前园区药材
         this.loadLocationDrugs();
         return;
       }
 
       const keyword = this.drugSearchText.toLowerCase();
-      // 从当前园区的药品中搜索
+      // 从当前园区的药材中搜索
       if (this.filteredDrugs.length > 0 && !this.drugSearchText) {
-        // 已经加载了园区药品，在其中搜索
+        // 已经加载了园区药材，在其中搜索
         const currentList = [...this.filteredDrugs];
         this.filteredDrugs = currentList.filter(drug => {
-          return drug.name.toLowerCase().includes(keyword) ||
-                 (drug.specification && drug.specification.toLowerCase().includes(keyword));
+          const name = (drug.name || '').toLowerCase();
+          const genericName = (drug.genericName || '').toLowerCase();
+          const spec = (drug.specification || '').toLowerCase();
+          const tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
+          const hitTrade = tradeNames.some(t => (t || '').toLowerCase().includes(keyword));
+
+          return name.includes(keyword) ||
+                 genericName.includes(keyword) ||
+                 spec.includes(keyword) ||
+                 hitTrade;
         });
       } else {
-        // 从所有药品中搜索
+        // 从所有药材中搜索
         this.filteredDrugs = this.allDrugs.filter(drug => {
-          return drug.name.toLowerCase().includes(keyword) ||
-                 (drug.pinyin && drug.pinyin.toLowerCase().includes(keyword)) ||
-                 (drug.specification && drug.specification.toLowerCase().includes(keyword));
+          const name = (drug.name || '').toLowerCase();
+          const genericName = (drug.genericName || '').toLowerCase();
+          const pinyin = (drug.pinyin || '').toLowerCase();
+          const spec = (drug.specification || drug.spec || '').toLowerCase();
+          const tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
+          const hitTrade = tradeNames.some(t => (t || '').toLowerCase().includes(keyword));
+
+          return name.includes(keyword) ||
+                 genericName.includes(keyword) ||
+                 pinyin.includes(keyword) ||
+                 spec.includes(keyword) ||
+                 hitTrade;
         }).slice(0, 30); // 最多显示30个结果
       }
     },
 
-    // 从列表选择药品
+    // 从列表选择药材
     selectDrugFromList(drug) {
       this.drugSearchText = drug.name;
-      this.showDrugList = false;
       this.onDrugSelect(drug);
+      this.showDrugList = false;
     },
 
-    // 疾病名称获得焦点
+    // 疾病名称获得焦点：显示下拉列表
     onDiseaseFocus() {
-      // 焦点进入时，显示所有疾病列表
-      if (!this.form.diseaseName || this.form.diseaseName.trim() === '') {
-        // 没有输入内容，显示所有疾病
-        this.filteredDiseases = this.diseaseOptions;
-      } else {
-        // 有输入内容，显示过滤后的疾病
-        const keyword = this.form.diseaseName.toLowerCase();
-        this.filteredDiseases = this.diseaseOptions.filter(disease => {
-          return disease.toLowerCase().includes(keyword);
-        });
+      // 清除失焦隐藏计时器
+      if (this.diseaseBlurTimer) {
+        clearTimeout(this.diseaseBlurTimer);
+        this.diseaseBlurTimer = null;
       }
-      this.showDiseaseList = true;
+      
+      // 触发全局搜索，基于所有三个框的关键词
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+      
+      // 显示下拉（即使为空也显示，会显示所有疾病）
+      this.showDiseaseList = this.filteredDiseases.length > 0;
     },
     
-    // 疾病名称输入
-    onDiseaseInput() {
-      if (!this.form.diseaseName || this.form.diseaseName.trim() === '') {
-        // 显示所有常见疾病
-        this.filteredDiseases = this.diseaseOptions;
-        this.showDiseaseList = true;
-        return;
+    onDiseaseBlur() {
+      const text = (this.form.diseaseName || '').trim();
+      if (text) {
+        // 1）先按疾病大类精确匹配
+        const hasDisease = this.templateIndex.some(r => r.disease === text);
+        if (hasDisease) {
+          this.selectDisease(text);
+        } else {
+          // 2）再按标准诊断名匹配
+          const diagRecord = this.templateIndex.find(r =>
+            (r.diagnoses || []).some(d => d === text)
+          );
+          if (diagRecord) {
+            this.selectDiagnosis(text);
+          }
+        }
       }
 
-      const keyword = this.form.diseaseName.toLowerCase();
-      this.filteredDiseases = this.diseaseOptions.filter(disease => {
-        return disease.toLowerCase().includes(keyword);
-      });
-      
-      // 如果有匹配结果，显示列表
-      if (this.filteredDiseases.length > 0) {
-        this.showDiseaseList = true;
-      }
-      // 精确匹配时载入模板
-      const exact = this.diseaseOptions.find(d => d === this.form.diseaseName);
-      if (exact) {
-        this.loadTemplatesForDisease(exact);
-        this.updateTemplateChips(exact);
+      // 延迟隐藏下拉，给点击事件留时间
+      this.diseaseBlurTimer = setTimeout(() => {
+        this.showDiseaseList = false;
+      }, 200);
+    },
+    
+    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉
+    onDiseaseInput() {
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+
+      this.showDiseaseList = this.filteredDiseases.length > 0;
+      // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
+      // 如果当前输入的疾病名称与某个疾病完全匹配，则自动按该疾病刷新联动字段
+      const kw = (this.form.diseaseName || '').trim();
+      if (kw && this.filteredDiseases.includes(kw)) {
+        this.selectDisease(kw);
       }
     },
 
-    // 选择疾病
+    // 选择疾病：自动填充第一条匹配的主诉/诊断/处置
     selectDisease(disease) {
-      this.form.diseaseName = disease;
-      this.showDiseaseList = false;  // 选择后隐藏列表
-      this.loadTemplatesForDisease(disease);
-      this.autoFillByDisease(disease);
-      this.updateTemplateChips(disease);
+      // 清除失焦隐藏计时器
+      if (this.diseaseBlurTimer) {
+        clearTimeout(this.diseaseBlurTimer);
+        this.diseaseBlurTimer = null;
+      }
+      
+      // 选择后关闭下拉
+      this.showDiseaseList = false;
+
+      // 查找该疾病的第一条模板记录
+      const record = this.templateIndex.find(r => r.disease === disease);
+      if (record) {
+        const mainDiagnosis = (record.diagnoses && record.diagnoses[0]) || '';
+        this.form.diseaseName = mainDiagnosis || disease;
+        this.form.chiefComplaint = record.complaint;
+        if (record.symptoms && record.symptoms.length) {
+          this.form.symptom = record.symptoms.join('；');
+        }
+        if (record.diagnoses && record.diagnoses.length) {
+          // 初步诊断字段使用模板中的完整诊断组合
+          this.form.diagnosis = record.diagnoses.join('；');
+        }
+        if (record.treatments && record.treatments.length) {
+          this.form.treatment = record.treatments.join('；');
+        }
+        if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
+          this.applySuggestDrugs(record.suggestDrugs);
+        }
+      } else {
+        // 回退到旧逻辑
+        this.loadTemplatesForDisease(disease);
+        this.autoFillByDisease(disease);
+      }
     },
     // 依据疾病载入诊断与处置模板
     loadTemplatesForDisease(disease) {
-      const diag = this.diseaseTemplates?.[disease] || [];
+      const baseDiag = this.diseaseTemplates?.[disease] || [];
+      // 合并结构化模板中的诊断
+      const structDiag = (this.diseaseTemplateLib?.[disease] || [])
+        .flatMap(t => t.diagnoses || []);
+      const diag = Array.from(new Set([...(baseDiag || []), ...structDiag]));
       const treat = this.treatmentTemplates?.[disease] || [];
       this.filteredDiagnosis = diag;
       this.filteredTreatments = treat;
     },
-    // 根据疾病更新主诉/诊断/处置模板chips
-    updateTemplateChips(disease) {
-      const chips = [];
-
-      // 主诉模板
-      const complaint = this.complaintTemplates?.[disease];
-      if (complaint) {
-        chips.push({
-          key: `complaint-${disease}`,
-          type: 'complaint',
-          label: `主诉：${complaint}`,
-          isCustom: false
-        });
-      }
-
-      // 诊断模板（取前若干条）
-      const diagList = this.diseaseTemplates?.[disease] || [];
-      diagList.slice(0, 3).forEach((text, index) => {
-        chips.push({
-          key: `diag-${disease}-${index}`,
-          type: 'diagnosis',
-          label: `诊断：${text}`,
-          isCustom: false
-        });
-      });
-
-      // 处置模板（取前若干条）
-      const treatList = this.treatmentTemplates?.[disease] || [];
-      treatList.slice(0, 3).forEach((text, index) => {
-        chips.push({
-          key: `treat-${disease}-${index}`,
-          type: 'treatment',
-          label: `处置：${text}`,
-          isCustom: false
-        });
-      });
-
-      this.templateChips = chips;
-    },
     // 自动按疾病填入主诉/诊断/处置（可编辑）
     autoFillByDisease(disease) {
       const complaint = this.complaintTemplates?.[disease];
-      const diag = (this.diseaseTemplates?.[disease] || [])[0];
+      const diagList = this.diseaseTemplates?.[disease] || [];
+      const diag = diagList[0];
       const treats = (this.treatmentTemplates?.[disease] || []).slice(0, 2);
       // 附加注意事项/复诊提示
       const cautions = this.treatmentCautions?.[disease] || [];
@@ -920,32 +1810,187 @@ export default {
       };
       pushUnique(treats);
       pushUnique(cautions);
+      // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
       if (complaint) this.form.chiefComplaint = complaint;
-      if (diag && !this.form.diagnosis) this.form.diagnosis = diag;
-      if (merged.length && !this.form.treatment) this.form.treatment = merged.join('；');
+      if (diag) {
+        // 疾病名称使用首个诊断，初步诊断使用全部诊断组合
+        this.form.diseaseName = diag;
+        this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+      }
+      if (merged.length) this.form.treatment = merged.join('；');
     },
     // 诊断输入与选择
+    // 诊断获得焦点：显示下拉列表
     onDiagnosisFocus() {
-      if (!this.form.diagnosis || this.form.diagnosis.trim() === '') {
-        const src = this.diseaseTemplates?.[this.form.diseaseName] || [];
-        this.filteredDiagnosis = src;
-        this.showDiagnosisList = src.length > 0;
-      }
+      // 触发全局搜索，基于所有三个框的关键词
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+      
+      // 显示下拉（即使为空也显示，基于其他框的关键词）
+      this.showDiagnosisList = this.filteredDiagnosis.length > 0;
     },
     onDiagnosisInput() {
-      const src = this.diseaseTemplates?.[this.form.diseaseName] || [];
-      const text = (this.form.diagnosis || '').trim().toLowerCase();
-      if (!text) {
-        this.filteredDiagnosis = src;
-        this.showDiagnosisList = src.length > 0;
-        return;
-      }
-      this.filteredDiagnosis = src.filter(s => s.toLowerCase().includes(text));
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+
       this.showDiagnosisList = this.filteredDiagnosis.length > 0;
     },
     selectDiagnosis(text) {
-      this.form.diagnosis = text;
+      // 查找包含该诊断的第一条模板记录
+      const record = this.templateIndex.find(r => 
+        (r.diagnoses || []).some(d => d === text)
+      );
+
+      if (record) {
+        // 疾病名称直接使用所选标准诊断名
+        this.form.diseaseName = text;
+        this.form.chiefComplaint = record.complaint;
+        // 初步诊断使用该模板下的完整诊断组合
+        if (record.diagnoses && record.diagnoses.length) {
+          this.form.diagnosis = record.diagnoses.join('；');
+        } else {
+          this.form.diagnosis = text;
+        }
+        if (record.symptoms && record.symptoms.length) {
+          this.form.symptom = record.symptoms.join('；');
+        }
+        if (record.treatments && record.treatments.length) {
+          this.form.treatment = record.treatments.join('；');
+        }
+        // 如模板提供推荐用药列表，自动按顺序触发联动药材逻辑
+        if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
+          record.suggestDrugs.forEach(name => {
+            if (name) {
+              this.onDrugChip(name);
+            }
+          });
+        }
+      } else {
+        this.form.diagnosis = text;
+      }
+
       this.showDiagnosisList = false;
+    },
+    // 主诉获得焦点：根据编辑模式决定是否触发搜索
+    onComplaintFocus() {
+      // 清除失焦隐藏计时器
+      if (this.complaintBlurTimer) {
+        clearTimeout(this.complaintBlurTimer);
+        this.complaintBlurTimer = null;
+      }
+      
+      const currentComplaint = (this.form.chiefComplaint || '').trim();
+      
+      // 情况1：自由编辑模式（已选择过） → 不触发搜索，不显示下拉
+      if (this.complaintSelectedMode && currentComplaint) {
+        this.showComplaintList = false;
+        return;
+      }
+      
+      // 情况2：输入框为空 → 重置为搜索模式，基于其他框的关键词显示联动结果
+      if (!currentComplaint) {
+        this.complaintSelectedMode = false;
+      }
+      
+      // 情况3：搜索模式 → 触发全局搜索（基于AND逻辑）并显示下拉
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+      
+      // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
+      this.showComplaintList = this.filteredComplaints.length > 0;
+    },
+    onComplaintInput() {
+      const currentComplaint = (this.form.chiefComplaint || '').trim();
+      
+      // 如果内容被清空，重置为搜索模式
+      if (!currentComplaint) {
+        this.complaintSelectedMode = false;
+      }
+      
+      // 如果已选择主诉（自由编辑模式），不显示下拉
+      if (this.complaintSelectedMode && currentComplaint) {
+        this.showComplaintList = false;
+        return;
+      }
+      
+      // 搜索模式：执行全局搜索并显示下拉
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      this.filteredDiseases = result.diseases;
+      this.filteredComplaints = result.complaints;
+      this.filteredDiagnosis = result.diagnoses;
+
+      this.showComplaintList = this.filteredComplaints.length > 0;
+    },
+    
+    onComplaintBlur() {
+      // 失焦时重置聚焦状态
+      this.complaintFocus = false;
+      // 延迟隐藏下拉，给点击事件留时间
+      this.complaintBlurTimer = setTimeout(() => {
+        this.showComplaintList = false;
+      }, 200);
+    },
+    selectComplaint(opt) {
+      // 清除失焦隐藏计时器
+      if (this.complaintBlurTimer) {
+        clearTimeout(this.complaintBlurTimer);
+        this.complaintBlurTimer = null;
+      }
+      
+      if (!opt || !opt.record) return;
+      const rec = opt.record;
+
+      // 自动填充疾病、主诉、症状、诊断、处置
+      const mainDiagnosis = (rec.diagnoses && rec.diagnoses[0]) || '';
+      this.form.diseaseName = mainDiagnosis || rec.disease;
+      this.form.chiefComplaint = rec.complaint;
+      if (rec.symptoms && rec.symptoms.length) {
+        this.form.symptom = rec.symptoms.join('；');
+      }
+      if (rec.diagnoses && rec.diagnoses.length) {
+        // 初步诊断字段使用模板中的完整诊断组合
+        this.form.diagnosis = rec.diagnoses.join('；');
+      }
+      if (rec.treatments && rec.treatments.length) {
+        this.form.treatment = rec.treatments.join('；');
+      }
+      if (Array.isArray(rec.suggestDrugs) && rec.suggestDrugs.length) {
+        this.applySuggestDrugs(rec.suggestDrugs);
+      }
+
+      // 进入自由编辑模式
+      this.complaintSelectedMode = true;
+      this.showComplaintList = false;
+      
+      // 自动聚焦到主诉输入框，方便立即编辑
+      this.$nextTick(() => {
+        this.complaintFocus = false;
+        this.$nextTick(() => {
+          this.complaintFocus = true;
+        });
+      });
     },
     // 处置输入与选择
     onTreatmentFocus() {
@@ -974,29 +2019,7 @@ export default {
       const base = (this.form.treatment || '').trim();
       this.form.treatment = base ? `${base}；${token}` : token;
     },
-    // 点击模板chips，按类型填充主诉/诊断/处置
-    applyTemplate(tpl) {
-      if (!tpl || !tpl.type) return;
-
-      const text = (tpl.label || '').replace(/^主诉：|^诊断：|^处置：/, '');
-
-      switch (tpl.type) {
-        case 'complaint':
-          this.form.chiefComplaint = text;
-          break;
-        case 'diagnosis':
-          this.form.diagnosis = text;
-          break;
-        case 'treatment':
-          // 处置可以叠加
-          this.appendTreatment(text);
-          break;
-        default:
-          break;
-      }
-    },
-
-    // 将当前输入内容保存为自定义模板chips
+    // 将当前输入内容保存为自定义模板（全局搜索使用）
     saveCurrentAsTemplate() {
       const disease = (this.form.diseaseName || '').trim();
       if (!disease) {
@@ -1008,45 +2031,73 @@ export default {
       const diagnosis = (this.form.diagnosis || '').trim();
       const treatment = (this.form.treatment || '').trim();
 
-      const newChips = [...this.templateChips];
-
-      if (complaint) {
-        newChips.push({
-          key: `custom-complaint-${Date.now()}`,
-          type: 'complaint',
-          label: `主诉：${complaint}`,
-          isCustom: true
-        });
-      }
-
-      if (diagnosis) {
-        newChips.push({
-          key: `custom-diagnosis-${Date.now() + 1}`,
-          type: 'diagnosis',
-          label: `诊断：${diagnosis}`,
-          isCustom: true
-        });
-      }
-
-      if (treatment) {
-        newChips.push({
-          key: `custom-treatment-${Date.now() + 2}`,
-          type: 'treatment',
-          label: `处置：${treatment}`,
-          isCustom: true
-        });
-      }
-
-      if (newChips.length === this.templateChips.length) {
-        uni.showToast({ title: '暂无可保存的内容', icon: 'none' });
+      if (!complaint && !diagnosis && !treatment) {
+        uni.showToast({ title: '请输入主诉/诊断/处置后再保存', icon: 'none' });
         return;
       }
 
-      this.templateChips = newChips;
+      // 直接更新 userDiseaseTemplates
+      if (!this.userDiseaseTemplates[disease]) {
+        this.userDiseaseTemplates[disease] = {
+          complaints: [],
+          diagnosis: [],
+          treatments: []
+        };
+      }
 
-      uni.showToast({ title: '已保存为模板', icon: 'success' });
+      const target = this.userDiseaseTemplates[disease];
+
+      if (complaint && !target.complaints.includes(complaint)) {
+        target.complaints.unshift(complaint);
+        target.complaints = target.complaints.slice(0, 20);
+      }
+
+      if (diagnosis && !target.diagnosis.includes(diagnosis)) {
+        target.diagnosis.unshift(diagnosis);
+        target.diagnosis = target.diagnosis.slice(0, 20);
+      }
+
+      if (treatment && !target.treatments.includes(treatment)) {
+        target.treatments.unshift(treatment);
+        target.treatments = target.treatments.slice(0, 20);
+      }
+
+      // 持久化到本地
+      try {
+        uni.setStorageSync('userDiseaseTemplates', this.userDiseaseTemplates);
+        // 重新构建模板索引，包含新保存的模板
+        this.buildTemplateIndex();
+        uni.showToast({ title: '模板已保存', icon: 'success' });
+      } catch (e) {
+        console.error('保存模板失败:', e);
+        uni.showToast({ title: '保存失败', icon: 'none' });
+      }
     },
-    // —— 药品标签：与园区库存联动 —— //
+    // 提交后提示保存模板
+    promptSaveTemplate() {
+      const disease = (this.form.diseaseName || '').trim();
+      const complaint = (this.form.chiefComplaint || '').trim();
+      const diagnosis = (this.form.diagnosis || '').trim();
+      const treatment = (this.form.treatment || '').trim();
+
+      // 必须有疾病名和至少一项内容
+      if (!disease || (!complaint && !diagnosis && !treatment)) {
+        return;
+      }
+
+      uni.showModal({
+        title: '保存为模板',
+        content: '是否将当前主诉、诊断、处置保存为自定义模板？下次可快速调用',
+        confirmText: '保存',
+        cancelText: '跳过',
+        success: (res) => {
+          if (res.confirm) {
+            this.saveCurrentAsTemplate();
+          }
+        }
+      });
+    },
+    // —— 药材标签：与园区库存联动 —— //
     normalizeText(text) {
       try {
         return String(text || '').toLowerCase().replace(/\\s+/g, '');
@@ -1060,6 +2111,23 @@ export default {
           await this.loadLocationDrugs();
         } catch (e) {}
       }
+    },
+    isPrescriptionDrug(name) {
+      const n = (name || '').trim();
+      if (!n) return false;
+      return (this.rxDrugNames || []).includes(n);
+    },
+    applySuggestDrugs(list) {
+      if (!Array.isArray(list) || !list.length) return;
+      list.forEach(name => {
+        const n = (name || '').trim();
+        if (!n) return;
+        if (this.isPrescriptionDrug(n)) {
+          this.appendTreatment(`${n}（处方药，需开具处方单，在陆园/水园药房发药）`);
+        } else {
+          this.onDrugChip(n);
+        }
+      });
     },
     findDrugByName(name) {
       const target = this.normalizeText(name);
@@ -1077,13 +2145,13 @@ export default {
     async onDrugChip(name) {
       // 1) 先附加“（一次）”到处置文本
       this.appendTreatment(`${name}（一次）`);
-      // 2) 加载当前园区库存，并尝试选中对应药品
+      // 2) 加载当前园区库存，并尝试选中对应药材
       await this.ensureStockLoaded();
       const drug = this.findDrugByName(name);
       if (drug && drug._id) {
         try {
           await this.onDrugSelect(drug);
-          uni.showToast({ title: `已选中药品：${drug.name}`, icon: 'none' });
+          uni.showToast({ title: `已选中药材：${drug.name}`, icon: 'none' });
         } catch (e) {
           // 选中失败不影响处置文本
         }
@@ -1096,13 +2164,23 @@ export default {
     restoreLastLocation() {
       try {
         const lastLocation = uni.getStorageSync('clinic_last_location');
-        if (lastLocation && (lastLocation === 'land_park' || lastLocation === 'water_park')) {
+        const tipClosed = uni.getStorageSync('clinic_location_tip_closed');
+        const isValidLocation = lastLocation === 'land_park' || lastLocation === 'water_park';
+
+        // 规则：
+        // 1）默认不选园区，每次进入都弹窗；
+        // 2）只有当用户勾选了“下次不再提醒”并关闭弹窗时，才记住园区且下次不再弹窗；
+        // 3）此时才在进入页面时自动带出上次园区。
+        if (tipClosed && isValidLocation) {
+          // 用户明确选择了不再提醒，并有合法园区记录
           this.form.location = lastLocation;
+          this.showLocationTip = false;
           const locationName = lastLocation === 'land_park' ? '陆园' : '水园';
-          console.log(`已恢复上次选择的园区: ${locationName}`);
+          console.log(`已按上次记录自动选择园区: ${locationName}`);
         } else {
-          // 默认陆园
-          this.form.location = 'land_park';
+          // 其余情况：不自动选园区，始终弹出提示
+          this.form.location = '';
+          this.showLocationTip = true;
         }
         
         // 恢复连续登记模式设置
@@ -1112,7 +2190,7 @@ export default {
         }
       } catch (err) {
         console.error('恢复园区选择失败:', err);
-        this.form.location = 'land_park';
+        this.form.location = '';
       }
     },
 
@@ -1170,9 +2248,9 @@ export default {
       this.form.drugId = drug._id;
       this.showDrugSelector = false;
       
-      // 从药品档案获取完整信息
+      // 从药材档案获取完整信息
       try {
-        uni.showLoading({ title: '加载药品信息...' });
+        uni.showLoading({ title: '加载药材信息...' });
         const res = await wx.cloud.callFunction({
           name: 'drugManage',
           data: {
@@ -1182,7 +2260,7 @@ export default {
         });
         
         if (res.result.success && res.result.data) {
-          // 使用完整的药品信息
+          // 使用完整的药材信息
           this.selectedDrug = {
             ...res.result.data,
             _id: res.result.data._id,
@@ -1204,7 +2282,7 @@ export default {
           };
         }
       } catch (err) {
-        console.error('获取药品详情失败:', err);
+        console.error('获取药材详情失败:', err);
         // 使用传入的drug数据
         this.selectedDrug = {
           ...drug,
@@ -1244,7 +2322,7 @@ export default {
           this.availableStock = 0;
           const parkName = this.form.location === 'land_park' ? '陆园' : '水园';
           uni.showToast({
-            title: `${parkName}该药品库存不足`,
+            title: `${parkName}该药材库存不足`,
             icon: 'none',
             duration: 2000
           });
@@ -1285,6 +2363,12 @@ export default {
     },
 
     async handleSubmit() {
+      // 必须先选择就诊园区
+      if (!this.form.location || (this.form.location !== 'land_park' && this.form.location !== 'water_park')) {
+        uni.showToast({ title: '请选择就诊园区', icon: 'none' });
+        return;
+      }
+
       // 表单验证
       if (!this.form.name || this.form.name.trim() === '') {
         uni.showToast({ title: '请输入患者姓名', icon: 'none' });
@@ -1326,12 +2410,8 @@ export default {
         uni.showToast({ title: '请输入处置措施', icon: 'none' });
         return;
       }
-      if (!this.form.doctorSign) {
-        uni.showToast({ title: '请签名', icon: 'none' });
-        return;
-      }
 
-      // 用药信息为选填：仅当选择了药品且数量>0时，才视为用药登记
+      // 用药信息为选填：仅当选择了药材且数量>0时，才视为用药登记
       let hasValidDrugUsage = false;
       if (this.selectedDrug) {
         if (this.form.quantity && this.form.quantity > 0) {
@@ -1346,7 +2426,7 @@ export default {
           }
           hasValidDrugUsage = true;
         } else {
-          // 选择了药品但未填写有效数量，视为本次不登记用药，清空用药相关状态
+          // 选择了药材但未填写有效数量，视为本次不登记用药，清空用药相关状态
           this.form.drugId = '';
           this.form.quantity = null;
           this.selectedDrug = null;
@@ -1374,9 +2454,7 @@ export default {
           diseaseName: this.form.diseaseName.trim(),
           diagnosis: this.form.diagnosis.trim(),
           treatment: this.form.treatment.trim(),
-          remark: this.form.remark.trim(),
-          doctorSign: this.form.doctorSign,
-          signTime: this.form.signTime
+          remark: this.form.remark.trim()
         };
 
         // 如果有有效用药信息，云函数会从对应园区扣减库存
@@ -1386,7 +2464,7 @@ export default {
           
           submitData.drugInfo = {
             drugId: this.form.drugId,  // 系统内部ID（主键）
-            drugCode: this.selectedDrug.drugCode || this.selectedDrug.code || '',  // 药品代码（业务编码）
+            drugCode: this.selectedDrug.drugCode || this.selectedDrug.code || '',  // 药材代码（业务编码）
               drugName: this.selectedDrug.name,
               specification: this.selectedDrug.specification,
             unit: this.selectedDrug.minUnit,
@@ -1401,7 +2479,7 @@ export default {
           
           // 兼容旧字段
           submitData.drugId = this.form.drugId;  // 系统内部ID（主键）
-          submitData.drugCode = this.selectedDrug.drugCode || this.selectedDrug.code || '';  // 药品代码（业务编码）
+          submitData.drugCode = this.selectedDrug.drugCode || this.selectedDrug.code || '';  // 药材代码（业务编码）
           submitData.drugName = this.selectedDrug.name;
           submitData.specification = this.selectedDrug.specification;
           submitData.batchId = this.selectedBatch._id;
@@ -1422,6 +2500,9 @@ export default {
         });
 
         if (res.result.success) {
+          // 提示保存为模板
+          this.promptSaveTemplate();
+          
           if (this.continueAfterSubmit) {
             // 连续登记模式：立即清空表单
           uni.showToast({
@@ -1470,7 +2551,7 @@ export default {
 
     resetForm() {
       // 保留当前园区选择，其他信息全部重置
-      const currentLocation = this.form.location || 'land_park';
+      const currentLocation = this.form.location || '';
 
       // 更新时间（就诊时间始终为当前时间）
       this.updateDateTime();
@@ -1510,7 +2591,9 @@ export default {
       this.showDiagnosisList = false;
       this.filteredTreatments = [];
       this.showTreatmentList = false;
-      this.templateChips = [];
+      this.filteredComplaints = [];
+      this.showComplaintList = false;
+      this.complaintSelectedMode = false; // 重置主诉编辑模式
     },
 
     formatDate(dateStr) {
@@ -1555,7 +2638,16 @@ export default {
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
+
+        // 必须先选择就诊园区
         const location = this.form.location;
+        if (!location || (location !== 'land_park' && location !== 'water_park')) {
+          uni.hideLoading();
+          uni.showToast({ title: '请选择就诊园区', icon: 'none' });
+          // 如有需要，可同时弹出园区选择提示
+          this.showLocationTip = true;
+          return;
+        }
         const locationName = location === 'land_park' ? '陆园' : '水园';
 
         // 查询当日的所有门诊记录
@@ -1815,23 +2907,34 @@ export default {
 <style lang="scss" scoped>
 .clinic-add {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20rpx 20rpx 140rpx;
+  // 使用与首页/门诊首页一致的蓝色渐变背景
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 40rpx;
+}
+
+.clinic-scroll {
+  box-sizing: border-box;
+  padding-bottom: 120rpx; // 预留空间避免被底部固定按钮遮挡
 }
 
 // 顶部标题
 .page-header {
-  background: white;
-  border-radius: 20rpx;
+  // 顶部标题卡片：象牙白圆角卡片，宽度与首页 header-card 对齐
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
   padding: 40rpx 30rpx;
-  margin-bottom: 20rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
   text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+    0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+    0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 
   .title {
     font-size: 44rpx;
     font-weight: bold;
-    color: #1890ff;
+    color: #0f172a;
     margin-bottom: 16rpx;
     letter-spacing: 2rpx;
   }
@@ -1839,63 +2942,72 @@ export default {
   .subtitle {
     font-size: 36rpx;
     font-weight: bold;
-    color: #333;
+    color: #111827;
     margin-bottom: 16rpx;
     padding: 16rpx 0;
-    border-bottom: 4rpx solid #1890ff;
+    border-bottom: 4rpx solid rgba(59, 130, 246, 0.6);
     display: inline-block;
-  }
-
-  .date-time {
-    font-size: 28rpx;
-    color: #666;
-    margin-top: 16rpx;
-  }
-
-  .generate-report-btn {
-    margin-top: 20rpx;
-    padding: 16rpx 32rpx;
-    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
-    border-radius: 12rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10rpx;
-    box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
-    transition: all 0.3s;
-
-    &:active {
-      transform: scale(0.98);
-      box-shadow: 0 2rpx 8rpx rgba(82, 196, 26, 0.4);
-    }
-
-    .btn-icon {
-      font-size: 32rpx;
-    }
-
-    .btn-text {
-      font-size: 28rpx;
-      color: #ffffff;
-      font-weight: bold;
-    }
   }
 }
 
+.top-actions-card {
+  margin: 0 0 12rpx 0;
+  padding: 16rpx 18rpx 18rpx;
+  background: #FFFFF0;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.14);
+}
+
+.top-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 20rpx;
+}
+
+.top-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 18rpx 0;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  /* 覆盖小程序 button 的默认 block+全宽行为，保证在一行内平分 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  background: linear-gradient(135deg, #22c1c3 0%, #2a91e9 100%);
+  border: none;
+  color: #ffffff;
+}
+
+.top-btn.primary {
+  background: linear-gradient(135deg, #22c1c3 0%, #2a91e9 100%);
+}
+
+.top-btn.ghost {
+  background: linear-gradient(135deg, #22c1c3 0%, #2a91e9 100%);
+}
+
 .form-section {
-  background: white;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 32rpx 30rpx 30rpx;
+  background: #FFFFF0;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #1890ff;
+  color: #0f172a;
   margin-bottom: 30rpx;
   padding-bottom: 20rpx;
-  border-bottom: 3rpx solid #e8e8e8;
+  border-bottom: 3rpx solid rgba(226, 232, 240, 0.9);
   display: flex;
   align-items: center;
 }
@@ -1908,7 +3020,7 @@ export default {
   }
 
   .label {
-    font-size: 28rpx;
+    font-size: 30rpx;
     color: #333;
     margin-bottom: 16rpx;
     display: block;
@@ -1924,62 +3036,65 @@ export default {
 
   input {
     width: 100%;
-    padding: 20rpx 24rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    padding: 0 24rpx;
     border: 2rpx solid #e0e0e0;
     border-radius: 12rpx;
-    font-size: 26rpx;
+    font-size: 28rpx;
     background: #fafafa;
     transition: all 0.3s;
     box-sizing: border-box;
-    height: 80rpx;  // 统一高度
-    line-height: 1.6;  // 统一行高
-
-    &:focus {
-      border-color: #1890ff;
-      background: white;
-    }
-    
-    &::placeholder {
-      font-size: 26rpx;
-      color: #999;
-    }
   }
 
-  textarea {
-    width: 100%;
-    padding: 20rpx 24rpx;
+  // 稍大一点的多行 textarea（如处置等）
+  .textarea-small {
+    min-height: 104rpx !important;  // 固定两行高度
+    max-height: 104rpx !important;
     border: 2rpx solid #e0e0e0;
     border-radius: 12rpx;
-    font-size: 26rpx;
-    background: #fafafa;
+    background: #f9fafb;
+    font-size: 28rpx;
+    color: #333;
+  }
+
+  // 自适应高度的 textarea
+  .textarea-auto {
+    min-height: 104rpx !important;  // 固定两行高度
+    height: 104rpx !important;
+    max-height: 104rpx !important;
+    padding: 12rpx 24rpx !important;
+    border: 2rpx solid #e0e0e0;
+    border-radius: 12rpx;
+    background: #f9fafb;
+    font-size: 28rpx;
+    color: #333;
+    line-height: 1.4 !important;
+    word-wrap: break-word;
+    word-break: break-all;
     transition: all 0.3s;
     box-sizing: border-box;
-    line-height: 1.8;
-
+    
     &:focus {
       border-color: #1890ff;
-      background: white;
+      background: #ffffff;
+      box-shadow: 0 0 0 4rpx rgba(24, 144, 255, 0.1);
     }
     
     &::placeholder {
-      font-size: 26rpx;
       color: #999;
+      font-size: 26rpx;
     }
-  }
-
-  // 统一宽度的输入框
-  .input-uniform,
-  .textarea-uniform {
-    width: 100% !important;
-    box-sizing: border-box;
-    max-width: 100%;
-  }
-
-  textarea {
-    height: 180rpx;
     
-    &.textarea-small {
-    height: 150rpx;
+    // 内容较长时使用中等字号
+    &.font-medium {
+      font-size: 26rpx !important;
+    }
+    
+    // 内容很长时使用小字号
+    &.font-small {
+      font-size: 24rpx !important;
+      line-height: 1.5 !important;
     }
   }
 }
@@ -2010,7 +3125,7 @@ export default {
 
 .form-row {
   display: flex;
-  gap: 20rpx;
+  gap: 24rpx;        // 统一两列之间的间距
 }
 
 .datetime-display {
@@ -2018,7 +3133,7 @@ export default {
   background: #e6f7ff;
   border: 2rpx solid #91d5ff;
   border-radius: 12rpx;
-  font-size: 30rpx;
+  font-size: 32rpx;
   color: #1890ff;
   font-weight: bold;
   text-align: center;
@@ -2111,7 +3226,13 @@ export default {
 .gender-age-row {
   display: flex;
   gap: 15rpx;
-  align-items: stretch;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between; // 让年龄输入框贴到右边
+}
+
+.gender-selector.compact {
+  flex: 1; // 性别按钮组占据左侧剩余空间
 }
 
 .age-input {
@@ -2132,50 +3253,7 @@ export default {
   }
 }
 
-.location-selector {
-  display: flex;
-  gap: 20rpx;
-
-  .location-item {
-    flex: 1;
-    height: 80rpx;  // 统一高度
-    padding: 20rpx;
-    text-align: center;
-    border: 3rpx solid #e0e0e0;
-    border-radius: 16rpx;
-    font-size: 32rpx;
-    color: #666;
-    background: #fafafa;
-    transition: all 0.3s;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-
-    &.active {
-      border-color: #1890ff;
-      background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-      color: #1890ff;
-      font-weight: bold;
-      box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
-      transform: translateY(-4rpx);
-    }
-  }
-}
-
-.location-hint {
-  margin-top: 16rpx;
-  padding: 16rpx 20rpx;
-  background: #fff7e6;
-  border-left: 4rpx solid #faad14;
-    border-radius: 8rpx;
-  font-size: 24rpx;
-  color: #d46b08;
-  line-height: 1.6;
-}
-
-// 药品输入包装器
+// 药材输入包装器
 .drug-input-wrapper {
   position: relative;
   width: 100%;
@@ -2203,13 +3281,13 @@ export default {
     }
   }
 
-  // 药品下拉列表
+  // 药材下拉列表（显示在输入框上方，避免被键盘遮挡）
   .drug-dropdown {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 0;
     right: 0;
-    margin-top: 8rpx;
+    margin-bottom: 8rpx;
     background: white;
     border: 2rpx solid #e0e0e0;
     border-radius: 12rpx;
@@ -2271,10 +3349,10 @@ export default {
 
   .no-result {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 0;
     right: 0;
-    margin-top: 8rpx;
+    margin-bottom: 8rpx;
     padding: 40rpx 20rpx;
     background: white;
     border: 2rpx solid #e0e0e0;
@@ -2301,10 +3379,10 @@ export default {
 
   .disease-dropdown {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 0;
     right: 0;
-    margin-top: 8rpx;
+    margin-bottom: 8rpx;
     background: white;
     border: 2rpx solid #e0e0e0;
     border-radius: 12rpx;
@@ -2335,7 +3413,7 @@ export default {
   }
 }
 
-// 处置药品建议 chips
+// 处置药材建议 chips
 .drug-chip-list {
   margin-top: 10rpx;
   display: flex;
@@ -2365,10 +3443,10 @@ export default {
 
   .location-dropdown {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 0;
     right: 0;
-    margin-top: 8rpx;
+    margin-bottom: 8rpx;
     background: white;
     border: 2rpx solid #e0e0e0;
     border-radius: 12rpx;
@@ -2405,7 +3483,7 @@ export default {
   padding: 0;
 }
 
-// 药品名称大卡片
+// 药材名称大卡片
 .drug-name-card {
   display: flex;
   align-items: center;
@@ -2754,34 +3832,40 @@ export default {
   right: 0;
   display: flex;
   gap: 20rpx;
-  padding: 20rpx;
-  background: white;
-  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.1);
+  padding: 16rpx 24rpx 34rpx;
+  background: #FFFFF0;
+  box-shadow: 0 -4rpx 16rpx rgba(15, 23, 42, 0.22);
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
   z-index: 100;
+}
 
-  button {
-    flex: 1;
-    padding: 28rpx;
-    border-radius: 12rpx;
-    font-size: 32rpx;
-    font-weight: bold;
-  }
+.submit-section button {
+  flex: 1;
+  padding: 28rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
 
-  .cancel-btn {
-    background: white;
-    border: 2rpx solid #d9d9d9;
-    color: #666;
-  }
+.submit-section .cancel-btn {
+  background: linear-gradient(135deg, #22c1c3 0%, #2a91e9 100%);
+  border: none;
+  color: #ffffff;
+  border-radius: 999rpx;
+}
 
-  .submit-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
+.submit-section .submit-btn {
+  background: linear-gradient(135deg, #22c1c3 0%, #2a91e9 100%);
+  border: none;
+  color: #ffffff;
+  border-radius: 999rpx;
 }
 
 .continue-option {
-  padding: 20rpx;
-  margin-bottom: 20rpx;
+  padding: 20rpx 24rpx 40rpx;
+  margin: 0 auto 8rpx;
+  max-width: 702rpx;
 }
 
 .continue-card {
@@ -2822,5 +3906,121 @@ export default {
   font-size: 24rpx;
   color: #999;
   line-height: 1.5;
+}
+
+/* 园区选择悬浮窗样式 */
+.location-modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.location-modal {
+  width: 86%;
+  max-width: 720rpx;
+  background: #FFFFF0;
+  border-radius: 28rpx;
+  padding: 30rpx 30rpx 26rpx;
+  box-shadow:
+    0 1rpx 0 rgba(255,255,255,0.9) inset,
+    0 -1rpx 0 rgba(15,23,42,0.06) inset,
+    0 18rpx 40rpx rgba(15, 23, 42, 0.35);
+  border: 1rpx solid rgba(148, 163, 184, 0.35);
+}
+
+.modal-icon-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8rpx;
+}
+
+.modal-icon-circle {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 40%, #e0f2fe 100%);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 18rpx rgba(37, 99, 235, 0.45);
+  border: 3rpx solid rgba(255,255,255,0.9);
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  margin: 10rpx 0 6rpx;
+}
+
+.modal-subtitle {
+  font-size: 24rpx;
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 26rpx;
+  line-height: 1.5;
+}
+
+.modal-location-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.modal-loc-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  border-radius: 999rpx;
+  border: 2rpx solid #d1d5db;
+  font-size: 28rpx;
+  background: #ffffff;
+  color: #374151;
+  box-shadow: 0 2rpx 6rpx rgba(15, 23, 42, 0.08);
+}
+
+.modal-loc-btn.active {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  border-color: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 6rpx 14rpx rgba(37, 99, 235, 0.45);
+}
+
+.modal-hint-text {
+  font-size: 22rpx;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 18rpx;
+}
+
+.modal-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22rpx;
+  font-size: 26rpx;
+  color: #4b5563;
+}
+
+.modal-checkbox-text {
+  margin-left: 12rpx;
+}
+
+.modal-close-btn {
+  width: 100%;
+  padding: 18rpx 0;
+  border-radius: 999rpx;
+  border: 1rpx solid #d1d5db;
+  background: #f9fafb;
+  color: #4b5563;
+  font-size: 28rpx;
 }
 </style>

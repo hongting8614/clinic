@@ -3,7 +3,7 @@
 		<!-- 表头 -->
 		<view class="page-header">
 			<view class="page-title">爱康医务室管理系统</view>
-			<view class="page-subtitle">北京欢乐谷医务室 · 药品请领单</view>
+			<view class="page-subtitle">北京欢乐谷医务室 · 药材请领单</view>
 		</view>
 		
 		<!-- 基本信息 -->
@@ -44,38 +44,38 @@
 				<textarea 
 					class="form-textarea" 
 					v-model="purpose" 
-					placeholder="请输入药品用途说明（必填）"
+					placeholder="请输入药材用途说明（必填）"
 					maxlength="200"
 				></textarea>
 				<text class="char-count">{{ purpose.length }}/200</text>
 			</view>
 		</view>
 		
-		<!-- 药品明细 -->
+		<!-- 药材明细 -->
 		<view class="form-section">
 			<view class="section-title">
-				药品明细
+				药材明细
 				<text class="section-count">({{ drugList.length }}种)</text>
 			</view>
 			
-		<!-- 添加药品按钮 -->
+		<!-- 添加药材按钮 -->
 			<view class="action-buttons">
 			<u-button
-				text="📋 选择药品"
+				text="📋 选择药材"
 				size="medium"
 				type="primary"
 				@click="goSelectDrug"
 			></u-button>
 			</view>
 			
-			<!-- 药品列表 -->
+			<!-- 药材列表 -->
 			<view class="drug-list">
 				<view 
 					v-for="(item, index) in drugList" 
 					:key="index" 
 					class="drug-item"
 				>
-					<!-- 高值/急救药品标记 -->
+					<!-- 高值/急救药材标记 -->
 					<view class="drug-badges">
 						<view v-if="item.isHighValue" class="badge high-value">高值</view>
 						<view v-if="item.isEmergency" class="badge emergency">急救</view>
@@ -118,7 +118,7 @@
 				
 				<!-- 空状态 -->
 				<view v-if="drugList.length === 0" class="empty-hint">
-				<text>💊 暂无药品，请点击上方按钮添加</text>
+				<text>💊 暂无药材，请点击上方按钮添加</text>
 				</view>
 			</view>
 		</view>
@@ -180,7 +180,7 @@ export default {
 	
 	onLoad() {
 		this.initPage()
-		// 监听药品选择事件
+		// 监听药材选择事件
 		uni.$on('drugSelected', this.onDrugSelect)
 	},
 	
@@ -217,13 +217,13 @@ export default {
 			this.addDrug(drug)
 		},
 		
-		// 添加药品到列表
+		// 添加药材到列表
 		addDrug(drugInfo) {
 			// 检查是否已添加
 			const exists = this.drugList.some(item => item.drugId === drugInfo._id)
 			if (exists) {
 				uni.showToast({
-					title: '该药品已添加',
+					title: '该药材已添加',
 					icon: 'none'
 				})
 				return
@@ -269,16 +269,16 @@ export default {
 				return false
 			}
 			
-			// 验证药品列表
+			// 验证药材列表
 			if (this.drugList.length === 0) {
 				uni.showToast({
-					title: '请添加药品',
+					title: '请添加药材',
 					icon: 'none'
 				})
 				return false
 			}
 			
-			// 验证每个药品的数量
+			// 验证每个药材的数量
 			for (let i = 0; i < this.drugList.length; i++) {
 				const item = this.drugList[i]
 				if (!item.quantity || item.quantity <= 0) {
@@ -305,7 +305,7 @@ export default {
 		async saveDraft() {
 			if (this.drugList.length === 0) {
 				uni.showToast({
-					title: '请先添加药品',
+					title: '请先添加药材',
 					icon: 'none'
 				})
 				return

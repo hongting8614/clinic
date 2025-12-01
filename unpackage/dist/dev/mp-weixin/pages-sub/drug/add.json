@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "添加药材",
+  "usingComponents": {
+    "scanner": "/components/scanner/index"
+  }
+}

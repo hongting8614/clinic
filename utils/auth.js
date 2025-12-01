@@ -7,15 +7,16 @@ import { ROLES, hasPermission, isAdmin, canOperate, getRoleText } from './permis
 /**
  * 用户登录
  * 在 App.js onLaunch 或登录页面调用
+ * @param {string} [wechatId] 可选：用于首次登录时按微信号绑定账号
  */
-export async function login() {
+export async function login(wechatId) {
   try {
     // 兼容uni-app和微信小程序
     const cloud = typeof uni !== 'undefined' ? uni.cloud : wx.cloud
     
     const res = await cloud.callFunction({
       name: 'login',
-      data: {}
+      data: wechatId ? { wechatId } : {}
     })
     
     if (res.result.code === 0 && res.result.authorized) {

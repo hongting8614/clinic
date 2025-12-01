@@ -40,10 +40,10 @@
 			</view>
 		</view>
 
-		<!-- 药品明细 -->
+		<!-- 药材明细 -->
 		<view class="drug-section">
 			<view class="section-title">
-				<text class="title-text">📦 药品明细</text>
+				<text class="title-text">📦 药材明细</text>
 				<text class="title-count">共 {{ record.items ? record.items.length : 0 }} 种</text>
 			</view>
 
@@ -197,12 +197,25 @@
 
 		<!-- 底部操作栏 -->
 		<view class="action-bar">
-			<view class="action-btn btn-reject" @tap="handleReject">
-				<text class="btn-text">驳回</text>
-			</view>
-			<view class="action-btn btn-approve" @tap="handleApprove">
-				<text class="btn-text">通过并入库</text>
-			</view>
+			<!-- 默认状态：驳回 + 通过 -->
+			<template v-if="!showRejectReason">
+				<view class="action-btn btn-reject" @tap="handleReject">
+					<text class="btn-text">驳回</text>
+				</view>
+				<view class="action-btn btn-approve" @tap="handleApprove">
+					<text class="btn-text">通过并入库</text>
+				</view>
+			</template>
+			
+			<!-- 驳回状态：取消 + 确认驳回 -->
+			<template v-else>
+				<view class="action-btn btn-cancel" @tap="cancelReject">
+					<text class="btn-text">取消</text>
+				</view>
+				<view class="action-btn btn-confirm-reject" @tap="confirmReject">
+					<text class="btn-text">确认驳回</text>
+				</view>
+			</template>
 		</view>
 	</view>
 </template>
@@ -337,22 +350,40 @@ export default {
 		},
 		
 		handleReject() {
+			// 显示驳回原因输入框
 			this.showRejectReason = true
+			// 滚动到底部
+			setTimeout(() => {
+				uni.pageScrollTo({
+					scrollTop: 9999,
+					duration: 300
+				})
+			}, 100)
+		},
+		
+		// 取消驳回
+		cancelReject() {
+			this.showRejectReason = false
+			this.rejectReason = ''
+		},
+		
+		// 确认驳回
+		async confirmReject() {
+			// 检查驳回原因
+			if (!this.rejectReason.trim()) {
+				uni.showToast({
+					title: '请输入驳回原因',
+					icon: 'none'
+				})
+				return
+			}
 			
 			uni.showModal({
 				title: '确认驳回',
-				content: '确定要驳回这个入库单吗？',
-				success: (res) => {
+				content: `确定要驳回这个入库单吗？\n驳回原因：${this.rejectReason}`,
+				success: async (res) => {
 					if (res.confirm) {
-						// 显示驳回原因输入框
-						this.showRejectReason = true
-						// 滚动到底部
-						setTimeout(() => {
-							uni.pageScrollTo({
-								scrollTop: 9999,
-								duration: 300
-							})
-						}, 100)
+						await this.submitReview('reject')
 					}
 				}
 			})
@@ -585,7 +616,7 @@ export default {
 	}
 }
 
-// 药品明细
+// 药材明细
 .drug-section {
 	padding: 0 30rpx;
 	
@@ -997,22 +1028,30 @@ export default {
 		font-size: 32rpx;
 		font-weight: bold;
 		transition: all 0.3s;
+		/* 统一胶囊按钮：青蓝渐变背景 + 白色文字 */
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: #ffffff;
+		box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 		
 		&.btn-reject {
-			background: #fff;
-			border: 2rpx solid #f44336;
-			color: #f44336;
-			
 			&:active {
-				background: #ffebee;
+				opacity: 0.9;
 			}
 		}
 		
 		&.btn-approve {
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
-			box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.4);
-			
+			&:active {
+				opacity: 0.9;
+			}
+		}
+		
+		&.btn-cancel {
+			&:active {
+				opacity: 0.9;
+			}
+		}
+		
+		&.btn-confirm-reject {
 			&:active {
 				opacity: 0.9;
 			}

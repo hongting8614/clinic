@@ -1,6 +1,6 @@
 <template>
   <view class="filter-panel">
-    <view class="filter-row">
+    <view class="filter-row" v-if="!hideKeyword">
       <view class="search-wrapper">
         <text class="search-icon">🔍</text>
         <input
@@ -55,6 +55,7 @@ export default {
     keyword: { type: String, default: '' },
     keywordPlaceholder: { type: String, default: '输入关键词' },
     showSearchButton: { type: Boolean, default: true },
+    hideKeyword: { type: Boolean, default: false },
     showDate: { type: Boolean, default: false },
     startDate: { type: String, default: '' },
     endDate: { type: String, default: '' },

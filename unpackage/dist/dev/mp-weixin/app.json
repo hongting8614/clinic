@@ -1,0 +1,163 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/clinic/index",
+    "pages/material/index",
+    "pages/user/index",
+    "pages/test/dialog"
+  ],
+  "subPackages": [
+    {
+      "root": "pages-sub/drug",
+      "pages": [
+        "list",
+        "add",
+        "detail"
+      ]
+    },
+    {
+      "root": "pages-sub/in",
+      "pages": [
+        "list",
+        "add",
+        "review",
+        "detail"
+      ]
+    },
+    {
+      "root": "pages-sub/out",
+      "pages": [
+        "add",
+        "select-drug",
+        "list",
+        "detail"
+      ]
+    },
+    {
+      "root": "pages-sub/transfer",
+      "pages": [
+        "add",
+        "list"
+      ]
+    },
+    {
+      "root": "pages-sub/consume",
+      "pages": [
+        "add",
+        "list"
+      ]
+    },
+    {
+      "root": "pages-sub/requisition",
+      "pages": [
+        "add",
+        "list"
+      ]
+    },
+    {
+      "root": "pages-sub/inventory",
+      "pages": [
+        "add",
+        "list",
+        "detail"
+      ]
+    },
+    {
+      "root": "pages-sub/damage",
+      "pages": [
+        "add",
+        "list"
+      ]
+    },
+    {
+      "root": "pages-sub/return",
+      "pages": [
+        "add",
+        "list"
+      ]
+    },
+    {
+      "root": "pages-sub/stock",
+      "pages": [
+        "query",
+        "park"
+      ]
+    },
+    {
+      "root": "pages-sub/report",
+      "pages": [
+        "index",
+        "inbound",
+        "outbound",
+        "stock",
+        "daily",
+        "weekly",
+        "monthly",
+        "clinic",
+        "clinic-analysis"
+      ]
+    },
+    {
+      "root": "pages-sub/setting",
+      "pages": [
+        "index",
+        "user-list",
+        "change-password",
+        "edit-realname",
+        "reset-password",
+        "department",
+        "location"
+      ]
+    },
+    {
+      "root": "pages-sub/clinic",
+      "pages": [
+        "add"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "爱康医务室管理系统",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#9CA3AF",
+    "selectedColor": "#5B77F9",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/clinic/index",
+        "iconPath": "static/tabbar/record.png",
+        "selectedIconPath": "static/tabbar/record-active.png",
+        "text": "门诊管理"
+      },
+      {
+        "pagePath": "pages/material/index",
+        "iconPath": "static/tabbar/stock.png",
+        "selectedIconPath": "static/tabbar/stock-active.png",
+        "text": "药材管理"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/user-active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于定位医务室位置"
+    }
+  },
+  "usingComponents": {}
+}

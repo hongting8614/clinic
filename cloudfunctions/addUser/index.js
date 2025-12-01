@@ -7,7 +7,8 @@ const db = cloud.database()
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  const { openid, name, phone, nickname, role = 'viewer', realName, password } = event
+  // 改造：管理员只需录入微信号（wechatId），openid 可在登录时自动绑定
+  const { openid = '', wechatId, name, phone, nickname, role = 'viewer', realName, password } = event
   
   try {
     // 1. 验证操作者权限（必须是管理员或项目经理）
@@ -33,11 +34,11 @@ exports.main = async (event, context) => {
       }
     }
     
-    // 2. 验证参数
-    if (!openid || !name || !phone || !realName) {
+    // 2. 验证参数：wechatId 必填，openid 可为空
+    if (!wechatId || !name || !phone || !realName) {
       return {
         code: 400,
-        message: '参数不完整，openid、name、phone、realName 为必填项'
+        message: '参数不完整，wechatId、name、phone、realName 为必填项'
       }
     }
     
@@ -58,9 +59,11 @@ exports.main = async (event, context) => {
       }
     }
     
-    // 3. 检查用户是否已存在
+    // 3. 检查用户是否已存在（按 wechatId 或 openid 检查）
     const existRes = await db.collection('users')
-      .where({ openid })
+      .where({
+        wechatId,
+      })
       .get()
     
     if (existRes.data.length > 0) {
@@ -103,15 +106,15 @@ exports.main = async (event, context) => {
       passwordHash = crypto.createHash('sha256').update(password).digest('hex')
     }
     
-    // 5. 添加用户
+    // 5. 添加用户（openid 可暂时为空，登录时再绑定）
     const result = await db.collection('users').add({
       data: {
-        openid,
+        openid: openid || '',
+        wechatId,
         name,
         realName: realName || name, // 实名
         nickname: nickname || name,
         phone,
-        wechatId: '', // 微信号（可选，用户可自行设置）
         role,
         password: passwordHash, // 密码（加密后）
         status: 'active',

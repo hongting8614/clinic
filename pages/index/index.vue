@@ -18,156 +18,175 @@
 					
 				<view class="clinic-text">
 					<text class="clinic-name">爱康医务室管理系统</text>
-					<text class="clinic-name-en">AIKANG CLINIC MANAGEMENT SYSTEM</text>
 					<text class="clinic-subtitle">● 北京欢乐谷医务室 ●</text>
 				</view>
 	</view>
 		</view>
 	</view>
 		
-		<!-- 快捷操作区 - 科技风格 -->
+		<!-- 快捷操作区 - 统一网格布局 -->
 		<view class="quick-actions">
 			<view class="section-header">
 				<text class="section-title">快捷操作</text>
-				<text class="section-subtitle">Quick Actions</text>
-			</view>
-			<!-- 与用户权限相关的标签单独一行，保持整体布局稳定 -->
-			<view v-if="showInboundButton || showReviewEntry" class="role-row">
-				<view v-if="showInboundButton" class="role-badge inbound" @tap="goToPage('/pages-sub/in/add')">
-					<view class="role-badge-icon inbound"></view>
-					<view class="role-badge-text">
-						<text class="role-badge-title">新建入库单</text>
-						<text class="role-badge-desc">入库权限已开通</text>
-					</view>
-					<view class="role-badge-tag">可用</view>
-				</view>
-				
-				<view v-if="showReviewEntry" class="role-badge review" @tap="goToPage('/pages-sub/in/list?tab=review')">
-					<view class="role-badge-icon review"></view>
-					<view class="role-badge-text">
-						<text class="role-badge-title">待复核入库单</text>
-						<text class="role-badge-desc">需要您审核</text>
-					</view>
-					<view class="role-badge-tag count">{{ pendingReviewCount || 0 }}</view>
-				</view>
-			</view>
-	<view class="clinic-quick-grid">
-		<view class="clinic-card register" @tap="goToPage('/pages-sub/clinic/add')">
-			<view class="clinic-card-glass"></view>
-			<view class="clinic-card-content">
-				<view class="clinic-card-icon register"></view>
-				<view class="clinic-card-text">
-					<text class="clinic-card-title">门诊登记表</text>
-					<text class="clinic-card-desc">快速登记 · 信息完整</text>
-				</view>
-			</view>
-		</view>
-		
-		<view class="clinic-card daily" @tap="generateDailyReport">
-			<view class="clinic-card-glass"></view>
-			<view class="clinic-card-content">
-				<view class="clinic-card-icon daily"></view>
-				<view class="clinic-card-text">
-					<text class="clinic-card-title">门诊日报</text>
-					<text class="clinic-card-desc">当日接诊 · 用药速览</text>
-				</view>
-			</view>
-		</view>
-		
-	</view>
-		
-		<view class="action-grid">
-				<!-- 入库 -->
-			<view class="action-card primary" @tap="goToPage('/pages-sub/in/list')">
-					<view class="action-icon-bg primary">
-						<view class="icon-shape">
-							<view class="arrow-down"></view>
-							<view class="box-base"></view>
-						</view>
-					</view>
-				<text class="action-label">入库管理</text>
-				<text class="action-desc">药品入库、复核审批</text>
-					<view class="action-badge">IN</view>
-				</view>
-				
-				<!-- 出库 -->
-			<view class="action-card success" @tap="goToPage('/pages-sub/out/list')">
-					<view class="action-icon-bg success">
-						<view class="icon-shape">
-							<view class="arrow-up"></view>
-							<view class="box-base"></view>
-						</view>
-					</view>
-				<text class="action-label">出库管理</text>
-				<text class="action-desc">园区领用、双签审批</text>
-					<view class="action-badge">OUT</view>
-				</view>
-				
-				<!-- 库存 -->
-				<view class="action-card warning" @tap="goToPage('/pages/stock/index')">
-					<view class="action-icon-bg warning">
-						<view class="icon-shape">
-							<view class="stack-layer layer-1"></view>
-							<view class="stack-layer layer-2"></view>
-							<view class="stack-layer layer-3"></view>
-						</view>
-					</view>
-					<text class="action-label">库存查询</text>
-					<text class="action-desc">实时库存监控</text>
-					<view class="action-badge">INV</view>
-				</view>
-				
-			<!-- 日消耗 -->
-			<view class="action-card info" @tap="goToPage('/pages-sub/consume/add')">
-				<view class="action-icon-bg info">
-					<view class="icon-shape">
-						<view class="chart-bar bar-1"></view>
-						<view class="chart-bar bar-2"></view>
-						<view class="chart-bar bar-3"></view>
-						<view class="chart-axis"></view>
-					</view>
-				</view>
-				<text class="action-label">日消耗</text>
-				<text class="action-desc">每日药品消耗</text>
-				<view class="action-badge">USE</view>
 			</view>
 			
-				<!-- 药品档案 -->
-				<view class="action-card teal" @tap="goToPage('/pages-sub/drug/list')">
-					<view class="action-icon-bg teal">
-					<view class="icon-shape">
-							<view class="pill-shape"></view>
-							<view class="pill-shape pill-2"></view>
+			<!-- 统一的网格容器：根据角色展示不同数量的入口（管理员6个，项目经理4个，医生4个） -->
+			<view class="unified-grid">
+				<!-- 管理员：新建入库单 -->
+				<view
+					v-if="showInboundButton && role === 'admin'"
+					class="grid-card clinic-card register"
+					@tap="goToPage('/pages-sub/in/add')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon inbound"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">新建入库单</text>
+							<text class="clinic-card-desc"></text>
+						</view>
 					</view>
 				</view>
-					<text class="action-label">药品档案</text>
-					<text class="action-desc">档案管理</text>
-					<view class="action-badge">DRG</view>
-		</view>
-		
-				<!-- 报表统计 -->
-				<view class="action-card purple" @tap="goToPage('/pages/record/index')">
-					<view class="action-icon-bg purple">
-						<view class="icon-shape">
-							<view class="chart-bar bar-1"></view>
-							<view class="chart-bar bar-2"></view>
-							<view class="chart-bar bar-3"></view>
-							<view class="chart-axis"></view>
+
+				<!-- 管理员 & 项目经理：待复核入库单 -->
+				<view
+					v-if="showReviewEntry && (role === 'admin' || role === 'project_manager')"
+					class="grid-card clinic-card review"
+					@tap="goToPage('/pages-sub/in/list?status=pending_review')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon review"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">待复核入库单</text>
+							<view class="review-count-badge">
+								<text class="review-count-text">{{ pendingReviewCount || 0 }}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 管理员 & 医生：待复核出库单 -->
+				<view
+					v-if="canReviewOut && (role === 'admin' || role === 'doctor')"
+					class="grid-card clinic-card summary"
+					@tap="goToPage('/pages-sub/out/list?status=pending_review')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon summary"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">待复核出库单</text>
+							<view class="review-count-badge">
+								<text class="review-count-text">{{ pendingOutReviewCount || 0 }}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 管理员 & 医生：新建出库单（项目经理首页不再展示此入口） -->
+				<view
+					v-if="canEditInOut && (role === 'admin' || role === 'doctor')"
+					class="grid-card clinic-card register"
+					@tap="goToPage('/pages-sub/out/add')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon outbound"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">新建出库单</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 管理员 & 医生：门诊登记 -->
+				<view
+					v-if="role === 'admin' || role === 'doctor'"
+					class="grid-card clinic-card register"
+					@tap="goToPage('/pages-sub/clinic/add')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon register"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">门诊登记</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 管理员 & 医生：门诊日报 -->
+				<view
+					v-if="role === 'admin' || role === 'doctor'"
+					class="grid-card clinic-card daily"
+					@tap="generateDailyReport"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon daily"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">门诊日报</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 项目经理专属入口：库存查询 -->
+				<view
+					v-if="role === 'project_manager'"
+					class="grid-card clinic-card summary"
+					@tap="goToPage('/pages/stock/index')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon summary"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">库存查询</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 项目经理专属入口：药材近效期 -->
+				<view
+					v-if="role === 'project_manager'"
+					class="grid-card clinic-card daily"
+					@tap="goToPage('/pages/stock/index?filter=expiring')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon daily"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">药材近效期</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 项目经理专属入口：用户管理 -->
+				<view
+					v-if="role === 'project_manager'"
+					class="grid-card clinic-card register"
+					@tap="goToPage('/pages-sub/setting/user-list')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon register"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">用户管理</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
 			</view>
-			</view>
-					<text class="action-label">数据报表</text>
-					<text class="action-desc">统计分析</text>
-					<view class="action-badge">RPT</view>
 		</view>
-		</view>
-	</view>
-		
 		
 		<!-- 今日数据 - 数据可视化 -->
 		<view class="stats-section">
 			<view class="section-header">
 				<text class="section-title">今日数据</text>
-				<text class="section-subtitle">Today's Statistics</text>
+				
 			</view>
 			<view v-if="isLoadingStats" class="stats-grid">
 				<view class="stat-card skeleton" v-for="i in 4" :key="i">
@@ -188,7 +207,7 @@
 					<view class="stat-content">
 						<text class="stat-value">{{ todayStats.inCount }}</text>
 						<text class="stat-label">入库单</text>
-						<text class="stat-unit">笔</text>
+						<text class="stat-unit"></text>
 					</view>
 					<view class="stat-decorative-line blue"></view>
 				</view>
@@ -204,42 +223,85 @@
 					<view class="stat-content">
 						<text class="stat-value">{{ todayStats.outCount }}</text>
 						<text class="stat-label">出库单</text>
-						<text class="stat-unit">笔</text>
+						<text class="stat-unit"></text>
 					</view>
 					<view class="stat-decorative-line green"></view>
 				</view>
 				
-				<!-- 药品种类 -->
-				<view class="stat-card">
-					<view class="stat-icon-wrapper orange">
-						<view class="stat-icon-shape">
-							<view class="pill-shape"></view>
-							<view class="pill-shape pill-2"></view>
+				<!-- 医生：一个门诊卡片 + 一个近效期药材卡片 -->
+				<block v-if="role === 'doctor'">
+					<!-- 当前园区的今日就诊人数 -->
+					<view
+						class="stat-card"
+						@tap="goToPage(`/pages-sub/clinic/list?filter=today&location=${currentClinicLocation}`)"
+					>
+						<view class="stat-icon-wrapper orange">
+							<view class="stat-icon-shape">
+								<view class="pill-shape"></view>
+								<view class="pill-shape pill-2"></view>
+							</view>
 						</view>
+						<view class="stat-content">
+							<text class="stat-value">
+								{{ currentClinicLocation === 'water_park' ? (todayStats.clinicWaterCount || 0) : (todayStats.clinicLandCount || 0) }}人次
+							</text>
+							<text class="stat-label">今日就诊人数（{{ currentClinicLocationName }}）</text>
+							<text class="stat-unit"></text>
+						</view>
+						<view class="stat-decorative-line orange"></view>
 					</view>
-					<view class="stat-content">
-						<text class="stat-value">{{ todayStats.totalDrugs }}</text>
-						<text class="stat-label">药品种类</text>
-						<text class="stat-unit">种</text>
+					
+					<!-- 近效期药材 -->
+					<view class="stat-card" @tap="goToPage('/pages/stock/index?filter=expiring')">
+						<view class="stat-icon-wrapper red">
+							<view class="stat-icon-shape">
+								<view class="alert-triangle"></view>
+								<text class="alert-exclamation">!</text>
+							</view>
+						</view>
+						<view class="stat-content">
+							<text class="stat-value">{{ todayStats.lowStockCount }}</text>
+							<text class="stat-label">近效期药材</text>
+							<text class="stat-unit">种</text>
+						</view>
+						<view class="stat-decorative-line red"></view>
 					</view>
-					<view class="stat-decorative-line orange"></view>
-				</view>
+				</block>
 				
-				<!-- 库存预警 -->
-				<view class="stat-card">
-					<view class="stat-icon-wrapper red">
-						<view class="stat-icon-shape">
-							<view class="alert-triangle"></view>
-							<text class="alert-exclamation">!</text>
+				<!-- 管理员 / 项目经理等：继续显示陆园 / 水园两张门诊卡片 -->
+				<block v-else>
+					<!-- 今日就诊人数（陆园） -->
+					<view class="stat-card" @tap="goToPage('/pages-sub/clinic/list?filter=today&location=land_park')">
+						<view class="stat-icon-wrapper orange">
+							<view class="stat-icon-shape">
+								<view class="pill-shape"></view>
+								<view class="pill-shape pill-2"></view>
+							</view>
 						</view>
+						<view class="stat-content">
+							<text class="stat-value">{{ todayStats.clinicLandCount }}人次</text>
+							<text class="stat-label">今日就诊人数（陆园）</text>
+							<text class="stat-unit"></text>
+						</view>
+						<view class="stat-decorative-line orange"></view>
 					</view>
-					<view class="stat-content">
-						<text class="stat-value">{{ todayStats.lowStockCount }}</text>
-						<text class="stat-label">库存预警</text>
-						<text class="stat-unit">项</text>
+					
+					<!-- 今日就诊人数（水园） -->
+					<view class="stat-card" @tap="goToPage('/pages-sub/clinic/list?filter=today&location=water_park')">
+						<view class="stat-icon-wrapper red">
+							<view class="stat-icon-shape">
+								<view class="alert-triangle"></view>
+								<text class="alert-exclamation">⛑</text>
+							</view>
+						</view>
+						<view class="stat-content">
+							<text class="stat-value">{{ todayStats.clinicWaterCount }}人次</text>
+							<text class="stat-label">今日就诊人数（水园）</text>
+							<text class="stat-unit"></text>
+						</view>
+						<view class="stat-decorative-line red"></view>
 					</view>
-					<view class="stat-decorative-line red"></view>
-				</view>
+				</block>
 			</view>
 		</view>
 		
@@ -247,7 +309,7 @@
 		<view class="status-panel">
 			<view class="section-header">
 				<text class="section-title">系统状态</text>
-				<text class="section-subtitle">System Status</text>
+				
 			</view>
 			<view class="status-grid">
 				<view class="status-item">
@@ -281,7 +343,7 @@
 
 <script>
 import { callFunction } from '@/utils/api.js'
-import { hasPermission, canReview } from '@/utils/permission.js'
+import { hasPermission, canReview, canReviewOutbound, canEditInOutRecords, getCurrentRole } from '@/utils/permission.js'
 import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
@@ -292,15 +354,23 @@ export default {
 				inCount: 0,
 				outCount: 0,
 				totalDrugs: 0,
-				lowStockCount: 0
+				lowStockCount: 0,
+				clinicCount: 0,
+				clinicLandCount: 0,
+				clinicWaterCount: 0
 			},
-		lastUpdateTime: '',
-		userInfo: null,
-		canCreateIn: false,  // 是否可以创建入库单
-		canReviewIn: false,  // 是否可以复核入库单
-		pendingReviewCount: 0,  // 待复核数量
-		isLoadingStats: true
-	}
+			lastUpdateTime: '',
+			userInfo: null,
+			role: getCurrentRole(),
+			currentClinicLocation: 'land_park',
+			currentClinicLocationName: '陆园',
+			canCreateIn: false,  // 是否可以创建入库单
+			canReviewIn: false,  // 是否可以复核入库单
+			canReviewOut: false, // 是否可以复核/接收出库单
+			pendingReviewCount: 0,  // 待复核数量（入库）
+			pendingOutReviewCount: 0, // 待复核数量（出库）
+			isLoadingStats: true
+		}
 	},
 	
 	computed: {
@@ -311,17 +381,23 @@ export default {
 		// 是否显示待复核入口
 		showReviewEntry() {
 			return this.canReviewIn
+		},
+		// 是否可以操作入/出库单（首页其它区域可能使用）
+		canEditInOut() {
+			return canEditInOutRecords(this.role)
 		}
 	},
 	onLoad() {
 		console.log('===== 首页 onLoad =====')
 		this.checkPermissions()
+		this.loadClinicLocation()
 		this.updateLastUpdateTime()
 		this.loadTodayStats()
 	},
 	onShow() {
 		console.log('===== 首页 onShow =====')
 		this.checkPermissions()
+		this.loadClinicLocation()
 		this.loadTodayStats()
 		this.loadPendingReviewCount()
 	},
@@ -333,10 +409,13 @@ export default {
 		checkPermissions() {
 			this.userInfo = uni.getStorageSync('userInfo')
 			if (this.userInfo && this.userInfo.role) {
+				this.role = this.userInfo.role
 				// 检查是否可以创建入库单
 				this.canCreateIn = hasPermission(this.userInfo.role, 'in.create')
 				// 检查是否可以复核入库单
 				this.canReviewIn = canReview(this.userInfo.role)
+				// 检查是否可以复核/接收出库单
+				this.canReviewOut = canReviewOutbound(this.userInfo.role)
 				
 				console.log('权限检查:', {
 					role: this.userInfo.role,
@@ -346,6 +425,24 @@ export default {
 			} else {
 				this.canCreateIn = false
 				this.canReviewIn = false
+				this.canReviewOut = false
+			}
+		},
+
+		// 加载最近使用的门诊园区，用于医生待办显示
+		loadClinicLocation() {
+			try {
+				const last = uni.getStorageSync('clinic_last_location')
+				if (last === 'land_park' || last === 'water_park') {
+					this.currentClinicLocation = last
+					this.currentClinicLocationName = last === 'water_park' ? '水园' : '陆园'
+				} else {
+					this.currentClinicLocation = 'land_park'
+					this.currentClinicLocationName = '陆园'
+				}
+			} catch (e) {
+				this.currentClinicLocation = 'land_park'
+				this.currentClinicLocationName = '陆园'
 			}
 		},
 		
@@ -388,24 +485,74 @@ export default {
 		async loadTodayStats() {
 			this.isLoadingStats = true
 			try {
-				const [inData, outData, drugData, stockData] = await Promise.all([
+				// 今天日期，用于门诊统计
+				const today = new Date()
+				const y = today.getFullYear()
+				const m = String(today.getMonth() + 1).padStart(2, '0')
+				const d = String(today.getDate()).padStart(2, '0')
+				const dateStr = `${y}-${m}-${d}`
+
+				const [inData, outData, drugData, stockData, clinicLandData, clinicWaterData] = await Promise.all([
 					callFunction('inRecords', { action: 'getCounts', data: {} }, false),
 					callFunction('outRecords', { action: 'getCounts', data: {} }, false),
 					callFunction('drugManage', { action: 'getList', data: { pageSize: 1, pageNum: 1 } }, false).catch(e => {
-						console.log('获取药品总数失败', e)
-					 return { data: { total: 0 } }
+						console.log('获取药材总数失败', e)
+						return { data: { total: 0 } }
 					}),
 					callFunction('stockManage', { action: 'getLowStockList', data: {} }, false).catch(e => {
 						console.log('获取库存预警失败', e)
-					 return { data: [] }
+						return { data: [] }
+					}),
+					// 今日门诊记录数量统计（陆园）
+					callFunction('clinicRecords', {
+						action: 'list',
+						data: {
+							location: 'land_park',
+							startDate: dateStr,
+							endDate: dateStr,
+							pageSize: 1000,
+							useClinicRecords: true
+						}
+					}, false).catch(e => {
+						console.log('获取陆园门诊记录失败', e)
+						return { data: { list: [] } }
+					}),
+					// 今日门诊记录数量统计（水园）
+					callFunction('clinicRecords', {
+						action: 'list',
+						data: {
+							location: 'water_park',
+							startDate: dateStr,
+							endDate: dateStr,
+							pageSize: 1000,
+							useClinicRecords: true
+						}
+					}, false).catch(e => {
+						console.log('获取水园门诊记录失败', e)
+						return { data: { list: [] } }
 					})
 				])
+				
+				// 待复核出库数量（如果接口支持）
+				const outPending =
+					outData?.pendingReview ??
+					outData?.pending_review ??
+					outData?.pending ??
+					0
+				this.pendingOutReviewCount = outPending
+				
+				// 今日门诊数量（陆园 / 水园）
+				const clinicLandList = clinicLandData?.data?.list || clinicLandData?.result?.data?.list || []
+				const clinicWaterList = clinicWaterData?.data?.list || clinicWaterData?.result?.data?.list || []
 				
 				this.todayStats = {
 					inCount: inData?.today || 0,
 					outCount: outData?.today || 0,
 					totalDrugs: drugData?.data?.total || 0,
-					lowStockCount: stockData?.data?.length || 0
+					lowStockCount: stockData?.data?.length || 0,
+					clinicCount: (clinicLandList.length || 0) + (clinicWaterList.length || 0),
+					clinicLandCount: clinicLandList.length || 0,
+					clinicWaterCount: clinicWaterList.length || 0
 				}
 				this.updateLastUpdateTime()
 				console.log('今日统计加载成功:', this.todayStats)
@@ -570,16 +717,37 @@ export default {
 		
 		// 页面跳转
 		goToPage(url) {
-			uni.navigateTo({
-				url: url,
-				fail: (err) => {
-					console.log('页面跳转失败:', err)
-					uni.showToast({
-						title: '页面开发中',
-						icon: 'none'
-					})
-				}
-			})
+			// tabBar 页面必须使用 switchTab，其它页面使用 navigateTo
+			const tabPages = [
+				'/pages/index/index',
+				'/pages/stock/index',
+				'/pages/record/index',
+				'/pages/user/index'
+			]
+			const isTabPage = tabPages.includes(url)
+			if (isTabPage) {
+				uni.switchTab({
+					url,
+					fail: (err) => {
+						console.log('页面跳转失败:', err)
+						uni.showToast({
+							title: '页面开发中',
+							icon: 'none'
+						})
+					}
+				})
+			} else {
+				uni.navigateTo({
+					url,
+					fail: (err) => {
+						console.log('页面跳转失败:', err)
+						uni.showToast({
+							title: '页面开发中',
+							icon: 'none'
+						})
+					}
+				})
+			}
 		}
 	}
 }
@@ -588,29 +756,31 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+	/* 使用与“我的”页相同的蓝色渐变背景，统一整体风格 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
 	/* 兼容底部安全区，避免被 Tab 覆盖 */
 	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
 	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
-/* 顶部渐变卡片 */
+/* 顶部工作台卡片：白色立体卡片，居中固定宽度 */
 .header-card {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding: 40rpx 30rpx 50rpx;
-	margin-bottom: -20rpx;
 	position: relative;
+	margin: 22rpx auto 12rpx;
+	padding: 24rpx 24rpx 30rpx;
+	max-width: 702rpx;
+	/* 统一为象牙白圆角卡片，风格与“我的”页个人信息卡一致 */
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 }
 
 .header-card::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 40rpx;
-	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
-	border-radius: 40rpx 40rpx 0 0;
+	/* 去掉原来的底部过渡带，避免影响统一卡片形状 */
+	content: none;
 }
 
 .header-content {
@@ -636,16 +806,18 @@ export default {
 .logo-circle {
 	width: 100%;
 	height: 100%;
-	background: rgba(255, 255, 255, 0.25);
-	backdrop-filter: blur(10rpx);
 	border-radius: 50%;
-	border: 3rpx solid rgba(255, 255, 255, 0.4);
+	/* 蓝绿渐变医疗圆形底，带高光和边框 */
+	background:
+		linear-gradient(145deg, #2a91e9 0%, #22c1c3 40%, #e0f7ff 100%);
+	border: 3rpx solid rgba(255, 255, 255, 0.9);
+	box-shadow:
+		0 10rpx 26rpx rgba(15, 23, 42, 0.25),
+		0 0 0 1rpx rgba(15, 23, 42, 0.06),
+		inset 0 2rpx 8rpx rgba(255, 255, 255, 0.6);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 
-		0 8rpx 32rpx rgba(0, 0, 0, 0.2),
-		inset 0 2rpx 8rpx rgba(255, 255, 255, 0.3);
 	position: relative;
 	z-index: 2;
 }
@@ -661,7 +833,8 @@ export default {
 	position: absolute;
 	background: #ffffff;
 	border-radius: 3rpx;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+	box-shadow:
+		0 2rpx 4rpx rgba(15, 23, 42, 0.18);
 }
 
 .cross-horizontal {
@@ -678,6 +851,11 @@ export default {
 	left: 50%;
 	top: 0;
 	transform: translateX(-50%);
+}
+
+/* 小绿叶：依附在十字右上，象征康复与生机 */
+.logo-circle::after {
+	content: none;
 }
 
 /* Logo脉冲动画 */
@@ -719,11 +897,11 @@ export default {
 
 .clinic-name {
 	display: block;
-	font-size: 38rpx;
+	font-size: 40rpx;
 	font-weight: 800;
-	color: #ffffff;
+	color: #111827;
 	margin-bottom: 6rpx;
-	text-shadow: 0 2rpx 12rpx rgba(0,0,0,0.2);
+	text-shadow: 0 2rpx 6rpx rgba(148, 163, 184, 0.5);
 	letter-spacing: 2rpx;
 }
 
@@ -740,24 +918,50 @@ export default {
 .clinic-subtitle {
 	display: block;
 	font-size: 22rpx;
-	color: rgba(255,255,255,0.8);
+	color: #2a91e9;
 	letter-spacing: 1rpx;
 	font-weight: 500;
 }
 
-/* 快捷操作区 */
+/* 快捷操作区：作为一张白色卡片容器 */
 .quick-actions {
-	padding: 30rpx;
+	margin: 4rpx auto 12rpx;
+	padding: 20rpx 24rpx 22rpx;
+	max-width: 702rpx;
+	/* 与“我的”页菜单分组统一为象牙白大卡片 */
+	background: #FFFFF0;
+	border-radius: 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
-/* 用户权限相关标签单独一行 */
-.role-row {
-	display: flex;
-	flex-direction: column;
-	gap: 16rpx;
-	margin-bottom: 20rpx;
-	/* 与父容器 .quick-actions 的 30rpx 内边距对齐 */
-	padding: 0;
+/* 统一的6列网格布局系统：所有卡片统一宽度（每行两个） */
+.unified-grid {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 20rpx;
+	width: 100%;
+}
+
+/* 网格卡片基类：统一圆角、阴影、内边距与宽度 */
+.grid-card {
+	box-sizing: border-box;
+	grid-column: span 3; /* 每个卡片占 3 列，一行两个 */
+	border-radius: 20rpx;
+	padding: 20rpx 18rpx;
+	/* 身份证式浅青蓝纸质感：顶部加深一点暖黄高光，整体偏蓝 */
+	background: linear-gradient(145deg, #fdf5e7 0%, #e6f0ff 26%, #c0d8ff 68%, #a1c1ff 100%);
+	border: 1rpx solid rgba(48, 102, 189, 0.95);
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(48, 102, 189, 0.5) inset,
+		0 16rpx 34rpx rgba(15, 23, 42, 0.18);
+}
+
+/* 为了兼容旧代码，large/medium/small 不再区分宽度，统一为 span 3 */
+.grid-card.large,
+.grid-card.medium,
+.grid-card.small {
+	grid-column: span 3;
 }
 .role-badge {
 	width: 100%;
@@ -857,8 +1061,58 @@ export default {
 	font-size: 22rpx;
 	font-weight: 700;
 	color: #ffffff;
-	box-shadow: 0 6rpx 16rpx rgba(15,23,42,0.18);
+	box-shadow: 0 16rpx 40rpx rgba(15, 23, 42, 0.28);
 }
+
+/* 待办事项区：卡片化样式，呼应药材管理页 */
+.todo-section {
+	padding: 0 30rpx 10rpx;
+}
+
+.todo-card {
+	background: #ffffff;
+	border-radius: 24rpx;
+	box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.06);
+	padding: 8rpx 18rpx;
+}
+
+.todo-item {
+	display: flex;
+	align-items: center;
+	padding: 12rpx 4rpx;
+}
+
+.todo-item + .todo-item {
+	border-top: 1rpx solid rgba(148, 163, 184, 0.18);
+}
+
+.todo-icon {
+	width: 52rpx;
+	text-align: center;
+	font-size: 30rpx;
+	margin-right: 10rpx;
+}
+
+.todo-text {
+	flex: 1;
+	font-size: 26rpx;
+	color: #111827;
+}
+
+.todo-count {
+	min-width: 60rpx;
+	text-align: right;
+	font-size: 24rpx;
+	color: #2563eb;
+	font-weight: 600;
+	margin-right: 4rpx;
+}
+
+.todo-arrow {
+	font-size: 24rpx;
+	color: #9ca3af;
+}
+
 .role-badge-tag.count {
 	min-width: 56rpx;
 	height: 56rpx;
@@ -883,14 +1137,7 @@ export default {
 	50% { transform: scale(1.06); }
 }
 
-/* 门诊快捷入口（四宫格） */
-.clinic-quick-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 20rpx;
-	margin-bottom: 32rpx;
-	padding: 0;
-}
+/* 移除旧的 clinic-quick-grid，已集成到 unified-grid */
 
 .clinic-card {
 	position: relative;
@@ -927,41 +1174,53 @@ export default {
 	opacity: 1;
 }
 
+/* 取消玻璃蒙层，保持更干净的白底 */
 .clinic-card .clinic-card-glass {
-	position: absolute;
-	inset: 0;
-	background: rgba(255,255,255,0.08);
-	backdrop-filter: blur(20rpx);
-	z-index: 0;
+	display: none;
 }
 
 .clinic-card-content {
 	position: relative;
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16rpx;
-	width: 100%;
-	z-index: 1;
-}
-
-/* 快捷卡片：“门诊登记表”和“门诊日报”采用上下布局（上图标，下文字） */
-.clinic-card.register .clinic-card-content,
-.clinic-card.daily .clinic-card-content {
-	flex-direction: column;
+	flex-direction: column; /* 图标在上，文字在下 */
 	align-items: center;
 	justify-content: space-between;
 	gap: 12rpx;
 	padding-top: 8rpx;
 	height: 100%;
 	width: 100%;
+	z-index: 1;
 }
 
-.clinic-card.register .clinic-card-title,
-.clinic-card.daily .clinic-card-title {
+/* 所有快捷卡片标题居中显示 */
+.clinic-card .clinic-card-title {
 	text-align: center;
 	width: 100%;
 	align-self: center;
+}
+
+/* 待复核入库单数量徽标样式 */
+.review-count-badge {
+	position: absolute;
+	top: 20rpx;
+	right: 22rpx;
+	min-width: 40rpx;
+	height: 40rpx;
+	padding: 0 10rpx;
+	border-radius: 999rpx;
+	/* 在偏蓝卡片上更醒目的徽标：浅黄色，柔和一些 */
+	background: linear-gradient(135deg, #fffcf0 0%, #fde68a 45%, #fbbf24 100%);
+	box-shadow: 0 4rpx 10rpx rgba(234, 179, 8, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.review-count-text {
+	font-size: 24rpx;
+	font-weight: 800;
+	/* 数字颜色加深一点，提升对比度 */
+	color: #92400e;
 }
 
 .clinic-card-icon {
@@ -969,8 +1228,9 @@ export default {
 	width: 74rpx;
 	height: 74rpx;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.18);
-	backdrop-filter: blur(14rpx);
+	/* 蓝白线性图标底：浅蓝填充，适合线性图标 */
+	background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.9) 45%, rgba(42,145,233,0.18) 100%);
+	backdrop-filter: blur(10rpx);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -985,38 +1245,48 @@ export default {
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	background: #ffffff;
 	border-radius: 999rpx;
 }
 
+/* 门诊登记 / 加号：绿色十字 */
 .clinic-card-icon.register::before {
 	width: 40rpx;
 	height: 6rpx;
+	background: #16a34a;
 }
 
 .clinic-card-icon.register::after {
 	width: 6rpx;
 	height: 40rpx;
+	background: #16a34a;
 }
 
+/* 待复核入库单：橙色对勾 */
 .clinic-card-icon.review::before {
-	content: none;
+	width: 38rpx;
+	height: 22rpx;
+	border-radius: 12rpx;
+	background: rgba(254, 226, 226, 0.95);
+	border: 2rpx solid #ef4444;
 }
 
 .clinic-card-icon.review::after {
-	content: '';
-	width: 32rpx;
-	height: 18rpx;
-	border-left: 4rpx solid #ffffff;
-	border-bottom: 4rpx solid #ffffff;
-	border-radius: 4rpx;
-	transform: rotate(-40deg);
+	content: '✓';
+	width: auto;
+	height: auto;
+	border-radius: 0;
+	border: none;
+	background: transparent;
+	color: #ef4444;
+	font-size: 24rpx;
+	font-weight: 700;
 }
 
 .clinic-card-icon.inbound::before {
-	width: 6rpx;
-	height: 34rpx;
-	top: 32%;
+	width: 8rpx;
+	height: 32rpx;
+	top: 30%;
+	background: #2563eb;
 }
 
 .clinic-card-icon.inbound::after {
@@ -1024,7 +1294,7 @@ export default {
 	height: 0;
 	border-left: 10rpx solid transparent;
 	border-right: 10rpx solid transparent;
-	border-top: 14rpx solid #ffffff;
+	border-top: 14rpx solid #2563eb;
 	bottom: 10rpx;
 }
 
@@ -1032,33 +1302,58 @@ export default {
 	width: 46rpx;
 	height: 46rpx;
 	border-radius: 50%;
-	border: 4rpx solid rgba(255,255,255,0.8);
-	background: transparent;
-	animation: quick-pulse 2.2s ease-in-out infinite;
+	border: 3rpx solid rgba(59,130,246,0.7);
+	background: radial-gradient(circle, rgba(219,234,254,0.9) 0%, rgba(191,219,254,0.3) 70%, transparent 100%);
 }
 
 .clinic-card-icon.daily::after {
-	width: 16rpx;
-	height: 16rpx;
+	width: 22rpx;
+	height: 22rpx;
 	border-radius: 50%;
-	box-shadow: 0 0 12rpx rgba(255,255,255,0.7);
+	box-shadow: 0 0 12rpx rgba(59,130,246,0.7);
+	background: radial-gradient(circle, #ffffff 0%, rgba(191,219,254,0.4) 80%);
 }
 
+/* 待复核出库单：蓝色出库箱 + 向上箭头 + 小对勾 */
 .clinic-card-icon.summary::before {
-	width: 48rpx;
-	height: 24rpx;
-	border-radius: 12rpx;
-	background: rgba(255,255,255,0.32);
-	transform: rotate(-18deg);
+	/* 箱体 */
+	width: 40rpx;
+	height: 22rpx;
+	border-radius: 8rpx;
+	background: rgba(254, 226, 226, 0.96);
+	border: 2rpx solid #ef4444;
+	bottom: 12rpx;
+	top: auto;
 }
 
 .clinic-card-icon.summary::after {
-	width: 18rpx;
-	height: 18rpx;
-	border-radius: 50%;
-	right: 10rpx;
-	top: 16rpx;
-	box-shadow: 0 0 10rpx rgba(255,255,255,0.6);
+	/* 向上箭头 + 对勾的组合：箭头主体 */
+	width: 0;
+	height: 0;
+	border-left: 10rpx solid transparent;
+	border-right: 10rpx solid transparent;
+	border-bottom: 14rpx solid #ef4444;
+	top: 20rpx;
+}
+
+/* 出库图标：小箱子 + 向上箭头，不使用加号 */
+.clinic-card-icon.outbound::before {
+	width: 40rpx;
+	height: 22rpx;
+	border-radius: 8rpx;
+	background: rgba(219, 234, 254, 0.95);
+	border: 2rpx solid #0ea5e9;
+	bottom: 14rpx;
+	top: auto;
+}
+
+.clinic-card-icon.outbound::after {
+	width: 0;
+	height: 0;
+	border-left: 10rpx solid transparent;
+	border-right: 10rpx solid transparent;
+	border-bottom: 16rpx solid #0ea5e9;
+	top: 24rpx;
 }
 
 .clinic-card-text {
@@ -1068,10 +1363,11 @@ export default {
 	flex: 1;
 }
 .clinic-card-title {
-	font-size: 34rpx;
+	font-size: 32rpx;
 	font-weight: 700;
 	letter-spacing: 0.6rpx;
-	text-shadow: 0 3rpx 12rpx rgba(0,0,0,0.25);
+	color: #111827;
+	text-shadow: 0 1rpx 2rpx rgba(209, 213, 219, 0.8);
 }
 
 .clinic-card-desc {
@@ -1088,45 +1384,12 @@ export default {
 	font-size: 22rpx;
 	font-weight: 700;
 	background: rgba(255,255,255,0.22);
-	color: #ffffff;
+	color: #0f172a;
 	backdrop-filter: blur(12rpx);
 	box-shadow: 0 6rpx 18rpx rgba(15,23,42,0.18);
 }
 
-.clinic-card.register {
-	background: linear-gradient(135deg, #ff72a6 0%, #ff9264 100%);
-}
-.clinic-card.register .clinic-card-glass {
-	background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 70%);
-}
-
-.clinic-card.inbound {
-	background: linear-gradient(135deg, #34d399 0%, #16c9c5 50%, #0ea5e9 100%);
-}
-.clinic-card.inbound .clinic-card-glass {
-	background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
-}
-
-.clinic-card.review {
-	background: linear-gradient(135deg, #ffb84d 0%, #ff5f73 100%);
-}
-.clinic-card.review .clinic-card-glass {
-	background: radial-gradient(circle, rgba(255,255,255,0.33) 0%, transparent 70%);
-}
-
-.clinic-card.daily {
-	background: linear-gradient(135deg, #ff9f5f 0%, #ff5f5f 100%);
-}
-.clinic-card.daily .clinic-card-glass {
-	background: radial-gradient(circle, rgba(255,255,255,0.38) 0%, transparent 70%);
-}
-
-.clinic-card.summary {
-	background: linear-gradient(135deg, #66a4ff 0%, #8b6bff 100%);
-}
-.clinic-card.summary .clinic-card-glass {
-	background: radial-gradient(circle, rgba(255,255,255,0.32) 0%, transparent 70%);
-}
+/* 去掉按类型的整卡渐变色，颜色放在图标上 */
 
 .clinic-card-tag {
 	position: relative;
@@ -1135,7 +1398,7 @@ export default {
 	background: rgba(255,255,255,0.24);
 	font-size: 22rpx;
 	font-weight: 700;
-	color: #ffffff;
+	color: #0f172a;
 	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.22);
 }
 
@@ -1154,12 +1417,12 @@ export default {
 .clinic-banner {
 	margin: 0 0 20rpx 0;
 	padding: 30rpx 35rpx;
-	background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+	background: linear-gradient(135deg, #34d399 0%, #2ecc71 100%);
 	border-radius: 20rpx;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	box-shadow: 0 8rpx 32rpx rgba(236, 72, 153, 0.4);
+	box-shadow: 0 8rpx 32rpx rgba(52, 211, 153, 0.4);
 	position: relative;
 	overflow: hidden;
 	transition: all 0.3s;
@@ -1178,7 +1441,7 @@ export default {
 
 .clinic-banner:active {
 	transform: scale(0.98);
-	box-shadow: 0 4rpx 20rpx rgba(236, 72, 153, 0.5);
+	box-shadow: 0 4rpx 20rpx rgba(52, 211, 153, 0.5);
 }
 
 .clinic-banner-icon {
@@ -1239,7 +1502,7 @@ export default {
 .clinic-banner-title {
 	font-size: 36rpx;
 	font-weight: bold;
-	color: #ffffff;
+	color: #0f172a;
 	margin-bottom: 8rpx;
 	text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
 	letter-spacing: 1rpx;
@@ -1523,30 +1786,7 @@ export default {
 	text-transform: uppercase;
 }
 
-.action-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 20rpx;
-	margin-top: 20rpx;
-	/* 与父容器 .quick-actions 的 30rpx 内边距对齐 */
-	padding: 0;
-}
-
-.action-card {
-	background: #ffffff;
-	border-radius: 24rpx;
-	padding: 26rpx 18rpx;
-	box-shadow: 0 16rpx 32rpx rgba(31, 41, 55, 0.18);
-	position: relative;
-	overflow: hidden;
-	transition: transform 0.18s ease, box-shadow 0.18s ease;
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-between;
-	min-height: 210rpx;
-}
+/* 移除重复的 unified-grid 和 grid-card 定义，已在上方定义 */
 
 .action-card::before {
 	content: '';
@@ -1782,9 +2022,14 @@ export default {
 	letter-spacing: 1rpx;
 }
 
-/* 数据统计区 */
+/* 数据统计区：整体一张象牙白统计卡片，风格与“我的”页信息卡一致 */
 .stats-section {
-	padding: 0 30rpx 30rpx;
+	margin: 0 auto 16rpx;
+	padding: 22rpx 24rpx 26rpx;
+	max-width: 702rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .stats-grid {
@@ -1794,13 +2039,18 @@ export default {
 }
 
 .stat-card {
-	background: #ffffff;
+	/* 今日数据卡片：白黄主色 + 红色边缘阴影，带立体感 */
+	background: linear-gradient(145deg, #ffffff 0%, #fff9e6 45%, #ffeec2 100%);
 	border-radius: 20rpx;
-	padding: 30rpx 25rpx;
-	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.06);
+	padding: 26rpx 22rpx;
 	position: relative;
 	overflow: hidden;
 	text-align: center;
+	border: 1rpx solid rgba(248, 196, 113, 0.85);
+	box-shadow:
+		0 1rpx 0 rgba(255,255,255,0.9) inset,
+		0 -1rpx 0 rgba(239, 68, 68, 0.35) inset,
+		0 14rpx 32rpx rgba(148, 27, 27, 0.18);
 }
 
 /* 统计骨架屏 */
@@ -1975,35 +2225,43 @@ export default {
 /* 装饰线 */
 .stat-decorative-line {
 	position: absolute;
+	/* 左侧绿色立体色条：上下顶满卡片 */
+	top: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
-	height: 4rpx;
-	border-radius: 4rpx 4rpx 0 0;
+	width: 12rpx;
+	border-radius: 0;
+	overflow: visible;
 }
 
-.stat-decorative-line.blue { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); }
-.stat-decorative-line.green { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
-.stat-decorative-line.orange { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }
-.stat-decorative-line.red { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }
+.stat-decorative-line.blue,
+.stat-decorative-line.green,
+.stat-decorative-line.orange,
+.stat-decorative-line.red {
+	/* 竖条主体：由浅绿到深绿的渐变 */
+	background: linear-gradient(to bottom, #4ade80 0%, #16a34a 40%, #0f766e 100%);
+}
 
 .stat-content {
-	margin-bottom: 15rpx;
+	/* 统一数字+标签区域高度，略压缩垂直间距 */
+	margin-bottom: 12rpx;
 }
 
 .stat-value {
+	/* 与下方标签字号一致：数字 + 单位一体显示（如 0人次） */
 	display: block;
-	font-size: 48rpx;
+	font-size: 28rpx;
 	font-weight: bold;
 	color: #2c3e50;
 	line-height: 1;
-	margin-bottom: 8rpx;
+	margin-bottom: 6rpx;
 	font-family: 'DIN Alternate', 'Arial', sans-serif;
 }
 
 .stat-label {
 	display: inline-block;
-	font-size: 24rpx;
+	/* 略小于快捷卡片标题，避免长标签换行 */
+	font-size: 28rpx;
 	color: #7f8c8d;
 	margin-right: 8rpx;
 }
@@ -2032,9 +2290,14 @@ export default {
 	font-weight: 600;
 }
 
-/* 系统状态面板 */
+/* 系统状态面板：统一白色卡片容器 */
 .status-panel {
-	padding: 0 30rpx;
+	margin: 0 auto 22rpx;
+	padding: 22rpx 24rpx 26rpx;
+	max-width: 702rpx;
+	background: #ffffff;
+	border-radius: 22rpx;
+	box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 }
 
 .status-grid {
@@ -2056,21 +2319,25 @@ export default {
 }
 
 .status-indicator {
-	width: 12rpx;
-	height: 12rpx;
+	width: 16rpx;
+	height: 16rpx;
 	border-radius: 50%;
-	margin-right: 20rpx;
+	margin-right: 18rpx;
 	position: relative;
 }
 
 .status-indicator.online {
-	background: #10b981;
-	box-shadow: 0 0 0 4rpx rgba(16, 185, 129, 0.2);
+	background: #22c55e;
+	box-shadow:
+		0 0 0 2rpx rgba(187, 247, 208, 0.9),
+		0 0 10rpx rgba(34, 197, 94, 0.8);
 }
 
 .status-indicator.online::after {
 	content: '';
 	position: absolute;
+	width: 16rpx;
+	height: 16rpx;
 	width: 12rpx;
 	height: 12rpx;
 	border-radius: 50%;

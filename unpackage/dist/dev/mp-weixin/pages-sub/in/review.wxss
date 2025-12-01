@@ -1,0 +1,455 @@
+@charset "UTF-8";
+.page.data-v-cf707de8 {
+  min-height: 100vh;
+  background: #f8f8f8;
+  padding-bottom: 120rpx;
+}
+.page-header.data-v-cf707de8 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx;
+}
+.page-header .header-content .header-title.data-v-cf707de8 {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10rpx;
+}
+.page-header .header-content .header-subtitle.data-v-cf707de8 {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+.info-card.data-v-cf707de8 {
+  background: white;
+  margin: 20rpx 30rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+.info-card .info-row.data-v-cf707de8 {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+.info-card .info-row.data-v-cf707de8:last-child {
+  margin-bottom: 0;
+}
+.info-card .info-row .info-item.data-v-cf707de8 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.info-card .info-row .info-item.full.data-v-cf707de8 {
+  flex: 1 1 100%;
+}
+.info-card .info-row .info-item .label.data-v-cf707de8 {
+  font-size: 24rpx;
+  color: #969799;
+}
+.info-card .info-row .info-item .value.data-v-cf707de8 {
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+}
+.info-card .info-row .info-item .status-badge.data-v-cf707de8 {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+.info-card .info-row .info-item .status-badge.pending_review.data-v-cf707de8 {
+  background: #fff3e0;
+  color: #ff9800;
+}
+.info-card .info-row .info-item .status-badge.completed.data-v-cf707de8 {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.info-card .info-row .info-item .status-badge.rejected.data-v-cf707de8 {
+  background: #ffebee;
+  color: #f44336;
+}
+.drug-section.data-v-cf707de8 {
+  padding: 0 30rpx;
+}
+.drug-section .section-title.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.drug-section .section-title .title-text.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.drug-section .section-title .title-count.data-v-cf707de8 {
+  font-size: 24rpx;
+  color: #969799;
+}
+.drug-card.data-v-cf707de8 {
+  background: white;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+.drug-card .drug-header.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+}
+.drug-card .drug-header .drug-name.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.drug-card .drug-header .drug-index.data-v-cf707de8 {
+  width: 48rpx;
+  height: 48rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+.drug-card .drug-spec.data-v-cf707de8 {
+  font-size: 26rpx;
+  color: #969799;
+  margin-bottom: 20rpx;
+}
+.drug-card .drug-details .detail-row.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.drug-card .drug-details .detail-row.data-v-cf707de8:last-child {
+  margin-bottom: 0;
+}
+.drug-card .drug-details .detail-row .detail-label.data-v-cf707de8 {
+  font-size: 26rpx;
+  color: #646566;
+  width: 150rpx;
+}
+.drug-card .drug-details .detail-row .detail-value.data-v-cf707de8 {
+  flex: 1;
+  font-size: 26rpx;
+  color: #323233;
+}
+.drug-card .drug-details .detail-row .detail-value.highlight.data-v-cf707de8 {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+.drug-card .drug-details .detail-row .detail-value.amount.data-v-cf707de8 {
+  font-weight: bold;
+  color: #667eea;
+}
+.drug-card .drug-details .detail-row .detail-value.normal.data-v-cf707de8 {
+  color: #323233;
+}
+.drug-card .drug-details .detail-row .detail-value.expiring.data-v-cf707de8 {
+  color: #ff9800;
+}
+.drug-card .drug-details .detail-row .detail-value.expiring-soon.data-v-cf707de8 {
+  color: #ff5722;
+}
+.drug-card .drug-details .detail-row .detail-value.expired.data-v-cf707de8 {
+  color: #f44336;
+  font-weight: bold;
+}
+.dual-signature-section.data-v-cf707de8 {
+  padding: 0 30rpx;
+  margin-top: 30rpx;
+}
+.dual-signature-section .section-title.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 25rpx;
+}
+.dual-signature-section .section-title .title-text.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.dual-signature-section .signature-card.data-v-cf707de8 {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid #f0f0f0;
+  position: relative;
+  overflow: hidden;
+}
+.dual-signature-section .signature-card.data-v-cf707de8::before {
+  content: "";
+  position: absolute;
+  top: -50rpx;
+  right: -50rpx;
+  width: 150rpx;
+  height: 150rpx;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.dual-signature-section .signature-card.operator-card.data-v-cf707de8 {
+  border-left: 4rpx solid #667eea;
+}
+.dual-signature-section .signature-card.reviewer-card.data-v-cf707de8 {
+  border-left: 4rpx solid #4caf50;
+}
+.dual-signature-section .signature-card.reviewer-card.data-v-cf707de8  .signature-container {
+  height: 160rpx !important;
+}
+.dual-signature-section .signature-card.reviewer-card.data-v-cf707de8  .placeholder-icon {
+  font-size: 40rpx !important;
+}
+.dual-signature-section .signature-card.reviewer-card.data-v-cf707de8  .placeholder-text {
+  font-size: 28rpx !important;
+}
+.dual-signature-section .signature-card.reviewer-card.data-v-cf707de8  .signature-preview {
+  height: 160rpx !important;
+}
+.dual-signature-section .signature-card .signature-header.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25rpx;
+  position: relative;
+  z-index: 1;
+}
+.dual-signature-section .signature-card .signature-header .header-left.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.dual-signature-section .signature-card .signature-header .header-left .signature-icon.data-v-cf707de8 {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+.dual-signature-section .signature-card .signature-header .header-left .signature-label.data-v-cf707de8 {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.dual-signature-section .signature-card .signature-header .signature-status.data-v-cf707de8 {
+  padding: 10rpx 28rpx;
+  border-radius: 32rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.dual-signature-section .signature-card .signature-header .signature-status.completed.data-v-cf707de8 {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #2e7d32;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.2);
+}
+.dual-signature-section .signature-card .signature-header .signature-status.pending.data-v-cf707de8 {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  color: #e65100;
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.2);
+}
+.dual-signature-section .signature-card .signature-display-box.data-v-cf707de8 {
+  height: 160rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 0;
+  margin-bottom: 20rpx;
+  border: 2rpx solid #e8e8e8;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.dual-signature-section .signature-card .signature-display-box .signature-img.data-v-cf707de8 {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10rpx;
+}
+.dual-signature-section .signature-card .signature-display-box .no-signature.data-v-cf707de8 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15rpx;
+}
+.dual-signature-section .signature-card .signature-display-box .no-signature .no-sig-icon.data-v-cf707de8 {
+  font-size: 60rpx;
+  opacity: 0.3;
+}
+.dual-signature-section .signature-card .signature-display-box .no-signature .no-sig-text.data-v-cf707de8 {
+  font-size: 24rpx;
+  color: #c8c9cc;
+}
+.dual-signature-section .signature-card .signature-footer.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  background: rgba(102, 126, 234, 0.04);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  position: relative;
+  z-index: 1;
+}
+.dual-signature-section .signature-card .signature-footer .footer-item.data-v-cf707de8 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.dual-signature-section .signature-card .signature-footer .footer-item .footer-label.data-v-cf707de8 {
+  font-size: 22rpx;
+  color: #969799;
+}
+.dual-signature-section .signature-card .signature-footer .footer-item .footer-value.data-v-cf707de8 {
+  font-size: 26rpx;
+  color: #323233;
+  font-weight: 600;
+}
+.dual-signature-section .signature-card .signature-footer .footer-divider.data-v-cf707de8 {
+  width: 2rpx;
+  height: 40rpx;
+  background: #e0e0e0;
+  margin: 0 20rpx;
+}
+.summary-card.data-v-cf707de8 {
+  background: white;
+  margin: 30rpx 30rpx 0;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  display: flex;
+  justify-content: space-around;
+}
+.summary-card .summary-item.data-v-cf707de8 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+.summary-card .summary-item.highlight .summary-value.data-v-cf707de8 {
+  color: #667eea;
+}
+.summary-card .summary-item .summary-label.data-v-cf707de8 {
+  font-size: 24rpx;
+  color: #969799;
+}
+.summary-card .summary-item .summary-value.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.reject-section.data-v-cf707de8 {
+  padding: 0 30rpx;
+  margin-top: 30rpx;
+}
+.reject-section .section-title.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+.reject-section .section-title .title-text.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.reject-section .section-title .required.data-v-cf707de8 {
+  color: #ee0a24;
+  font-size: 28rpx;
+}
+.reject-section .reject-textarea.data-v-cf707de8 {
+  width: 100%;
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  min-height: 200rpx;
+  font-size: 28rpx;
+  color: #323233;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+.reject-section .char-count.data-v-cf707de8 {
+  text-align: right;
+  font-size: 24rpx;
+  color: #969799;
+  margin-top: 10rpx;
+}
+.action-bar.data-v-cf707de8 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  background: white;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+.action-bar .action-btn.data-v-cf707de8 {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  transition: all 0.3s;
+  /* 统一胶囊按钮：青蓝渐变背景 + 白色文字 */
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.action-bar .action-btn.btn-reject.data-v-cf707de8:active {
+  opacity: 0.9;
+}
+.action-bar .action-btn.btn-approve.data-v-cf707de8:active {
+  opacity: 0.9;
+}
+.action-bar .action-btn.btn-cancel.data-v-cf707de8:active {
+  opacity: 0.9;
+}
+.action-bar .action-btn.btn-confirm-reject.data-v-cf707de8:active {
+  opacity: 0.9;
+}
+.signature-popup.data-v-cf707de8 {
+  background: white;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+.signature-popup .popup-header.data-v-cf707de8 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #ebedf0;
+}
+.signature-popup .popup-header .popup-title.data-v-cf707de8 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.signature-popup .popup-header .popup-close.data-v-cf707de8 {
+  font-size: 40rpx;
+  color: #969799;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

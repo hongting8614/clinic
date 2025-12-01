@@ -8,21 +8,27 @@
 			}
 		},
 		{
-			"path": "pages/stock/index",
+			"path": "pages/clinic/index",
 			"style": {
-				"navigationBarTitleText": "库存管理"
+				"navigationBarTitleText": "门诊管理"
 			}
 		},
 		{
-			"path": "pages/record/index",
+			"path": "pages/material/index",
 			"style": {
-				"navigationBarTitleText": "数据报表"
+				"navigationBarTitleText": "药材管理"
 			}
 		},
 		{
 			"path": "pages/user/index",
 			"style": {
 				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/test/dialog",
+			"style": {
+				"navigationBarTitleText": "弹窗测试"
 			}
 		}
 	],
@@ -34,19 +40,19 @@
 				{
 					"path": "list",
 					"style": {
-						"navigationBarTitleText": "药品列表"
+						"navigationBarTitleText": "药材列表"
 					}
 				},
 				{
 					"path": "add",
 					"style": {
-						"navigationBarTitleText": "添加药品"
+						"navigationBarTitleText": "添加药材"
 					}
 				},
 				{
 					"path": "detail",
 					"style": {
-						"navigationBarTitleText": "药品详情"
+						"navigationBarTitleText": "药材详情"
 					}
 				}
 			]
@@ -90,6 +96,12 @@
 					}
 				},
 				{
+					"path": "select-drug",
+					"style": {
+						"navigationBarTitleText": "选择药材"
+					}
+				},
+				{
 					"path": "list",
 					"style": {
 						"navigationBarTitleText": "出库单列表"
@@ -126,13 +138,13 @@
 				{
 					"path": "add",
 					"style": {
-						"navigationBarTitleText": "药房日消耗记录"
+						"navigationBarTitleText": "门诊日消耗记录"
 					}
 				},
 				{
 					"path": "list",
 					"style": {
-						"navigationBarTitleText": "消耗记录"
+						"navigationBarTitleText": "门诊日消耗"
 					}
 				}
 			]
@@ -167,6 +179,12 @@
 					"path": "list",
 					"style": {
 						"navigationBarTitleText": "盘点单列表"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "盘点单详情"
 					}
 				}
 			]
@@ -214,6 +232,12 @@
 						"navigationBarTitleText": "库存查询",
 						"enablePullDownRefresh": true
 					}
+				},
+				{
+					"path": "park",
+					"style": {
+						"navigationBarTitleText": "园区库存明细"
+					}
 				}
 			]
 		},
@@ -234,6 +258,13 @@
 					}
 				},
 				{
+					"path": "outbound",
+					"style": {
+						"navigationBarTitleText": "出库单报表",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
 					"path": "stock",
 					"style": {
 						"navigationBarTitleText": "库存报表",
@@ -244,8 +275,8 @@
 					"path": "daily",
 					"style": {
 						"navigationBarTitleText": "门诊日报",
-						"navigationBarBackgroundColor": "#667eea",
-						"navigationBarTextStyle": "white",
+						"navigationBarBackgroundColor": "#FFFFFF",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -265,6 +296,12 @@
 					"path": "clinic",
 					"style": {
 						"navigationBarTitleText": "门诊登记报表"
+					}
+				},
+				{
+					"path": "clinic-analysis",
+					"style": {
+						"navigationBarTitleText": "门诊统计分析"
 					}
 				}
 			]
@@ -349,16 +386,16 @@
 				"text": "首页"
 			},
 			{
-				"pagePath": "pages/stock/index",
-				"iconPath": "static/tabbar/stock.png",
-				"selectedIconPath": "static/tabbar/stock-active.png",
-				"text": "库存"
-			},
-			{
-				"pagePath": "pages/record/index",
+				"pagePath": "pages/clinic/index",
 				"iconPath": "static/tabbar/record.png",
 				"selectedIconPath": "static/tabbar/record-active.png",
-				"text": "报表"
+				"text": "门诊管理"
+			},
+			{
+				"pagePath": "pages/material/index",
+				"iconPath": "static/tabbar/stock.png",
+				"selectedIconPath": "static/tabbar/stock-active.png",
+				"text": "药材管理"
 			},
 			{
 				"pagePath": "pages/user/index",

@@ -1,4 +1,4 @@
-// 药品第三方API云函数
+// 药材第三方API云函数
 // 用于查询国家药监局等第三方数据库
 
 const cloud = require('wx-server-sdk')
@@ -26,15 +26,15 @@ exports.main = async (event, context) => {
 }
 
 /**
- * 搜索药品
+ * 搜索药材
  * @param {string} keyword - 搜索关键词
  */
 async function searchDrug(keyword) {
   try {
-    console.log('开始搜索药品:', keyword)
+    console.log('开始搜索药材:', keyword)
     
     // TODO: 这里接入真实的第三方API
-    // 例如：国家药品监督管理局数据查询接口
+    // 例如：国家药材监督管理局数据查询接口
     // const result = await callNMPAAPI(keyword)
     
     // 目前使用模拟数据进行测试
@@ -50,12 +50,12 @@ async function searchDrug(keyword) {
       return {
         success: false,
         data: null,
-        message: '未找到相关药品'
+        message: '未找到相关药材'
       }
     }
     
   } catch (error) {
-    console.error('搜索药品失败:', error)
+    console.error('搜索药材失败:', error)
     return {
       success: false,
       error: error.message,
@@ -72,7 +72,7 @@ async function mockSearchAPI(keyword) {
   // 模拟延迟
   await sleep(1000)
   
-  // 模拟药品数据库
+  // 模拟药材数据库
   const mockDatabase = [
     {
       name: '阿莫西林胶囊',
@@ -133,7 +133,7 @@ async function mockSearchAPI(keyword) {
 /**
  * 真实的第三方API调用示例（待实现）
  * 可以接入以下数据源：
- * 1. 国家药品监督管理局（NMPA）- 药品数据查询
+ * 1. 国家药材监督管理局（NMPA）- 药材数据查询
  * 2. 药智网 API
  * 3. 医药数据开放平台
  */

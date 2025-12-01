@@ -1,0 +1,101 @@
+.page.data-v-7219ff46 {
+  min-height: 100vh;
+  background: #f7f8fa;
+  padding-bottom: 40rpx;
+}
+.page-header.data-v-7219ff46 {
+  background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
+  padding: 40rpx 30rpx 30rpx;
+}
+.page-header .header-content .header-title.data-v-7219ff46 {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: white;
+}
+.info-card.data-v-7219ff46,
+.security-card.data-v-7219ff46,
+.other-card.data-v-7219ff46 {
+  background: white;
+  margin: 30rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+.card-title.data-v-7219ff46 {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f1f5f9;
+}
+.card-title .title-icon.data-v-7219ff46 {
+  font-size: 32rpx;
+}
+.card-title .title-text.data-v-7219ff46 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+.info-item.data-v-7219ff46 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f1f5f9;
+}
+.info-item.data-v-7219ff46:last-child {
+  border-bottom: none;
+}
+.info-item .info-label.data-v-7219ff46 {
+  font-size: 28rpx;
+  color: #646566;
+  width: 120rpx;
+}
+.info-item .info-value.data-v-7219ff46 {
+  flex: 1;
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+  text-align: right;
+  margin-right: 20rpx;
+}
+.info-item .info-action.data-v-7219ff46 {
+  padding: 8rpx 20rpx;
+  background: #07C160;
+  border-radius: 20rpx;
+}
+.info-item .info-action .action-text.data-v-7219ff46 {
+  font-size: 24rpx;
+  color: white;
+}
+.menu-item.data-v-7219ff46 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f1f5f9;
+}
+.menu-item.data-v-7219ff46:last-child {
+  border-bottom: none;
+}
+.menu-item .menu-left.data-v-7219ff46 {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.menu-item .menu-left .menu-icon.data-v-7219ff46 {
+  font-size: 32rpx;
+}
+.menu-item .menu-left .menu-text.data-v-7219ff46 {
+  font-size: 28rpx;
+  color: #323233;
+}
+.menu-item .menu-arrow.data-v-7219ff46 {
+  font-size: 32rpx;
+  color: #c8c9cc;
+}
+.menu-item.data-v-7219ff46:active {
+  background: #f7f8fa;
+}

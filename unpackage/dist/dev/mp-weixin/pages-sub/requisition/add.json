@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "新建请领单",
+  "usingComponents": {
+    "signature": "/components/signature/index"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "出库单详情",
+  "usingComponents": {
+    "signature": "/components/signature/index"
+  }
+}

@@ -4,12 +4,11 @@
 		<view class="page-header">
 			<view>
 				<text class="page-title">库存总览</text>
-				<text class="page-subtitle">Inventory Overview</text>
 			</view>
 			<view class="header-actions">
-				<view class="header-btn" @tap="goToPage('/pages-sub/in/list')">
-					<text class="btn-icon">📝</text>
-					<text class="btn-text">入库管理</text>
+				<view class="header-btn secondary" @tap="onExpirySettingTap">
+					<text class="btn-icon">⏱</text>
+					<text class="btn-text">预警设置</text>
 				</view>
 				<view class="header-btn" @tap="goToPage('/pages-sub/report/stock')">
 					<text class="btn-icon">📄</text>
@@ -21,7 +20,7 @@
 		<filter-panel
 			class="panel-wrapper"
 			:keyword="searchKeyword"
-			keyword-placeholder="搜索药品名称/规格/拼音"
+			keyword-placeholder="搜索药材名称/规格/拼音"
 			:quick-filters="statusOptions"
 			:active-quick-filter="statusFilter"
 			:show-date="false"
@@ -35,8 +34,8 @@
 			<view class="dashboard-card primary">
 				<view class="dashboard-icon">📊</view>
 				<view class="dashboard-content">
-					<text class="dashboard-value">{{ stockStats.totalDrugs }}</text>
-					<text class="dashboard-label">药品种类</text>
+					<text class="dashboard-value">{{ dashboardStats.totalDrugs }}</text>
+					<text class="dashboard-label">药材种类</text>
 				</view>
 				<view class="dashboard-badge">总计</view>
 			</view>
@@ -44,7 +43,7 @@
 			<view class="dashboard-card warning">
 				<view class="dashboard-icon">⚠️</view>
 				<view class="dashboard-content">
-					<text class="dashboard-value">{{ stockStats.lowStockCount }}</text>
+					<text class="dashboard-value">{{ dashboardStats.lowStockCount }}</text>
 					<text class="dashboard-label">库存预警</text>
 				</view>
 				<view class="dashboard-badge">预警</view>
@@ -53,90 +52,67 @@
 			<view class="dashboard-card danger">
 				<view class="dashboard-icon">🚨</view>
 				<view class="dashboard-content">
-					<text class="dashboard-value">{{ stockStats.expiredCount }}</text>
-					<text class="dashboard-label">缺货药品</text>
+					<text class="dashboard-value">{{ dashboardStats.expiredCount }}</text>
+					<text class="dashboard-label">缺货药材</text>
 				</view>
 				<view class="dashboard-badge">缺货</view>
 			</view>
-		</view>
-		
-		<!-- 药品列表 - 专业展示 -->
-		<view class="drug-section">
-			<view class="section-header">
-				<text class="section-title">库存清单</text>
-				<text class="section-count">共 {{ filteredDrugList.length }} 种</text>
-		</view>
-		
-		<view class="drug-list">
-			<view 
-					class="drug-card" 
-					v-for="(item, index) in filteredDrugList" 
-					:key="index"
-					@tap="goToDetail(item)"
-				>
-					<!-- 药品信息 -->
-				<view class="drug-header">
-						<view class="drug-main-info">
-							<text class="drug-name">{{ item.name }}</text>
-							<view class="drug-meta">
-								<text class="drug-spec">{{ item.spec }}</text>
-								<text class="drug-divider">|</text>
-								<text class="drug-manufacturer">{{ item.manufacturer || '未知' }}</text>
-							</view>
-					</view>
-					<view class="drug-status-badge" :class="item.totalQuantity === 0 ? 'status-danger' : (item.totalQuantity <= item.reorderLevel ? 'status-warning' : 'status-success')">
-						<text class="status-text">{{ getStatusText(item) }}</text>
-					</view>
-				</view>
-				
-					<!-- 库存信息 -->
-					<view class="drug-stock-info">
-						<view class="stock-item">
-							<text class="stock-label">当前库存</text>
-							<view class="stock-value-wrapper">
-							<text class="stock-value" :class="item.totalQuantity === 0 ? 'color-danger' : (item.totalQuantity <= item.reorderLevel ? 'color-warning' : 'color-success')">
-								{{ item.totalQuantity }}
-							</text>
-								<text class="stock-unit">{{ item.unit }}</text>
-							</view>
-				</view>
-				
-						<view class="stock-divider"></view>
-						
-						<view class="stock-item">
-							<text class="stock-label">安全库存</text>
-							<view class="stock-value-wrapper">
-								<text class="stock-value-small">{{ item.reorderLevel || 100 }}</text>
-								<text class="stock-unit">{{ item.unit }}</text>
-							</view>
-				</view>
-			</view>
 			
-					<!-- 进度条 -->
-					<view class="progress-bar">
-					<view 
-						class="progress-fill" 
-						:class="item.totalQuantity === 0 ? 'progress-danger' : (item.totalQuantity <= item.reorderLevel ? 'progress-warning' : 'progress-success')"
-						:style="{ width: (Math.min((item.totalQuantity / (item.reorderLevel || 100)) * 100, 100)) + '%' }"
-					></view>
-					</view>
-					
-					<!-- 操作指示 -->
-					<view class="drug-action-hint">
-						<text class="hint-text">点击查看详情</text>
-						<text class="hint-arrow">→</text>
-					</view>
+			<!-- 近效期药材统计 -->
+			<view class="dashboard-card info">
+				<view class="dashboard-icon">⏰</view>
+				<view class="dashboard-content">
+					<text class="dashboard-value">{{ dashboardStats.nearExpiryCount }}</text>
+					<text class="dashboard-label single-line">近效期药材</text>
 				</view>
 			</view>
 		</view>
 		
-		<!-- 空状态 - 专业设计 -->
-		<view v-if="!loading && filteredDrugList.length === 0" class="empty-state">
+		<!-- 库存列表：仅在有搜索条件或选择了特定状态时显示 -->
+		<view v-if="(searchKeyword || statusFilter !== 'all') && filteredDrugList.length > 0" class="stock-list">
+			<view
+				v-for="(item, index) in filteredDrugList"
+				:key="index"
+				class="stock-card"
+			>
+				<view class="stock-card-header">
+					<text class="stock-name">{{ item.drugName || item.name || '未命名药材' }}</text>
+					<view class="stock-status-tag" :class="item.expireStatusClass">
+						<text class="stock-status-text">{{ getExpireStatusText(item) }}</text>
+					</view>
+				</view>
+				
+				<view class="stock-row">
+					<text class="stock-label">规格/单位：</text>
+					<text class="stock-value">
+						{{ item.spec || '未录入规格' }}
+						<text v-if="item.unit" class="stock-unit-inline">（{{ item.unit }}）</text>
+					</text>
+				</view>
+				<view class="stock-row">
+					<text class="stock-label">当前数量：</text>
+					<text class="stock-value">{{ (item.totalQuantity || item.quantity || 0) }}</text>
+				</view>
+				
+				<view class="stock-row">
+					<text class="stock-label">有效期：</text>
+					<text class="stock-value">
+						{{ item.expireDate || '未录入有效期' }}
+						<text class="expire-days-tag" :class="item.expireStatusClass">
+							{{ formatExpireDays(item.expireDays) }}
+						</text>
+					</text>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 空状态：仅在有搜索条件或选择了特定状态时才提示未找到数据 -->
+		<view v-if="!loading && (searchKeyword || statusFilter !== 'all') && filteredDrugList.length === 0" class="empty-state">
 			<view class="empty-icon-wrapper">
 				<text class="empty-icon">📦</text>
 			</view>
-			<text class="empty-title">{{ searchKeyword ? '未找到相关药品' : '暂无药品数据' }}</text>
-			<text class="empty-desc">{{ searchKeyword ? '试试其他关键词' : '请先添加药品档案' }}</text>
+			<text class="empty-title">{{ searchKeyword ? '未找到相关药材' : '暂无药材数据' }}</text>
+			<text class="empty-desc">{{ searchKeyword ? '试试其他关键词' : '请先添加药材档案' }}</text>
 		</view>
 
 		<!-- 加载状态 -->
@@ -151,6 +127,7 @@
 import { callFunction } from '@/utils/api.js'
 import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 import FilterPanel from '@/components/filter-panel/index.vue'
+import Common from '@/utils/common.js'
 
 export default {
 	mixins: [createTabSwipeMixin(1)],
@@ -163,7 +140,8 @@ export default {
 			stockStats: {
 				totalDrugs: 0,
 				lowStockCount: 0,
-				expiredCount: 0
+				expiredCount: 0,
+				nearExpiryCount: 0
 			},
 			searchKeyword: '',
 			statusFilter: 'all',
@@ -171,8 +149,13 @@ export default {
 				{ label: '全部', value: 'all' },
 				{ label: '充足', value: 'sufficient' },
 				{ label: '预警', value: 'warning' },
-				{ label: '缺货', value: 'empty' }
+				{ label: '缺货', value: 'empty' },
+				{ label: '近效期', value: 'expiry_warning' },
+				{ label: '已过期', value: 'expired' }
 			],
+			// 有效期预警配置：距离到期多少天以内视为近效期
+			expiryWarningDays: 30,
+			expiryDangerDays: 0,
 			loading: false
 		}
 	},
@@ -181,11 +164,23 @@ export default {
 			let list = this.drugList
 			const keyword = (this.searchKeyword || '').toLowerCase()
 			if (keyword) {
-				list = list.filter(item => 
-					item.name.toLowerCase().includes(keyword) ||
-					item.spec.toLowerCase().includes(keyword) ||
-					(item.pinyin && item.pinyin.toLowerCase().includes(keyword))
-				)
+				const isAlpha = /^[a-z]+$/.test(keyword)
+				list = list.filter(item => {
+					const name = (item.name || '').toLowerCase()
+					const spec = (item.spec || '').toLowerCase()
+					const manufacturer = (item.manufacturer || '').toLowerCase()
+					const pinyin = (item.pinyin || '').toLowerCase()
+					// 基础字段模糊匹配
+					if (name.includes(keyword) || spec.includes(keyword) || manufacturer.includes(keyword) || pinyin.includes(keyword)) {
+						return true
+					}
+					// 纯字母关键字：按药名即时生成拼音首字母匹配
+					if (isAlpha && item.name) {
+						const py = (Common.toPinyin(item.name) || '').toLowerCase()
+						if (py.includes(keyword)) return true
+					}
+					return false
+				})
 			}
 			if (this.statusFilter === 'sufficient') {
 				return list.filter(item => (item.totalQuantity || 0) > (item.reorderLevel || 100))
@@ -196,76 +191,201 @@ export default {
 			if (this.statusFilter === 'empty') {
 				return list.filter(item => (item.totalQuantity || 0) === 0)
 			}
+			// 近效期：0 < expireDays <= expiryWarningDays
+			if (this.statusFilter === 'expiry_warning') {
+				return list.filter(item => {
+					const d = item.expireDays
+					return typeof d === 'number' && d > this.expiryDangerDays && d <= this.expiryWarningDays
+				})
+			}
+			// 已过期：expireDays <= 0
+			if (this.statusFilter === 'expired') {
+				return list.filter(item => {
+					const d = item.expireDays
+					return typeof d === 'number' && d <= this.expiryDangerDays
+				})
+			}
 			return list
+		},
+		dashboardStats() {
+			const list = this.filteredDrugList
+			const totalDrugs = list.length
+			const lowStockCount = list.filter(item =>
+				(item.totalQuantity || 0) > 0 && (item.totalQuantity || 0) <= (item.reorderLevel || 100)
+			).length
+			const expiredCount = list.filter(item => (item.totalQuantity || 0) === 0).length
+			const nearExpiryCount = list.filter(item => {
+				const d = item.expireDays
+				return typeof d === 'number' && d > this.expiryDangerDays && d <= this.expiryWarningDays
+			}).length
+			return {
+				totalDrugs,
+				lowStockCount,
+				expiredCount,
+				nearExpiryCount
+			}
 		}
 	},
 	onLoad() {
 		console.log('===== 库存页 onLoad =====')
-		this.loadStockData()
-	},
-	onShow() {
-		console.log('===== 库存页 onShow =====')
-		this.loadStockData()
-	},
-	methods: {
-	async loadStockData() {
-		this.loading = true
+		// 读取本地保存的有效期预警天数
 		try {
-			const result = await callFunction('stockManage', {
-				action: 'getList',
-				data: {
-					page: 1,
-					pageSize: 100
-				}
-			})
-			
-			if (result.success) {
-				this.drugList = result.data || []
-			} else {
-				this.drugList = []
+			const saved = uni.getStorageSync('stock_expiry_warning_days')
+			if (typeof saved === 'number' && !isNaN(saved) && saved > 0) {
+				this.expiryWarningDays = saved
 			}
-			
-			this.calculateStats()
-			
-			console.log('库存数据加载成功:', this.drugList.length)
-		} catch (err) {
-			console.error('加载库存数据失败:', err)
-			this.drugList = []
+		} catch (e) {
+			console.warn('读取本地保存的有效期预警天数失败：', e)
 		} finally {
-			this.loading = false
+			this.loadStockData()
 		}
 	},
-		
-		calculateStats() {
-			this.stockStats = {
-				totalDrugs: this.drugList.length,
-				lowStockCount: this.drugList.filter(item => 
-					item.totalQuantity > 0 && item.totalQuantity <= item.reorderLevel
-				).length,
-				expiredCount: this.drugList.filter(item => 
-					item.totalQuantity === 0
-				).length
+	methods: {
+		async loadStockData() {
+			this.loading = true
+			try {
+				// 并行获取库存汇总和药材档案（含拼音）
+				const [stockResult, drugResult] = await Promise.all([
+					callFunction('stockManage', {
+						action: 'getList',
+						data: {
+							page: 1,
+							pageSize: 200
+						}
+					}),
+					callFunction('getDrugList', {
+						keyword: '',
+						category: 'all',
+						page: 1,
+						pageSize: 500
+					})
+				])
+				// 构建 drugId -> pinyin 的映射表
+				console.log('stockManage.getList first item:', stockResult && stockResult.data && stockResult.data[0])
+				const drugPinyinMap = {}
+				if (drugResult && drugResult.success && Array.isArray(drugResult.data)) {
+					(drugResult.data || []).forEach(drug => {
+						const id = drug._id
+						if (!id) return
+						let py = drug.pinyin || ''
+						if (!py && drug.name) {
+							py = Common.toPinyin(drug.name) || ''
+						}
+						if (py) {
+							drugPinyinMap[id] = String(py).toLowerCase()
+						}
+					})
+				}
+				const today = new Date()
+				if (stockResult && stockResult.success) {
+					const list = stockResult.data || []
+					this.drugList = list.map(raw => {
+						const item = { ...raw }
+						// 统一 drugId 字段，便于映射
+						item.drugId = item.drugId || item._id || ''
+						// 统一搜索字段
+						item.name = item.name || item.drugName || ''
+						item.spec = item.spec || item.specification || ''
+						// 优先使用 drugs 表中的拼音，其次使用本身拼音，最后兜底生成
+						let py = drugPinyinMap[item.drugId] || item.pinyin || ''
+						if (!py && item.name) {
+							py = Common.toPinyin(item.name) || ''
+						}
+						if (py) {
+							item.pinyin = String(py).toLowerCase()
+						}
+						// 计算距有效期天数
+						if (item.expireDate) {
+							const d = new Date(item.expireDate)
+							if (!isNaN(d.getTime())) {
+								const diffMs = d.getTime() - today.getTime()
+								item.expireDays = Math.floor(diffMs / (24 * 3600 * 1000))
+							}
+						}
+						// 预先计算有效期状态样式，避免在模板中调用函数
+						item.expireStatusClass = this.getExpireStatusClass(item)
+						return item
+					})
+				} else {
+					this.drugList = []
+				}
+				this.calculateStats()
+			} catch (e) {
+				console.error('加载库存数据失败:', e)
+				this.drugList = []
+			} finally {
+				this.loading = false
 			}
 		},
-		
-		onKeywordChange(val) {
-			this.searchKeyword = val
-		},
-		
 		onStatusFilter(val) {
 			this.statusFilter = val
 		},
-		
+		// 点击“预警设置”按钮：选择有效期预警天数
+		onExpirySettingTap() {
+			const that = this
+			const options = [7, 15, 30, 60]
+			uni.showActionSheet({
+				itemList: options.map(d => `${d} 天内视为近效期`),
+				success(res) {
+					const days = options[res.tapIndex]
+					that.expiryWarningDays = days
+					try {
+						uni.setStorageSync('stock_expiry_warning_days', days)
+					} catch (e) {}
+					that.calculateStats()
+					uni.showToast({ title: `预警天数已设置为 ${days} 天`, icon: 'none' })
+				}
+			})
+		},
+		onKeywordChange(val) {
+			this.searchKeyword = val
+		},
 		clearSearch() {
 			this.searchKeyword = ''
 		},
-		
-		getStatusText(item) {
-			if (item.totalQuantity === 0) return '缺货'
-			if (item.totalQuantity <= item.reorderLevel) return '库存不足'
-			return '充足'
+		calculateStats() {
+			const totalDrugs = this.drugList.length
+			const lowStockCount = this.drugList.filter(item =>
+				(item.totalQuantity || 0) > 0 && (item.totalQuantity || 0) <= (item.reorderLevel || 100)
+			).length
+			const expiredCount = this.drugList.filter(item => (item.totalQuantity || 0) === 0).length
+			const nearExpiryCount = this.drugList.filter(item => {
+				const d = item.expireDays
+				return typeof d === 'number' && d > this.expiryDangerDays && d <= this.expiryWarningDays
+			}).length
+			this.stockStats = {
+				totalDrugs,
+				lowStockCount,
+				expiredCount,
+				nearExpiryCount
+			}
 		},
-		
+		formatExpireDays(days) {
+			if (days === undefined || days === null || isNaN(days)) return ''
+			if (days < 0) return `已过期 ${Math.abs(days)} 天`
+			if (days === 0) return '今日到期'
+			return `剩余 ${days} 天`
+		},
+		getExpireStatusClass(item) {
+			const qty = item.totalQuantity || item.quantity || 0
+			const d = item.expireDays
+			if (qty === 0) return 'status-empty'
+			if (typeof d === 'number') {
+				if (d <= 0) return 'status-expired'
+				if (d <= this.expiryWarningDays) return 'status-warning'
+			}
+			return 'status-normal'
+		},
+		getExpireStatusText(item) {
+			const qty = item.totalQuantity || item.quantity || 0
+			const d = item.expireDays
+			if (qty === 0) return '缺货'
+			if (typeof d === 'number') {
+				if (d <= 0) return '过期'
+				if (d <= this.expiryWarningDays) return '近效期'
+			}
+			return '正常'
+		},
 		goToDetail(item) {
 			uni.navigateTo({
 				url: `/pages-sub/stock/detail?id=${item.drugId || item._id || ''}`,
@@ -274,7 +394,6 @@ export default {
 				}
 			})
 		},
-		
 		goToPage(url) {
 			uni.navigateTo({
 				url,
@@ -333,6 +452,11 @@ export default {
 	font-size: 24rpx;
 }
 
+.header-btn.secondary {
+	background: #e5e7eb;
+	color: #374151;
+}
+
 .btn-icon {
 	font-size: 28rpx;
 }
@@ -380,6 +504,7 @@ export default {
 
 .dashboard-content {
 	margin-bottom: 10rpx;
+	text-align: center; /* 数字和标签居中 */
 }
 
 .dashboard-value {
@@ -407,7 +532,81 @@ export default {
 	font-weight: 500;
 }
 
-/* 药品列表区域 */
+/* 库存列表整体区域 */
+.stock-list {
+	padding: 10rpx 30rpx 30rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 18rpx;
+}
+
+/* 单个库存卡片 */
+.stock-card {
+	background: #ffffff;
+	border-radius: 18rpx;
+	padding: 22rpx 22rpx 20rpx;
+	box-shadow: 0 6rpx 18rpx rgba(15, 23, 42, 0.06);
+	border: 1rpx solid #e5e7eb;
+}
+
+.stock-card-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12rpx;
+	margin-bottom: 8rpx;
+}
+
+.stock-name {
+	flex: 1;
+	font-size: 30rpx;
+	font-weight: 700;
+	color: #111827;
+	line-height: 1.4;
+}
+
+.stock-spec {
+	font-size: 22rpx;
+	color: #6b7280;
+}
+
+.stock-status-tag {
+	padding: 6rpx 12rpx;
+	border-radius: 999rpx;
+	font-size: 20rpx;
+	font-weight: 600;
+	color: #ffffff;
+}
+
+.stock-row {
+	display: flex;
+	margin-top: 4rpx;
+}
+
+.stock-label {
+	min-width: 138rpx;
+	font-size: 22rpx;
+	color: #6b7280;
+}
+
+.stock-value {
+	flex: 1;
+	font-size: 24rpx;
+	color: #111827;
+}
+
+.stock-unit-inline {
+	font-size: 22rpx;
+	color: #6b7280;
+}
+
+.expire-days-tag {
+	margin-left: 10rpx;
+	font-size: 22rpx;
+	color: #6b7280;
+}
+
+/* 药材列表区域 */
 .drug-section {
 	padding: 0 30rpx;
 }
@@ -436,7 +635,7 @@ export default {
 	gap: 20rpx;
 }
 
-/* 药品卡片 - 专业设计 */
+/* 药材卡片 - 专业设计 */
 .drug-card {
 	background: #ffffff;
 	border-radius: 20rpx;
@@ -467,7 +666,7 @@ export default {
 	width: 10rpx;
 }
 
-/* 药品头部 */
+/* 药材头部 */
 .drug-header {
 	display: flex;
 	justify-content: space-between;
@@ -663,6 +862,11 @@ export default {
 	display: block;
 	font-size: 26rpx;
 	color: #94a3b8;
+}
+
+/* 库存列表整体左右留白，与页面其它区域对齐 */
+.stock-list {
+	padding: 0 30rpx 30rpx;
 }
 
 /* 加载状态 */

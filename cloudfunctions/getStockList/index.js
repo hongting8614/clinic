@@ -39,44 +39,154 @@ exports.main = async (event, context) => {
   }
 }
 
-// 获取库存列表（按药品汇总）
+// 获取库存列表（按药材汇总），支持通用筛选和近效期自定义天数
 async function getStockList(data) {
   const {
     keyword = '',
-    location = 'all',
+    // 默认只查询总库（drug_storage），如需全园区统计可显式传入 'all'
+    location = 'drug_storage',
+    stockFilter = 'all',
+    expiryFilter = 'all',
+    customExpiryDays = null,
     page = 1,
     pageSize = 20
   } = data
   
-  // 使用聚合查询汇总库存
-  const result = await db.collection('stock')
-    .aggregate()
-    .match(location !== 'all' ? { location } : {})
-    .group({
-      _id: '$drugId',
-      drugName: _.$.first('$drugName'),
-      spec: _.$.first('$spec'),
-      unit: _.$.first('$unit'),
-      totalQuantity: _.$.sum('$quantity'),
-      batches: _.$.push({
-        batch: '$batch',
-        quantity: '$quantity',
-        expireDate: '$expireDate',
-        status: '$status'
-      })
+  // 构建查询条件
+  const whereCondition = {}
+  if (location && location !== 'all') {
+    whereCondition.location = location
+  }
+  if (keyword) {
+    // 简单按名称/规格模糊匹配
+    whereCondition.drugName = db.RegExp({
+      regexp: keyword,
+      options: 'i'
     })
-    .skip((page - 1) * pageSize)
-    .limit(pageSize)
-    .end()
-  
+  }
+
+  // 查询所有符合条件的库存记录
+  const res = await db.collection('stock')
+    .where(whereCondition)
+    .get()
+
+  const records = res.data || []
+
+  const now = new Date()
+
+  // 在云函数中按 drugId 汇总
+  const groupedMap = {}
+  for (const item of records) {
+    const drugId = item.drugId || 'unknown'
+    if (!groupedMap[drugId]) {
+      groupedMap[drugId] = {
+        _id: drugId,
+        drugName: item.drugName || '',
+        spec: item.spec || item.specification || '',
+        unit: item.unit || '',
+        totalQuantity: 0,
+        minStock: item.minStock || 0,
+        minDaysToExpiry: null,
+        batches: []
+      }
+    }
+    const group = groupedMap[drugId]
+    const qty = item.quantity || 0
+    group.totalQuantity += qty
+
+    let daysToExpiry = null
+    if (item.expireDate) {
+      const expireDate = new Date(item.expireDate)
+      daysToExpiry = Math.floor((expireDate - now) / (1000 * 60 * 60 * 24))
+      if (group.minDaysToExpiry === null || daysToExpiry < group.minDaysToExpiry) {
+        group.minDaysToExpiry = daysToExpiry
+      }
+    }
+
+    // 仅保留有库存的批次，避免前端看到数量为 0 的批次
+    if (qty > 0) {
+      group.batches.push({
+        batch: item.batch,
+        quantity: qty,
+        expireDate: item.expireDate,
+        status: item.status,
+        daysToExpiry
+      })
+    }
+  }
+
+  let allList = Object.values(groupedMap)
+
+  // 按库存状态过滤
+  allList = allList.filter(item => {
+    const qty = item.totalQuantity || 0
+    const minStock = item.minStock || 10
+    switch (stockFilter) {
+      case 'inStock':
+        return qty > 0
+      case 'sufficient':
+        return qty > minStock
+      case 'warning':
+        return qty > 0 && qty <= minStock
+      case 'low':
+        return qty > 0 && qty < minStock
+      case 'empty':
+        return qty <= 0
+      case 'all':
+      default:
+        // 查询全部时，也只看有库存的药材
+        return qty > 0
+    }
+  })
+
+  // 按效期状态过滤（以最早到期批次为准）
+  allList = allList.filter(item => {
+    const d = item.minDaysToExpiry
+    if (d === null || typeof d !== 'number') {
+      // 没有效期信息时，仅在选择“全部/正常”时保留
+      if (customExpiryDays && customExpiryDays > 0) {
+        // 自定义天数时，没有效期信息的记录忽略
+        return false
+      }
+      return expiryFilter === 'all' || expiryFilter === 'normal'
+    }
+
+    // 自定义近效期天数优先
+    if (customExpiryDays && customExpiryDays > 0) {
+      return d >= 0 && d <= customExpiryDays
+    }
+
+    switch (expiryFilter) {
+      case 'normal':
+        return d > 90
+      case 'expiring30':
+        return d >= 0 && d <= 30
+      case 'expiring60':
+        return d >= 0 && d <= 60
+      case 'expiring90':
+        return d >= 0 && d <= 90
+      case 'expired':
+        return d < 0
+      case 'all':
+      default:
+        return true
+    }
+  })
+  // 简单按照药名排序，提升前端可读性
+  allList.sort((a, b) => (a.drugName || '').localeCompare(b.drugName || ''))
+
+  const start = (page - 1) * pageSize
+  const end = start + pageSize
+  const pagedList = allList.slice(start, end)
+
   return {
     success: true,
-    data: result.list,
-    total: result.list.length
+    data: pagedList,
+    total: allList.length
   }
 }
 
-// 获取批次列表（按药品和园区）
+// 获取批次列表（按药材和园区）
 async function getBatchList(data) {
   const {
     drugId,
@@ -85,7 +195,7 @@ async function getBatchList(data) {
   } = data
   
   if (!drugId) {
-    throw new Error('药品ID不能为空')
+    throw new Error('药材ID不能为空')
   }
   
   let whereCondition = { drugId }
@@ -144,14 +254,14 @@ async function getStockDetail(data) {
   }
 }
 
-// 检查近效期和过期药品
+// 检查近效期和过期药材
 async function checkExpiry(data) {
   const { days = 90 } = data
   
   const now = new Date()
   const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
   
-  // 近效期药品
+  // 近效期药材
   const nearExpiry = await db.collection('stock')
     .where({
       expireDate: _.and(_.gte(now.toISOString()), _.lte(futureDate.toISOString())),
@@ -160,7 +270,7 @@ async function checkExpiry(data) {
     .orderBy('expireDate', 'asc')
     .get()
   
-  // 已过期药品
+  // 已过期药材
   const expired = await db.collection('stock')
     .where({
       expireDate: _.lt(now.toISOString()),

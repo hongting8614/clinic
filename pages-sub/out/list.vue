@@ -1,24 +1,28 @@
 <template>
 	<view class="container">
-		<!-- 页面头部：标题 + 报表入口 -->
+		<!-- 页面头部：与入库单列表风格一致 -->
 		<view class="page-header">
-			<view>
+			<view class="page-header-title">
 				<text class="page-title">出库管理</text>
 			</view>
 			<view class="page-actions">
-				<view class="header-btn ghost" @click="goReport">出库报表</view>
+				<view class="header-btn primary" @tap="goTransfer">库存调拨</view>
+				<view class="header-btn primary" @tap="goAdd">新建出库单</view>
+				<view class="header-btn primary" @tap="goParkStock">园区库存明细</view>
 			</view>
 		</view>
-		<!-- 筛选标签 -->
-		<view class="filter-tabs">
-			<view 
-				v-for="(tab, index) in tabs" 
-				:key="index"
-				:class="['tab-item', { active: currentTab === tab.value }]"
-				@click="switchTab(tab.value)"
+		
+		<!-- 状态筛选Tab栏（与入库列表统一样式） -->
+		<view class="status-tabs">
+			<view
+				v-for="tab in tabs"
+				:key="tab.value"
+				class="status-tab"
+				:class="{ active: currentTab === tab.value }"
+				@tap="switchTab(tab.value)"
 			>
-				<text class="tab-text">{{ tab.label }}</text>
-				<text v-if="tab.count > 0" class="tab-badge">{{ tab.count }}</text>
+				<text class="status-name">{{ tab.label }}</text>
+				<text class="count" v-if="tab.count > 0">{{ tab.count }}</text>
 			</view>
 		</view>
 		
@@ -66,7 +70,7 @@
 						<text class="info-value">{{ item.createTime }}</text>
 					</view>
 					<view class="info-item">
-						<text class="info-label">药品种类：</text>
+						<text class="info-label">药材种类：</text>
 						<text class="info-value">{{ item.items.length }} 种</text>
 					</view>
 					<view class="info-item" v-if="item.remark">
@@ -75,14 +79,11 @@
 					</view>
 				</view>
 				
-				<!-- 待复核时显示操作按钮 -->
-				<view v-if="item.status === 'pending_review' && canReview(item)" class="record-actions">
-					<u-button 
-						text="去复核" 
-						type="primary" 
-						size="small"
-						@click.stop="goReview(item._id)"
-					></u-button>
+				<!-- 待接收时显示操作按钮：自定义样式按钮，避免组件兼容问题 -->
+				<view v-if="item.status === 'pending_review'" class="record-actions">
+					<view class="record-action-btn" @tap.stop="goReview(item._id)">
+						去接收
+					</view>
 				</view>
 				
 				<!-- 已驳回时显示操作按钮 -->
@@ -111,11 +112,6 @@
 				<text>没有更多了</text>
 			</view>
 		</view>
-		
-		<!-- 新建按钮 -->
-		<view class="fab-button" @click="goAdd">
-			<text class="fab-icon">+</text>
-		</view>
 	</view>
 </template>
 
@@ -129,8 +125,7 @@ export default {
 			tabs: [
 				{ label: '全部', value: 'all', count: 0 },
 				{ label: '草稿', value: 'draft', count: 0 },
-				{ label: '待复核', value: 'pending_review', count: 0 },
-				{ label: '已完成', value: 'completed', count: 0 },
+				{ label: '待接收', value: 'pending_review', count: 0 },
 				{ label: '已驳回', value: 'rejected', count: 0 }
 			],
 			currentLocation: 'all',
@@ -147,7 +142,11 @@ export default {
 		}
 	},
 	
-	onLoad() {
+	onLoad(options) {
+		// 如果从首页或药材管理页面带了状态参数（例如 status=pending_review），优先使用该状态
+		if (options && options.status) {
+			this.currentTab = options.status
+		}
 		this.initPage()
 	},
 	
@@ -169,6 +168,12 @@ export default {
 			
 			this.loadRecords()
 			this.loadCounts()
+		},
+		
+		goTransfer() {
+			uni.navigateTo({
+				url: '/pages-sub/transfer/list'
+			})
 		},
 		
 		switchTab(value) {
@@ -196,66 +201,66 @@ export default {
 			return tab ? tab.label : ''
 		},
 		
-	async loadRecords() {
-		uni.showLoading({ title: '加载中...' })
-		
-		try {
-			const result = await this.$api.callFunction('outRecords', {
-				action: 'getList',
-				data: {
-					status: this.currentTab === 'all' ? 'all' : this.currentTab,
-					location: this.currentLocation === 'all' ? 'all' : this.currentLocation,
-					page: this.page,
-					pageSize: this.pageSize
-				}
-			})
+		async loadRecords() {
+			uni.showLoading({ title: '加载中...' })
 			
-			if (result.success) {
-				const newData = result.data || []
-				this.recordList = this.page === 1 ? newData : [...this.recordList, ...newData]
-				this.hasMore = newData.length >= this.pageSize
-			} else {
-				throw new Error(result.message || '加载失败')
-			}
-			
-			uni.hideLoading()
-		} catch (err) {
-			console.error('加载失败:', err)
-			uni.hideLoading()
-			uni.showToast({
-				title: err.message || '加载失败',
-				icon: 'none'
-			})
-		}
-	},
-	
-	async loadCounts() {
-		try {
-			const result = await this.$api.callFunction('outRecords', {
-				action: 'getCounts',
-				data: {}
-			})
-			
-			if (result.success) {
-				// 更新各标签的数量
-				this.tabs.forEach(tab => {
-					if (tab.value === 'all') {
-						tab.count = result.all || 0
-					} else if (tab.value === 'draft') {
-						tab.count = result.draft || 0
-					} else if (tab.value === 'pending_review') {
-						tab.count = result.pending_review || 0
-					} else if (tab.value === 'completed') {
-						tab.count = result.completed || 0
-					} else if (tab.value === 'rejected') {
-						tab.count = result.rejected || 0
+			try {
+				const result = await this.$api.callFunction('outRecords', {
+					action: 'getList',
+					data: {
+						status: this.currentTab === 'all' ? 'all' : this.currentTab,
+						location: this.currentLocation === 'all' ? 'all' : this.currentLocation,
+						page: this.page,
+						pageSize: this.pageSize
 					}
 				})
+				
+				if (result.success) {
+					const newData = result.data || []
+					this.recordList = this.page === 1 ? newData : [...this.recordList, ...newData]
+					this.hasMore = newData.length >= this.pageSize
+				} else {
+					throw new Error(result.message || '加载失败')
+				}
+				
+				uni.hideLoading()
+			} catch (err) {
+				console.error('加载失败:', err)
+				uni.hideLoading()
+				uni.showToast({
+					title: err.message || '加载失败',
+					icon: 'none'
+				})
 			}
-		} catch (err) {
-			console.error('加载数量失败:', err)
-		}
-	},
+		},
+		
+		async loadCounts() {
+			try {
+				const result = await this.$api.callFunction('outRecords', {
+					action: 'getCounts',
+					data: {}
+				})
+				
+				if (result.success) {
+					// 更新各标签的数量
+					this.tabs.forEach(tab => {
+						if (tab.value === 'all') {
+							tab.count = result.all || 0
+						} else if (tab.value === 'draft') {
+							tab.count = result.draft || 0
+						} else if (tab.value === 'pending_review') {
+							tab.count = result.pending_review || 0
+						} else if (tab.value === 'completed') {
+							tab.count = result.completed || 0
+						} else if (tab.value === 'rejected') {
+							tab.count = result.rejected || 0
+						}
+					})
+				}
+			} catch (err) {
+				console.error('加载数量失败:', err)
+			}
+		},
 		
 		refreshList() {
 			this.page = 1
@@ -274,7 +279,7 @@ export default {
 		getStatusText(status) {
 			const statusMap = {
 				draft: '草稿',
-				pending_review: '待复核',
+				pending_review: '待接收',
 				completed: '已完成',
 				rejected: '已驳回'
 			}
@@ -282,7 +287,9 @@ export default {
 		},
 		
 		canReview(item) {
-			return item.status === 'pending_review' && item.dispenserId !== this.currentUserId
+			// 开发阶段：放宽限制，允许自己接收自己创建的待接收出库单
+			// 如需恢复严格权限控制，可改回同时判断 dispenserId !== currentUserId
+			return item.status === 'pending_review'
 		},
 		
 		canEdit(item) {
@@ -317,6 +324,12 @@ export default {
 		goAdd() {
 			uni.navigateTo({
 				url: '/pages-sub/out/add'
+			})
+		},
+		
+		goParkStock() {
+			uni.navigateTo({
+				url: '/pages-sub/stock/park'
 			})
 		},
 		
@@ -408,15 +421,32 @@ export default {
 <style lang="scss" scoped>
 .container {
 	min-height: 100vh;
-	background-color: #F8F8F8;
-	padding-bottom: 100rpx;
+	/* 与入库列表等页面统一的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 120rpx;
 }
 
 .page-header {
+	/* 顶部标题卡片：702rpx 象牙白卡片 */
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	padding: 22rpx 22rpx 18rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: space-between;
-	padding: 30rpx 30rpx 10rpx;
+	justify-content: flex-start;
+}
+
+.page-header-title {
+	width: 100%;
+	display: flex;
+	justify-content: center;
 }
 
 .page-title {
@@ -428,7 +458,10 @@ export default {
 
 .page-actions {
 	display: flex;
+	flex-direction: row;
+	justify-content: center;
 	gap: 16rpx;
+	margin-top: 18rpx;
 }
 
 .header-btn {
@@ -441,96 +474,118 @@ export default {
 }
 
 .header-btn.ghost {
-	background: #ffffff;
-	color: #475569;
-	border: 1rpx solid #e2e8f0;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	border: none;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 }
 
-.filter-tabs {
+.header-btn.primary {
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+
+.status-tabs {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	display: flex;
-	background-color: #FFFFFF;
-	padding: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-	position: sticky;
-	top: 0;
-	z-index: 100;
+	flex-wrap: wrap;
+	padding: 12rpx 20rpx;
+	background: #FFFFF0;
+	gap: 10rpx;
+	justify-content: space-between;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
-.tab-item {
-	flex: 1;
-	text-align: center;
-	padding: 15rpx 10rpx;
-	position: relative;
-}
+.status-tab {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 8rpx 10rpx;
+	background: #ffffff;
+	border-radius: 40rpx;
+	font-size: 16rpx;
+	color: #646566;
+	box-shadow: 0 3rpx 10rpx rgba(15, 23, 42, 0.06);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	flex: 1 0 18%;
+	min-width: 0;
+	border: 2rpx solid transparent;
 
-.tab-item.active .tab-text {
-	color: #FF6B6B;
-	font-weight: bold;
-}
+	&.active {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: #ffffff;
+		font-weight: bold;
+		box-shadow: 0 6rpx 20rpx rgba(0, 160, 255, 0.35);
+		transform: scale(1.02);
+		border-color: #00a0ff;
+	}
 
-.tab-item.active::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 40rpx;
-	height: 4rpx;
-	background-color: #FF6B6B;
-	border-radius: 2rpx;
-}
+	.status-name {
+		margin-right: 4rpx;
+		white-space: nowrap;
+	}
 
-.tab-text {
-	font-size: 28rpx;
-	color: #666666;
-}
+	.count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28rpx;
+		height: 28rpx;
+		padding: 0 6rpx;
+		background: rgba(0, 0, 0, 0.08);
+		border-radius: 14rpx;
+		font-size: 18rpx;
+		line-height: 1;
+		font-weight: bold;
+	}
 
-.tab-badge {
-	position: absolute;
-	top: 5rpx;
-	right: 10rpx;
-	background-color: #FF6B6B;
-	color: #FFFFFF;
-	font-size: 20rpx;
-	padding: 2rpx 8rpx;
-	border-radius: 10rpx;
-	min-width: 30rpx;
-	text-align: center;
+	&.active .count {
+		background: rgba(255, 255, 255, 0.3);
+		color: #ffffff;
+	}
 }
 
 .location-filter {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	display: flex;
 	gap: 15rpx;
-	padding: 20rpx;
-	background-color: #FFFFFF;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	padding: 16rpx 20rpx;
+	background-color: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .location-item {
 	flex: 1;
 	text-align: center;
 	padding: 15rpx 0;
-	background-color: #F8F8F8;
+	background-color: #f8f8f8;
 	border-radius: 10rpx;
 	font-size: 26rpx;
 	color: #666666;
 }
 
 .location-item.active {
-	background-color: #FF6B6B;
-	color: #FFFFFF;
+	background-color: #ff6b6b;
+	color: #ffffff;
 }
 
 .list-container {
-	padding: 20rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 0;
 }
 
 .record-card {
-	background-color: #FFFFFF;
-	padding: 30rpx;
+	background-color: #FFFFF0;
+	padding: 26rpx 24rpx 24rpx;
 	border-radius: 20rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	margin-bottom: 8rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 	position: relative;
 }
 
@@ -540,7 +595,7 @@ export default {
 	align-items: center;
 	margin-bottom: 20rpx;
 	padding-bottom: 20rpx;
-	border-bottom: 1px solid #F0F0F0;
+	border-bottom: 1px solid #f0f0f0;
 }
 
 .record-no {
@@ -553,7 +608,7 @@ export default {
 	font-size: 24rpx;
 	padding: 8rpx 20rpx;
 	border-radius: 20rpx;
-	color: #FFFFFF;
+	color: #ffffff;
 }
 
 .status-draft {
@@ -561,23 +616,23 @@ export default {
 }
 
 .status-pending_review {
-	background-color: #FF9800;
+	background-color: #ff9800;
 }
 
 .status-completed {
-	background-color: #4CAF50;
+	background-color: #4caf50;
 }
 
 .status-rejected {
-	background-color: #FF6B6B;
+	background-color: #ff6b6b;
 }
 
 .location-badge {
 	position: absolute;
 	top: 25rpx;
 	right: 25rpx;
-	background-color: #E3F2FD;
-	color: #2196F3;
+	background-color: #e3f2fd;
+	color: #2196f3;
 	font-size: 22rpx;
 	padding: 6rpx 15rpx;
 	border-radius: 15rpx;
@@ -607,15 +662,32 @@ export default {
 .record-actions {
 	margin-top: 20rpx;
 	padding-top: 20rpx;
-	border-top: 1px solid #F0F0F0;
+	border-top: 1px solid #f0f0f0;
 	display: flex;
 	justify-content: flex-end;
+}
+
+.record-action-btn {
+	min-width: 180rpx;
+	padding: 14rpx 30rpx;
+	border-radius: 999rpx;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	font-size: 26rpx;
+	font-weight: 600;
+	text-align: center;
+	box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.35);
+}
+
+.record-action-btn:active {
+	opacity: 0.9;
+	transform: scale(0.97);
 }
 
 .reject-reason {
 	flex: 1;
 	font-size: 24rpx;
-	color: #FF6B6B;
+	color: #ff6b6b;
 	display: flex;
 	align-items: center;
 }
@@ -638,7 +710,8 @@ export default {
 	color: #999999;
 }
 
-.load-more, .no-more {
+.load-more,
+.no-more {
 	text-align: center;
 	padding: 30rpx 0;
 	font-size: 26rpx;
@@ -651,7 +724,7 @@ export default {
 	bottom: 100rpx;
 	width: 100rpx;
 	height: 100rpx;
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -662,8 +735,7 @@ export default {
 
 .fab-icon {
 	font-size: 60rpx;
-	color: #FFFFFF;
+	color: #ffffff;
 	font-weight: 300;
 }
 </style>
-

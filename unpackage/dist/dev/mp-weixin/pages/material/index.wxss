@@ -1,0 +1,124 @@
+
+.page {
+	min-height: 100vh;
+	/* 使用与首页/门诊首页一致的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 40rpx;
+}
+.section-header {
+	/* 顶部标题卡片：象牙白圆角卡片，宽度与首页 header-card 对齐 */
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	padding: 26rpx 24rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.section-title {
+	font-size: 34rpx;
+	font-weight: 700;
+	color: #0f172a;
+	letter-spacing: 2rpx;
+}
+.info-card {
+	position: relative;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 20rpx 22rpx 12rpx;
+	background: #FFFFF0;
+	border-radius: 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+	overflow: hidden;
+}
+.info-card::before {
+	/* 去掉右上角渐变方块装饰，保持卡片干净简洁 */
+	content: none;
+}
+.card-title {
+	display: flex;
+	align-items: center;
+	margin-bottom: 14rpx;
+}
+.title-icon {
+	width: 56rpx;
+	height: 56rpx;
+	border-radius: 20rpx;
+	background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 35%, #fee2ff 100%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32rpx;
+	margin-right: 12rpx;
+	box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.2);
+}
+.title-text {
+	font-size: 30rpx;
+	font-weight: 650;
+	color: #0f172a;
+}
+.card-list {
+	border-top: none;
+	margin-top: 10rpx;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	-webkit-column-gap: 16rpx;
+	        column-gap: 16rpx;
+	row-gap: 16rpx;
+}
+.card-item {
+	background: linear-gradient(135deg, #f9fafb 0%, #eef2ff 40%, #e0f2fe 100%);
+	border-radius: 22rpx;
+	padding: 20rpx 18rpx;
+	box-shadow: 0 10rpx 24rpx rgba(148, 163, 184, 0.25);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+/* 入库模块按钮：蓝绿系 */
+.inbound-card .card-item {
+	background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 40%, #bfdbfe 100%);
+}
+
+/* 出库模块按钮：橙红系 */
+.outbound-card .card-item {
+	background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 40%, #fee2e2 100%);
+}
+
+/* 库存模块按钮：紫蓝系 */
+.stock-card .card-item {
+	background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 40%, #cffafe 100%);
+}
+.card-item + .card-item {
+	border-top: none;
+}
+.card-item:active {
+	opacity: 0.9;
+	-webkit-transform: scale(0.97);
+	        transform: scale(0.97);
+}
+.item-text {
+	flex: 1;
+	font-size: 30rpx;
+	color: #0f172a;
+	font-weight: 600;
+}
+.item-badge {
+	min-width: 60rpx;
+	text-align: right;
+	font-size: 24rpx;
+	color: #2563eb;
+	font-weight: 650;
+	margin-right: 4rpx;
+}
+.item-arrow {
+	font-size: 30rpx;
+	color: #64748b;
+}
+

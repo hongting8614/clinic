@@ -25,25 +25,26 @@
 				<view class="user-details">
 					<text class="user-name">{{ userInfo.name }}</text>
 					<text class="user-role">{{ userInfo.roleText }}</text>
-					<view class="user-dept-tag">
-						<text class="dept-icon">🏥</text>
-						<text class="dept-text">医务室</text>
-					</view>
 					<!-- 登录按钮 -->
 					<view v-if="!isLoggedIn" class="login-btn-wrapper">
 						<view class="login-btn" @tap="handleLogin" :class="{ 'loading': isLoading }">
 							<text class="login-btn-text">{{ isLoading ? '登录中...' : '点击登录' }}</text>
 						</view>
 					</view>
+					<view v-else class="logout-btn-wrapper">
+						<view class="logout-btn" @tap="logoutUser" :class="{ 'loading': isLoading }">
+							<text class="logout-btn-text">{{ isLoading ? '处理中...' : '退出登录' }}</text>
+						</view>
+					</view>
 				</view>
 			</view>
 		</view>
 
-		<!-- 功能菜单 - 专业分组 -->
+		<!-- 功能菜单 - 专业分组，使用大卡片风格 -->
 		<view class="menu-section">
 			<view class="menu-group">
 				<view class="group-header">
-					<text class="group-icon">💼</text>
+					<text class="group-icon"></text>
 					<text class="group-title">核心业务</text>
 				</view>
 				<view class="menu-items">
@@ -53,7 +54,7 @@
 						</view>
 						<view class="menu-content">
 							<text class="menu-title">入库管理</text>
-							<text class="menu-desc">药品入库、复核审批</text>
+							<text class="menu-desc">药材入库、复核审批</text>
 						</view>
 						<text class="menu-arrow">→</text>
 					</view>
@@ -95,7 +96,7 @@
 
 			<view class="menu-group">
 				<view class="group-header">
-					<text class="group-icon">📊</text>
+					<text class="group-icon"></text>
 					<text class="group-title">数据分析</text>
 				</view>
 				<view class="menu-items">
@@ -125,7 +126,7 @@
 
 			<view class="menu-group">
 				<view class="group-header">
-					<text class="group-icon">⚙️</text>
+					<text class="group-icon"></text>
 					<text class="group-title">系统设置</text>
 				</view>
 				<view class="menu-items">
@@ -185,6 +186,23 @@
 				</view>
 		</view>
 		</view>
+
+		<!-- 首次登录绑定微信号弹窗 -->
+		<view v-if="showWechatBindDialog" class="bind-mask">
+			<view class="bind-dialog">
+				<text class="bind-title">绑定微信号</text>
+				<text class="bind-desc">您尚未在系统中绑定账号，请输入管理员已录入的微信号以完成绑定。</text>
+				<input
+					class="bind-input"
+					v-model="wechatIdInput"
+					placeholder="请输入您的微信号"
+				/>
+				<view class="bind-actions">
+					<button class="bind-btn cancel" @tap="cancelWechatBind">取消</button>
+					<button class="bind-btn confirm" @tap="confirmWechatBind">绑定并登录</button>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -207,7 +225,10 @@ export default {
 			lastUpdateTime: '',
 			isLoading: false,
 			isLoggedIn: false,
-			avatarLoadError: false
+			avatarLoadError: false,
+			// 首次登录绑定微信号弹窗
+			showWechatBindDialog: false,
+			wechatIdInput: ''
 		}
 	},
 	
@@ -234,9 +255,11 @@ export default {
 	methods: {
 		// 检查并登录
 		async checkAndLogin() {
+			console.log('checkAndLogin 调用')
 			// 检查是否已登录
 			const isLogin = checkLogin()
 			const userInfo = getUserInfo()
+			console.log('本地缓存登录状态:', { isLogin, userInfo })
 			
 			if (isLogin && userInfo) {
 				// 已登录，加载用户信息
@@ -251,33 +274,32 @@ export default {
 			
 			try {
 				const result = await login()
+				console.log('login 云函数返回:', result)
 				
 				if (result.success) {
 					// 登录成功
 					this.isLoggedIn = true
 					this.loadUserInfo()
+					console.log('登录成功，已更新用户信息')
 					uni.showToast({
 						title: '登录成功',
 						icon: 'success',
 						duration: 1500
 					})
 				} else {
-					// 登录失败
+					// 登录失败：当前 openid 未绑定任何用户，在本页弹出绑定微信号对话框
+					console.log('登录失败，准备弹出绑定微信号对话框，原因:', result && result.message)
 					this.isLoggedIn = false
 					this.userInfo = {
 						name: '未登录',
 						role: '请先登录',
-						department: '北京欢乐谷医务室'
+						roleText: '请先登录',
+						department: '北京欢乐谷医务室',
+						avatarUrl: '',
+						wechatAvatarUrl: ''
 					}
-					
-					// 显示登录提示
-					uni.showModal({
-						title: '需要登录',
-						content: result.message || '您不在系统白名单内，请联系管理员添加',
-						showCancel: false,
-						confirmText: '知道了',
-						confirmColor: '#667eea'
-					})
+					this.wechatIdInput = ''
+					this.showWechatBindDialog = true
 				}
 			} catch (err) {
 				console.error('登录失败:', err)
@@ -297,6 +319,48 @@ export default {
 				this.isLoading = false
 			}
 		},
+
+		// 取消绑定微信号
+		cancelWechatBind() {
+			this.showWechatBindDialog = false
+			this.wechatIdInput = ''
+		},
+		// 确认绑定微信号并重试登录
+		async confirmWechatBind() {
+			if (!this.wechatIdInput) {
+				uni.showToast({
+					title: '请输入微信号',
+					icon: 'none'
+				})
+				return
+			}
+			this.isLoading = true
+			try {
+				const result = await login(this.wechatIdInput.trim())
+				if (result.success) {
+					this.isLoggedIn = true
+					this.showWechatBindDialog = false
+					this.loadUserInfo()
+					uni.showToast({
+						title: '绑定并登录成功',
+						icon: 'success'
+					})
+				} else {
+					uni.showToast({
+						title: result.message || '绑定失败，请联系管理员',
+						icon: 'none'
+					})
+				}
+			} catch (err) {
+				console.error('绑定微信号失败:', err)
+				uni.showToast({
+					title: '绑定失败，请重试',
+					icon: 'none'
+				})
+			} finally {
+				this.isLoading = false
+			}
+		},
 		
 		// 加载用户信息
 		loadUserInfo() {
@@ -304,13 +368,17 @@ export default {
 			if (userInfo) {
 				this.userInfo = {
 					name: userInfo.realName || userInfo.name || '未设置',
-					role: userInfo.roleText || '未知角色',
+					// 英文角色值（admin/project_manager/doctor/viewer），备用
+					role: userInfo.role,
+					// 中文角色文本（管理员/项目经理/医务人员/查看者），用于展示
+					roleText: userInfo.roleText || '未知角色',
 					department: '北京欢乐谷医务室'
 				}
 			} else {
 				this.userInfo = {
 					name: '未登录',
-					role: '请先登录',
+					role: '',
+					roleText: '请先登录',
 					department: '北京欢乐谷医务室'
 				}
 			}
@@ -318,8 +386,55 @@ export default {
 		
 		// 手动登录
 		async handleLogin() {
+			console.log('handleLogin 被点击')
+			// 手动点击登录时，清除本地旧的登录缓存，强制重新走云函数登录
+			try {
+				if (typeof uni !== 'undefined') {
+					uni.removeStorageSync('isLogin')
+					uni.removeStorageSync('userInfo')
+					uni.removeStorageSync('userRole')
+					uni.removeStorageSync('userId')
+				}
+			} catch (e) {
+				console.log('清除本地登录缓存失败:', e)
+			}
 			this.isLoading = true
 			await this.checkAndLogin()
+		},
+
+		// 退出登录
+		logoutUser() {
+			try {
+				if (typeof uni !== 'undefined') {
+					uni.removeStorageSync('isLogin')
+					uni.removeStorageSync('userInfo')
+					uni.removeStorageSync('userRole')
+					uni.removeStorageSync('userId')
+				} else if (typeof wx !== 'undefined') {
+					wx.removeStorageSync('isLogin')
+					wx.removeStorageSync('userInfo')
+					wx.removeStorageSync('userRole')
+					wx.removeStorageSync('userId')
+				}
+			} catch (e) {
+				console.log('退出登录时清除缓存失败:', e)
+			}
+			this.isLoggedIn = false
+			this.userInfo = {
+				name: '未登录',
+				role: '',
+				roleText: '请先登录',
+				department: '北京欢乐谷医务室',
+				avatarUrl: '',
+				wechatAvatarUrl: ''
+			}
+			this.avatarLoadError = false
+			this.wechatIdInput = ''
+			this.showWechatBindDialog = false
+			uni.showToast({
+				title: '已退出登录',
+				icon: 'none'
+			})
 		},
 		
 		updateTime() {
@@ -397,7 +512,7 @@ export default {
 		showAbout() {
 			uni.showModal({
 				title: '关于系统',
-				content: '北京欢乐谷医务室药品管理系统\n\n版本：v1.0.0\n开发：AI助手\n\n专业的药品库存管理解决方案',
+				content: '北京欢乐谷医务室管理系统\n\n版本：v1.1.2\n开发者：于建华（微信：bjkfjz）',
 				showCancel: false,
 				confirmText: '确定',
 				confirmColor: '#667eea'
@@ -528,24 +643,25 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+	/* 使用与报表页相似的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
 	/* 兼容底部安全区，避免被 Tab 覆盖 */
 	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
 	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 }
 
-/* 用户信息卡片 - 科技风格 */
+/* 用户信息卡片 - 医疗工作台风格 */
 .user-profile {
 	position: relative;
-	margin-bottom: 30rpx;
-	overflow: hidden;
+	padding: 40rpx 0 16rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+	margin-bottom: 10rpx;
 }
 
 .profile-bg {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	height: 180rpx;
-	position: relative;
-	overflow: hidden;
+	display: none;
 }
 
 .bg-pattern {
@@ -559,14 +675,15 @@ export default {
 }
 
 .profile-content {
-	position: absolute;
-	bottom: -45rpx;
-	left: 30rpx;
-	right: 30rpx;
-	background: #ffffff;
-	border-radius: 24rpx;
-	padding: 30rpx 25rpx;
-	box-shadow: 0 12rpx 40rpx rgba(0,0,0,0.12);
+	margin: 0 auto;
+	max-width: 702rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	padding: 30rpx 26rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255,255,255,0.9) inset,
+		0 -1rpx 0 rgba(15,23,42,0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 	display: flex;
 	align-items: center;
 	gap: 20rpx;
@@ -579,12 +696,13 @@ export default {
 .avatar-circle {
 	width: 100rpx;
 	height: 100rpx;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	/* 头像圆使用与首页 Logo 相近的蓝绿渐变 */
+	background: linear-gradient(145deg, #2a91e9 0%, #22c1c3 45%, #e0f7ff 100%);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+	box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.3);
 	border: 5rpx solid #ffffff;
 	overflow: hidden;
 }
@@ -668,12 +786,17 @@ export default {
 
 /* 功能菜单 */
 .menu-section {
-	margin-top: 70rpx;
-	padding: 0 30rpx;
+	margin-top: 24rpx;
+	padding: 0 20rpx 36rpx;
 }
 
 .menu-group {
-	margin-bottom: 25rpx;
+	margin: 0 auto 26rpx;
+	max-width: 710rpx;
+	background: #FFFFF0;
+	border-radius: 24rpx;
+	padding: 22rpx 18rpx 10rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .group-header {
@@ -694,23 +817,25 @@ export default {
 }
 
 .menu-items {
-	background: #ffffff;
-	border-radius: 20rpx;
-	overflow: hidden;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+	/* 容器本身不再作为一整块卡片，仅负责垂直排列子卡片 */
+	background: transparent;
 }
 
 .menu-item {
 	display: flex;
 	align-items: center;
-	padding: 30rpx;
-	border-bottom: 1rpx solid #f1f5f9;
+	padding: 18rpx 22rpx;
+	margin: 4rpx 2rpx 10rpx;
+	border-radius: 18rpx;
+	background: rgba(255, 255, 255, 0.96);
+	border: 1rpx solid #e2e8f0;
+	box-shadow: 0 2rpx 6rpx rgba(15, 23, 42, 0.06);
 	transition: all 0.3s;
 	position: relative;
 }
 
 .menu-item:last-child {
-	border-bottom: none;
+	margin-bottom: 0;
 }
 
 .menu-item:active {
@@ -738,7 +863,7 @@ export default {
 .menu-icon-wrapper.indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
 
 .menu-icon {
-	font-size: 32rpx;
+	font-size: 26rpx;
 }
 
 .menu-content {
@@ -747,8 +872,8 @@ export default {
 
 .menu-title {
 	display: block;
-	font-size: 28rpx;
-	font-weight: 600;
+	font-size: 30rpx;
+	font-weight: 650;
 	color: #1e293b;
 	margin-bottom: 6rpx;
 }
@@ -768,8 +893,8 @@ export default {
 
 /* 系统信息面板 */
 .system-panel {
-	padding: 0 30rpx;
-	margin-top: 25rpx;
+	padding: 0 24rpx 30rpx;
+	margin-top: 12rpx;
 }
 
 .panel-header {
@@ -783,10 +908,13 @@ export default {
 }
 
 .info-grid {
-	background: #ffffff;
+	background: #FFFFF0;
 	border-radius: 20rpx;
-	padding: 25rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+	padding: 25rpx 26rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255,255,255,0.9) inset,
+		0 -1rpx 0 rgba(15,23,42,0.04) inset,
+		0 14rpx 32rpx rgba(15,23,42,0.12);
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	gap: 25rpx;
@@ -845,13 +973,13 @@ export default {
 }
 
 .login-btn {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #2a91e9 0%, #22c1c3 100%);
 	padding: 16rpx 32rpx;
 	border-radius: 40rpx;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+	box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.35);
 	transition: all 0.3s;
 }
 
@@ -869,6 +997,78 @@ export default {
 	font-size: 26rpx;
 	font-weight: 500;
 }
-</style>
 
+/* 绑定微信号弹窗 */
+.bind-mask {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+}
 
+.bind-dialog {
+	width: 80%;
+	max-width: 640rpx;
+	background: #ffffff;
+	border-radius: 20rpx;
+	padding: 32rpx 28rpx 24rpx;
+	box-shadow: 0 16rpx 40rpx rgba(15, 23, 42, 0.25);
+}
+
+.bind-title {
+	display: block;
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #111827;
+	margin-bottom: 12rpx;
+}
+
+.bind-desc {
+	display: block;
+	font-size: 24rpx;
+	color: #6b7280;
+	line-height: 1.5;
+	margin-bottom: 20rpx;
+}
+
+.bind-input {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1rpx solid #e5e7eb;
+	border-radius: 999rpx;
+	padding: 14rpx 22rpx;
+	font-size: 26rpx;
+	margin-bottom: 24rpx;
+	background-color: #f9fafb;
+}
+
+.bind-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 16rpx;
+}
+
+.bind-btn {
+	min-width: 140rpx;
+	padding: 12rpx 20rpx;
+	border-radius: 999rpx;
+	font-size: 26rpx;
+	line-height: 1.4;
+	text-align: center;
+}
+
+.bind-btn.cancel {
+	background-color: #e5e7eb;
+	color: #374151;
+}
+
+.bind-btn.confirm {
+	background: linear-gradient(135deg, #2a91e9 0%, #22c1c3 100%);
+	color: #ffffff;
+}

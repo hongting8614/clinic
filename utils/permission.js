@@ -20,7 +20,7 @@ const ROLES = {
 const ROLE_TEXT = {
   [ROLES.ADMIN]: '管理员',
   [ROLES.PROJECT_MANAGER]: '项目经理',
-  [ROLES.DOCTOR]: '医生',
+  [ROLES.DOCTOR]: '医务人员',
   [ROLES.PHARMACY]: '药房人员',
   [ROLES.VIEWER]: '查看者'
 }
@@ -47,7 +47,7 @@ const PERMISSIONS = {
   'user.delete': [ROLES.ADMIN, ROLES.PROJECT_MANAGER],
   'user.list': [ROLES.ADMIN, ROLES.PROJECT_MANAGER],
   
-  // 药品管理
+  // 药材管理
   'drug.create': [ROLES.ADMIN, ROLES.PHARMACY],
   'drug.update': [ROLES.ADMIN, ROLES.PHARMACY],
   'drug.delete': [ROLES.ADMIN],
@@ -187,6 +187,49 @@ function canViewReports(role) {
   return [ROLES.ADMIN, ROLES.PROJECT_MANAGER].includes(role)
 }
 
+// ===== 新增：前端便捷权限函数 =====
+
+// 从本地缓存获取当前用户角色，前端使用
+function getCurrentRole() {
+  try {
+    // uni 在云函数环境不存在，这里仅供小程序端使用
+    /* global uni */
+    const userInfo = typeof uni !== 'undefined' ? (uni.getStorageSync('userInfo') || {}) : {}
+    return userInfo.role || ROLES.VIEWER
+  } catch (e) {
+    return ROLES.VIEWER
+  }
+}
+
+// 是否可以新建/编辑入库单或出库单（除复核外的单据编辑权限）
+function canEditInOutRecords(role) {
+  return role === ROLES.ADMIN || role === ROLES.DOCTOR
+}
+
+// 是否可以进行入库复核
+function canReviewInbound(role) {
+  return role === ROLES.ADMIN || role === ROLES.PROJECT_MANAGER
+}
+
+// 是否可以进行出库复核/接收确认
+function canReviewOutbound(role) {
+  return role === ROLES.ADMIN || role === ROLES.DOCTOR
+}
+
+// 是否可以执行库存盘点/调整等操作
+function canAdjustStock(role) {
+  return role === ROLES.ADMIN || role === ROLES.DOCTOR
+}
+
+// 是否可以导出报表（入库/出库/库存/门诊等）
+function canExportReports(role) {
+  return (
+    role === ROLES.ADMIN ||
+    role === ROLES.PROJECT_MANAGER ||
+    role === ROLES.DOCTOR
+  )
+}
+
 /**
  * 云函数中验证权限
  * 需要在云函数中使用，依赖云开发环境
@@ -253,6 +296,12 @@ export {
   canOperate,
   canReview,
   canViewReports,
+  getCurrentRole,
+  canEditInOutRecords,
+  canReviewInbound,
+  canReviewOutbound,
+  canAdjustStock,
+  canExportReports,
   checkPermissionInCloud
 }
 
@@ -270,6 +319,12 @@ if (typeof module !== 'undefined' && module.exports) {
     canOperate,
     canReview,
     canViewReports,
+    getCurrentRole,
+    canEditInOutRecords,
+    canReviewInbound,
+    canReviewOutbound,
+    canAdjustStock,
+    canExportReports,
     checkPermissionInCloud
   }
 }

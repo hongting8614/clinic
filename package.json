@@ -5,7 +5,7 @@
   },
   "name": "ak-pms",
   "version": "1.0.0",
-  "description": "> **北京欢乐谷医务室药品智能管理系统**   > Amusement park-Klinik Pharmacy Management System   > **版本**: v2.0 Final | **状态**: ✅ 100% 完成",
+  "description": "> **北京欢乐谷医务室药材智能管理系统**   > Amusement park-Klinik Pharmacy Management System   > **版本**: v2.0 Final | **状态**: ✅ 100% 完成",
   "main": "main.js",
   "directories": {
     "doc": "docs"

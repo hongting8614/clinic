@@ -64,45 +64,56 @@ export default {
 <style scoped>
 .page {
 	min-height: 100vh;
-	background-color: #F8F8F8;
+	background: linear-gradient(180deg, #00c9ff 0%, #00e0b8 45%, #e0fdfb 100%);
+	padding-bottom: 40rpx;
 }
 
 .page-header {
-	background-color: #FFFFFF;
-	padding: 30rpx;
-	margin-bottom: 20rpx;
+	margin: 24rpx 24rpx 18rpx;
+	padding: 32rpx 30rpx 26rpx;
+	background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
+	border-radius: 26rpx;
+	box-shadow: 0 22rpx 60rpx rgba(15, 23, 42, 0.18);
 	text-align: center;
 }
 
 .page-title {
 	display: block;
 	font-size: 40rpx;
-	font-weight: bold;
-	color: #333333;
+	font-weight: 700;
+	color: #0f172a;
 }
 
 .page-subtitle {
 	display: block;
-	font-size: 28rpx;
-	color: #666666;
+	font-size: 26rpx;
+	color: #6b7280;
 	margin-top: 10rpx;
 }
 
 .report-menu {
-	padding: 0 30rpx;
+	padding: 0 24rpx;
 }
 
 .menu-item {
-	background-color: #FFFFFF;
-	border-radius: 10rpx;
-	padding: 30rpx;
-	margin-bottom: 20rpx;
+	background-color: #ffffff;
+	border-radius: 22rpx;
+	padding: 24rpx 22rpx;
+	margin-bottom: 18rpx;
 	display: flex;
 	align-items: center;
+	box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 }
 
 .menu-icon {
-	font-size: 50rpx;
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 999rpx;
+	background: linear-gradient(135deg, #22c1c3, #00e0b8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 40rpx;
 	margin-right: 20rpx;
 }
 
@@ -113,19 +124,19 @@ export default {
 .menu-title {
 	display: block;
 	font-size: 32rpx;
-	font-weight: bold;
-	color: #333333;
-	margin-bottom: 8rpx;
+	font-weight: 600;
+	color: #0f172a;
+	margin-bottom: 6rpx;
 }
 
 .menu-desc {
 	display: block;
-	font-size: 26rpx;
-	color: #999999;
+	font-size: 24rpx;
+	color: #6b7280;
 }
 
 .menu-arrow {
-	font-size: 28rpx;
-	color: #CCCCCC;
+	font-size: 30rpx;
+	color: #cbd5f5;
 }
 </style>

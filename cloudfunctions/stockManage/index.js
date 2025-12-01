@@ -12,7 +12,7 @@ exports.main = async (event, context) => {
   
   try {
     switch (action) {
-      // 获取库存列表（按药品汇总）
+      // 获取库存列表（按药材汇总）
       case 'getList':
         return await getList(data)
       
@@ -36,7 +36,7 @@ exports.main = async (event, context) => {
       case 'getLowStockList':
         return await getLowStockList(data)
       
-      // 近效期药品列表
+      // 近效期药材列表
       case 'getNearExpiryList':
         return await getNearExpiryList(data)
       
@@ -55,21 +55,24 @@ exports.main = async (event, context) => {
   }
 }
 
-// 获取库存列表（按药品汇总）
+// 获取库存列表（按药材汇总）
 async function getList(data) {
   const { page = 1, pageSize = 100 } = data
   
   try {
-    // 聚合查询：按药品分组统计库存
+    // 聚合查询：按药材分组统计库存
     const $ = db.command.aggregate
     const result = await db.collection('stock')
       .aggregate()
       .group({
         _id: '$drugId',
         drugName: $.first('$drugName'),
-        spec: $.first('$spec'),
+        // 入库时写入的是 specification 字段，这里按药材汇总时需要用同一字段
+        spec: $.first('$specification'),
         unit: $.first('$unit'),
         manufacturer: $.first('$manufacturer'),
+        // 为了在库存总览中展示有效期，取该药材在当前库存中的最早有效期
+        expireDate: $.min('$expireDate'),
         totalQuantity: $.sum('$quantity'),
         batchCount: $.sum(1)
       })
@@ -90,14 +93,19 @@ async function getList(data) {
   }
 }
 
-// 根据药品ID获取批次列表（用于批次选择器）
+// 根据药材ID获取批次列表（用于批次选择器）
 async function getBatchesByDrugId(data) {
   const { drugId, location, enableFIFO = true } = data
+  
+  console.log('📊 [云函数] getBatchesByDrugId 调试:')
+  console.log('  - drugId:', drugId)
+  console.log('  - location:', location)
+  console.log('  - enableFIFO:', enableFIFO)
   
   if (!drugId) {
     return {
       success: false,
-      message: '药品ID不能为空'
+      message: '药材ID不能为空'
     }
   }
   
@@ -111,6 +119,8 @@ async function getBatchesByDrugId(data) {
     where.location = location
   }
   
+  console.log('  - 查询条件:', JSON.stringify(where))
+  
   let query = db.collection('stock').where(where)
   
   // FIFO排序：优先推荐最早批次
@@ -121,6 +131,41 @@ async function getBatchesByDrugId(data) {
   }
   
   const result = await query.get()
+  
+  console.log('  - 查询结果数量:', result.data.length)
+  
+  if (result.data.length === 0) {
+    console.warn('  ⚠️ 未找到库存批次')
+    
+    // 尝试查询该药材的所有批次（包括库存为0的）
+    const allBatches = await db.collection('stock')
+      .where({ drugId: drugId })
+      .get()
+    
+    console.log('  - 该药材所有批次数量:', allBatches.data.length)
+    if (allBatches.data.length > 0) {
+      console.log('  - 所有批次:', allBatches.data)
+      const hasStock = allBatches.data.filter(b => b.quantity > 0)
+      console.log('  - 有库存的批次数量:', hasStock.length)
+      
+      if (hasStock.length > 0 && location) {
+        console.warn('  ⚠️ 其他园区可能有库存，当前园区无库存')
+      }
+    } else {
+      console.warn('  ⚠️ 数据库中完全没有该药材的批次记录')
+      console.warn('  - 可能是 drugId 不匹配')
+    }
+  } else {
+    console.log('  ✅ 找到批次:', result.data.length, '个')
+    result.data.forEach((batch, i) => {
+      console.log(`    批次${i + 1}:`, {
+        batch: batch.batch,
+        quantity: batch.quantity,
+        location: batch.location,
+        expireDate: batch.expireDate
+      })
+    })
+  }
   
   // 检查是否近效期
   const now = new Date()
@@ -297,7 +342,7 @@ async function getLowStockList(data) {
   }
 }
 
-// 近效期药品列表
+// 近效期药材列表
 async function getNearExpiryList(data) {
   const { location, days = 90 } = data
   

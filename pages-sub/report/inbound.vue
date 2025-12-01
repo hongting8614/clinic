@@ -1,23 +1,25 @@
 <template>
 	<view class="container">
-		<view class="page-header">
-			<view>
-        <text class="page-title">入库管理报表</text>
-        <text class="page-subtitle">北京欢乐谷医务室 · Inbound Reports</text>
-			</view>
-			<view class="page-actions">
-        <view class="header-btn ghost" @tap="resetFilters">
-          <text class="btn-icon">↺</text>
-          <text class="btn-text">重置条件</text>
+		<view class="content-column">
+			<view class="page-header">
+				<view class="header-left">
+		      <text class="page-title">入库管理报表</text>
 				</view>
-        <view class="header-btn primary" @tap="fetchCurrentTab">
-					<text class="btn-icon">🔄</text>
-          <text class="btn-text">刷新数据</text>
+				<view class="page-actions">
+		      <view class="header-btn ghost" @tap="resetFilters">
+		        <text class="btn-icon">
+		        	↺
+		        </text>
+		        <text class="btn-text">重置</text>
+				</view>
+		      <view class="header-btn primary" @tap="fetchCurrentTab">
+					<text class="btn-icon" style="color: blue;">↻</text>
+		        <text class="btn-text">刷新</text>
+				</view>
 				</view>
 			</view>
-		</view>
 
-    <view class="tab-bar">
+	    <view class="tab-bar">
       <view
         v-for="tab in tabs"
         :key="tab.value"
@@ -29,7 +31,7 @@
 			</view>
 		</view>
 		
-		<filter-panel
+			<filter-panel
       v-if="activeTab !== 'period'"
 			class="filter-panel-wrapper"
 			:show-date="true"
@@ -37,8 +39,8 @@
       :end-date="filters.endDate"
 			:quick-filters="quickFilters"
       :active-quick-filter="filters.quick"
-			:show-search-button="false"
-      keyword-placeholder="输入单号/药品"
+			:hideKeyword="true"
+      keyword-placeholder="输入单号/药材"
       :keyword="filters.recordNo"
       @update:startDate="val => updateFilter('startDate', val)"
       @update:endDate="val => updateFilter('endDate', val)"
@@ -47,40 +49,60 @@
       @update:keyword="val => updateFilter('recordNo', val)"
       @search="fetchCurrentTab"
 		>
-			<view class="filter-extra">
-				<view class="extra-item">
-					<text class="extra-label">药品名称</text>
-          <input
-            class="extra-input"
-            v-model.trim="filters.drugName"
-            placeholder="模糊查询药品名"
-            @confirm="fetchCurrentTab"
-          />
-				</view>
-        <view class="extra-item">
-					<text class="extra-label">操作人</text>
-          <input
-            class="extra-input"
-            v-model.trim="filters.operator"
-            placeholder="输入操作人"
-            @confirm="fetchCurrentTab"
-          />
-        </view>
-        <view class="extra-item">
-          <text class="extra-label">批号</text>
-          <input
-            class="extra-input"
-            v-model.trim="filters.batchNo"
-            placeholder="输入批号"
-            @confirm="fetchCurrentTab"
-          />
-        </view>
-        <view class="extra-item toggle-item" @tap="toggleIncludeDraft">
-          <text class="extra-label">草稿数据</text>
-          <view class="toggle" :class="{ active: filters.includeDraft }">
-            <view class="toggle-dot"></view>
-          </view>
-				</view>
+				<view class="filter-extra">
+					<!-- 行1：批号 -->
+					<view class="filter-row">
+						<view class="extra-item extra-item--batch">
+							<text class="extra-label">批号</text>
+							<view class="extra-input-wrapper">
+								<text class="extra-input-icon">🔍</text>
+								<input
+									class="extra-input"
+									v-model.trim="filters.batchNo"
+									placeholder="输入批号"
+									@confirm="fetchCurrentTab"
+								/>
+							</view>
+						</view>
+					</view>
+
+					<!-- 行2：药材名称 -->
+					<view class="filter-row">
+						<view class="extra-item extra-item--drug">
+							<text class="extra-label">药材名称</text>
+							<view class="extra-input-wrapper">
+								<text class="extra-input-icon">🔍</text>
+								<input
+									class="extra-input"
+									v-model.trim="filters.drugName"
+									placeholder="模糊查询药材名"
+									@confirm="fetchCurrentTab"
+								/>
+							</view>
+						</view>
+					</view>
+
+					<!-- 行3：发放人 + 草稿数据 -->
+					<view class="filter-row filter-row--two">
+						<view class="extra-item extra-item--operator">
+							<text class="extra-label">发放人</text>
+			      <view class="extra-input-wrapper">
+			        <text class="extra-input-icon">🔍</text>
+			        <input
+			          class="extra-input"
+			          v-model.trim="filters.operator"
+			          placeholder="输入发放人"
+			          @confirm="fetchCurrentTab"
+			        />
+			      </view>
+			    </view>
+			    <view class="extra-item toggle-item" @tap="toggleIncludeDraft">
+			      <text class="extra-label">草稿数据</text>
+			      <view class="toggle" :class="{ active: filters.includeDraft }">
+			        <view class="toggle-dot"></view>
+			      </view>
+					</view>
+					</view>
 				</view>
 		</filter-panel>
 		
@@ -109,7 +131,7 @@
       </view>
       <view class="stat-item">
         <text class="stat-value">{{ statistics.totalDrugs }}</text>
-        <text class="stat-label">药品种类</text>
+        <text class="stat-label">药材种类</text>
       </view>
       <view class="stat-item">
         <text class="stat-value">{{ statistics.totalQuantity }}</text>
@@ -122,123 +144,155 @@
 		</view>
 		
     <view v-if="activeTab === 'summary'" class="table-section">
-      <view v-if="summaryRows.length" class="table-wrapper">
-			<view class="table-header">
-				<text class="col col-no">单号</text>
-				<text class="col col-date">日期</text>
-				<text class="col col-operator">操作人</text>
-          <text class="col col-status">状态</text>
-          <text class="col col-drugs">品种数</text>
-				<text class="col col-quantity">数量</text>
-				<text class="col col-amount">金额</text>
-			</view>
-        <view class="table-body">
-				<view 
-					class="table-row"
-            v-for="item in summaryRows"
-            :key="item._id"
+			<view v-if="summaryRows.length" class="detail-list">
+				<view
+					class="detail-card"
+					v-for="item in summaryRows"
+					:key="item._id"
 					@tap="viewDetail(item._id)"
 				>
-					<text class="col col-no">{{ item.recordNo }}</text>
-					<text class="col col-date">{{ formatDate(item.createTime) }}</text>
-            <text class="col col-operator">{{ item.operator || '-' }}</text>
-            <text class="col col-status">{{ renderStatus(item.status) }}</text>
-					<text class="col col-drugs">{{ item.drugCount }}</text>
-					<text class="col col-quantity">{{ item.totalQuantity }}</text>
-					<text class="col col-amount">¥{{ item.totalAmount }}</text>
+					<!-- 顶部：单号 + 日期 -->
+					<view class="detail-row detail-row-top">
+						<text class="detail-no">{{ item.recordNo }}</text>
+						<text class="detail-date">{{ formatDate(item.createTime) }}</text>
+					</view>
+
+					<!-- 医生 + 状态 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">医生</text>
+						<text class="meta-value">{{ item.operator || '-' }}</text>
+						<text class="meta-label">状态</text>
+						<text class="meta-value">{{ renderStatus(item.status) }}</text>
+					</view>
+
+					<!-- 品种数 + 总数量 + 总金额 -->
+					<view class="detail-row detail-row-main">
+						<view class="detail-main-left">
+							<text class="detail-spec">品种：{{ item.drugCount }} 种</text>
+						</view>
+						<view class="detail-main-right">
+							<text class="detail-qty">{{ item.totalQuantity }}</text>
+							<text class="detail-amount">¥{{ item.totalAmount }}</text>
+						</view>
+					</view>
 				</view>
-		</view>
-      </view>
-      <view v-else class="empty-state">
-			<text class="empty-icon">📊</text>
-			<text class="empty-text">暂无数据</text>
-        <text class="empty-hint">调整筛选条件后重新生成报表</text>
-      </view>
+			</view>
+			<view v-else class="empty-state">
+				<text class="empty-icon">📊</text>
+				<text class="empty-text">暂无数据</text>
+				<text class="empty-hint">调整筛选条件后重新生成报表</text>
+			</view>
 		</view>
 		
     <view v-if="activeTab === 'detail'" class="table-section">
-      <view v-if="detailRows.length" class="table-wrapper detail">
-        <view class="table-header detail">
-          <text class="col w-no">单号</text>
-          <text class="col w-date">日期</text>
-          <text class="col w-drug">药材名</text>
-          <text class="col w-spec">规格</text>
-          <text class="col w-unit">单位</text>
-          <text class="col w-batch">批号</text>
-          <text class="col w-date">生产日期</text>
-          <text class="col w-date">有效期</text>
-          <text class="col w-manufacturer">生产厂家</text>
-          <text class="col w-number">数量</text>
-          <text class="col w-number">单价</text>
-          <text class="col w-number">金额</text>
-          <text class="col w-operator">操作人</text>
+			<view v-if="detailRows.length" class="detail-list">
+				<view
+					class="detail-card"
+					v-for="(item, idx) in detailRows"
+					:key="idx"
+				>
+					<!-- 顶部：单号 + 日期 -->
+					<view class="detail-row detail-row-top">
+						<text class="detail-no">{{ item.recordNo }}</text>
+						<text class="detail-date">{{ formatDate(item.date) }}</text>
+					</view>
+
+					<!-- 药名 + 数量 + 金额 -->
+					<view class="detail-row detail-row-main">
+						<view class="detail-main-left">
+							<text class="detail-drug">{{ item.drugName }}</text>
+							<text class="detail-spec">{{ item.specification }}</text>
+						</view>
+						<view class="detail-main-right">
+							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
+							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
+						</view>
+					</view>
+
+					<!-- 批号 + 医生 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">批号</text>
+						<text class="meta-value mono">{{ item.batchNo || '-' }}</text>
+						<text class="meta-label">医生</text>
+						<text class="meta-value">{{ item.operator || '-' }}</text>
+					</view>
+
+					<!-- 生产 / 有效期 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">生产</text>
+						<text class="meta-value">{{ item.productionDate || '-' }}</text>
+						<text class="meta-label">有效</text>
+						<text class="meta-value">{{ item.expireDate || '-' }}</text>
+					</view>
+
+					<!-- 厂家 -->
+					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
+						<text class="meta-label">厂家</text>
+						<text class="meta-value">{{ item.manufacturer }}</text>
+					</view>
+				</view>
 			</view>
-        <view class="table-body">
-          <view class="table-row detail" v-for="(item, idx) in detailRows" :key="idx">
-            <text class="col w-no">{{ item.recordNo }}</text>
-            <text class="col w-date">{{ formatDate(item.date) }}</text>
-            <text class="col w-drug">{{ item.drugName }}</text>
-            <text class="col w-spec">{{ item.specification }}</text>
-            <text class="col w-unit">{{ item.unit }}</text>
-            <text class="col w-batch">{{ item.batchNo }}</text>
-            <text class="col w-date">{{ item.productionDate }}</text>
-            <text class="col w-date">{{ item.expireDate }}</text>
-            <text class="col w-manufacturer">{{ item.manufacturer }}</text>
-            <text class="col w-number">{{ item.quantity }}</text>
-            <text class="col w-number">{{ item.price }}</text>
-            <text class="col w-number">{{ item.amount }}</text>
-            <text class="col w-operator">{{ item.operator }}</text>
-			</view>
-        </view>
-      </view>
-      <view v-else class="empty-state">
-        <text class="empty-icon">📄</text>
-        <text class="empty-text">未找到明细</text>
-        <text class="empty-hint">可以放宽搜索条件后再试</text>
+			<view v-else class="empty-state">
+				<text class="empty-icon">📄</text>
+				<text class="empty-text">未找到明细</text>
+				<text class="empty-hint">可以放宽搜索条件后再试</text>
 			</view>
 		</view>
 		
     <view v-if="activeTab === 'period'" class="table-section">
-      <view v-if="periodRows.length" class="table-wrapper detail">
-        <view class="table-header detail">
-          <text class="col w-no">单号</text>
-          <text class="col w-date">日期</text>
-          <text class="col w-drug">药材名</text>
-          <text class="col w-spec">规格</text>
-          <text class="col w-unit">单位</text>
-          <text class="col w-batch">批号</text>
-          <text class="col w-date">生产日期</text>
-          <text class="col w-date">有效期</text>
-          <text class="col w-manufacturer">生产厂家</text>
-          <text class="col w-number">数量</text>
-          <text class="col w-number">单价</text>
-          <text class="col w-number">金额</text>
-          <text class="col w-operator">操作人</text>
-				</view>
-        <view class="table-body">
-          <view class="table-row detail" v-for="(item, idx) in periodRows" :key="idx">
-            <text class="col w-no">{{ item.recordNo }}</text>
-            <text class="col w-date">{{ formatDate(item.date) }}</text>
-            <text class="col w-drug">{{ item.drugName }}</text>
-            <text class="col w-spec">{{ item.specification }}</text>
-            <text class="col w-unit">{{ item.unit }}</text>
-            <text class="col w-batch">{{ item.batchNo }}</text>
-            <text class="col w-date">{{ item.productionDate }}</text>
-            <text class="col w-date">{{ item.expireDate }}</text>
-            <text class="col w-manufacturer">{{ item.manufacturer }}</text>
-            <text class="col w-number">{{ item.quantity }}</text>
-            <text class="col w-number">{{ item.price }}</text>
-            <text class="col w-number">{{ item.amount }}</text>
-            <text class="col w-operator">{{ item.operator }}</text>
+			<view v-if="periodRows.length" class="detail-list">
+				<view
+					class="detail-card"
+					v-for="(item, idx) in periodRows"
+					:key="idx"
+				>
+					<!-- 顶部：单号 + 日期 -->
+					<view class="detail-row detail-row-top">
+						<text class="detail-no">{{ item.recordNo }}</text>
+						<text class="detail-date">{{ formatDate(item.date) }}</text>
+					</view>
+
+					<!-- 药名 + 数量 + 金额 -->
+					<view class="detail-row detail-row-main">
+						<view class="detail-main-left">
+							<text class="detail-drug">{{ item.drugName }}</text>
+							<text class="detail-spec">{{ item.specification }}</text>
+						</view>
+						<view class="detail-main-right">
+							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
+							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
+						</view>
+					</view>
+
+					<!-- 批号 + 操作人 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">批号</text>
+						<text class="meta-value mono">{{ item.batchNo || '-' }}</text>
+						<text class="meta-label">操作人</text>
+						<text class="meta-value">{{ item.operator || '-' }}</text>
+					</view>
+
+					<!-- 生产 / 有效期 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">生产</text>
+						<text class="meta-value">{{ item.productionDate || '-' }}</text>
+						<text class="meta-label">有效</text>
+						<text class="meta-value">{{ item.expireDate || '-' }}</text>
+					</view>
+
+					<!-- 厂家 -->
+					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
+						<text class="meta-label">厂家</text>
+						<text class="meta-value">{{ item.manufacturer }}</text>
 					</view>
 				</view>
 			</view>
-      <view v-else class="empty-state">
-        <text class="empty-icon">🗓️</text>
-        <text class="empty-text">该时间段暂无入库</text>
-        <text class="empty-hint">试试其它时间段</text>
-      </view>
-    </view>
+			<view v-else class="empty-state">
+				<text class="empty-icon">🗓️</text>
+				<text class="empty-text">该时间段暂无入库</text>
+				<text class="empty-hint">试试其它时间段</text>
+			</view>
+		</view>
 
     <view class="export-section" v-if="hasData">
       <view class="export-btn" @tap="exportExcel">
@@ -253,7 +307,8 @@
         <text class="export-icon">🖨️</text>
         <text class="export-text">打印(开发中)</text>
 				</view>
-			</view>
+		</view>
+		</view>
 	</view>
 </template>
 
@@ -331,6 +386,7 @@ export default {
     }
   },
   created() {
+    console.log('INBOUND_LAYOUT_V2')
     this.initPage()
   },
   methods: {
@@ -657,383 +713,469 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 整体背景与底部留白 */
 .container {
 	min-height: 100vh;
-  background: #f8f9fa;
-  padding-bottom: 140rpx;
+	/* 使用与首页/门诊/药材工作台一致的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 140rpx;
 }
 
+/* 顶部标题卡片 */
 .page-header {
+	/* 顶部标题卡片：象牙白圆角卡片，与其它工作台 header-card 对齐 */
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	padding: 22rpx 22rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 	display: flex;
 	justify-content: space-between;
-  align-items: center;
-  padding: 40rpx 30rpx 30rpx;
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+	align-items: center;
 }
 
 .page-title {
-		font-size: 40rpx;
-  font-weight: 600;
-  color: #1e1b4b;
+	font-size: 36rpx;
+	font-weight: 650;
+	color: #0f172a;
 }
 
 .page-subtitle {
+	margin-top: 4rpx;
 	font-size: 24rpx;
-  color: #6366f1;
-  margin-top: 8rpx;
+	color: #0d9488;
 }
 
 .page-actions {
 	display: flex;
-	gap: 16rpx;
+	flex-direction: row;
+	align-items: center;
+	gap: 12rpx;
 }
 
 .header-btn {
 	display: flex;
 	align-items: center;
-  gap: 8rpx;
-  padding: 18rpx 32rpx;
+	gap: 6rpx;
+	padding: 10rpx 22rpx;
 	border-radius: 999rpx;
-		font-size: 26rpx;
-  font-weight: 500;
-  border: 1rpx solid rgba(99, 102, 241, 0.4);
-	
-	&.primary {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: #fff;
-		border: none;
-    box-shadow: 0 8rpx 20rpx rgba(99, 102, 241, 0.25);
-  }
+	font-size: 24rpx;
+	font-weight: 500;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	border: none;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 
-  &.ghost {
-    background: #fff;
-    color: #4338ca;
+	&.primary {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: #ffffff;
 	}
 }
 
 .btn-icon {
-  font-size: 26rpx;
+	font-size: 24rpx;
 }
 
+/* 顶部 Tab 卡片区域 */
 .tab-bar {
   display: flex;
-  gap: 16rpx;
-  padding: 20rpx 30rpx;
+  /* 居中排布三个 Tab，在 702rpx 内容区域内左右留均匀空白 */
+  justify-content: center;
+  gap: 12rpx;
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 0;
 }
 
 .tab-item {
-  flex: 1;
-  padding: 20rpx;
+  /* 三个 Tab 平均分配整行宽度，覆盖编译生成的固定 width */
+  flex: 1 1 0;
+  width: auto !important;
+  padding: 18rpx 16rpx;
   border-radius: 18rpx;
-  background: #fff;
+  background: #ffffff;
   border: 2rpx solid transparent;
-  box-shadow: 0 6rpx 20rpx rgba(15, 23, 42, 0.05);
-	display: flex;
+  box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.08);
+  display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  align-items: center;
+  text-align: center;
+  gap: 6rpx;
+	/* 三个 Tab 平均分配整行宽度，覆盖编译生成的固定 width */
+	flex: 1 1 0;
+	width: auto !important;
+	padding: 18rpx 16rpx;
+	border-radius: 18rpx;
+	background: #ffffff;
+	border: 2rpx solid transparent;
+	box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.08);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 6rpx;
 
-  &.active {
-    border-color: #4f46e5;
-    box-shadow: 0 10rpx 22rpx rgba(79, 70, 229, 0.18);
-  }
+	&.active {
+		border-color: #06b6d4;
+		box-shadow: 0 10rpx 26rpx rgba(8, 145, 178, 0.3);
+	}
 }
 
 .tab-label {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #111827;
+	font-size: 30rpx;
+	font-weight: 600;
+	color: #0f172a;
 }
 
 .tab-desc {
-  font-size: 24rpx;
-  color: #6b7280;
+	font-size: 22rpx;
+	color: #6b7280;
 }
 
+/* 筛选面板外框（与截图中大筛选卡片保持一致宽度） */
 .filter-panel-wrapper {
-	margin: 0 30rpx 20rpx;
+	/* 筛选卡片：象牙白卡片轨道，底部留 8rpx */
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 }
 
+/* 统一筛选卡内部白卡片与明细卡的左右内边距（22rpx） */
+:deep(.filter-panel) {
+	padding-left: 22rpx;
+	padding-right: 22rpx;
+}
+
+/* 插槽中的附加筛选区域：整体作为内部浅色块 */
 .filter-extra {
-			display: flex;
-	flex-wrap: wrap;
-	gap: 12rpx;
-  margin-top: 14rpx;
+	margin-top: 12rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 10rpx;
+}
+
+.filter-row {
+	display: flex;
+	flex-direction: row;
+	gap: 10rpx;
+}
+
+.filter-row--two {
+	justify-content: space-between;
 }
 
 .extra-item {
 	flex: 1;
-  min-width: 220rpx;
-  background: #f9fafb;
-  padding: 16rpx 22rpx;
-  border-radius: 14rpx;
+	background: #f3f4f6;
+	border-radius: 999rpx;
 	display: flex;
-	flex-direction: column;
-  gap: 8rpx;
+	align-items: center;
+	padding: 10rpx 18rpx;
+}
+
+.extra-item--batch,
+.extra-item--drug {
+	border-radius: 18rpx;
+	padding: 12rpx 18rpx;
+}
+
+.extra-item--operator {
+	flex: 1.2;
+}
+
+.toggle-item {
+	flex: 0.8;
+	border-radius: 18rpx;
+	background: #f3f4f6;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12rpx 18rpx;
 }
 
 .extra-label {
 	font-size: 24rpx;
-	color: #94a3b8;
+	color: #6b7280;
+}
+
+.extra-input-wrapper {
+	position: relative;
+	flex: 1;
+	background: #eef2ff;
+	border-radius: 999rpx;
+	padding: 8rpx 18rpx 8rpx 46rpx;
+}
+
+.extra-input-icon {
+	position: absolute;
+	left: 18rpx;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 24rpx;
+	color: #9ca3af;
 }
 
 .extra-input {
-				font-size: 28rpx;
-  color: #111827;
-}
-
-.toggle-item {
-  flex: none;
-  width: 220rpx;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
+	font-size: 26rpx;
+	color: #0f172a;
 }
 
 .toggle {
-  width: 86rpx;
-  height: 40rpx;
+	width: 86rpx;
+	height: 40rpx;
 	border-radius: 999rpx;
-  background: #e5e7eb;
-  position: relative;
+	background: #e5e7eb;
+	position: relative;
 
-  &.active {
-    background: #4ade80;
-  }
+	&.active {
+		background: #22c55e;
+	}
 }
 
 .toggle-dot {
-  position: absolute;
-  width: 34rpx;
-  height: 34rpx;
-  border-radius: 50%;
-  background: #fff;
-  top: 3rpx;
-  left: 4rpx;
-  transition: transform 0.2s;
+	position: absolute;
+	width: 34rpx;
+	height: 34rpx;
+	border-radius: 50%;
+	background: #ffffff;
+	top: 3rpx;
+	left: 4rpx;
+	transition: transform 0.2s;
 }
 
 .toggle.active .toggle-dot {
-  transform: translateX(44rpx);
+	transform: translateX(44rpx);
 }
 
+/* 时间段快捷筛选卡片 */
 .period-filter-card {
-  margin: 0 30rpx 20rpx;
-  padding: 28rpx;
-  background: #fff;
-  border-radius: 18rpx;
-  box-shadow: 0 8rpx 24rpx rgba(15, 23, 42, 0.08);
+	max-width: 702rpx;
+	margin: 0 auto 0;
+	padding: 22rpx 24rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .period-title {
-			font-size: 28rpx;
+	font-size: 28rpx;
 	font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 16rpx;
+	color: #1e293b;
+	margin-bottom: 12rpx;
 }
 
 .period-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10rpx;
+	margin-bottom: 16rpx;
 }
 
 .period-chip {
-  padding: 14rpx 28rpx;
-  border-radius: 999rpx;
-  background: #f3f4f6;
-  font-size: 26rpx;
+	padding: 10rpx 22rpx;
+	border-radius: 999rpx;
+	background: #f3f4f6;
+	font-size: 24rpx;
 	color: #475569;
 
-  &.active {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: #fff;
-    box-shadow: 0 8rpx 18rpx rgba(99, 102, 241, 0.24);
-  }
+	&.active {
+		background: linear-gradient(135deg, #06b6d4, #22c1c3);
+		color: #ffffff;
+		box-shadow: 0 8rpx 20rpx rgba(8, 145, 178, 0.3);
+	}
 }
 
 .period-range {
-  font-size: 26rpx;
-  color: #334155;
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
+	font-size: 24rpx;
+	color: #334155;
+	display: flex;
+	flex-direction: column;
+	gap: 4rpx;
 }
 
 .range-hint {
-  font-size: 24rpx;
-  color: #94a3b8;
+	font-size: 22rpx;
+	color: #94a3b8;
 }
 
+/* 顶部统计信息卡片 */
 .stats-card {
-  margin: 0 30rpx 20rpx;
-  padding: 24rpx;
-  background: #fff;
-  border-radius: 18rpx;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
-  box-shadow: 0 6rpx 20rpx rgba(15, 23, 42, 0.05);
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 18rpx 22rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12rpx;
 }
 
 .stat-item {
-  text-align: center;
+	text-align: center;
 }
 
 .stat-value {
-  font-size: 34rpx;
-  font-weight: 600;
-  color: #1d4ed8;
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #1d4ed8;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: #94a3b8;
+	margin-top: 2rpx;
+	font-size: 22rpx;
+	color: #94a3b8;
 }
 
+/* 列表/空状态总体卡片，相同外框宽度 */
 .table-section {
-	margin: 0 30rpx 20rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 0 0 10rpx;
+	background: transparent;
+	border-radius: 0;
+	box-shadow: none;
 }
 
-.table-wrapper {
-  background: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0 12rpx 30rpx rgba(15, 23, 42, 0.08);
-	overflow: hidden;
-}
-	
-	.table-header {
-		display: flex;
-  padding: 22rpx 16rpx;
-  background: #f8fafc;
-		font-size: 24rpx;
-  font-weight: 600;
-  color: #475569;
-
-  &.detail {
-    font-size: 22rpx;
-		}
-	}
-	
-	.table-body {
-  max-height: 900rpx;
-}
-		
-		.table-row {
-			display: flex;
-  align-items: center;
-  padding: 18rpx 16rpx;
-			font-size: 24rpx;
-  color: #0f172a;
-  border-bottom: 1rpx solid #f1f5f9;
-
-  &.detail {
-    font-size: 22rpx;
-  }
+/* 有数据时：明细卡片列表 */
+.detail-list {
+	/* 明细卡内部列表与底部留少量空间 */
+	margin: 0 0 6rpx;
 }
 
-.table-row:last-child {
-				border-bottom: none;
-			}
-			
-			.col {
-				text-align: center;
-  padding: 0 8rpx;
-
-  &.col-no {
-    width: 200rpx;
-    text-align: left;
-  }
-  &.col-date {
-    width: 150rpx;
-  }
-  &.col-operator {
-    width: 140rpx;
-  }
-  &.col-status {
-    width: 120rpx;
-  }
-  &.col-drugs {
-    width: 110rpx;
-  }
-  &.col-quantity,
-  &.col-amount {
-    width: 150rpx;
-  }
-
-  &.w-no {
-    width: 200rpx;
-    text-align: left;
-  }
-  &.w-date {
-    width: 150rpx;
-  }
-  &.w-drug {
-    width: 200rpx;
-    text-align: left;
-  }
-  &.w-spec {
-    width: 180rpx;
-  }
-  &.w-unit {
-    width: 80rpx;
-  }
-  &.w-batch {
-    width: 160rpx;
-  }
-  &.w-manufacturer {
-    width: 200rpx;
-    text-align: left;
-  }
-  &.w-number {
-    width: 120rpx;
-  }
-  &.w-operator {
-    width: 150rpx;
-  }
+.detail-card {
+	background: #FFFFF0;
+	border-radius: 18rpx;
+	padding: 18rpx 22rpx 14rpx;
+	margin: 0 0 8rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+	border: 1rpx solid #e5e7eb;
 }
 
+.detail-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 4rpx;
+}
+
+.detail-row-top {
+	margin-bottom: 4rpx;
+}
+
+.detail-no {
+	font-size: 26rpx;
+	font-weight: 600;
+	color: #111827;
+}
+
+.detail-main-left {
+	flex: 1;
+	margin-right: 10rpx;
+	display: flex;
+	flex-direction: column;
+}
+
+.detail-drug {
+	font-size: 28rpx;
+	font-weight: 600;
+	color: #111827;
+}
+
+.detail-spec {
+	margin-top: 2rpx;
+	font-size: 24rpx;
+	color: #6b7280;
+}
+
+.detail-main-right {
+	min-width: 150rpx;
+	text-align: right;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.detail-qty {
+	font-size: 26rpx;
+	font-weight: 600;
+	color: #2563eb;
+}
+
+.detail-amount {
+	margin-top: 2rpx;
+	font-size: 24rpx;
+	color: #ef4444;
+}
+
+.detail-row-meta,
+.detail-row-manufacturer {
+	font-size: 22rpx;
+	color: #4b5563;
+}
+
+.meta-label {
+	color: #9ca3af;
+	margin-right: 4rpx;
+}
+
+.meta-value {
+	margin-right: 16rpx;
+}
+
+.meta-value.mono {
+	font-family: 'DIN Alternate', 'Courier New', monospace;
+}
+
+/* 无数据时：提示内容占满整个 table-section */
 .empty-state {
-  background: #fff;
-  padding: 120rpx 20rpx;
-  border-radius: 20rpx;
-  text-align: center;
-  color: #94a3b8;
-			display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.06);
+	padding: 80rpx 24rpx 90rpx;
+	text-align: center;
+	color: #94a3b8;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10rpx;
 }
 
 .empty-icon {
-  font-size: 90rpx;
+	font-size: 88rpx;
 }
 
+/* 底部导出区域：暂保持原有宽度，不影响入库主列视觉 */
 .export-section {
-  display: flex;
-  gap: 18rpx;
-  padding: 0 30rpx 40rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	display: flex;
+	gap: 18rpx;
+	padding: 0 0 40rpx;
 }
 
 .export-btn {
-  flex: 1;
-  background: #fff;
-  border-radius: 18rpx;
-  padding: 26rpx;
-				display: flex;
-				align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 10rpx;
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.08);
+	flex: 1;
+	border-radius: 999rpx;
+	padding: 18rpx 18rpx;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 10rpx;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 }
 
 .export-icon {
-  font-size: 42rpx;
+	font-size: 40rpx;
 }
 
 .export-text {
-  font-size: 24rpx;
-  color: #475569;
+	font-size: 24rpx;
+	color: #ffffff;
 }
 </style>

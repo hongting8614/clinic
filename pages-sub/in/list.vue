@@ -2,14 +2,13 @@
 	<view class="container">
 	<!-- 页面头部 -->
 	<view class="page-header">
-		<view>
+		<view class="page-header-title">
 			<text class="page-title">入库管理</text>
-			<text class="page-subtitle">{{ currentTime }}</text>
 		</view>
 		<view class="page-actions">
-			<view class="header-btn ghost" @tap="goReport">入库报表</view>
-			<view class="header-btn ghost" @tap="refreshList">刷新</view>
 			<view class="header-btn primary" @tap="goAdd">新建入库单</view>
+			<view class="header-btn ghost" @tap="resetFilters">重置</view>
+			<view class="header-btn ghost" @tap="generateList">查询</view>
 		</view>
 	</view>
 	
@@ -32,7 +31,7 @@
 	<filter-panel
 		class="panel-wrapper"
 		:keyword="searchKeyword"
-		keyword-placeholder="搜索单号/药品名称"
+		keyword-placeholder="搜索单号/药材名称"
 		:show-date="true"
 		:start-date="startDate"
 		:end-date="endDate"
@@ -48,15 +47,10 @@
 	>
 	</filter-panel>
 	
-	<view class="filter-action-bar">
-		<view class="action-btn ghost" @tap="resetFilters">重置</view>
-		<view class="action-btn primary" @tap="generateList">查询</view>
-	</view>
-	
 	<view class="result-meta">
 		<text class="meta-item">已选择 {{ recordList.length }} 笔</text>
 		<text class="meta-dot">•</text>
-		<text class="meta-item">共计 {{ totalDrugs }} 种药品</text>
+		<text class="meta-item">共计 {{ totalDrugs }} 种药材</text>
 	</view>
 		
 		<!-- 列表 -->
@@ -86,7 +80,7 @@
 					<text class="info-value">{{ item.createTime }}</text>
 				</view>
 				<view class="info-item">
-					<text class="info-label">药品种类：</text>
+					<text class="info-label">药材种类：</text>
 						<text class="info-value">{{ item.items.length }} 种</text>
 					</view>
 				</view>
@@ -148,7 +142,6 @@ export default {
 				{ label: '全部', value: 'all' },
 				{ label: '草稿', value: 'draft' },
 				{ label: '待复核', value: 'pending_review' },
-				{ label: '已完成', value: 'completed' },
 				{ label: '已驳回', value: 'rejected' }
 			],
 			
@@ -190,7 +183,11 @@ export default {
 		}
 	},
 	
-	onLoad() {
+	onLoad(options) {
+		// 如果从药材管理页面带了状态参数（例如 status=pending_review），优先使用该状态
+		if (options && options.status) {
+			this.statusFilter = options.status
+		}
 		this.initPage()
 	},
 	
@@ -200,7 +197,7 @@ computed: {
 		const found = this.statusList.find(item => item.value === this.statusFilter)
 		return found ? found.label : '全部'
 	},
-	// 计算总药品种类数
+	// 计算总药材种类数
 	totalDrugs() {
 		const drugSet = new Set()
 		this.recordList.forEach(record => {
@@ -307,6 +304,10 @@ computed: {
 				if (this.searchKeyword) {
 					newData = this.filterByKeyword(newData)
 				}
+				// 再按当前状态做一次前端过滤，确保“待复核”等标签只显示对应状态
+				if (this.statusFilter && this.statusFilter !== 'all') {
+					newData = newData.filter(item => item.status === this.statusFilter)
+				}
 				
 				this.recordList = this.page === 1 ? newData : [...this.recordList, ...newData]
 				this.hasMore = newData.length >= this.pageSize
@@ -315,6 +316,9 @@ computed: {
 				let newData = result
 				if (this.searchKeyword) {
 					newData = this.filterByKeyword(newData)
+				}
+				if (this.statusFilter && this.statusFilter !== 'all') {
+					newData = newData.filter(item => item.status === this.statusFilter)
 				}
 				this.recordList = this.page === 1 ? newData : [...this.recordList, ...newData]
 				this.hasMore = newData.length >= this.pageSize
@@ -343,7 +347,7 @@ computed: {
 			if (item.recordNo && item.recordNo.toLowerCase().includes(keyword)) {
 				return true
 			}
-			// 搜索药品名称
+			// 搜索药材名称
 			if (item.items && Array.isArray(item.items)) {
 				return item.items.some(drug => 
 					drug.drugName && drug.drugName.toLowerCase().includes(keyword)
@@ -697,17 +701,36 @@ async loadCounts() {
 </script>
 
 <style lang="scss" scoped>
+@import '@/common/ui.scss';
+
 .container {
 	min-height: 100vh;
-	background-color: #f5f7fb;
-	padding-bottom: 60rpx;
+	/* 使用与首页/门诊/药材工作台一致的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 60rpx;
 }
 
 .page-header {
+	/* 顶部标题卡片：象牙白圆角卡片，宽度与其它工作台 header-card 对齐 */
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	padding: 24rpx 24rpx 18rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: space-between;
-	padding: 40rpx 30rpx 20rpx;
+	justify-content: flex-start;
+}
+
+.page-header-title {
+	width: 100%;
+	display: flex;
+	justify-content: center;
 }
 
 .page-title {
@@ -725,7 +748,11 @@ async loadCounts() {
 
 .page-actions {
 	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 	gap: 16rpx;
+	margin-top: 18rpx;
+	width: 100%;
 }
 
 .header-btn {
@@ -738,44 +765,44 @@ async loadCounts() {
 }
 
 .header-btn.ghost {
-	background: #ffffff;
-	color: #475569;
-	border: 1rpx solid #e2e8f0;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	border: none;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 }
 
 .header-btn.primary {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
 	color: #ffffff;
-	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.3);
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
 }
 
 // 状态筛选Tab栏（新设计）
 .status-tabs {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 12rpx 20rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 	display: flex;
-	padding: 16rpx 20rpx;
-	background: #f7f8fa;
-	gap: 8rpx;
-	overflow-x: auto;
-	white-space: nowrap;
+	flex-wrap: wrap;
+	gap: 10rpx;
 	justify-content: space-between;
-	
-	&::-webkit-scrollbar {
-		display: none;
-	}
 }
 
 .status-tab {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 10rpx 16rpx;
+	padding: 8rpx 10rpx;
 	background: white;
 	border-radius: 40rpx;
-	font-size: 24rpx;
+	font-size: 16rpx;
 	color: #646566;
-	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+	box-shadow: 0 3rpx 10rpx rgba(15, 23, 42, 0.06);
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	flex: 1;
+	flex: 1 0 18%;
 	min-width: 0;
 	border: 2rpx solid transparent;
 	
@@ -783,7 +810,7 @@ async loadCounts() {
 		background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
 		color: white;
 		font-weight: bold;
-		box-shadow: 0 4rpx 20rpx rgba(7, 193, 96, 0.3);
+		box-shadow: 0 6rpx 20rpx rgba(7, 193, 96, 0.35);
 		transform: scale(1.02);
 		border-color: #07C160;
 	}
@@ -814,7 +841,8 @@ async loadCounts() {
 }
 
 .panel-wrapper {
-	margin: 0 30rpx 10rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 }
 
 .filter-extra {
@@ -848,13 +876,16 @@ async loadCounts() {
 }
 
 .filter-action-bar {
+	max-width: 702rpx;
+	margin: 8rpx auto 8rpx;
 	display: flex;
+	justify-content: space-between;
 	gap: 16rpx;
-	margin: 0 30rpx 16rpx;
+	padding: 0 24rpx;
 }
 
 .action-btn {
-	flex: 1;
+	min-width: 150rpx;
 	height: 82rpx;
 	border-radius: 999rpx;
 	display: flex;
@@ -865,21 +896,23 @@ async loadCounts() {
 }
 
 .action-btn.ghost {
-	background: #ffffff;
-	color: #475569;
-	border: 1rpx solid #e2e8f0;
+	background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+	color: #ffffff;
+	border: none;
+	box-shadow: 0 6rpx 16rpx rgba(37, 99, 235, 0.3);
 }
 
 .action-btn.primary {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 	color: #ffffff;
-	box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.3);
+	box-shadow: 0 6rpx 16rpx rgba(37, 99, 235, 0.3);
 }
 
 .result-meta {
-	margin: 0 30rpx 10rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	padding: 16rpx 20rpx;
-	background: #ffffff;
+	background: #FFFFF0;
 	border-radius: 16rpx;
 	display: flex;
 	flex-wrap: wrap;
@@ -897,15 +930,17 @@ async loadCounts() {
 }
 
 .list-container {
-	padding: 20rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 0;
 }
 
 .record-card {
-	background-color: #FFFFFF;
+	background-color: #FFFFF0;
 	padding: 30rpx;
-	border-radius: 20rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	border-radius: $card-radius-lg;
+	margin-bottom: 8rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .record-header {

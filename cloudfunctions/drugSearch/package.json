@@ -1,0 +1,10 @@
+{
+  "name": "drugSearch",
+  "version": "1.0.0",
+  "description": "药材名称搜索云函数（本地查询 + 国家药监局NMPA）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "axios": "^0.27.2"
+  }
+}

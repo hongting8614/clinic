@@ -23,7 +23,7 @@ async testInRecordsAdd() {
         items: [
           {
             drugId: 'test_drug_001',
-            drugName: '测试药品',
+            drugName: '测试药材',
             spec: '10mg*10片',
             unit: '盒',
             manufacturer: '测试厂家',
@@ -95,7 +95,7 @@ async testOutRecordsAdd() {
         items: [
           {
             drugId: 'test_drug_001',
-            drugName: '测试药品',
+            drugName: '测试药材',
             specification: '10mg*10片',
             batch: 'TEST001',
             productionDate: '2025-01-01',
@@ -309,7 +309,7 @@ methods: {
 解决: 重新部署 inRecords 云函数
 ```
 
-### 错误2: "入库单号和药品明细不能为空"
+### 错误2: "入库单号和药材明细不能为空"
 ```
 原因: 必填字段缺失
 解决: 确保 recordNo 和 items 字段存在

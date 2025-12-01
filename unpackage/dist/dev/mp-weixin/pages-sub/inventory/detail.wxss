@@ -1,0 +1,206 @@
+@charset "UTF-8";
+.container.data-v-d261566c {
+  min-height: 100vh;
+  /* 使用与首页/门诊/药材工作台一致的蓝色渐变背景 */
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 120rpx;
+}
+.header-card.data-v-d261566c {
+  /* 顶部盘点单信息：象牙白标题卡片，宽度与其它工作台 header-card 对齐 */
+  max-width: 702rpx;
+  margin: 10rpx auto 8rpx;
+  padding: 22rpx 22rpx 18rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.9) inset, 0 -1rpx 0 rgba(15, 23, 42, 0.06) inset, 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+}
+.row-main.data-v-d261566c {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.record-no.data-v-d261566c {
+  font-size: 30rpx;
+  font-weight: 650;
+  color: #111827;
+}
+.status-tag.data-v-d261566c {
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: #ffffff;
+}
+.status-tag.status-draft.data-v-d261566c {
+  background: #9ca3af;
+}
+.status-tag.status-in_progress.data-v-d261566c {
+  background: #f59e0b;
+}
+.status-tag.status-completed.data-v-d261566c {
+  background: #22c55e;
+}
+.row-sub.data-v-d261566c {
+  font-size: 26rpx;
+  color: #4b5563;
+  margin-top: 4rpx;
+}
+.label.data-v-d261566c {
+  color: #9ca3af;
+}
+.value.data-v-d261566c {
+  color: #111827;
+}
+.summary-card.data-v-d261566c {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 20rpx 18rpx;
+  background: #FFFFF0;
+  border-radius: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.summary-item.data-v-d261566c {
+  flex: 1;
+  text-align: center;
+}
+.summary-label.data-v-d261566c {
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+.summary-value.data-v-d261566c {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-top: 6rpx;
+  color: #1d4ed8;
+}
+.summary-value.positive.data-v-d261566c {
+  color: #16a34a;
+}
+.summary-value.negative.data-v-d261566c {
+  color: #f97316;
+}
+.detail-list.data-v-d261566c {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+}
+.detail-card.data-v-d261566c {
+  background: #FFFFF0;
+  border-radius: 18rpx;
+  padding: 18rpx 18rpx 14rpx;
+  margin-bottom: 8rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.detail-header.data-v-d261566c {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.drug-name.data-v-d261566c {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+.batch-no.data-v-d261566c {
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+.detail-body.data-v-d261566c {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.line.data-v-d261566c {
+  font-size: 26rpx;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+}
+.input-line .input.data-v-d261566c {
+  flex: 1;
+  height: 52rpx;
+  background: #f3f4f6;
+  border-radius: 26rpx;
+  padding: 0 18rpx;
+  margin-left: 4rpx;
+  margin-right: 4rpx;
+  font-size: 24rpx;
+}
+.unit.data-v-d261566c {
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+.diff.data-v-d261566c {
+  font-weight: 600;
+}
+.diff.positive.data-v-d261566c {
+  color: #16a34a;
+}
+.diff.negative.data-v-d261566c {
+  color: #f97316;
+}
+.diff.neutral.data-v-d261566c {
+  color: #6b7280;
+}
+.remark-line.data-v-d261566c {
+  margin-top: 4rpx;
+}
+.remark-input.data-v-d261566c {
+  flex: 1;
+  margin-left: 4rpx;
+  height: 52rpx;
+  border-radius: 26rpx;
+  background: #f9fafb;
+  padding: 0 18rpx;
+  font-size: 24rpx;
+}
+.empty-state.data-v-d261566c {
+  padding: 140rpx 0 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #9ca3af;
+}
+.empty-icon.data-v-d261566c {
+  font-size: 90rpx;
+  margin-bottom: 16rpx;
+}
+.empty-text.data-v-d261566c {
+  font-size: 32rpx;
+  margin-bottom: 8rpx;
+}
+.empty-hint.data-v-d261566c {
+  font-size: 26rpx;
+  color: #cbd5e1;
+}
+.footer-bar.data-v-d261566c {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10rpx 24rpx 28rpx;
+  background: rgba(248, 250, 252, 0.96);
+  display: flex;
+  gap: 12rpx;
+}
+.footer-btn.data-v-d261566c {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+.footer-btn.ghost.data-v-d261566c {
+  background: #ffffff;
+  color: #4b5563;
+  border: 1rpx solid #e5e7eb;
+}
+.footer-btn.primary.data-v-d261566c {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  box-shadow: 0 8rpx 20rpx rgba(0, 160, 255, 0.3);
+}

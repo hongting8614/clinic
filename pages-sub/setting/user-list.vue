@@ -9,16 +9,16 @@
     
     <!-- 页面内容 -->
     <view v-else-if="isAuthorized" class="page-content">
-    <!-- 页面标题 -->
-    <view class="page-header">
-      <text class="header-title">用户管理</text>
-      <button class="btn-add" @click="showAddDialog">
-        <text class="icon">+</text> 添加用户
+    <!-- 顶部工具栏：当前角色 + 添加按钮 -->
+    <view class="page-toolbar toolbar-light">
+      <text class="toolbar-role">当前角色：{{ currentRoleText }}</text>
+      <button class="btn-add btn-primary" @click="showAddDialog">
+        <text class="btn-add-text">添加用户</text>
       </button>
     </view>
     
-    <!-- 统计卡片 -->
-    <view class="stats-card">
+    <!-- 统计卡片：仅在有用户时显示 -->
+    <view class="stats-card" v-if="totalUsers > 0" style="background-color: #f9f9f9; padding: 16px; border-bottom: 1px solid #ddd;">
       <view class="stat-item">
         <text class="stat-value">{{ totalUsers }}</text>
         <text class="stat-label">总用户数</text>
@@ -33,8 +33,8 @@
       </view>
     </view>
     
-    <!-- 筛选栏 -->
-    <view class="filter-bar">
+    <!-- 筛选栏：仅在有用户时显示 -->
+    <view class="filter-bar" v-if="totalUsers > 0" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: #f9f9f9; border-bottom: 1px solid #ddd;">
       <picker 
         :range="roleFilter" 
         :range-key="'text'"
@@ -82,14 +82,14 @@
               </text>
             </view>
             <view class="user-meta">
-              <text class="meta-item">🆔 实名：{{ user.realName || '未设置' }}</text>
+              <text class="meta-item">实名：{{ user.realName || '未设置' }}</text>
             </view>
             <view class="user-meta">
-              <text class="meta-item">📱 {{ user.phone }}</text>
+              <text class="meta-item">{{ user.phone }}</text>
             </view>
             <view class="user-meta" v-if="user.lastLogin">
               <text class="meta-item">
-                🕒 最近登录: {{ formatTime(user.lastLogin) }}
+                最近登录: {{ formatTime(user.lastLogin) }}
               </text>
             </view>
           </view>
@@ -127,15 +127,15 @@
           </view>
           
           <view class="edit-form-body">
-            <view class="inline-form-item">
-              <text class="inline-label">用户OpenID</text>
-              <input 
-                v-model="form.openid" 
-                class="inline-input"
-                placeholder="请输入微信OpenID"
-                disabled
-              />
-            </view>
+            <!-- 改为展示微信号，方便管理员按微信号管理用户 -->
+          <view class="inline-form-item">
+            <text class="inline-label">微信号</text>
+            <input 
+              v-model="form.wechatId" 
+              class="inline-input"
+              placeholder="请输入微信号（或唯一备注名）"
+            />
+          </view>
             
             <view class="inline-form-item">
               <text class="inline-label">姓名 *</text>
@@ -198,51 +198,49 @@
           
           <view class="edit-form-footer">
             <button class="inline-btn btn-cancel" @click="cancelEdit">取消</button>
-            <button class="inline-btn btn-save" @click="submitForm">保存</button>
+            <button class="inline-btn btn-save" @click="submitForm">保存修改</button>
           </view>
         </view>
       </view>
-      
-      <!-- 空状态 -->
-      <view v-if="filteredUserList.length === 0" class="empty-state">
-        <text class="empty-icon">👤</text>
-        <text class="empty-text">暂无用户</text>
-      </view>
     </view>
     
-    <!-- 添加/编辑用户弹窗 - 优化版 -->
-    <u-popup 
-      v-model="showDialog" 
-      mode="center" 
-      :border-radius="24"
-      :closeable="true"
-      :close-on-click-overlay="false"
-    >
-      <view class="dialog-new">
+    <!-- 空状态：系统尚无任何用户 -->
+    <view v-if="totalUsers === 0" class="empty-state">
+      <text class="empty-icon">👤</text>
+      <text class="empty-text">当前还没有用户，请点击右上角“添加用户”</text>
+    </view>
+    
+    <!-- 空状态：有用户，但当前筛选无结果 -->
+    <view v-else-if="filteredUserList.length === 0" class="empty-state tip">
+      <text class="empty-text">当前筛选条件下暂无用户，请调整筛选条件</text>
+    </view>
+    
+    <!-- 添加/编辑用户弹层：仅在 showDialog 为 true 时显示 -->
+    <view v-if="showDialog" class="dialog-mask" @tap="closeDialog">
+      <view class="dialog-new" @tap.stop>
         <!-- 头部 -->
         <view class="dialog-header-new">
           <view class="header-icon">
             <text class="icon-text">{{ isEdit ? '✏️' : '👤' }}</text>
           </view>
-          <text class="dialog-title-new">{{ isEdit ? '编辑用户信息' : '添加新用户' }}</text>
+          <text class="dialog-title-new">{{ isEdit ? '编辑用户信息' : '用户信息' }}</text>
           <text class="dialog-subtitle">{{ isEdit ? '修改用户的基本信息' : '填写用户的基本信息' }}</text>
         </view>
         
         <!-- 表单区域 -->
         <view class="dialog-body-new">
-          <!-- OpenID -->
+          <!-- 微信号（供管理员按微信号管理权限） -->
           <view class="form-group">
             <view class="form-label-new">
-              <text class="label-text">OpenID</text>
+              <text class="label-text">微信号</text>
               <text class="required">*</text>
             </view>
             <input 
-              v-model="form.openid" 
+              v-model="form.wechatId" 
               class="form-input-new"
-              placeholder="粘贴微信OpenID"
-              :disabled="isEdit"
+              placeholder="请输入微信号（或管理员录入的备注名）"
             />
-            <text class="form-hint" v-if="!isEdit">从开发者工具控制台获取</text>
+            <text class="form-hint" v-if="!isEdit">请填写管理员在后台预留的微信号，用于绑定权限</text>
           </view>
           
           <!-- 姓名和实名 -->
@@ -252,24 +250,24 @@
                 <text class="label-text">姓名</text>
                 <text class="required">*</text>
               </view>
-            <input 
-              v-model="form.name" 
+              <input 
+                v-model="form.name" 
                 class="form-input-new"
                 placeholder="输入姓名"
-            />
-          </view>
-          
+              />
+            </view>
+            
             <view class="form-group half">
               <view class="form-label-new">
                 <text class="label-text">实名</text>
                 <text class="required">*</text>
               </view>
-            <input 
+              <input 
                 v-model="form.realName" 
                 class="form-input-new"
                 placeholder="2-10个字"
                 maxlength="10"
-            />
+              />
             </view>
           </view>
           
@@ -306,8 +304,8 @@
                   <view class="role-info">
                     <text class="role-name">{{ form.roleText }}</text>
                     <text class="role-desc-short">{{ getRoleDescriptionShort(form.role) }}</text>
-              </view>
-          </view>
+                  </view>
+                </view>
                 <text class="select-arrow">▼</text>
               </view>
             </picker>
@@ -325,26 +323,14 @@
           </button>
         </view>
       </view>
-    </u-popup>
-    </view>
-    
-    <!-- 未授权提示 -->
-    <view v-else class="unauthorized-container">
-      <view class="unauthorized-content">
-        <text class="unauthorized-icon">🔒</text>
-        <text class="unauthorized-title">需要登录</text>
-        <text class="unauthorized-text">{{ unauthorizedMessage }}</text>
-        <view class="unauthorized-btn" @click="handleGoBack">
-          <text class="btn-text">返回</text>
-        </view>
-      </view>
     </view>
   </view>
+</view>
 </template>
 
 <script>
 import { authMixin, login } from '@/utils/auth.js'
-
+import { hasPermission, ROLE_TEXT } from '@/utils/permission.js'
 export default {
   mixins: [authMixin],
   
@@ -384,15 +370,17 @@ export default {
       isEdit: false,
       editingUserId: null, // 正在编辑的用户ID
       
-      // 登录检查
+      // 登录检查与权限
       isChecking: true,
       isAuthorized: false,
       unauthorizedMessage: '请先登录',
+      noPermission: false,
       
       // 表单
       form: {
         _id: '',
-        openid: '',
+        openid: '', // 仅用于展示/兼容，新增时不再手动填写
+        wechatId: '',
         name: '',
         realName: '',
         nickname: '',
@@ -404,9 +392,8 @@ export default {
       roleOptions: [
         { value: 'admin', text: '管理员', desc: '拥有全部权限，包括用户管理' },
         { value: 'project_manager', text: '项目经理', desc: '有入库复核功能，可查看各种报表，可管理用户' },
-        { value: 'doctor', text: '医生', desc: '无管理员功能，无入库复核功能' },
-        { value: 'pharmacy', text: '药房人员', desc: '可进行日常出入库操作' },
-        { value: 'viewer', text: '查看者', desc: '仅可查看数据' }
+        { value: 'doctor', text: '医务人员', desc: '负责门诊登记和出库，无系统管理权限' },
+        { value: 'viewer', text: '查看者', desc: '仅可查看数据，无编辑权限' }
       ]
     }
   },
@@ -424,22 +411,38 @@ export default {
     // 角色选择器当前索引
     roleIndex() {
       return this.roleOptions.findIndex(item => item.value === this.form.role)
+    },
+    
+    // 当前登录角色的中文名称
+    currentRoleText() {
+      const role = this.userInfo?.role
+      if (!role) return '未登录'
+      return ROLE_TEXT[role] || '未知角色'
     }
   },
   
   async onLoad() {
-    // 先检查登录状态，避免页面闪烁
+    // 先检查登录状态
     await this.checkAuth()
     
     if (!this.isAuthorized) {
-      // 未授权，不加载数据
+      // 未登录或登录态异常
+      this.unauthorizedMessage = '请先登录后再访问用户管理'
       return
     }
     
-    // 获取当前用户openid
-    this.currentUserOpenid = this.userInfo.openid
+    // 检查是否有用户管理权限（仅管理员、项目经理）
+    const role = this.userInfo?.role
+    if (!role || !hasPermission(role, 'user.list')) {
+      this.noPermission = true
+      this.unauthorizedMessage = '仅管理员和项目经理可以查看和管理用户列表'
+      return
+    }
     
-    // 加载用户列表
+    // 有权限，加载数据
+    this.noPermission = false
+    this.isAuthorized = true
+    this.currentUserOpenid = this.userInfo.openid
     this.loadUserList()
   },
   
@@ -448,39 +451,28 @@ export default {
     async checkAuth() {
       this.isChecking = true
       
-      // 先检查本地是否有用户信息
-      let userInfo = uni.getStorageSync('userInfo')
-      
-      // 如果没有用户信息，尝试自动登录
-      if (!userInfo) {
-        try {
-          const result = await login()
-          
-          if (result.success) {
-            userInfo = result.userInfo
-          } else {
-            this.isChecking = false
-            this.isAuthorized = false
-            this.unauthorizedMessage = result.message || '请先登录'
-            return
-          }
-        } catch (err) {
-          console.error('登录失败:', err)
+      // 强制刷新一次登录信息，避免使用过期的本地缓存角色
+      let userInfo = null
+      try {
+        const result = await login()
+        
+        if (result.success) {
+          userInfo = result.userInfo
+        } else {
           this.isChecking = false
           this.isAuthorized = false
-          this.unauthorizedMessage = '登录失败，请重试'
+          this.unauthorizedMessage = result.message || '请先登录'
           return
         }
-      }
-      
-      // 检查权限（管理员和项目经理）
-      if (!userInfo) {
+      } catch (err) {
+        console.error('登录失败:', err)
         this.isChecking = false
         this.isAuthorized = false
-        this.unauthorizedMessage = '请先登录'
+        this.unauthorizedMessage = '登录失败，请重试'
         return
       }
       
+      // 检查权限（管理员和项目经理）
       if (userInfo.role !== 'admin' && userInfo.role !== 'project_manager') {
         this.isChecking = false
         this.isAuthorized = false
@@ -510,16 +502,23 @@ export default {
         })
         
         uni.hideLoading()
-        
-        if (res.result.code === 0) {
-          this.userList = res.result.data
-          this.updateStats()
-        } else {
+        const result = res.result || {}
+
+        if (result.code !== 0) {
+          this.unauthorizedMessage = result.message || '获取用户列表失败'
+          if (result.code === 403) {
+            // 云函数层面也做了权限校验
+            this.noPermission = true
+          }
           uni.showToast({
-            title: res.result.message || '加载失败',
+            title: result.message || '获取用户列表失败',
             icon: 'none'
           })
+          return
         }
+        
+        this.userList = result.data || []
+        this.updateStats()
       } catch (err) {
         uni.hideLoading()
         console.error('加载用户列表失败:', err)
@@ -588,6 +587,7 @@ export default {
       this.form = {
         _id: user._id,
         openid: user.openid,
+        wechatId: user.wechatId || '',
         name: user.name,
         realName: user.realName || user.name,
         nickname: user.nickname || '',
@@ -601,18 +601,20 @@ export default {
     cancelEdit() {
       this.editingUserId = null
       this.form = {
-        openid: '',
+        _id: '',
+        wechatId: '',
         name: '',
         realName: '',
         nickname: '',
         phone: '',
-        role: 'pharmacy',
-        roleText: '药房人员'
+        role: 'viewer',
+        roleText: '查看者'
       }
     },
     
     // 切换用户状态
     toggleUserStatus(user) {
+      // 仍然按 openid 防止禁用自己的账号
       if (user.openid === this.currentUserOpenid) {
         uni.showToast({
           title: '不能禁用自己的账号',
@@ -773,17 +775,17 @@ export default {
         realName: '',
         nickname: '',
         phone: '',
-        role: 'pharmacy',
-        roleText: '药房人员'
+        role: 'viewer',
+        roleText: '查看者'
       }
     },
     
     // 提交表单
     async submitForm() {
       // 验证表单
-      if (!this.form.openid || !this.form.name || !this.form.realName || !this.form.phone) {
+      if (!this.form.wechatId || !this.form.name || !this.form.realName || !this.form.phone) {
         uni.showToast({
-          title: '请填写完整信息',
+          title: '请填写完整信息（微信号、姓名、实名、手机号）',
           icon: 'none'
         })
         return
@@ -823,7 +825,8 @@ export default {
         const res = await wx.cloud.callFunction({
           name: 'addUser',
           data: {
-            openid: this.form.openid,
+            // 新增用户时只需提供 wechatId，openid 将在首次登录时自动绑定
+            wechatId: this.form.wechatId,
             name: this.form.name,
             realName: this.form.realName,
             nickname: this.form.nickname || this.form.name,
@@ -940,7 +943,7 @@ export default {
 <style lang="scss" scoped>
 .user-management {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: #f5f6f8;
   padding-bottom: 30rpx;
 }
 
@@ -950,7 +953,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f7fa;
+  background: #f5f6f8;
   
   .checking-content {
     text-align: center;
@@ -968,7 +971,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f7fa;
+  background: #f5f6f8;
   padding: 40rpx;
   
   .unauthorized-content {
@@ -1021,36 +1024,39 @@ export default {
       }
     }
   }
+
+  .edit-form-footer {
+    margin-top: 12rpx;
+  }
 }
 
-// 页面标题
-.page-header {
+// 顶部工具栏：改为白色圆角卡片，统一风格
+.page-toolbar {
+  margin: 20rpx 24rpx 10rpx;
+  padding: 18rpx 22rpx;
+  background: #ffffff;
+  border-radius: 26rpx;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 30rpx;
-  background: #fff;
-  
-  .header-title {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: #333;
+  justify-content: space-between;
+  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.08);
+
+  .toolbar-role {
+    font-size: 26rpx;
+    color: #4b5563;
   }
-  
+
   .btn-add {
-    display: flex;
-    align-items: center;
-    padding: 12rpx 24rpx;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    border-radius: 50rpx;
-    font-size: 28rpx;
+    min-width: 180rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    padding: 0 26rpx;
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    color: #ffffff;
+    border-radius: 999rpx;
+    font-size: 26rpx;
     border: none;
-    
-    .icon {
-      font-size: 32rpx;
-      margin-right: 8rpx;
-    }
+    text-align: center;
   }
 }
 
@@ -1247,11 +1253,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 100rpx 0;
+  padding: 40rpx 0; // 再向上收紧，使头像更靠上
   
   .empty-icon {
-    font-size: 120rpx;
-    margin-bottom: 20rpx;
+    font-size: 96rpx;      // 略微缩小头像
+    margin-bottom: 8rpx;   // 头像和提示文字更紧凑
   }
   
   .empty-text {
@@ -1399,16 +1405,15 @@ export default {
 
 // 原地编辑表单
 .inline-edit-form {
-  margin-top: 24rpx;
-  padding-top: 24rpx;
+  margin-top: 12rpx;
   border-top: 2rpx solid #e9ecef;
   background: #fafbfc;
-      border-radius: 12rpx;
-  padding: 24rpx;
+  border-radius: 12rpx;
+  padding: 16rpx;
   animation: slideDown 0.3s ease;
   
   .edit-form-header {
-    margin-bottom: 20rpx;
+    margin-bottom: 12rpx;
     
     .edit-form-title {
       font-size: 32rpx;
@@ -1426,11 +1431,11 @@ export default {
   
   .edit-form-body {
     .inline-form-item {
-      margin-bottom: 20rpx;
+      margin-bottom: 14rpx;
       
       .inline-label {
         display: block;
-      font-size: 28rpx;
+        font-size: 26rpx;
         font-weight: 600;
         color: #333;
         margin-bottom: 10rpx;
@@ -1438,11 +1443,11 @@ export default {
       
       .inline-input {
         width: 100%;
-        padding: 20rpx 16rpx;
+        padding: 16rpx 14rpx;
         background: #fff;
         border: 2rpx solid #e9ecef;
         border-radius: 12rpx;
-        font-size: 30rpx;
+        font-size: 28rpx;
         color: #333;
         transition: all 0.3s;
         
@@ -1461,11 +1466,11 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20rpx 16rpx;
+        padding: 16rpx 14rpx;
         background: #fff;
         border: 2rpx solid #e9ecef;
         border-radius: 12rpx;
-        font-size: 30rpx;
+        font-size: 28rpx;
         color: #333;
         font-weight: 500;
         
@@ -1552,50 +1557,51 @@ export default {
 
 // ============ 新版弹窗样式 ============
 .dialog-new {
-  width: 680rpx;
+  width: 640rpx; 
   background: #ffffff;
-  border-radius: 28rpx;
+  border-radius: 24rpx;
   overflow: hidden;
-  box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8rpx 32rpx rgba(15, 23, 42, 0.16);
+  margin: -190rpx auto 40rpx; // 弹窗整体再上移一点
 }
 
 // 头部区域
 .dialog-header-new {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 48rpx 32rpx 40rpx;
+  background: linear-gradient(135deg, #6d8bff 0%, #8e7bff 100%);
+  padding: 32rpx 32rpx 24rpx;
   text-align: center;
   position: relative;
   
   .header-icon {
-    width: 88rpx;
-    height: 88rpx;
-    background: rgba(255, 255, 255, 0.2);
+    width: 72rpx;
+    height: 72rpx;
+    background: rgba(255, 255, 255, 0.18);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20rpx;
+    margin: 0 auto 14rpx;
     backdrop-filter: blur(10rpx);
-    border: 3rpx solid rgba(255, 255, 255, 0.3);
+    border: 2rpx solid rgba(255, 255, 255, 0.3);
     
     .icon-text {
-      font-size: 48rpx;
+      font-size: 40rpx;
     }
   }
   
   .dialog-title-new {
     display: block;
-    font-size: 40rpx;
-    font-weight: bold;
+    font-size: 34rpx;
+    font-weight: 700;
     color: #ffffff;
-    margin-bottom: 12rpx;
+    margin-bottom: 6rpx;
     letter-spacing: 1rpx;
   }
   
   .dialog-subtitle {
     display: block;
-    font-size: 26rpx;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 24rpx;
+    color: rgba(255, 255, 255, 0.82);
   }
 }
 

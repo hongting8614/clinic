@@ -8,25 +8,25 @@ cloud.init({
 const db = cloud.database()
 
 exports.main = async (event, context) => {
-  const { action, barcode } = event
+  const { action, barcode, drugName, specification, unit } = event
   const startTime = Date.now()
   
   console.log('========================================')
-  console.log('🔍 药品条形码查询云函数')
+  console.log('🔍 药材条形码查询云函数')
   console.log('操作:', action)
   console.log('条形码:', barcode)
+  console.log('药材名称:', drugName || '-')
   console.log('时间:', new Date().toISOString())
   console.log('========================================')
   
   try {
     let result
     
-    switch (action) {
-      case 'queryByBarcode':
-        result = await queryByBarcode(barcode)
-        break
-      default:
-        result = { success: false, message: `未知操作: ${action}` }
+    // 只支持条形码查询
+    if (action === 'queryByBarcode') {
+      result = await queryByBarcode(barcode)
+    } else {
+      result = { success: false, message: `未知操作: ${action}` }
     }
     
     const duration = Date.now() - startTime
@@ -62,7 +62,7 @@ exports.main = async (event, context) => {
 }
 
 /**
- * 查询药品信息（三级查询策略）
+ * 查询药材信息（三级查询策略）
  */
 async function queryByBarcode(barcode) {
   if (!barcode) {
@@ -73,27 +73,27 @@ async function queryByBarcode(barcode) {
   console.log('📋 开始三级查询策略')
   console.log('条形码:', barcode)
   
-  // 第一级：查询本地药品档案
-  console.log('🔍 [第1级] 查询本地药品档案...')
+  // 第一级：查询本地药材档案
+  console.log('🔍 [第1级] 查询本地药材档案...')
   let drugInfo = await queryLocalDrugs(barcode)
   if (drugInfo) {
-    console.log('✅ [第1级] 本地药品档案命中!')
-    console.log('药品名称:', drugInfo.name)
+    console.log('✅ [第1级] 本地药材档案命中!')
+    console.log('药材名称:', drugInfo.name)
     return {
       success: true,
       data: drugInfo,
       source: 'local',
-      message: '从本地药品档案获取'
+      message: '从本地药材档案获取'
     }
   }
-  console.log('❌ [第1级] 本地药品档案未找到')
+  console.log('❌ [第1级] 本地药材档案未找到')
   
   // 第二级：查询缓存数据库
   console.log('🔍 [第2级] 查询缓存数据库...')
   drugInfo = await queryCache(barcode)
   if (drugInfo) {
     console.log('✅ [第2级] 缓存数据命中!')
-    console.log('药品名称:', drugInfo.name)
+    console.log('药材名称:', drugInfo.name)
     return {
       success: true,
       data: drugInfo,
@@ -103,41 +103,48 @@ async function queryByBarcode(barcode) {
   }
   console.log('❌ [第2级] 缓存数据库未找到')
   
-  // 第三级：调用第三方API
-  console.log('🔍 [第3级] 调用第三方API...')
-  drugInfo = await queryGS1China(barcode)
-  if (drugInfo) {
-    console.log('✅ [第3级] 第三方API查询成功!')
-    console.log('药品名称:', drugInfo.name)
-    console.log('数据来源:', drugInfo.apiSource || 'unknown')
-    
-    // 保存到缓存数据库
-    console.log('💾 保存到缓存数据库...')
-    await saveToCache(drugInfo)
+  // 第三级：条形码映射表（含完整药材信息）
+  console.log('🔍 [第3级] 查询条形码映射表...')
+  const mapping = await queryBarcodeMapping(barcode)
+  if (mapping) {
+    console.log('✅ [第3级] 映射表命中!')
+    console.log('药材名称:', mapping.drugName)
     
     return {
       success: true,
-      data: drugInfo,
-      source: 'gs1',
-      message: '从第三方API获取'
+      data: {
+        name: mapping.drugName,
+        specification: mapping.specification || '',
+        unit: mapping.unit || '盒',
+        manufacturer: mapping.manufacturer || '',
+        barcode: barcode,
+        isPrescription: mapping.isPrescription || false,
+        prescriptionType: mapping.prescriptionType || '非处方药',
+        approvalNumber: mapping.approvalNumber || ''
+      },
+      source: 'mapping',
+      message: '从条形码映射表获取'
     }
   }
-  console.log('❌ [第3级] 第三方API未找到')
+  console.log('❌ [第3级] 映射表未找到')
   
-  // 未找到，返回失败
-  console.log('⚠️ 三级查询全部失败，未找到药品信息')
-  console.log('建议: 用户需要手动填写药品信息')
+  // 未找到，提示用户首次录入
+  console.log('💡 未找到药材信息，需要首次录入')
+  console.log('📋 建议用户：')
+  console.log('   1. 从已有药材中选择')
+  console.log('   2. 输入药材名称查询NMPA')
+  console.log('   3. 手动新建药材档案')
   
   return {
     success: false,
-    message: '未找到药品信息',
+    message: '未找到药材信息',
     barcode: barcode,
-    suggestion: '请手动填写药品信息，填写后将自动保存到系统'
+    suggestion: '请手动填写药材信息，填写后将自动保存到系统'
   }
 }
 
 /**
- * 查询本地药品档案
+ * 查询本地药材档案
  */
 async function queryLocalDrugs(barcode) {
   try {
@@ -160,7 +167,7 @@ async function queryLocalDrugs(barcode) {
     
     return null
   } catch (err) {
-    console.error('查询本地药品失败:', err)
+    console.error('查询本地药材失败:', err)
     return null
   }
 }
@@ -204,154 +211,6 @@ async function queryCache(barcode) {
     return null
   } catch (err) {
     console.error('查询缓存失败:', err)
-    return null
-  }
-}
-
-/**
- * 查询中国物品编码中心API（GS1中国）
- * 注：由于GS1中国没有公开免费API，这里提供多个备选方案
- */
-async function queryGS1China(barcode) {
-  try {
-    // 方案1：阿里云市场 - 商品条码查询API
-    // 需要在阿里云市场购买并配置APPCODE
-    const ALIYUN_APPCODE = process.env.ALIYUN_APPCODE || ''
-    
-    if (ALIYUN_APPCODE) {
-      console.log('尝试阿里云条码查询API...')
-      try {
-        const response = await axios.get('https://icode.market.alicloudapi.com/getBarcode', {
-          params: { Code: barcode },
-          headers: {
-            'Authorization': `APPCODE ${ALIYUN_APPCODE}`
-          },
-          timeout: 8000
-        })
-        
-        console.log('阿里云API响应:', response.data)
-        
-        if (response.data && response.data.showapi_res_code === 0) {
-          const data = response.data.showapi_res_body
-          return {
-            name: data.goodsName || data.name,
-            specification: data.spec || '',
-            unit: parseUnit(data.spec || ''),
-            manufacturer: data.manuName || data.manufacturer || '',
-            barcode: barcode,
-            category: data.type || '',
-            price: data.price || 0
-          }
-        }
-      } catch (err) {
-        console.error('阿里云API调用失败:', err.message)
-      }
-    }
-    
-    // 方案2：聚合数据API - 商品条码查询
-    const JUHE_API_KEY = process.env.JUHE_API_KEY || ''
-    
-    if (JUHE_API_KEY) {
-      console.log('尝试聚合数据条码查询API...')
-      try {
-        const response = await axios.get('http://apis.juhe.cn/goodsQuery/query', {
-          params: {
-            key: JUHE_API_KEY,
-            barcode: barcode
-          },
-          timeout: 8000
-        })
-        
-        console.log('聚合数据API响应:', response.data)
-        
-        if (response.data && response.data.error_code === 0) {
-          const data = response.data.result
-          return {
-            name: data.goodsname || data.name,
-            specification: data.spec || '',
-            unit: parseUnit(data.spec || ''),
-            manufacturer: data.manuname || data.manufacturer || '',
-            barcode: barcode,
-            category: data.type || '',
-            price: data.price || 0
-          }
-        }
-      } catch (err) {
-        console.error('聚合数据API调用失败:', err.message)
-      }
-    }
-    
-    // 方案3：极速数据API - 商品条码查询
-    const JISUAPI_APPKEY = process.env.JISUAPI_APPKEY || ''
-    
-    if (JISUAPI_APPKEY) {
-      console.log('📡 [API-3] 尝试极速数据API...')
-      console.log('AppKey:', JISUAPI_APPKEY.substring(0, 8) + '...')
-      try {
-        const response = await axios.get('https://api.jisuapi.com/barcode/query', {
-          params: {
-            appkey: JISUAPI_APPKEY,
-            barcode: barcode
-          },
-          timeout: 8000
-        })
-        
-        console.log('📡 [API-3] 极速数据API响应状态:', response.data.status)
-        console.log('📡 [API-3] 响应消息:', response.data.msg || 'success')
-        
-        if (response.data && response.data.status === '0' && response.data.result) {
-          const data = response.data.result
-          console.log('✅ [API-3] 极速数据API查询成功!')
-          console.log('药品名称:', data.name || data.goodsname)
-          
-          return {
-            name: data.name || data.goodsname,
-            specification: data.spec || data.specification || '',
-            unit: parseUnit(data.spec || data.specification || ''),
-            manufacturer: data.manufacturer || data.manuname || '',
-            barcode: barcode,
-            category: data.category || data.type || '',
-            price: data.price || 0,
-            apiSource: 'jisuapi'
-          }
-        } else {
-          console.log('❌ [API-3] 极速数据API未找到数据')
-        }
-      } catch (err) {
-        console.error('❌ [API-3] 极速数据API调用失败')
-        console.error('错误信息:', err.message)
-        if (err.response) {
-          console.error('响应状态:', err.response.status)
-          console.error('响应数据:', err.response.data)
-        }
-      }
-    } else {
-      console.log('⏭️ [API-3] 跳过极速数据API（未配置AppKey）')
-    }
-    
-    // 如果没有配置API密钥，提示用户
-    if (!ALIYUN_APPCODE && !JUHE_API_KEY && !JISUAPI_APPKEY) {
-      console.warn('========================================')
-      console.warn('⚠️ 未配置任何第三方API密钥')
-      console.warn('========================================')
-      console.warn('请在云函数环境变量中配置以下任意一个：')
-      console.warn('1. JISUAPI_APPKEY  - 极速数据（推荐）')
-      console.warn('2. JUHE_API_KEY    - 聚合数据')
-      console.warn('3. ALIYUN_APPCODE  - 阿里云市场')
-      console.warn('========================================')
-      console.warn('配置步骤：')
-      console.warn('1. 打开云开发控制台')
-      console.warn('2. 进入云函数 → drugBarcodeQuery → 配置')
-      console.warn('3. 添加环境变量')
-      console.warn('4. 重新部署云函数')
-      console.warn('========================================')
-      console.warn('详细文档: docs/极速数据API配置指南.md')
-      console.warn('========================================')
-    }
-    
-    return null
-  } catch (err) {
-    console.error('查询GS1中国失败:', err.message)
     return null
   }
 }
@@ -403,3 +262,50 @@ function parseUnit(specification) {
   return '盒'
 }
 
+// NMPA查询相关代码已删除，使用纯本地方案
+
+/**
+ * 查询条形码映射表
+ */
+async function queryBarcodeMapping(barcode) {
+  try {
+    const res = await db.collection('barcode_mapping')
+      .where({ barcode: barcode })
+      .get()
+    
+    if (res.data && res.data.length > 0) {
+      return res.data[0]
+    }
+    return null
+  } catch (err) {
+    console.error('查询映射表失败:', err.message)
+    return null
+  }
+}
+
+/**
+ * 创建条形码映射
+ */
+async function createBarcodeMapping(barcode, drugInfo) {
+  try {
+    await db.collection('barcode_mapping').add({
+      data: {
+        barcode: barcode,
+        drugName: drugInfo.name,
+        specification: drugInfo.specification || '',
+        unit: drugInfo.unit || '盒',
+        manufacturer: drugInfo.manufacturer || '',
+        approvalNumber: drugInfo.approvalNumber || '',
+        isPrescription: drugInfo.isPrescription || false,
+        prescriptionType: drugInfo.prescriptionType || '非处方药',
+        source: 'manual',  // 手动录入
+        createTime: db.serverDate()
+      }
+    })
+    console.log('✅ 条形码映射创建成功')
+    return true
+  } catch (err) {
+    console.error('创建映射失败:', err.message)
+    return false
+  }
+}

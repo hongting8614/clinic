@@ -116,7 +116,7 @@ exports.main = async (event, context) => {
       let migrated = 0;
       for (const stock of stocks.data) {
         try {
-          // 获取药品信息
+          // 获取药材信息
           const drugRes = await db.collection('drugs').doc(stock.drugId).get();
           const drug = drugRes.data;
           

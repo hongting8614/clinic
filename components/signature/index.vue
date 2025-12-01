@@ -191,115 +191,43 @@ export default {
 			}
 		})
 	},
-	
+		
 	touchStart(e) {
 		if (!this.ctx) {
 			console.error('Canvas未初始化')
 			return
 		}
-		
-		// ✅ 简化方案：直接使用 touches[0] 的坐标，不做复杂转换
 		const touch = e.touches[0]
-		
-		// 使用最简单的方式：pageX/pageY（相对于页面）
-		// 然后实时获取 Canvas 位置来计算相对坐标
-		const pageX = touch.pageX || touch.x || touch.clientX || 0
-		const pageY = touch.pageY || touch.y || touch.clientY || 0
-		
-		console.log('👆 触摸开始:', { pageX, pageY })
-		
-		// 同步获取 Canvas 位置并立即绘制
-		uni.createSelectorQuery()
-			.in(this)
-			.select('#signatureCanvas')
-			.boundingClientRect()
-			.exec((res) => {
-				if (!res || !res[0]) {
-					console.error('❌ 获取Canvas失败')
-					return
-				}
-				
-				const rect = res[0]
-				
-				// 🎯 优先使用小程序提供的相对坐标（最准确）
-				let x = typeof touch.x === 'number' ? touch.x : undefined
-				let y = typeof touch.y === 'number' ? touch.y : undefined
-				
-				// 兜底：使用 pageX/pageY 与 rect 计算
-				if (x === undefined || y === undefined) {
-					x = pageX - rect.left
-					y = pageY - rect.top
-				}
-				
-				// 保存状态
-				this.isDrawing = true
-				this.lastX = x
-				this.lastY = y
-				
-			// 开始绘制
-			this.ctx.beginPath()
-			this.ctx.moveTo(x, y)
-			
-			// 旧版API需要调用draw()
-			if (!this.canvas) {
-				this.ctx.draw(true)
-			}
-			
-			console.log('✅ 开始绘制:', { 
-				pageX, 
-				pageY, 
-				rectLeft: rect.left, 
-				rectTop: rect.top,
-				touchX: touch.x,
-				touchY: touch.y,
-				x, 
-				y,
-				canvasWidth: rect.width,
-				canvasHeight: rect.height,
-				使用旧版API: !this.canvas
-			})
-		})
-},
+		// 直接使用相对坐标，保证连贯性
+		const x = typeof touch.x === 'number' ? touch.x : 0
+		const y = typeof touch.y === 'number' ? touch.y : 0
+		this.isDrawing = true
+		this.lastX = x
+		this.lastY = y
+		this.ctx.beginPath()
+		this.ctx.moveTo(x, y)
+		if (!this.canvas) {
+			this.ctx.draw(true)
+		}
+	},
 	
 	touchMove(e) {
 		if (!this.isDrawing || !this.ctx) return
-		
 		const touch = e.touches[0]
-		const pageX = touch.pageX || touch.x || touch.clientX || 0
-		const pageY = touch.pageY || touch.y || touch.clientY || 0
-		
-		// 🎯 实时获取 Canvas 位置（防止滚动影响）
-		uni.createSelectorQuery()
-			.in(this)
-			.select('#signatureCanvas')
-			.boundingClientRect()
-			.exec((res) => {
-				if (!res || !res[0] || !this.isDrawing) return
-				
-				const rect = res[0]
-				// 优先使用相对坐标 touch.x/touch.y
-				let x = typeof touch.x === 'number' ? touch.x : undefined
-				let y = typeof touch.y === 'number' ? touch.y : undefined
-				if (x === undefined || y === undefined) {
-					x = pageX - rect.left
-					y = pageY - rect.top
-				}
-				
-			// 绘制线条
-			this.ctx.lineTo(x, y)
-			this.ctx.stroke()
-			
-			// 旧版API需要调用draw()
-			if (!this.canvas) {
-				this.ctx.draw(true)
-			}
-			
-			// 更新状态
-			this.lastX = x
-			this.lastY = y
-			this.hasDrawn = true
-		})
-},
+		const x = typeof touch.x === 'number' ? touch.x : 0
+		const y = typeof touch.y === 'number' ? touch.y : 0
+		// 每次从上一个点连到当前点，形成连续笔迹
+		this.ctx.beginPath()
+		this.ctx.moveTo(this.lastX, this.lastY)
+		this.ctx.lineTo(x, y)
+		this.ctx.stroke()
+		if (!this.canvas) {
+			this.ctx.draw(true)
+		}
+		this.lastX = x
+		this.lastY = y
+		this.hasDrawn = true
+	},
 		
 	touchEnd(e) {
 		this.isDrawing = false
@@ -421,10 +349,10 @@ export default {
 // ==================== 非全屏签名区域 ====================
 .signature-container {
 	width: 100%;
-	height: 60rpx;
-	background-color: #F8F8F8;
-	border: 2rpx dashed #CCCCCC;
-	border-radius: 12rpx;
+	height: 90rpx;
+	background-color: #FFFFFF;
+	border: 2rpx solid #E5E5E5;
+	border-radius: 16rpx;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -443,8 +371,8 @@ export default {
 }
 
 .placeholder-text {
-		font-size: 20rpx;
-	color: #999999;
+		font-size: 24rpx;
+		color: #999999;
 	}
 }
 
@@ -493,16 +421,16 @@ export default {
 	display: flex;
 	flex-direction: column;
 	background-color: #FFFFFF;
-	padding: calc(env(safe-area-inset-top) + 20rpx) 20rpx calc(env(safe-area-inset-bottom) + 220rpx) 20rpx;
+	padding: calc(env(safe-area-inset-top) + 10rpx) 20rpx calc(env(safe-area-inset-bottom) + 180rpx) 20rpx;
 	box-sizing: border-box;
 	overflow: hidden;
-	gap: 20rpx;
+	gap: 16rpx;
 	position: relative;
 }
 
 // 顶部工具栏
 .signature-header {
-	height: 100rpx;
+	height: 88rpx;
 	background-color: #FFFFFF;
 	display: flex;
 	align-items: center;
@@ -544,11 +472,12 @@ export default {
 .signature-canvas-wrapper {
 	flex: 1;
 	min-height: 0;
-	background-color: #FFFFFF;
-	margin: 0;
+	background-color: #FAFAFA;
+	margin: 10rpx 0 0;
 	border-radius: 20rpx;
 	position: relative;
 	overflow: hidden;
+	border: 1rpx solid #E5E5E5;
 
 .signature-canvas {
 	width: 100%;
@@ -569,7 +498,7 @@ export default {
 
 // 底部按钮
 .signature-footer {
-	height: 120rpx;
+	height: 110rpx;
 	background-color: #FFFFFF;
 	display: flex;
 	align-items: center;
@@ -582,8 +511,8 @@ export default {
 
 	button {
 		flex: 1;
-		height: 80rpx;
-		border-radius: 40rpx;
+		height: 72rpx;
+		border-radius: 36rpx;
 		font-size: 28rpx;
 		border: none;
 		

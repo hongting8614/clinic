@@ -5,16 +5,15 @@
 			<view class="header-bg"></view>
 			<view class="header-content">
 				<text class="clinic-name">爱康医务室管理系统</text>
-				<text class="doc-type">北京欢乐谷医务室 · 药品出库单</text>
-				<text class="doc-type-en">DRUG ISSUE FORM</text>
+				<text class="doc-type">北京欢乐谷医务室 · 药材出库单</text>
 			</view>
 		</view>
 		
-		<!-- 园区标识 -->
-		<view class="location-banner" :class="'location-' + record.location">
+		<!-- 园区标识（出库单暂不展示，避免 null 标签） -->
+		<!-- <view class="location-banner" :class="'location-' + record.location">
 			<text class="location-icon">{{ getLocationIcon(record.location) }}</text>
 			<text class="location-name">{{ record.locationName }}</text>
-		</view>
+		</view> -->
 		
 		<!-- 状态流程指示器 -->
 		<view class="status-flow">
@@ -70,11 +69,11 @@
 			</view>
 		</view>
 		
-		<!-- 药品明细卡片 -->
+		<!-- 药材明细卡片 -->
 		<view class="info-card">
 			<view class="card-title">
 				<text class="title-icon">💊</text>
-				<text class="title-text">药品明细</text>
+				<text class="title-text">药材明细</text>
 				<text class="title-count">{{ record.items ? record.items.length : 0 }}种</text>
 			</view>
 			<view class="drug-list">
@@ -83,10 +82,10 @@
 					:key="index"
 					class="drug-item-card"
 				>
-					<!-- 高值药品标识 -->
+					<!-- 高值药材标识 -->
 					<view v-if="item.isHighValue" class="high-value-tag">
 						<text class="tag-icon">💎</text>
-						<text class="tag-text">高值药品</text>
+						<text class="tag-text">高值药材</text>
 					</view>
 					
 					<view class="drug-header">
@@ -326,12 +325,22 @@ export default {
 			uni.showLoading({ title: '加载中...' })
 			
 			try {
-				const data = await callFunction('outRecords', {
+				const res = await callFunction('outRecords', {
 					action: 'getDetail',
 					data: { _id: this.recordId }
 				})
 				
-				this.record = data
+				if (!res || res.success === false) {
+					throw new Error((res && res.message) || '获取详情失败')
+				}
+				// 云函数返回结构为 { success, data: record }
+				this.record = res.data || {}
+				// 确保出库园区名称可用（后端只存编码时前端补全）
+				if (!this.record.locationName) {
+					const loc = this.record.toLocation || this.record.location
+					if (loc === 'land_park') this.record.locationName = '陆园'
+					else if (loc === 'water_park') this.record.locationName = '水园'
+				}
 				
 				// 转换签名图片URL（如果是云存储路径）
 				await this.convertSignatureUrls()
@@ -441,7 +450,7 @@ export default {
 						
 						try {
 							await callFunction('outRecords', {
-								action: 'approve',
+								action: 'complete',
 								data: {
 									_id: this.recordId,
 									receiver: '接收人',
@@ -574,8 +583,9 @@ export default {
 <style>
 .page {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-	padding-bottom: 150rpx;
+	/* 与入/出库表单统一的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 150rpx;
 }
 
 /* 专业医疗表头 - 与入库页相同 */
@@ -664,14 +674,15 @@ export default {
 
 /* 状态流程 - 与入库相同 */
 .status-flow {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 35rpx 50rpx;
-	background: #ffffff;
-	margin: 0 30rpx 25rpx;
-	border-radius: 20rpx;
-	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.08);
+	padding: 30rpx 40rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.12);
 }
 
 .flow-item {
@@ -731,10 +742,12 @@ export default {
 }
 
 /* 状态徽章 */
+
 .status-badge-large {
-	margin: 0 30rpx 30rpx;
-	padding: 20rpx 30rpx;
-	border-radius: 16rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 18rpx 26rpx;
+	border-radius: 20rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -773,12 +786,13 @@ export default {
 
 /* 信息卡片 - 与入库相同 */
 .info-card {
-	background: #ffffff;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	margin: 0 30rpx 25rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
-	border: 1rpx solid #f1f5f9;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 26rpx 26rpx 24rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.12);
+	border: 1rpx solid #e5e7eb;
 }
 
 .card-title {
@@ -842,7 +856,7 @@ export default {
 	font-weight: 600;
 }
 
-/* 药品明细 - 与入库相同 */
+/* 药材明细 - 与入库相同 */
 .drug-list {
 	display: flex;
 	flex-direction: column;
@@ -857,7 +871,7 @@ export default {
 	position: relative;
 }
 
-/* 高值药品标签 */
+/* 高值药材标签 */
 .high-value-tag {
 	position: absolute;
 	top: 15rpx;
@@ -979,28 +993,20 @@ export default {
 	font-size: 36rpx;
 	font-weight: bold;
 	color: #ef4444;
-	font-family: 'DIN Alternate', 'Arial', sans-serif;
 }
 
-/* 签名区域 - 与入库相同 */
 .signature-section {
-	padding: 0 30rpx 30rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 }
 
 .signature-card {
 	background: #ffffff;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	margin-bottom: 25rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
-	border: 1rpx solid #f1f5f9;
-}
-
-.signature-header {
-	display: flex;
-	align-items: center;
-	gap: 12rpx;
-	margin-bottom: 20rpx;
+	border-radius: 22rpx;
+	padding: 26rpx 26rpx 24rpx;
+	margin-bottom: 8rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.12);
+	border: 1rpx solid #e5e7eb;
 }
 
 .sig-icon {
@@ -1040,11 +1046,12 @@ export default {
 
 /* 驳回卡片 - 与入库相同 */
 .reject-card {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 	background: #ffffff;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	margin: 0 30rpx 30rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+	border-radius: 22rpx;
+	padding: 26rpx 26rpx 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.12);
 	border-left: 4rpx solid #ef4444;
 }
 
@@ -1094,15 +1101,16 @@ export default {
 
 /* 接收操作区 - 与入库相同 */
 .review-section {
-	padding: 0 30rpx 30rpx;
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
 }
 
 .review-card {
 	background: #ffffff;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
-	border: 1rpx solid #f1f5f9;
+	border-radius: 22rpx;
+	padding: 26rpx 26rpx 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15,23,42,0.12);
+	border: 1rpx solid #e5e7eb;
 }
 
 .signature-input {
@@ -1140,8 +1148,8 @@ export default {
 	left: 0;
 	right: 0;
 	background: #ffffff;
-	padding: 25rpx 30rpx;
-	box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.08);
+	padding: 22rpx 30rpx 28rpx;
+	box-shadow: 0 -4rpx 16rpx rgba(15,23,42,0.16);
 	display: flex;
 	gap: 20rpx;
 	z-index: 100;
@@ -1152,9 +1160,9 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 10rpx;
+	gap: 8rpx;
 	padding: 22rpx 30rpx;
-	border-radius: 50rpx;
+	border-radius: 999rpx;
 	font-weight: 600;
 	transition: all 0.3s;
 }
@@ -1163,29 +1171,18 @@ export default {
 	transform: scale(0.97);
 }
 
-.btn-approve {
-	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-	box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
-}
-
-.btn-reject {
-	background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-	box-shadow: 0 4rpx 12rpx rgba(239, 68, 68, 0.3);
-}
-
-.btn-edit {
-	background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-	box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3);
+/* 统一青蓝胶囊按钮 */
+.btn-approve,
+.btn-reject,
+.btn-edit,
+.btn-export {
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	box-shadow: 0 6rpx 16rpx rgba(0,160,255,0.25);
 }
 
 .btn-delete {
 	background: #ffffff;
 	border: 2rpx solid #ef4444;
-}
-
-.btn-export {
-	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-	box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
 }
 
 .btn-icon {

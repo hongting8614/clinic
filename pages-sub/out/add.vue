@@ -1,139 +1,152 @@
 <template>
-	<view class="container">
-		<!-- 表头 -->
+	<view class="page">
+		<!-- 页面头部：与入库单保持一致风格 -->
 		<view class="page-header">
-			<view class="page-title">爱康医务室管理系统</view>
-			<view class="page-subtitle">北京欢乐谷医务室 · 药品出库单</view>
-		</view>
-		
-		<!-- 基本信息 -->
-		<view class="form-section">
-			<view class="section-title">基本信息</view>
-			<view class="form-item">
-				<text class="form-label">出库单号</text>
-				<text class="form-value">{{ recordNo || '自动生成' }}</text>
-			</view>
-			<view class="form-item">
-				<text class="form-label">出库时间</text>
-				<text class="form-value">{{ currentTime }}</text>
-			</view>
-			<view class="form-item">
-				<text class="form-label">发放人</text>
-				<text class="form-value">{{ dispenser }}</text>
-			</view>
-			
-			<!-- 园区选择 -->
-			<view class="form-item">
-				<text class="form-label">出库园区 *</text>
-				<picker 
-					:range="locations" 
-					range-key="label"
-					:value="locationIndex"
-					@change="onLocationChange"
-				>
-					<view class="picker-input">
-						{{ currentLocation.label }}
-						<text class="picker-arrow">›</text>
-					</view>
-				</picker>
-			</view>
-			
-			<view class="form-item">
-				<text class="form-label">备注（选填）</text>
-				<input 
-					class="form-input" 
-					v-model="remark" 
-					placeholder="请输入备注"
-				/>
+			<view class="header-content">
+				<text class="header-title">药材出库</text>
+				<text class="header-subtitle">出库日期：{{ currentDate }}</text>
 			</view>
 		</view>
 		
-		<!-- 药品明细 -->
+		<!-- 基本信息卡片：对齐入库单布局 -->
+		<view class="info-card">
+			<view class="info-row">
+				<view class="info-item">
+					<text class="label">单号：</text>
+					<text class="value">{{ recordNo || '自动生成' }}</text>
+				</view>
+				<view class="info-item">
+					<text class="label">发放人：</text>
+					<text class="value">{{ dispenser }}</text>
+				</view>
+			</view>
+			<view class="info-row">
+				<view class="info-item">
+					<text class="label">出库到园区：<text class="required">*</text></text>
+					<picker 
+						:range="locations" 
+						range-key="label"
+						:value="locationIndex"
+						@change="onLocationChange"
+					>
+						<view class="picker-input">
+							<text class="value">{{ currentLocation.label }}</text>
+							<text class="picker-arrow">›</text>
+						</view>
+					</picker>
+				</view>
+				<view class="info-item">
+					<text class="label">园区请领：</text>
+					<picker 
+						:range="requestAreas" 
+						range-key="label"
+						:value="requestAreaIndex"
+						@change="onRequestAreaChange"
+					>
+						<view class="picker-input">
+							<text class="value">{{ currentRequestArea.label }}</text>
+							<text class="picker-arrow">›</text>
+						</view>
+					</picker>
+				</view>
+			</view>
+			<view class="info-row">
+				<view class="info-item full">
+					<text class="label">备注</text>
+					<input 
+						class="input-value" 
+						v-model="remark" 
+						placeholder="请输入备注信息（选填）"
+						placeholder-class="placeholder"
+					/>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 药材明细 -->
 		<view class="form-section">
 			<view class="section-title">
-				药品明细
+				药材明细
 				<text class="section-count">({{ drugList.length }}种)</text>
 			</view>
 			
-		<!-- 添加药品按钮 -->
-		<view class="action-buttons">
-			<u-button
-				text="➕ 添加药品"
-				type="primary"
-				@click="goSelectDrug"
-			></u-button>
-		</view>
+			<!-- 添加药材按钮 -->
+			<view class="action-buttons">
+				<view class="add-drug-btn" @click="goSelectDrug">
+					<text class="btn-icon">➕</text>
+					<text class="btn-text">添加药材</text>
+				</view>
+			</view>
 			
-			<!-- 药品列表 -->
+			<!-- 药材列表 -->
 			<view class="drug-list">
 				<view 
 					v-for="(item, index) in drugList" 
 					:key="index" 
 					class="drug-item"
 				>
-					<!-- 高值药品标记 -->
-					<view v-if="item.isHighValue" class="high-value-badge">
-						<text>高值药品</text>
-					</view>
-					
+					<!-- 药材头部 -->
 					<view class="drug-header">
-						<view class="drug-name">{{ item.drugName }}</view>
+						<view class="drug-title-row">
+							<view class="drug-badges">
+								<text v-if="item.isHighValue" class="badge high-value">高值</text>
+								<text v-if="item.isEmergency" class="badge emergency">急救</text>
+							</view>
+							<text class="drug-name">{{ item.drugName }}</text>
+						</view>
 						<view class="drug-delete" @click="deleteDrug(index)">删除</view>
 					</view>
 					
-					<view class="drug-info">
-						<view v-if="item.drugCode" class="info-row">
-							<text class="info-label">代码：</text>
-							<text class="code-badge">{{ item.drugCode }}</text>
-						</view>
-						<view class="info-row">
-							<text class="info-label">规格：</text>
-							<text>{{ item.specification || item.spec }}</text>
-						</view>
-						<view class="info-row">
-							<text class="info-label">单位：</text>
-							<text>{{ item.unit }}</text>
-						</view>
-						<view class="info-row">
-							<text class="info-label">厂家：</text>
-							<text>{{ item.manufacturer }}</text>
-						</view>
+					<!-- 规格单位合并一行 -->
+					<view class="drug-spec-row">
+						<text class="spec-icon">📦</text>
+						<text class="spec-text">{{ item.specification || item.spec }}</text>
+						<text class="spec-divider">·</text>
+						<text class="unit-text">单位: {{ item.unit }}</text>
+					</view>
+					
+					<!-- 药材代码（如有） -->
+					<view v-if="item.drugCode" class="drug-code-row">
+						<text class="code-icon">🏷️</text>
+						<text class="code-text">代码: {{ item.drugCode }}</text>
+					</view>
+					
+					<!-- 调试信息：显示drugId -->
+					<view class="drug-debug-row" style="font-size: 20rpx; color: #999; padding: 5rpx 0;">
+						<text>🔍 drugId: {{ item.drugId || '❌ 无' }}</text>
 					</view>
 					
 					<view class="drug-input-section">
-						<!-- 批次选择 -->
-						<view class="input-row">
-							<text class="input-label">选择批次 *</text>
-							<batch-selector
-								:button-text="item.batch ? `批号: ${item.batch}` : '点击选择'"
-								button-type="info"
-								button-size="small"
-								:drug-id="item.drugId"
-								:drug-info="{ name: item.drugName, specification: item.specification || item.spec, unit: item.unit }"
-								:show-location-filter="false"
-								:default-location="currentLocation.value"
-								:enable-f-i-f-o="true"
-								@select="(batch) => onBatchSelect(index, batch)"
-							></batch-selector>
+					<!-- 批次信息（已选中） -->
+					<view v-if="item.batch" class="batch-info-selected">
+						<view class="batch-info-row">
+							<text class="batch-label">批号：</text>
+							<text class="batch-value">{{ item.batch }}</text>
 						</view>
-						
-						<!-- 显示选中批次信息 -->
-						<view v-if="item.batch" class="batch-info-display">
-							<view class="batch-detail-row">
-								<text class="batch-label">有效期：</text>
-								<text :class="['batch-value', { 'text-warning': item.isNearExpiry }]">
-									{{ item.expireDate }}
-								</text>
-							</view>
-							<view class="batch-detail-row">
-								<text class="batch-label">库存：</text>
-								<text class="batch-value">{{ item.stockQuantity }} {{ item.unit }}</text>
-							</view>
-							<view v-if="item.price" class="batch-detail-row">
-								<text class="batch-label">单价：</text>
-								<text class="batch-value">¥{{ item.price }}</text>
-							</view>
+						<view class="batch-info-row">
+							<text class="batch-label">⏰ 有效期：</text>
+							<text class="batch-value">{{ item.expireDate }}</text>
 						</view>
+						<view class="batch-info-row">
+							<text class="batch-label">📊 库存：</text>
+							<text class="batch-value">{{ item.stockQuantity }} {{ item.unit }}</text>
+						</view>
+					</view>
+					
+					<!-- 批次选择按钮（未选中时显示） -->
+					<view v-else class="batch-select-row">
+						<batch-selector
+							button-text="🔍 选择批次"
+							button-type="info"
+							button-size="small"
+							:drug-id="item.drugId"
+							:drug-info="{ name: item.drugName, specification: item.specification || item.spec, unit: item.unit }"
+							:show-location-filter="false"
+							:default-location="'drug_storage'"
+							:enable-f-i-f-o="true"
+							@select="(batch) => onBatchSelect(index, batch)"
+						></batch-selector>
+					</view>
 						
 						<!-- 出库数量 -->
 						<view class="input-row">
@@ -156,7 +169,7 @@
 						</text>
 					</view>
 						
-						<!-- 高值药品金额提示 -->
+						<!-- 高值药材金额提示 -->
 						<view v-if="item.isHighValue && item.quantity && item.price" class="amount-hint">
 							<text class="amount-label">金额：</text>
 							<text class="amount-value">¥{{ (item.quantity * item.price).toFixed(2) }}</text>
@@ -166,7 +179,7 @@
 				
 				<!-- 空状态 -->
 				<view v-if="drugList.length === 0" class="empty-hint">
-			<text>💊 暂无药品，请点击上方按钮添加</text>
+			<text>💊 暂无药材，请点击上方按钮添加</text>
 				</view>
 			</view>
 		</view>
@@ -182,17 +195,12 @@
 		
 		<!-- 底部按钮 -->
 		<view class="bottom-actions">
-			<u-button 
-				type="info" 
-				text="保存草稿"
-				plain
-				@click="saveDraft"
-			></u-button>
-			<u-button 
-				type="primary" 
-				text="提交复核"
-				@click="submitReview"
-			></u-button>
+			<view class="bottom-btn btn-secondary" @click="saveDraft">
+				<text>保存草稿</text>
+			</view>
+			<view class="bottom-btn btn-primary" @click="submitReview">
+				<text>提交复核</text>
+			</view>
 		</view>
 	</view>
 </template>
@@ -212,383 +220,362 @@ export default {
 		return {
 			recordNo: '',
 			currentTime: '',
+			currentDate: '',
 			dispenser: '',
 			remark: '',
-		locationIndex: 0,
-		locations: [
-			{ label: '陆园', value: 'land_park' },
-			{ label: '水园', value: 'water_park' }
-		],
-		currentLocation: { label: '陆园', value: 'land_park' },
+			locationIndex: 0,
+			locations: [
+				{ label: '陆园', value: 'land_park' },
+				{ label: '水园', value: 'water_park' }
+			],
+			// 当前选择的发往园区（目的地），总库固定为 drug_storage
+			currentLocation: { label: '陆园', value: 'land_park' },
+			requestAreaIndex: 0,
+			requestAreas: [
+				{ label: '不选择', value: '' },
+				// 以下示例表示项目/部门等非医务单位，请根据实际需要调整
+				{ label: '陆园项目组', value: 'land_project' },
+				{ label: '水园项目组', value: 'water_project' }
+			],
+			currentRequestArea: { label: '不选择', value: '' },
 			drugList: [],
 			dispenserSign: ''
 		}
 	},
 	
-	onLoad() {
+	onLoad(options) {
+		// 清空上次的药材明细
+		this.drugList = []
+		// 清空可能残留的缓存
+		uni.removeStorageSync('selectedDrugsForOut')
+		// 初始化页面
 		this.initPage()
-		// 监听药品选择事件
-		uni.$on('drugSelected', this.onDrugSelect)
 	},
 	
-	onUnload() {
-		// 移除事件监听
-		uni.$off('drugSelected', this.onDrugSelect)
-	},
+	onShow() {
+		// 从选择药材页面返回时，接收选中的药材数据
+		const selectedDrugs = uni.getStorageSync('selectedDrugsForOut')
+		
+		if (selectedDrugs && selectedDrugs.length > 0) {
+			console.log('=== 出库页面 onShow ===')
+			console.log('从缓存读取的药材数量:', selectedDrugs.length)
+			
+			// 合并新选择的药材，避免重复
+			selectedDrugs.forEach((drug, index) => {
+				console.log(`药材${index + 1}:`, drug.name || drug.drugName)
+				console.log(`  - drug._id: ${drug._id}`)
+				console.log(`  - drug.drugId: ${drug.drugId || '无'}`)
+				console.log(`  - 完整数据:`, drug)
+			
+			const exists = this.drugList.find(item => item.drugId === drug.drugId)
+			if (!exists) {
+				// 初始化药材数据结构
+				const finalDrugId = drug._id || drug.drugId
+				console.log(`  - 最终使用的 drugId: ${finalDrugId}`)
+				
+				this.drugList.push({
+					drugId: finalDrugId,
+					drugCode: drug.drugCode || '',
+					drugName: drug.name || drug.drugName,
+					specification: drug.specification || drug.spec || '',
+					spec: drug.specification || drug.spec || '',
+					unit: drug.unit || '',
+					manufacturer: drug.manufacturer || '',
+					isHighValue: drug.isHighValue || false,
+					isEmergency: drug.isEmergency || false,
+					// 批次相关信息（使用从选择药材页面传来的数据）
+					batch: drug.batch || '',
+					batchId: drug.batchId || '',
+					expireDate: drug.expireDate || '',
+					productionDate: drug.productionDate || '',
+					stockQuantity: drug.stockQuantity || 0,
+					price: drug.price || 0,
+					quantity: '',
+					// 单位转换信息
+					conversionRate: drug.conversionRate || 1,
+					minUnit: drug.minUnit || drug.unit || '',
+					isNearExpiry: drug.isNearExpiry || false
+				})
+			}
+		})
+		
+		console.log('当前药材列表:', this.drugList)
+		
+		// 清除缓存
+		uni.removeStorageSync('selectedDrugsForOut')
+	}
+},
 	
 	methods: {
 		initPage() {
 			// 生成出库单号
 			this.recordNo = Common.generateRecordNo('CK')
-			
-			// 当前时间
-			this.currentTime = Common.formatDate(new Date(), 'YYYY-MM-DD HH:mm')
-			
+			// 当前时间与日期
+			const now = new Date()
+			this.currentTime = Common.formatDate(now, 'YYYY-MM-DD HH:mm')
+			this.currentDate = Common.formatDate(now, 'YYYY-MM-DD')
 			// 获取当前用户
 			const userInfo = uni.getStorageSync('userInfo')
 			this.dispenser = userInfo?.name || '未登录'
 		},
 		
-	onLocationChange(e) {
-		this.locationIndex = e.detail.value
-		this.currentLocation = this.locations[this.locationIndex]
-	},
-	
-	goSelectDrug() {
-		uni.navigateTo({
-			url: '/pages-sub/drug/list?mode=select'
-		})
-	},
-	
-	onDrugSelect(drug) {
-		console.log('选择药品:', drug)
-		this.addDrug(drug)
-	},
+		onLocationChange(e) {
+			this.locationIndex = e.detail.value
+			this.currentLocation = this.locations[this.locationIndex]
+		},
 		
-		addDrug(drugInfo) {
-			// 检查是否已添加
-			const exists = this.drugList.some(item => item.drugId === drugInfo._id)
-			if (exists) {
+		onRequestAreaChange(e) {
+			this.requestAreaIndex = e.detail.value
+			this.currentRequestArea = this.requestAreas[this.requestAreaIndex]
+		},
+		
+		// 选择药材（保持原有逻辑占位）
+		goSelectDrug() {
+			// 这里复用原来跳转选择药材页面的逻辑
+			uni.navigateTo({ url: '/pages-sub/out/select-drug' })
+		},
+		// 构建带包装单位的完整规格，供云函数解析。如：10ml×9支/盒
+		buildSpecification(drug) {
+			const base = drug.specification || drug.spec || ''
+			if (!base) return ''
+			if (base.includes('/') || base.includes('／')) return base
+			if (drug.unit) return `${base}/${drug.unit}`
+			return base
+		},
+		
+		// 删除一行药材
+		deleteDrug(index) {
+			this.drugList.splice(index, 1)
+		},
+		
+		// 批次选择回调
+		onBatchSelect(index, batch) {
+			const item = this.drugList[index]
+			if (!item) return
+			item.batch = batch.batch
+			item.batchId = batch._id
+			item.expireDate = batch.expireDate
+			item.stockQuantity = batch.quantity
+			item.price = batch.price || item.price || 0
+			item.isNearExpiry = batch.isNearExpiry || false
+		},
+		
+		// 校验数量不能超过库存
+		validateQuantity(index) {
+			const item = this.drugList[index]
+			if (!item) return
+			const max = Number(item.stockQuantity || 0)
+			const val = Number(item.quantity || 0)
+			if (val <= 0 || !Number.isFinite(val)) {
+				item.quantity = ''
+				return
+			}
+			if (val > max) {
+				item.quantity = max
 				uni.showToast({
-					title: '该药品已添加',
+					title: '数量不能超过库存',
+					icon: 'none'
+				})
+			}
+		},
+		
+		// 保存草稿
+		async saveDraft() {
+			if (this.drugList.length === 0) {
+				uni.showToast({
+					title: '请先添加药材',
 					icon: 'none'
 				})
 				return
 			}
 			
-			// 添加到列表
-			this.drugList.push({
-				drugId: drugInfo._id,
-				drugCode: drugInfo.drugCode || drugInfo.code || '',  // 药品代码
-				drugName: drugInfo.name,
-				specification: drugInfo.specification || drugInfo.spec || '',  // 统一使用 specification
-				unit: drugInfo.unit,
-				manufacturer: drugInfo.manufacturer,
-				isHighValue: drugInfo.isHighValue || false,
-				isEmergency: drugInfo.isEmergency || false,
-				batch: '',
-				batchId: '',
-				expireDate: '',
-				quantity: '',
-				stockQuantity: 0,
-				price: '',
-				isNearExpiry: false
-			})
-			
-			uni.showToast({
-				title: '添加成功',
-				icon: 'success'
-			})
-		},
-		
-		onBatchSelect(index, batch) {
-			console.log('选择批次:', batch)
-			
-			// 更新药品批次信息
-			this.drugList[index] = {
-				...this.drugList[index],
-				batchId: batch._id,
-				batch: batch.batch,
-				expireDate: batch.expireDate,
-				stockQuantity: batch.quantity,
-				price: batch.price || '',
-				isNearExpiry: batch.isNearExpiry || false
-			}
-		},
-		
-		validateQuantity(index) {
-			const item = this.drugList[index]
-			
-			if (!item.quantity) return
-			
-			// 检查是否超过库存
-			if (item.quantity > item.stockQuantity) {
-				uni.showModal({
-					title: '数量超限',
-					content: `出库数量不能超过库存数量（${item.stockQuantity}${item.unit}）`,
-					showCancel: false
-				})
-				item.quantity = item.stockQuantity
-			}
-			
-			// 高值药品二次确认
-			if (item.isHighValue && item.price) {
-				const totalAmount = (item.quantity * item.price).toFixed(2)
-				uni.showModal({
-					title: '高值药品确认',
-					content: `${item.drugName}\n数量：${item.quantity}${item.unit}\n金额：¥${totalAmount}`,
-					confirmText: '确认',
-					cancelText: '取消',
-					success: (res) => {
-						if (!res.confirm) {
-							item.quantity = ''
-						}
+			uni.showLoading({ title: '保存中...' })
+			try {
+				const userInfo = uni.getStorageSync('userInfo')
+				const result = await this.$api.callFunction('outRecords', {
+					action: 'create',
+					data: {
+						recordNo: this.recordNo,
+						// 总库位置固定为 drug_storage
+						location: 'drug_storage',
+						locationName: '总库',
+						fromLocation: 'drug_storage',
+						fromLocationName: '总库',
+						// 出库到的园区/库位
+						toLocation: this.currentLocation.value,
+						toLocationName: this.currentLocation.label,
+						requestLocation: this.currentRequestArea.value,
+						requestLocationName: this.currentRequestArea.label,
+						dispenser: this.dispenser,
+						dispenserId: userInfo?._id || '',
+						dispenserSign: '',
+						dispenserSignTime: '',
+						remark: this.remark,
+						items: this.drugList.map(drug => ({
+							drugId: drug.drugId,
+							drugCode: drug.drugCode || '',
+							drugName: drug.drugName,
+							specification: this.buildSpecification(drug),
+							unit: drug.unit,
+							manufacturer: drug.manufacturer,
+							batch: drug.batch,
+							batchId: drug.batchId,
+							expireDate: drug.expireDate,
+							quantity: drug.quantity,
+							price: drug.price || 0,
+							isHighValue: drug.isHighValue || false,
+							isEmergency: drug.isEmergency || false
+						})),
+						status: 'draft'
 					}
 				})
+				uni.hideLoading()
+				if (result.success) {
+					uni.showToast({ title: '保存成功', icon: 'success' })
+					setTimeout(() => { uni.navigateBack() }, 1500)
+				} else {
+					throw new Error(result.message || '保存失败')
+				}
+			} catch (err) {
+				console.error('保存失败:', err)
+				uni.hideLoading()
+				uni.showToast({ title: err.message || '保存失败', icon: 'none' })
 			}
 		},
 		
-		deleteDrug(index) {
-			uni.showModal({
-				title: '确认删除',
-				content: `确定要删除 ${this.drugList[index].drugName} 吗？`,
-				success: (res) => {
-					if (res.confirm) {
-						this.drugList.splice(index, 1)
-					}
-				}
-			})
-		},
-		
-		validateForm() {
-			// 验证药品列表
-			if (this.drugList.length === 0) {
-				uni.showToast({
-					title: '请添加药品',
-					icon: 'none'
-				})
-				return false
-			}
-			
-			// 验证每个药品的必填字段
-			for (let i = 0; i < this.drugList.length; i++) {
-				const item = this.drugList[i]
-				
-				if (!item.batch) {
-					uni.showToast({
-						title: `${item.drugName} 未选择批次`,
-						icon: 'none'
-					})
-					return false
-				}
-				
-				if (!item.quantity || item.quantity <= 0) {
-					uni.showToast({
-						title: `${item.drugName} 数量未填写或无效`,
-						icon: 'none'
-					})
-					return false
-				}
-				
-				if (item.quantity > item.stockQuantity) {
-					uni.showToast({
-						title: `${item.drugName} 数量超过库存`,
-						icon: 'none'
-					})
-					return false
-				}
-			}
-			
-			// 验证签名
+		// 提交复核
+		async submitReview() {
 			if (!this.dispenserSign) {
-				uni.showToast({
-					title: '请先签名',
-					icon: 'none'
-				})
-				return false
+				uni.showToast({ title: '请先完成发放人签名', icon: 'none' })
+				return
+			}
+			if (this.drugList.length === 0) {
+				uni.showToast({ title: '请先添加药材', icon: 'none' })
+				return
 			}
 			
-			return true
-		},
-		
-	async saveDraft() {
-		if (this.drugList.length === 0) {
-			uni.showToast({
-				title: '请先添加药品',
-				icon: 'none'
-			})
-			return
-		}
-		
-		uni.showLoading({
-			title: '保存中...'
-		})
-		
-		try {
-			const userInfo = uni.getStorageSync('userInfo')
-			const result = await this.$api.callFunction('outRecords', {
-				action: 'create',
-				data: {
-					recordNo: this.recordNo,
-					location: this.currentLocation.value,
-					locationName: this.currentLocation.label,
-					dispenser: this.dispenser,
-					dispenserId: userInfo?._id || '',
-					dispenserSign: '',
-					dispenserSignTime: '',
-					remark: this.remark,
-					items: this.drugList.map(drug => ({
-						drugId: drug.drugId,
-						drugCode: drug.drugCode || '',  // 药品代码
-						drugName: drug.drugName,
-						specification: drug.specification || drug.spec || '',  // 统一使用 specification
-						unit: drug.unit,
-						manufacturer: drug.manufacturer,
-						batch: drug.batch,
-						batchId: drug.batchId,
-						expireDate: drug.expireDate,
-						quantity: drug.quantity,
-						price: drug.price || 0,
-						isHighValue: drug.isHighValue || false,
-						isEmergency: drug.isEmergency || false
-					})),
-					status: 'draft'
+			uni.showLoading({ title: '提交中...' })
+			try {
+				const userInfo = uni.getStorageSync('userInfo')
+				const result = await this.$api.callFunction('outRecords', {
+					action: 'create',
+					data: {
+						recordNo: this.recordNo,
+						// 总库位置固定为 drug_storage
+						location: 'drug_storage',
+						locationName: '总库',
+						fromLocation: 'drug_storage',
+						fromLocationName: '总库',
+						// 出库到的园区/库位
+						toLocation: this.currentLocation.value,
+						toLocationName: this.currentLocation.label,
+						requestLocation: this.currentRequestArea.value,
+						requestLocationName: this.currentRequestArea.label,
+						dispenser: this.dispenser,
+						dispenserId: userInfo?._id || '',
+						dispenserSign: this.dispenserSign,
+						dispenserSignTime: new Date(),
+						remark: this.remark,
+						items: this.drugList.map(drug => ({
+							drugId: drug.drugId,
+							drugCode: drug.drugCode || '',
+							drugName: drug.drugName,
+							specification: this.buildSpecification(drug),
+							unit: drug.unit,
+							manufacturer: drug.manufacturer,
+							batch: drug.batch,
+							batchId: drug.batchId,
+							expireDate: drug.expireDate,
+							quantity: drug.quantity,
+							price: drug.price || 0,
+							isHighValue: drug.isHighValue || false,
+							isEmergency: drug.isEmergency || false
+						})),
+						status: 'pending_review'
+					}
+				})
+				uni.hideLoading()
+				if (result.success) {
+					uni.showToast({ title: '提交成功', icon: 'success' })
+					setTimeout(() => { uni.navigateBack() }, 1500)
+				} else {
+					throw new Error(result.message || '提交失败')
 				}
-			})
-			
-			uni.hideLoading()
-			
-			if (result.success) {
-				uni.showToast({
-					title: '草稿已保存',
-					icon: 'success'
-				})
-			} else {
-				throw new Error(result.message || '保存失败')
+			} catch (err) {
+				console.error('提交失败:', err)
+				uni.hideLoading()
+				uni.showToast({ title: err.message || '提交失败', icon: 'none' })
 			}
-		} catch (err) {
-			console.error('保存失败:', err)
-			uni.hideLoading()
-			uni.showToast({
-				title: err.message || '保存失败',
-				icon: 'none'
-			})
-		}
-	},
-		
-	async submitReview() {
-		// 验证表单
-		if (!this.validateForm()) {
-			return
-		}
-		
-		uni.showLoading({
-			title: '提交中...'
-		})
-		
-		try {
-			const userInfo = uni.getStorageSync('userInfo')
-			// 提交出库单到云数据库
-			const result = await this.$api.callFunction('outRecords', {
-				action: 'create',
-				data: {
-					recordNo: this.recordNo,
-					location: this.currentLocation.value,
-					locationName: this.currentLocation.label,
-					dispenser: this.dispenser,
-					dispenserId: userInfo?._id || '',
-					dispenserSign: this.dispenserSign,
-					dispenserSignTime: new Date(),
-					remark: this.remark,
-					items: this.drugList.map(drug => ({
-						drugId: drug.drugId,
-						drugCode: drug.drugCode || '',  // 药品代码
-						drugName: drug.drugName,
-						specification: drug.specification || drug.spec || '',  // 统一使用 specification
-						unit: drug.unit,
-						manufacturer: drug.manufacturer,
-						batch: drug.batch,
-						batchId: drug.batchId,
-						expireDate: drug.expireDate,
-						quantity: drug.quantity,
-						price: drug.price || 0,
-						isHighValue: drug.isHighValue || false,
-						isEmergency: drug.isEmergency || false
-					})),
-					status: 'pending_review'  // 待复核状态
-				}
-			})
-			
-			uni.hideLoading()
-			
-			if (result.success) {
-				uni.showToast({
-					title: '提交成功',
-					icon: 'success'
-				})
-				
-				// 返回列表页
-				setTimeout(() => {
-					uni.navigateBack()
-				}, 1500)
-			} else {
-				throw new Error(result.message || '提交失败')
-			}
-			
-		} catch (err) {
-			console.error('提交失败:', err)
-			uni.hideLoading()
-			uni.showToast({
-				title: err.message || '提交失败',
-				icon: 'none'
-			})
-		}
-	}
+ 		}
 	}
 }
+
 </script>
 
 <style lang="scss" scoped>
-.container {
-	padding: 20rpx;
-	padding-bottom: 150rpx;
-	background-color: #F8F8F8;
+	.page {
 	min-height: 100vh;
+	/* 与入库新建页一致的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 180rpx; // 为底部固定按钮留出空间
 }
 
+// 页面头部：702rpx 象牙白卡片
 .page-header {
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-	padding: 40rpx;
-	border-radius: 20rpx;
-	text-align: center;
-	margin-bottom: 20rpx;
-	box-shadow: 0 4rpx 20rpx rgba(255, 107, 107, 0.3);
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	padding: 30rpx 26rpx 26rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+	
+	.header-content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 8rpx;
+		
+		.header-title {
+			font-size: 40rpx;
+			font-weight: bold;
+			color: #111827;
+		}
+		
+		.header-subtitle {
+			font-size: 24rpx;
+			color: #4b5563;
+		}
+	}
 }
 
-.page-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: #FFFFFF;
-	margin-bottom: 10rpx;
+// 基本信息卡片：象牙白卡片，702rpx 轨道
+.info-card {
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 26rpx 26rpx 24rpx;
+	background: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
-.page-subtitle {
-	font-size: 28rpx;
-	color: rgba(255, 255, 255, 0.9);
-}
-
+// 药材明细与签名等表单板块
 .form-section {
-	background-color: #FFFFFF;
-	padding: 30rpx;
-	border-radius: 20rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	padding: 26rpx 26rpx 24rpx;
+	background-color: #FFFFF0;
+	border-radius: 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .section-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #333333;
+	color: #111827;
 	margin-bottom: 25rpx;
 	display: flex;
 	align-items: center;
@@ -614,8 +601,8 @@ export default {
 
 .form-label {
 	font-size: 28rpx;
-	color: #666666;
-	min-width: 180rpx;
+	color: #333333;
+	flex: 1;
 }
 
 .form-value {
@@ -624,19 +611,17 @@ export default {
 	flex: 1;
 }
 
-.form-input {
-	flex: 1;
-	font-size: 28rpx;
-	color: #333333;
-}
-
 .picker-input {
-	flex: 1;
 	font-size: 28rpx;
 	color: #333333;
-	display: flex;
+	display: inline-flex;
 	justify-content: space-between;
 	align-items: center;
+	background-color: #ffffff;
+	border-radius: 999rpx;
+	padding: 6rpx 20rpx;
+	box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+	max-width: 100%;
 }
 
 .picker-arrow {
@@ -650,16 +635,37 @@ export default {
 	margin-bottom: 25rpx;
 }
 
+.add-drug-btn {
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	padding: 22rpx 40rpx;
+	border-radius: 999rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12rpx;
+	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+	
+	.btn-icon {
+		font-size: 32rpx;
+	}
+	
+	.btn-text {
+		font-size: 28rpx;
+		font-weight: 500;
+	}
+}
+
 .drug-list {
 	display: flex;
 	flex-direction: column;
-	gap: 20rpx;
+	gap: 8rpx;
 }
 
 .drug-item {
-	background-color: #F8F8F8;
+	background-color: #FFFFF0;
 	padding: 25rpx;
-	border-radius: 15rpx;
+	border-radius: 18rpx;
 	position: relative;
 }
 
@@ -678,19 +684,103 @@ export default {
 .drug-header {
 	display: flex;
 	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 12rpx;
+}
+
+.drug-title-row {
+	display: flex;
 	align-items: center;
-	margin-bottom: 15rpx;
+	gap: 12rpx;
+	flex: 1;
+}
+
+.drug-badges {
+	display: flex;
+	gap: 8rpx;
+	flex-shrink: 0;
+	
+	.badge {
+		font-size: 20rpx;
+		padding: 4rpx 12rpx;
+		border-radius: 8rpx;
+		font-weight: 500;
+		
+		&.high-value {
+			background: #FFF3E0;
+			color: #FF9800;
+		}
+		
+		&.emergency {
+			background: #FFEBEE;
+			color: #F44336;
+		}
+	}
 }
 
 .drug-name {
 	font-size: 30rpx;
 	font-weight: bold;
 	color: #333333;
+	flex: 1;
 }
 
 .drug-delete {
 	font-size: 26rpx;
 	color: #FF6B6B;
+	padding: 8rpx 15rpx;
+}
+
+// 规格单位合并行
+.drug-spec-row {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	margin-bottom: 10rpx;
+	padding: 10rpx 15rpx;
+	background: #FFFFFF;
+	border-radius: 10rpx;
+	
+	.spec-icon {
+		font-size: 28rpx;
+	}
+	
+	.spec-text {
+		font-size: 26rpx;
+		color: #333333;
+		font-weight: 500;
+	}
+	
+	.spec-divider {
+		font-size: 24rpx;
+		color: #CCCCCC;
+		margin: 0 4rpx;
+	}
+	
+	.unit-text {
+		font-size: 24rpx;
+		color: #666666;
+	}
+}
+
+// 药材代码行
+.drug-code-row {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	margin-bottom: 15rpx;
+	padding: 8rpx 15rpx;
+	background: #F5F7FA;
+	border-radius: 8rpx;
+	
+	.code-icon {
+		font-size: 24rpx;
+	}
+	
+	.code-text {
+		font-size: 24rpx;
+		color: #666666;
+	}
 }
 
 .drug-info {
@@ -703,12 +793,47 @@ export default {
 }
 
 .info-row {
-	font-size: 26rpx;
-	color: #666666;
-}
-
-.info-label {
-	color: #999999;
+	display: flex;
+	gap: 20rpx;
+	margin-bottom: 20rpx;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+	
+	.info-item {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 12rpx;
+		
+		&.full {
+			flex: 1 1 100%;
+		}
+		
+		.label {
+			font-size: 22rpx;
+			color: #9ca3af;
+			font-weight: 400;
+		}
+		
+		.value {
+			font-size: 28rpx;
+			color: #111827;
+			font-weight: 500;
+		}
+		
+		.input-value {
+			flex: 1;
+			font-size: 28rpx;
+			color: #323233;
+			border-radius: 999rpx;
+			padding: 10rpx 20rpx;
+			background-color: #ffffff;
+			box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+			border: none;
+		}
+	}
 }
 
 .drug-input-section {
@@ -743,6 +868,79 @@ export default {
 	min-width: 50rpx;
 }
 
+// 批次选择行
+.batch-select-row {
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+	margin-bottom: 15rpx;
+}
+
+.batch-quick-info {
+	font-size: 22rpx;
+	color: #666;
+	padding-left: 10rpx;
+}
+
+// 批次信息紧凑显示（旧样式，保留）
+.batch-info-compact {
+	background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F4 100%);
+	padding: 15rpx 20rpx;
+	border-radius: 12rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 10rpx;
+	margin-bottom: 15rpx;
+	
+	.batch-icon {
+		font-size: 24rpx;
+		flex-shrink: 0;
+	}
+	
+	.batch-text {
+		font-size: 24rpx;
+		color: #333333;
+		flex: 1;
+	}
+}
+
+// 已选批次信息显示（新样式）
+.batch-info-selected {
+	background: linear-gradient(135deg, #E3F2FD 0%, #F1F8FF 100%);
+	padding: 20rpx;
+	border-radius: 12rpx;
+	margin-bottom: 15rpx;
+	border-left: 4rpx solid #2196F3;
+}
+
+.batch-info-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8rpx;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.batch-label {
+	font-size: 24rpx;
+	color: #666;
+	min-width: 140rpx;
+}
+
+.batch-value {
+	font-size: 26rpx;
+	color: #333;
+	font-weight: 500;
+}
+
+.text-warning {
+	color: #FF9800 !important;
+	font-weight: bold;
+}
+
+// 保留旧样式以兼容
 .batch-info-display {
 	background-color: #E8F5E9;
 	padding: 15rpx 20rpx;
@@ -765,11 +963,6 @@ export default {
 .batch-value {
 	color: #333333;
 	flex: 1;
-}
-
-.text-warning {
-	color: #FF9800 !important;
-	font-weight: bold;
 }
 
 // 单位转换提示
@@ -829,10 +1022,33 @@ export default {
 	left: 0;
 	right: 0;
 	background-color: #FFFFFF;
-	padding: 20rpx;
+	padding: 20rpx 30rpx 26rpx;
 	display: flex;
 	gap: 20rpx;
-	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+	box-shadow: 0 -2rpx 14rpx rgba(15, 23, 42, 0.12);
+	z-index: 100;
+}
+
+.bottom-btn {
+	flex: 1;
+	padding: 24rpx;
+	border-radius: 999rpx;
+	text-align: center;
+	font-size: 28rpx;
+	font-weight: 500;
+	
+	&.btn-primary {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: #ffffff;
+		box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+	}
+	
+	&.btn-secondary {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: #ffffff;
+		border: none;
+		box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+	}
 }
 </style>
 

@@ -1,7 +1,7 @@
 {
   "name": "getDrugList",
   "version": "1.0.0",
-  "description": "药品列表查询云函数",
+  "description": "药材列表查询云函数",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

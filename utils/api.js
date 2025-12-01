@@ -172,17 +172,17 @@ export const getOutRecordCounts = () => {
 	}, false)
 }
 
-// ==================== 药品相关 ====================
+// ==================== 药材相关 ====================
 
 /**
- * 获取药品列表
+ * 获取药材列表
  */
 export const getDrugList = (params) => {
 	return Request.callFunction('getDrugList', params, false)
 }
 
 /**
- * 根据条形码查询药品
+ * 根据条形码查询药材
  */
 export const getDrugByBarcode = (barcode) => {
 	return Request.dbQuery('drugs', { barcode })

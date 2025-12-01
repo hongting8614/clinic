@@ -156,7 +156,7 @@ console.log('测试结果:', result)
 
 | 云函数 | Action | 说明 |
 |--------|--------|------|
-| `drugManage` | `add` | 添加药品 ✅ 已统一 |
+| `drugManage` | `add` | 添加药材 ✅ 已统一 |
 | `inRecords` | `add` / `create` | 创建入库单 ✅ 已修复 |
 | `outRecords` | `add` / `create` | 创建出库单 ✅ 已修复 |
 | `clinicRecords` | `add` | 门诊记录 ✅ 已统一 |

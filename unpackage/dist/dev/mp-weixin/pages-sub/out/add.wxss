@@ -1,0 +1,449 @@
+@charset "UTF-8";
+.page.data-v-017bfd6a {
+  min-height: 100vh;
+  /* 与入库新建页一致的蓝色渐变背景 */
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 180rpx;
+}
+.page-header.data-v-017bfd6a {
+  max-width: 702rpx;
+  margin: 10rpx auto 8rpx;
+  padding: 30rpx 26rpx 26rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.9) inset, 0 -1rpx 0 rgba(15, 23, 42, 0.06) inset, 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+}
+.page-header .header-content.data-v-017bfd6a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+}
+.page-header .header-content .header-title.data-v-017bfd6a {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #111827;
+}
+.page-header .header-content .header-subtitle.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #4b5563;
+}
+.info-card.data-v-017bfd6a {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 26rpx 26rpx 24rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.form-section.data-v-017bfd6a {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 26rpx 26rpx 24rpx;
+  background-color: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.section-title.data-v-017bfd6a {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 25rpx;
+  display: flex;
+  align-items: center;
+}
+.section-count.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #999999;
+  margin-left: 10rpx;
+  font-weight: normal;
+}
+.form-item.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1px solid #F8F8F8;
+}
+.form-item.data-v-017bfd6a:last-child {
+  border-bottom: none;
+}
+.form-label.data-v-017bfd6a {
+  font-size: 28rpx;
+  color: #333333;
+  flex: 1;
+}
+.form-value.data-v-017bfd6a {
+  font-size: 28rpx;
+  color: #333333;
+  flex: 1;
+}
+.picker-input.data-v-017bfd6a {
+  font-size: 28rpx;
+  color: #333333;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 999rpx;
+  padding: 6rpx 20rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  max-width: 100%;
+}
+.picker-arrow.data-v-017bfd6a {
+  font-size: 32rpx;
+  color: #999999;
+}
+.action-buttons.data-v-017bfd6a {
+  display: flex;
+  gap: 15rpx;
+  margin-bottom: 25rpx;
+}
+.add-drug-btn.data-v-017bfd6a {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  padding: 22rpx 40rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.add-drug-btn .btn-icon.data-v-017bfd6a {
+  font-size: 32rpx;
+}
+.add-drug-btn .btn-text.data-v-017bfd6a {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.drug-list.data-v-017bfd6a {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.drug-item.data-v-017bfd6a {
+  background-color: #FFFFF0;
+  padding: 25rpx;
+  border-radius: 18rpx;
+  position: relative;
+}
+.high-value-badge.data-v-017bfd6a {
+  position: absolute;
+  top: -8rpx;
+  right: 20rpx;
+  background-color: #FF9800;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  padding: 4rpx 15rpx;
+  border-radius: 15rpx;
+  z-index: 10;
+}
+.drug-header.data-v-017bfd6a {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+.drug-title-row.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex: 1;
+}
+.drug-badges.data-v-017bfd6a {
+  display: flex;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+.drug-badges .badge.data-v-017bfd6a {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+.drug-badges .badge.high-value.data-v-017bfd6a {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+.drug-badges .badge.emergency.data-v-017bfd6a {
+  background: #FFEBEE;
+  color: #F44336;
+}
+.drug-name.data-v-017bfd6a {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  flex: 1;
+}
+.drug-delete.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #FF6B6B;
+  padding: 8rpx 15rpx;
+}
+.drug-spec-row.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 10rpx;
+  padding: 10rpx 15rpx;
+  background: #FFFFFF;
+  border-radius: 10rpx;
+}
+.drug-spec-row .spec-icon.data-v-017bfd6a {
+  font-size: 28rpx;
+}
+.drug-spec-row .spec-text.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+}
+.drug-spec-row .spec-divider.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #CCCCCC;
+  margin: 0 4rpx;
+}
+.drug-spec-row .unit-text.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #666666;
+}
+.drug-code-row.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 15rpx;
+  padding: 8rpx 15rpx;
+  background: #F5F7FA;
+  border-radius: 8rpx;
+}
+.drug-code-row .code-icon.data-v-017bfd6a {
+  font-size: 24rpx;
+}
+.drug-code-row .code-text.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #666666;
+}
+.drug-info.data-v-017bfd6a {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1px solid #E0E0E0;
+}
+.info-row.data-v-017bfd6a {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+.info-row.data-v-017bfd6a:last-child {
+  margin-bottom: 0;
+}
+.info-row .info-item.data-v-017bfd6a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.info-row .info-item.full.data-v-017bfd6a {
+  flex: 1 1 100%;
+}
+.info-row .info-item .label.data-v-017bfd6a {
+  font-size: 22rpx;
+  color: #9ca3af;
+  font-weight: 400;
+}
+.info-row .info-item .value.data-v-017bfd6a {
+  font-size: 28rpx;
+  color: #111827;
+  font-weight: 500;
+}
+.info-row .info-item .input-value.data-v-017bfd6a {
+  flex: 1;
+  font-size: 28rpx;
+  color: #323233;
+  border-radius: 999rpx;
+  padding: 10rpx 20rpx;
+  background-color: #ffffff;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  border: none;
+}
+.drug-input-section.data-v-017bfd6a {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.input-row.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+}
+.input-label.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #666666;
+  min-width: 160rpx;
+}
+.input-field.data-v-017bfd6a {
+  flex: 1;
+  background-color: #FFFFFF;
+  padding: 15rpx 20rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+}
+.input-unit.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #999999;
+  margin-left: 10rpx;
+  min-width: 50rpx;
+}
+.batch-select-row.data-v-017bfd6a {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 15rpx;
+}
+.batch-quick-info.data-v-017bfd6a {
+  font-size: 22rpx;
+  color: #666;
+  padding-left: 10rpx;
+}
+.batch-info-compact.data-v-017bfd6a {
+  background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F4 100%);
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin-bottom: 15rpx;
+}
+.batch-info-compact .batch-icon.data-v-017bfd6a {
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+.batch-info-compact .batch-text.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #333333;
+  flex: 1;
+}
+.batch-info-selected.data-v-017bfd6a {
+  background: linear-gradient(135deg, #E3F2FD 0%, #F1F8FF 100%);
+  padding: 20rpx;
+  border-radius: 12rpx;
+  margin-bottom: 15rpx;
+  border-left: 4rpx solid #2196F3;
+}
+.batch-info-row.data-v-017bfd6a {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+.batch-info-row.data-v-017bfd6a:last-child {
+  margin-bottom: 0;
+}
+.batch-label.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #666;
+  min-width: 140rpx;
+}
+.batch-value.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+.text-warning.data-v-017bfd6a {
+  color: #FF9800 !important;
+  font-weight: bold;
+}
+.batch-info-display.data-v-017bfd6a {
+  background-color: #E8F5E9;
+  padding: 15rpx 20rpx;
+  border-radius: 10rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.batch-detail-row.data-v-017bfd6a {
+  display: flex;
+  font-size: 24rpx;
+}
+.batch-label.data-v-017bfd6a {
+  color: #666666;
+  min-width: 100rpx;
+}
+.batch-value.data-v-017bfd6a {
+  color: #333333;
+  flex: 1;
+}
+.convert-hint.data-v-017bfd6a {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  padding: 16rpx 20rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+  border-left: 4rpx solid #2196F3;
+}
+.convert-hint .hint-icon.data-v-017bfd6a {
+  font-size: 24rpx;
+  margin-right: 10rpx;
+}
+.convert-hint .hint-text.data-v-017bfd6a {
+  font-size: 24rpx;
+  color: #1976D2;
+  line-height: 1.6;
+  flex: 1;
+}
+.amount-hint.data-v-017bfd6a {
+  background-color: #FFF3E0;
+  padding: 15rpx 20rpx;
+  border-radius: 10rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+.amount-label.data-v-017bfd6a {
+  font-size: 26rpx;
+  color: #666666;
+}
+.amount-value.data-v-017bfd6a {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #FF9800;
+}
+.empty-hint.data-v-017bfd6a {
+  text-align: center;
+  padding: 60rpx 0;
+  font-size: 26rpx;
+  color: #999999;
+}
+.bottom-actions.data-v-017bfd6a {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  padding: 20rpx 30rpx 26rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 -2rpx 14rpx rgba(15, 23, 42, 0.12);
+  z-index: 100;
+}
+.bottom-btn.data-v-017bfd6a {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 999rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.bottom-btn.btn-primary.data-v-017bfd6a {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.bottom-btn.btn-secondary.data-v-017bfd6a {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}

@@ -75,11 +75,11 @@ export default {
 | `rejectOutRecord(data)` | 驳回 | 驳回数据 | 成功消息 |
 | `getOutRecordCounts()` | 获取数量统计 | 无 | { draft, pending_review, ... } |
 
-### 药品相关（drugs）
+### 药材相关（drugs）
 
 | API | 说明 | 参数 | 返回值 |
 |-----|------|------|--------|
-| `getDrugList(params)` | 获取药品列表 | { keyword, category, page } | [ {...}, {...} ] |
+| `getDrugList(params)` | 获取药材列表 | { keyword, category, page } | [ {...}, {...} ] |
 | `getDrugByBarcode(barcode)` | 条形码查询 | 条形码字符串 | [ {...} ] |
 
 ### 库存相关（stock）

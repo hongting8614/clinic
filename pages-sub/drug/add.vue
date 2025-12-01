@@ -3,15 +3,15 @@
 		<!-- 标题栏 -->
 		<view class="page-header">
 			<view class="clinic-name">🏥 爱康医务室管理系统</view>
-			<view class="doc-type">北京欢乐谷医务室 · 药品档案{{ isEdit ? '编辑' : '添加' }}</view>
+			<view class="doc-type">北京欢乐谷医务室 · 药材档案{{ isEdit ? '编辑' : '添加' }}</view>
 		</view>
 
-		<!-- 扫码区域 - 仅药品档案页面保留扫码功能 -->
+		<!-- 扫码区域 - 仅药材档案页面保留扫码功能 -->
 		<view class="scan-section">
 			<view class="scan-title">📷 扫码录入</view>
-			<view class="scan-desc">扫描药品条形码快速录入药品信息</view>
+			<view class="scan-desc">扫描药材条形码快速录入药材信息</view>
 			<scanner 
-				button-text="📷 扫码添加药品"
+				button-text="📷 扫码添加药材"
 				button-type="primary"
 				@success="onScanSuccess"
 				@notFound="onBarcodeNotFound"
@@ -22,20 +22,20 @@
 		<view class="form-section">
 			<view class="section-title">📋 基本信息</view>
 
-			<!-- 药品名称 -->
+			<!-- 药材名称 -->
 			<view class="form-item">
-				<view class="label required">药品名称</view>
+				<view class="label required">药材名称</view>
 				<input 
 					v-model="form.drugName" 
 					class="input" 
-					placeholder="请输入药品名称"
+					placeholder="请输入药材名称"
 					placeholder-class="placeholder"
 				/>
 			</view>
 
-			<!-- 药品代码 -->
+			<!-- 药材代码 -->
 			<view class="form-item">
-				<view class="label">药品代码</view>
+				<view class="label">药材代码</view>
 				<input 
 					v-model="form.drugCode" 
 					class="input" 
@@ -77,9 +77,9 @@
 				/>
 			</view>
 
-			<!-- 药品分类 -->
+			<!-- 药材分类 -->
 			<view class="form-item">
-				<view class="label">药品分类</view>
+				<view class="label">药材分类</view>
 				<picker 
 					mode="selector" 
 					:range="categoryOptions" 
@@ -87,7 +87,7 @@
 					:value="categoryIndex"
 				>
 					<view class="picker-display">
-						{{ form.category || '请选择药品分类' }}
+						{{ form.category || '请选择药材分类' }}
 					</view>
 				</picker>
 			</view>
@@ -192,8 +192,8 @@
 
 			<view class="switch-item">
 				<view class="switch-label">
-					<text class="label-text">高值药品</text>
-					<text class="label-desc">标记为高值药品，需特殊管理</text>
+					<text class="label-text">高值药材</text>
+					<text class="label-desc">标记为高值药材，需特殊管理</text>
 				</view>
 				<switch 
 					:checked="form.isHighValue" 
@@ -204,8 +204,8 @@
 
 			<view class="switch-item">
 				<view class="switch-label">
-					<text class="label-text">急救药品</text>
-					<text class="label-desc">标记为急救药品，优先管理</text>
+					<text class="label-text">急救药材</text>
+					<text class="label-desc">标记为急救药材，优先管理</text>
 				</view>
 				<switch 
 					:checked="form.isEmergency" 
@@ -233,7 +233,7 @@
 		<!-- 底部操作按钮 -->
 		<view class="bottom-actions">
 			<button class="btn-cancel" @tap="handleCancel">取消</button>
-			<button class="btn-submit" @tap="handleSubmit">{{ isEdit ? '保存修改' : '💾 保存药品' }}</button>
+			<button class="btn-submit" @tap="handleSubmit">{{ isEdit ? '保存修改' : '💾 保存药材' }}</button>
 		</view>
 	</view>
 </template>
@@ -274,7 +274,7 @@ export default {
 				'解热镇痛类',
 				'维生素类',
 				'外用药类',
-				'急救药品',
+				'急救药材',
 				'其他'
 			],
 			categoryIndex: -1
@@ -292,7 +292,7 @@ export default {
 	methods: {
 		// 扫码成功回调
 		async onScanSuccess(drugInfo) {
-			console.log('✅ 扫码成功，获取到药品信息:', drugInfo)
+			console.log('✅ 扫码成功，获取到药材信息:', drugInfo)
 			
 			const barcode = drugInfo.barcode
 			
@@ -301,8 +301,8 @@ export default {
 			
 			if (exists) {
 				uni.showModal({
-					title: '💊 药品已存在',
-					content: `该条形码药品已录入系统\n\n药品名称：${exists.drugName}\n规格：${exists.specification}\n\n是否查看详情？`,
+					title: '💊 药材已存在',
+					content: `该条形码药材已录入系统\n\n药材名称：${exists.drugName}\n规格：${exists.specification}\n\n是否查看详情？`,
 					confirmText: '查看详情',
 					cancelText: '重新录入',
 					success: (res) => {
@@ -414,8 +414,8 @@ export default {
 			const barcode = data.barcode || data
 			
 			uni.showModal({
-				title: '💊 新药品录入',
-				content: `条形码：${barcode}\n\n该药品未在系统中找到，请手动填写药品信息。\n\n提示：填写完成后，下次扫描此条形码将自动识别。`,
+				title: '💊 新药材录入',
+				content: `条形码：${barcode}\n\n该药材未在系统中找到，请手动填写药材信息。\n\n提示：填写完成后，下次扫描此条形码将自动识别。`,
 				showCancel: false,
 				confirmText: '开始填写',
 				success: () => {
@@ -452,7 +452,7 @@ export default {
 			}
 		},
 
-		// 加载药品详情（编辑模式）
+		// 加载药材详情（编辑模式）
 		async loadDrugDetail() {
 			uni.showLoading({ title: '加载中...' })
 			
@@ -489,7 +489,7 @@ export default {
 					this.categoryIndex = index >= 0 ? index : -1
 				}
 			} catch (err) {
-				console.error('加载药品详情失败:', err)
+				console.error('加载药材详情失败:', err)
 				uni.showToast({
 					title: '加载失败',
 					icon: 'none'
@@ -509,7 +509,7 @@ export default {
 		validateForm() {
 			if (!this.form.drugName) {
 				uni.showToast({
-					title: '请输入药品名称',
+					title: '请输入药材名称',
 					icon: 'none'
 				})
 				return false
@@ -517,7 +517,7 @@ export default {
 
 			if (!this.form.specification) {
 				uni.showToast({
-					title: '请输入药品规格',
+					title: '请输入药材规格',
 					icon: 'none'
 				})
 				return false
@@ -567,7 +567,7 @@ export default {
 			uni.showLoading({ title: this.isEdit ? '保存中...' : '添加中...' })
 
 			try {
-				// 如果没有药品代码，自动生成
+				// 如果没有药材代码，自动生成
 				if (!this.form.drugCode) {
 					this.form.drugCode = this.generateDrugCode()
 				}
@@ -578,7 +578,7 @@ export default {
 				}
 
 				if (this.isEdit) {
-					// 更新药品
+					// 更新药材
 					submitData._id = this.drugId
 					await wx.cloud.callFunction({
 						name: 'drugManage',
@@ -588,7 +588,7 @@ export default {
 						}
 					})
 				} else {
-					// 新增药品
+					// 新增药材
 					submitData.createTime = new Date().getTime()
 					await wx.cloud.callFunction({
 						name: 'drugManage',
@@ -619,9 +619,9 @@ export default {
 			}
 		},
 
-		// 生成药品代码
+		// 生成药材代码
 		generateDrugCode() {
-			// 简单的代码生成逻辑：取药品名称拼音首字母 + 规格首字母 + 时间戳后4位
+			// 简单的代码生成逻辑：取药材名称拼音首字母 + 规格首字母 + 时间戳后4位
 			const name = this.form.drugName
 			const spec = this.form.specification
 			const timestamp = Date.now().toString().slice(-4)
@@ -644,15 +644,22 @@ export default {
 <style lang="scss" scoped>
 .page-container {
 	min-height: 100vh;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding-bottom: 150rpx;
+	/* 与出入库/库存页面统一的蓝色渐变背景 */
+	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+	padding: 24rpx 24rpx 150rpx;
 }
 
 .page-header {
-	background: rgba(255, 255, 255, 0.98);
-	padding: 40rpx 30rpx 30rpx;
+	max-width: 702rpx;
+	margin: 10rpx auto 8rpx;
+	background: #fffff0;
+	padding: 26rpx 26rpx 20rpx;
 	text-align: center;
-	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+	border-radius: 22rpx;
+	box-shadow:
+		0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+		0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+		0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 }
 
 .clinic-name {
@@ -672,11 +679,12 @@ export default {
 }
 
 .scan-section {
-	margin: 30rpx;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	border-radius: 20rpx;
-	padding: 40rpx 30rpx;
-	box-shadow: 0 8rpx 30rpx rgba(102, 126, 234, 0.4);
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	background: #fffff0;
+	border-radius: 22rpx;
+	padding: 30rpx 26rpx 26rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .scan-title {
@@ -695,11 +703,12 @@ export default {
 }
 
 .form-section {
-	margin: 30rpx;
-	background-color: #FFFFFF;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+	max-width: 702rpx;
+	margin: 0 auto 8rpx;
+	background-color: #fffff0;
+	border-radius: 22rpx;
+	padding: 26rpx 26rpx 22rpx;
+	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .section-title {
@@ -887,7 +896,7 @@ export default {
 	left: 0;
 	right: 0;
 	background-color: #FFFFFF;
-	padding: 20rpx 30rpx;
+	padding: 18rpx 24rpx 26rpx;
 	display: flex;
 	gap: 20rpx;
 	box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
@@ -898,7 +907,7 @@ export default {
 .btn-submit {
 	flex: 1;
 	height: 90rpx;
-	border-radius: 45rpx;
+	border-radius: 999rpx;
 	font-size: 32rpx;
 	font-weight: bold;
 	border: none;
@@ -908,12 +917,14 @@ export default {
 }
 
 .btn-cancel {
-	background-color: #F5F5F5;
-	color: #666666;
+	background-color: #ffffff;
+	color: #64748b;
+	border: 1rpx solid #cbd5e1;
 }
 
 .btn-submit {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #FFFFFF;
+	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+	color: #ffffff;
+	box-shadow: 0 8rpx 20rpx rgba(0, 160, 255, 0.3);
 }
 </style>

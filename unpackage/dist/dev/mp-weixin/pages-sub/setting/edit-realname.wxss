@@ -1,0 +1,82 @@
+.page.data-v-cdbf45d2 {
+  min-height: 100vh;
+  background: #f7f8fa;
+  padding-bottom: 40rpx;
+}
+.page-header.data-v-cdbf45d2 {
+  background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
+  padding: 40rpx 30rpx 30rpx;
+}
+.page-header .header-content .header-title.data-v-cdbf45d2 {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: white;
+}
+.form-card.data-v-cdbf45d2 {
+  background: white;
+  margin: 30rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+.form-item .form-label.data-v-cdbf45d2 {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 20rpx;
+}
+.form-item .form-label .label-text.data-v-cdbf45d2 {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #323233;
+}
+.form-item .form-label .required.data-v-cdbf45d2 {
+  color: #ee0a24;
+  font-size: 28rpx;
+}
+.form-item .form-input.data-v-cdbf45d2 {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 30rpx;
+  background: #f7f8fa;
+  border: 2rpx solid #ebedf0;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #323233;
+}
+.form-item .form-input.data-v-cdbf45d2:focus {
+  border-color: #07C160;
+  background: white;
+}
+.form-item .form-hint.data-v-cdbf45d2 {
+  margin-top: 15rpx;
+}
+.form-item .form-hint .hint-text.data-v-cdbf45d2 {
+  font-size: 24rpx;
+  color: #969799;
+}
+.submit-container.data-v-cdbf45d2 {
+  padding: 0 30rpx;
+  margin-top: 40rpx;
+}
+.submit-container .submit-btn.data-v-cdbf45d2 {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.25);
+}
+.submit-container .submit-btn .submit-text.data-v-cdbf45d2 {
+  color: white;
+  font-size: 32rpx;
+  font-weight: 500;
+}
+.submit-container .submit-btn.data-v-cdbf45d2:active {
+  -webkit-transform: scale(0.98);
+          transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.3);
+}

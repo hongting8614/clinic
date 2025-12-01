@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "入库单列表",
+  "usingComponents": {
+    "filter-panel": "/components/filter-panel/index"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "入库单报表",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "filter-panel": "/components/filter-panel/index"
+  }
+}

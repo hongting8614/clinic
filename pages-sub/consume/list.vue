@@ -3,7 +3,7 @@
 		<!-- 专业顶部 -->
 		<view class="page-header">
 			<view class="header-info">
-				<text class="page-title">药房日消耗</text>
+				<text class="page-title">门诊日消耗</text>
 				<text class="page-subtitle">DAILY CONSUMPTION</text>
 			</view>
 			<view class="header-action" @tap="goAdd">
@@ -34,7 +34,7 @@
 			</view>
 			<view class="stat-card">
 				<text class="stat-value">{{ totalDrugs }}</text>
-				<text class="stat-label">药品种类</text>
+				<text class="stat-label">药材种类</text>
 			</view>
 			<view class="stat-card">
 				<text class="stat-value">{{ totalQuantity }}</text>
@@ -62,7 +62,7 @@
 				<view class="card-body">
 					<view class="info-row">
 						<text class="info-icon">💊</text>
-						<text class="info-text">{{ item.items ? item.items.length : 0 }}种药品</text>
+						<text class="info-text">{{ item.items ? item.items.length : 0 }}种药材</text>
 					</view>
 					<view class="info-row">
 						<text class="info-icon">👤</text>
@@ -140,17 +140,21 @@ export default {
 			try {
 				uni.showLoading({ title: '加载中...' })
 				
-				// 调用云函数加载数据
-				const result = await this.$api.callFunction('consumeRecords', {
+				// 调用门诊用药云函数，按日期读取 clinic_usage 明细
+				const result = await this.$api.callFunction('clinicRecords', {
 					action: 'list',
-					date: this.selectedDate,
-					pageSize: 50
+					data: {
+						startDate: this.selectedDate,
+						endDate: this.selectedDate,
+						pageSize: 50
+					}
 				})
 				
 				uni.hideLoading()
 				
 				if (result.success) {
-					this.recordList = result.data || []
+					// clinicRecords.list 返回 { list, total, page, pageSize }
+					this.recordList = (result.data && result.data.list) ? result.data.list : []
 					
 					// 加载统计数据
 					this.loadStats()
@@ -169,16 +173,18 @@ export default {
 		
 		async loadStats() {
 			try {
-				const result = await this.$api.callFunction('consumeRecords', {
-					action: 'getStats',
-					startDate: this.selectedDate,
-					endDate: this.selectedDate
+				// 调用门诊日消耗统计接口
+				const result = await this.$api.callFunction('clinicRecords', {
+					action: 'getDailyUsageStats',
+					data: {
+						date: this.selectedDate
+					}
 				})
 				
-				if (result.success) {
+				if (result.success && result.data) {
 					this.totalRecords = result.data.totalRecords || 0
 					this.totalDrugs = result.data.totalDrugs || 0
-					this.totalQuantity = result.data.totalQuantity || 0
+					this.totalQuantity = result.data.totalQuantityMin || 0
 				}
 			} catch (err) {
 				console.error('加载统计数据失败:', err)

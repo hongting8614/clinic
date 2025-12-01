@@ -5,7 +5,7 @@
 			<view class="header-bg"></view>
 			<view class="header-content">
 				<text class="clinic-name">爱康医务室管理系统</text>
-				<text class="doc-type">北京欢乐谷医务室 · 药房日消耗记录</text>
+				<text class="doc-type">北京欢乐谷医务室 · 门诊日消耗记录</text>
 				<text class="doc-type-en">DAILY CONSUMPTION RECORD</text>
 			</view>
 		</view>
@@ -66,7 +66,7 @@
 			</view>
 		</view>
 
-		<!-- 药品明细 -->
+		<!-- 药材明细 -->
 		<view class="drugs-card">
 			<view class="card-title">
 				<text class="title-icon">💊</text>
@@ -78,11 +78,11 @@
 			<view class="add-actions">
 			<view class="add-btn primary" @tap="manualAdd">
 					<text class="btn-icon">➕</text>
-				<text class="btn-text">添加药品</text>
+				<text class="btn-text">添加药材</text>
 				</view>
 			</view>
 			
-			<!-- 药品列表 -->
+			<!-- 药材列表 -->
 			<view v-if="drugList.length > 0" class="drug-list">
 				<view 
 					v-for="(item, index) in drugList"
@@ -125,7 +125,7 @@
 			<!-- 空状态 -->
 			<view v-else class="empty-drugs">
 				<text class="empty-icon">💊</text>
-				<text class="empty-text">请添加消耗药品</text>
+				<text class="empty-text">请添加消耗药材</text>
 			</view>
 		</view>
 
@@ -203,7 +203,7 @@ export default {
 			try {
 				uni.showLoading({ title: '加载批次...' })
 				
-				// 查询该药品在当前园区的库存批次
+				// 查询该药材在当前园区的库存批次
 				const result = await callFunction('stockManage', {
 					action: 'getBatchesByDrugId',
 					data: {
@@ -226,7 +226,7 @@ export default {
 					}
 				} else {
 					uni.showToast({
-						title: '该药品在当前园区无库存',
+						title: '该药材在当前园区无库存',
 						icon: 'none'
 					})
 				}
@@ -260,7 +260,7 @@ export default {
 			
 			if (existIndex >= 0) {
 				uni.showToast({
-					title: '该药品已添加',
+					title: '该药材已添加',
 					icon: 'none'
 				})
 				return
@@ -284,7 +284,7 @@ export default {
 		},
 		
 		manualAdd() {
-			// 手动选择药品
+			// 手动选择药材
 			uni.navigateTo({
 				url: '/pages-sub/drug/list?mode=select&location=' + this.location
 			})
@@ -349,7 +349,7 @@ export default {
 			}
 			
 			if (this.drugList.length === 0) {
-				uni.showToast({ title: '请添加消耗药品', icon: 'none' })
+				uni.showToast({ title: '请添加消耗药材', icon: 'none' })
 				return
 			}
 			
@@ -678,7 +678,7 @@ export default {
 	font-weight: 600;
 }
 
-/* 药品列表 */
+/* 药材列表 */
 .drug-list {
 	display: flex;
 	flex-direction: column;

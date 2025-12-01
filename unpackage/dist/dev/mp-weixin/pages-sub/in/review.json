@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "入库单复核",
+  "usingComponents": {
+    "signature": "/components/signature/index"
+  }
+}

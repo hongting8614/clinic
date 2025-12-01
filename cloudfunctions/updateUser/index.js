@@ -7,7 +7,7 @@ const db = cloud.database()
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  const { userId, name, nickname, phone, role } = event
+  const { userId, name, nickname, phone, role, realName } = event
   
   try {
     // 1. 验证操作者权限（必须是管理员或项目经理）
@@ -49,8 +49,8 @@ exports.main = async (event, context) => {
       }
     }
     
-    // 验证角色是否合法
-    const validRoles = ['admin', 'project_manager', 'doctor', 'pharmacy', 'viewer']
+    // 验证角色是否合法（与前端角色选项保持一致）
+    const validRoles = ['admin', 'project_manager', 'doctor', 'viewer']
     if (!validRoles.includes(role)) {
       return {
         code: 400,

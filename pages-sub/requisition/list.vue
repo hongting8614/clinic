@@ -62,7 +62,7 @@
 						<text class="info-value">{{ record.requisitioner }}</text>
 					</view>
 					<view class="info-row">
-						<text class="info-label">药品种类：</text>
+						<text class="info-label">药材种类：</text>
 						<text class="info-value">{{ record.drugList.length }}种</text>
 					</view>
 					<view class="info-row">

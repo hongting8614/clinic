@@ -80,15 +80,18 @@ class UnitConverter {
 }
 
 exports.main = async (event, context) => {
-  const { action, ...params } = event;
-  if (action === 'query') return await queryOutRecords(params);
-  if (action === 'detail') return await outboundDetail(params.id);
+  // 兼容旧版 query/detail 调用方式
+  const { action } = event
+  if (action === 'query') return await queryOutRecords(event)
+  if (action === 'detail') return await outboundDetail(event.id)
+  
   const wxContext = cloud.getWXContext()
+  const data = event.data || {}
   
   try {
     switch (action) {
       case 'create':
-      case 'add':  // 添加 'add' 作为 'create' 的别名,保持API命名统一
+      case 'add': // 添加 'add' 作为 'create' 的别名,保持API命名统一
         return await createRecord(data, wxContext)
       case 'update':
         return await updateRecord(data, wxContext)
@@ -169,10 +172,10 @@ async function createRecord(data, wxContext) {
   
   // 验证必填字段
   if (!recordNo || !toLocation || !items || items.length === 0) {
-    throw new Error('出库单号、目标园区和药品明细不能为空')
+    throw new Error('出库单号、目标园区和药材明细不能为空')
   }
   
-  // 转换药品明细（关键转换点）⭐
+  // 转换药材明细（关键转换点）⭐
   const convertedItems = []
   for (const item of items) {
     // 1. 解析规格
@@ -353,7 +356,7 @@ async function complete(data, wxContext) {
         })
       } else {
         // 不存在，新建库存记录（最小单位）⭐
-        // 获取药品完整信息
+        // 获取药材完整信息
         const drugInfo = await db.collection('drugs').doc(item.drugId).get()
         
         // 计算效期状态
@@ -569,6 +572,7 @@ async function getDetail(data, wxContext) {
 // 获取各状态数量
 async function getCounts(data, wxContext) {
   const draft = await db.collection('out_records').where({ status: 'draft' }).count()
+  const pending = await db.collection('out_records').where({ status: 'pending_review' }).count()
   const completed = await db.collection('out_records').where({ status: 'completed' }).count()
   
   // 获取今日数量
@@ -580,12 +584,18 @@ async function getCounts(data, wxContext) {
     })
     .count()
   
+  const draftTotal = draft.total || 0
+  const pendingTotal = pending.total || 0
+  const completedTotal = completed.total || 0
+  
   return {
     success: true,
-    draft: draft.total,
-    completed: completed.total,
-    all: draft.total + completed.total,
-    today: todayRecords.total
+    draft: draftTotal,
+    pending_review: pendingTotal,
+    pendingReview: pendingTotal,
+    completed: completedTotal,
+    all: draftTotal + pendingTotal + completedTotal,
+    today: todayRecords.total || 0
   }
 }
 

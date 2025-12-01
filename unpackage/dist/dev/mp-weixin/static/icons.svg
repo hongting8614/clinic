@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- 医务室Logo图标 -->
+  <symbol id="icon-clinic-logo" viewBox="0 0 64 64">
+    <defs>
+      <linearGradient id="grad-clinic" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <!-- 医疗十字 + 盾牌组合 -->
+    <path d="M32 8 L28 8 L28 28 L8 28 L8 36 L28 36 L28 56 L36 56 L36 36 L56 36 L56 28 L36 28 L36 8 Z" 
+          fill="url(#grad-clinic)" />
+    <circle cx="32" cy="32" r="28" stroke="url(#grad-clinic)" stroke-width="3" fill="none" opacity="0.3"/>
+  </symbol>
+
+  <!-- 入库图标 -->
+  <symbol id="icon-in" viewBox="0 0 48 48">
+    <defs>
+      <linearGradient id="grad-in" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="8" y="16" width="32" height="24" rx="3" fill="url(#grad-in)" opacity="0.2"/>
+    <path d="M24 8 L24 28 M16 20 L24 28 L32 20" stroke="url(#grad-in)" stroke-width="3" 
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="8" y="32" width="32" height="8" rx="2" fill="url(#grad-in)"/>
+  </symbol>
+
+  <!-- 出库图标 -->
+  <symbol id="icon-out" viewBox="0 0 48 48">
+    <defs>
+      <linearGradient id="grad-out" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="8" y="8" width="32" height="24" rx="3" fill="url(#grad-out)" opacity="0.2"/>
+    <path d="M24 40 L24 20 M16 28 L24 20 L32 28" stroke="url(#grad-out)" stroke-width="3" 
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="8" y="8" width="32" height="8" rx="2" fill="url(#grad-out)"/>
+  </symbol>
+
+  <!-- 库存图标 -->
+  <symbol id="icon-stock" viewBox="0 0 48 48">
+    <defs>
+      <linearGradient id="grad-stock" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="8" y="16" width="12" height="24" rx="2" fill="url(#grad-stock)"/>
+    <rect x="22" y="12" width="12" height="28" rx="2" fill="url(#grad-stock)" opacity="0.7"/>
+    <rect x="36" y="20" width="12" height="20" rx="2" fill="url(#grad-stock)" opacity="0.5"/>
+  </symbol>
+
+  <!-- 单据图标 -->
+  <symbol id="icon-document" viewBox="0 0 48 48">
+    <defs>
+      <linearGradient id="grad-doc" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="12" y="8" width="24" height="32" rx="3" fill="url(#grad-doc)" opacity="0.2"/>
+    <path d="M12 8 L28 8 L36 16 L36 40 L12 40 Z" fill="url(#grad-doc)"/>
+    <line x1="18" y1="20" x2="30" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="18" y1="26" x2="30" y2="26" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="18" y1="32" x2="26" y2="32" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+
+
+
+
+
+

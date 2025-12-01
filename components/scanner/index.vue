@@ -105,7 +105,7 @@ export default {
 						return
 					}
 					
-					// 查询药品信息
+					// 查询药材信息
 					this.getDrugByBarcode(barcode)
 				},
 				fail: (err) => {
@@ -161,7 +161,7 @@ export default {
 			return pattern.test(barcode)
 		},
 		
-		// 查询药品信息
+		// 查询药材信息
 		async getDrugByBarcode(barcode) {
 			this.loading = true
 			
@@ -199,9 +199,9 @@ export default {
 						duration: 1500
 					})
 					
-					console.log('✅ 药品信息:', drugInfo)
+					console.log('✅ 药材信息:', drugInfo)
 					
-					// 触发成功事件，返回药品信息和条形码
+					// 触发成功事件，返回药材信息和条形码
 					this.$emit('success', {
 						...drugInfo,
 						barcode: barcode,
@@ -215,13 +215,13 @@ export default {
 						}, 1500)
 					}
 				} else {
-					// 药品未找到
-					console.log('⚠️ 未找到药品信息')
+					// 药材未找到
+					console.log('⚠️ 未找到药材信息')
 					this.handleDrugNotFound(barcode)
 				}
 				
 			} catch (err) {
-				console.error('❌ 查询药品失败:', err)
+				console.error('❌ 查询药材失败:', err)
 				
 				let errorMsg = '查询失败，请重试'
 				
@@ -250,11 +250,11 @@ export default {
 			}
 		},
 		
-		// 处理药品未找到
+		// 处理药材未找到
 		handleDrugNotFound(barcode) {
 			uni.showModal({
-				title: '💊 药品未找到',
-				content: `条形码：${barcode}\n\n该药品未录入系统，是否手动添加？`,
+				title: '💊 药材未找到',
+				content: `条形码：${barcode}\n\n该药材未录入系统，是否手动添加？`,
 				confirmText: '立即添加',
 				cancelText: '取消',
 				success: (res) => {

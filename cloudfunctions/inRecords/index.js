@@ -135,6 +135,9 @@ async function simulateBulk(data, wxContext) {
       operator: r.operator || '',
       operatorId: r.operatorId || '',
       operatorRole: r.operatorRole || '',
+      // 同步写入 doctor 字段，含义等同于操作人，便于后续统一为医生
+      doctor: r.doctor || r.operator || '',
+      doctorId: r.doctorId || r.operatorId || '',
       operatorSign: r.operatorSign || r.operator || '',
       operatorSignTime: r.operatorSignTime ? new Date(r.operatorSignTime) : now,
       reviewer: r.reviewer || '',
@@ -187,7 +190,7 @@ async function createRecord(data, wxContext) {
   
   // 验证必填字段
   if (!recordNo || !items || items.length === 0) {
-    throw new Error('入库单号和药品明细不能为空')
+    throw new Error('入库单号和药材明细不能为空')
   }
   
   const now = new Date()
@@ -199,6 +202,9 @@ async function createRecord(data, wxContext) {
     remark: remark || '',
     operator,
     operatorId,
+    // 同步写入 doctor 字段，含义等同于操作人，便于后续统一为医生
+    doctor: operator,
+    doctorId: operatorId,
     operatorRole: operatorRole || '',
     operatorSign,
     operatorSignTime,

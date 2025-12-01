@@ -33,7 +33,7 @@
 ### 1.2 查询优先级（强制）
 
 ```
-优先级1: 本地药品档案（免费，无限次）
+优先级1: 本地药材档案（免费，无限次）
   ↓ 未找到
 优先级2: 检查API剩余次数
   ↓ 次数充足
@@ -123,7 +123,7 @@ exports.main = async (event, context) => {
   const userId = wxContext.OPENID
   
   console.log('========================================')
-  console.log('🔍 药品条形码查询云函数')
+  console.log('🔍 药材条形码查询云函数')
   console.log('用户ID:', userId)
   console.log('条形码:', barcode)
   console.log('========================================')
@@ -147,7 +147,7 @@ exports.main = async (event, context) => {
 }
 
 /**
- * 查询药品信息（带API次数控制）
+ * 查询药材信息（带API次数控制）
  */
 async function queryByBarcode(barcode, userId) {
   if (!barcode) {
@@ -156,8 +156,8 @@ async function queryByBarcode(barcode, userId) {
   
   console.log('📋 开始三级查询策略（带API次数控制）')
   
-  // 第1级：查询本地药品档案（优先，免费）
-  console.log('📦 [第1级] 查询本地药品档案...')
+  // 第1级：查询本地药材档案（优先，免费）
+  console.log('📦 [第1级] 查询本地药材档案...')
   let drugInfo = await queryLocalDrugs(barcode)
   
   if (drugInfo) {
@@ -169,7 +169,7 @@ async function queryByBarcode(barcode, userId) {
       data: drugInfo,
       source: 'local',
       cost: 0,
-      message: '从本地药品档案获取'
+      message: '从本地药材档案获取'
     }
   }
   
@@ -186,7 +186,7 @@ async function queryByBarcode(barcode, userId) {
       message: usageCheck.message,
       reason: 'api_limit_exceeded',
       stats: usageCheck.stats,
-      suggestion: '请手动新建药品档案，或等待明天重置'
+      suggestion: '请手动新建药材档案，或等待明天重置'
     }
   }
   
@@ -208,7 +208,7 @@ async function queryByBarcode(barcode, userId) {
     await logAPIUsage(barcode, userId, true, drugInfo)
     
     // 自动保存到本地档案（下次免费）
-    console.log('💾 自动保存到本地药品档案...')
+    console.log('💾 自动保存到本地药材档案...')
     await saveToDrugArchive(drugInfo)
     
     // 获取更新后的统计
@@ -236,9 +236,9 @@ async function queryByBarcode(barcode, userId) {
   
   return {
     success: false,
-    message: '未找到药品信息',
+    message: '未找到药材信息',
     barcode: barcode,
-    suggestion: '请手动新建药品档案'
+    suggestion: '请手动新建药材档案'
   }
 }
 
@@ -523,7 +523,7 @@ async scanBarcode() {
     if (stats.remaining === 0) {
       uni.showModal({
         title: '🚫 API次数已用完',
-        content: `今日API调用次数已达上限 (${stats.todayUsed}/${stats.limit})\n\n建议：\n1. 手动新建药品档案\n2. 等待明天重置`,
+        content: `今日API调用次数已达上限 (${stats.todayUsed}/${stats.limit})\n\n建议：\n1. 手动新建药材档案\n2. 等待明天重置`,
         showCancel: false
       })
       return
@@ -648,8 +648,8 @@ async handleBarcode(barcode) {
     } else {
       // 未找到
       uni.showModal({
-        title: '💊 未找到药品',
-        content: `条形码：${barcode}\n\n未找到药品信息，是否手动新建？`,
+        title: '💊 未找到药材',
+        content: `条形码：${barcode}\n\n未找到药材信息，是否手动新建？`,
         confirmText: '新建',
         cancelText: '取消',
         success: (res) => {
@@ -827,7 +827,7 @@ exports.main = async (event, context) => {
 ### 核心保障措施
 
 1. ✅ **硬性限制**：每日API调用 < 99次
-2. ✅ **优先本地**：优先查询本地药品档案（免费）
+2. ✅ **优先本地**：优先查询本地药材档案（免费）
 3. ✅ **实时监控**：每次调用前检查剩余次数
 4. ✅ **分级警告**：80次警告，90次严重警告
 5. ✅ **用户限制**：单用户每天最多20次

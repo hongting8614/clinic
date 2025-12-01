@@ -49,38 +49,82 @@
       </view>
     </view>
 
-    <!-- 结果列表 -->
-    <view class="table-section">
-      <view v-if="records.length" class="table-wrapper">
-        <view class="table-header">
-          <text class="col w-no">序号</text>
-          <text class="col w-date">就诊时间</text>
-          <text class="col w-name">姓名</text>
-          <text class="col w-main">主诉</text>
-          <text class="col w-diag">诊断</text>
-          <text class="col w-drug">用药信息</text>
-          <text class="col w-doctor">医生</text>
-        </view>
-        <scroll-view scroll-y class="table-body">
-          <view
-            class="table-row"
-            v-for="(item, index) in records"
-            :key="item._id || index"
-          >
-            <text class="col w-no">{{ index + 1 }}</text>
-            <text class="col w-date">{{ formatDateTime(item.visitDateTime || item.createTime) }}</text>
-            <text class="col w-name">{{ item.name || '-' }}</text>
-            <text class="col w-main">{{ item.chiefComplaint || '-' }}</text>
-            <text class="col w-diag">{{ item.diagnosis || '-' }}</text>
-            <text class="col w-drug">{{ renderDrugInfo(item) }}</text>
-            <text class="col w-doctor">{{ item.doctorName || '-' }}</text>
+    <!-- 结果列表：卡片式门诊记录 -->
+    <view class="list-section">
+      <view v-if="records.length" class="record-list">
+        <view
+          class="record-card"
+          v-for="(item, index) in records"
+          :key="index"
+        >
+          <!-- 顶部：时间 + 园区 -->
+          <view class="record-header">
+            <text class="record-time">{{ formatDateTime(item.visitDateTime || item.createTime) }}</text>
+            <view class="record-location-wrap" v-if="item.location">
+              <text class="record-location">{{ item.location === 'land_park' ? '陆园' : (item.location === 'water_park' ? '水园' : '不限园区') }}</text>
+            </view>
           </view>
-        </scroll-view>
+
+          <!-- 姓名 + 身份 / 类型信息 -->
+          <view class="record-main-row">
+            <view class="record-main-left">
+              <text class="record-name">{{ item.name || '-' }}</text>
+              <text class="record-sub" v-if="item.gender || item.age">
+                {{ item.gender || '' }}<text v-if="item.gender && item.age"> · </text>{{ item.age ? item.age + '岁' : '' }}
+              </text>
+            </view>
+            <view class="record-main-right">
+              <text class="record-tag" v-if="item.identity">{{ item.identity }}</text>
+              <text class="record-tag type" v-if="item.isOutcall || item.visitType">
+                {{ (item.isOutcall || item.visitType === 'outcall') ? '出诊' : '门诊' }}
+              </text>
+            </view>
+          </view>
+
+          <!-- 主诉 -->
+          <view class="record-field" v-if="item.chiefComplaint">
+            <text class="field-label">主诉</text>
+            <text class="field-value">{{ item.chiefComplaint }}</text>
+          </view>
+
+          <!-- 诊断 -->
+          <view class="record-field" v-if="item.diagnosis">
+            <text class="field-label">诊断</text>
+            <text class="field-value">{{ item.diagnosis }}</text>
+          </view>
+
+          <!-- 出诊地点（仅出诊记录显示） -->
+          <view
+            class="record-field"
+            v-if="(item.isOutcall || item.visitType === 'outcall') && item.injuryLocation"
+          >
+            <text class="field-label">出诊地点</text>
+            <text class="field-value">{{ item.injuryLocation }}</text>
+          </view>
+
+          <!-- 用药 / 处置信息 -->
+          <view class="record-field" v-if="renderDrugInfo(item)">
+            <text class="field-label">用药</text>
+            <text class="field-value">{{ renderDrugInfo(item) }}</text>
+          </view>
+
+          <!-- 备注 -->
+          <view class="record-field" v-if="item.remark">
+            <text class="field-label">备注</text>
+            <text class="field-value">{{ item.remark }}</text>
+          </view>
+
+          <!-- 医生 -->
+          <view class="record-footer">
+            <text class="field-label">医生</text>
+            <text class="field-value">{{ item.doctorName || '-' }}</text>
+          </view>
+        </view>
       </view>
       <view v-else class="empty-state">
         <text class="empty-icon">📋</text>
         <text class="empty-text">暂无门诊记录</text>
-        <text class="empty-hint">请选择日期和条件后点击查询</text>
+        <text class="empty-hint">请选择姓名 / 园区 / 时间段后点击查询</text>
       </view>
     </view>
   </view>
@@ -352,13 +396,22 @@ export default {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background: #f8f9fa;
+  // 使用与首页/门诊首页一致的蓝色渐变背景
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
   padding-bottom: 140rpx;
 }
 
 .page-header {
-  padding: 40rpx 30rpx 20rpx;
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  // 顶部标题卡片：象牙白圆角卡片，宽度与首页 header-card 对齐
+  max-width: 702rpx;
+  margin: 24rpx auto 8rpx;
+  padding: 32rpx 30rpx 24rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow:
+    0 1rpx 0 rgba(255, 255, 255, 0.9) inset,
+    0 -1rpx 0 rgba(15, 23, 42, 0.06) inset,
+    0 18rpx 40rpx rgba(15, 23, 42, 0.14);
 }
 
 .page-header-inner {
@@ -370,15 +423,16 @@ export default {
 .page-title {
   font-size: 40rpx;
   font-weight: 600;
-  color: #1e1b4b;
+  color: #0f172a;
 }
 
 .filter-card {
-  margin: 0 30rpx 20rpx;
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
   padding: 24rpx 24rpx 20rpx;
-  background: #fff;
-  border-radius: 18rpx;
-  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.06);
+  background: #FFFFF0;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .filter-row {
@@ -541,5 +595,119 @@ export default {
 
 .empty-hint {
   font-size: 24rpx;
+}
+
+/* 门诊查询卡片列表样式 */
+.list-section {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.record-card {
+  background: #ffffff;
+  border-radius: 22rpx;
+  padding: 22rpx 24rpx 20rpx;
+  box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+  border: none;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.record-time {
+  font-size: 24rpx;
+  color: #4b5563;
+}
+
+.record-location-wrap {
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.record-location {
+  font-size: 22rpx;
+  color: #6366f1;
+}
+
+.record-main-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 6rpx;
+}
+
+.record-main-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-main-right {
+  display: flex;
+  gap: 8rpx;
+}
+
+.record-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #111827;
+}
+
+.record-sub {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
+.record-tag {
+  font-size: 22rpx;
+  color: #6b7280;
+  padding: 2rpx 10rpx;
+  border-radius: 999rpx;
+  background: #f3f4f6;
+}
+
+.record-tag.type {
+  color: #2563eb;
+  background: #dbeafe;
+}
+
+.record-field {
+  margin-top: 4rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+
+.field-label {
+  font-size: 22rpx;
+  color: #9ca3af;
+  min-width: 72rpx;
+}
+
+.field-value {
+  font-size: 24rpx;
+  color: #111827;
+  flex: 1;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.record-footer {
+  margin-top: 8rpx;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6rpx;
 }
 </style>

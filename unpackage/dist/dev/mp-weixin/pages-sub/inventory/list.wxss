@@ -1,0 +1,185 @@
+@charset "UTF-8";
+.container.data-v-6b43ba52 {
+  min-height: 100vh;
+  /* 使用与首页/门诊/药材工作台一致的蓝色渐变背景 */
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 40rpx;
+}
+.page-header.data-v-6b43ba52 {
+  /* 顶部标题卡片：象牙白圆角卡片，宽度与其它工作台 header-card 对齐 */
+  max-width: 702rpx;
+  margin: 10rpx auto 8rpx;
+  padding: 20rpx 22rpx 18rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.9) inset, 0 -1rpx 0 rgba(15, 23, 42, 0.06) inset, 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-left.data-v-6b43ba52 {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.page-title.data-v-6b43ba52 {
+  font-size: 32rpx;
+  font-weight: 650;
+  color: #111827;
+}
+.page-subtitle.data-v-6b43ba52 {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+.page-actions.data-v-6b43ba52 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+}
+.header-btn.data-v-6b43ba52 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  border-width: 1rpx;
+  border-style: solid;
+}
+.header-btn.primary.data-v-6b43ba52 {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.header-btn.ghost.data-v-6b43ba52 {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.btn-text.data-v-6b43ba52 {
+  font-size: 24rpx;
+}
+.filter-section.data-v-6b43ba52 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 16rpx 18rpx 10rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.filter-row.data-v-6b43ba52 {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 8rpx;
+}
+.filter-chip.data-v-6b43ba52 {
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: #f3f4f6;
+  font-size: 24rpx;
+  color: #4b5563;
+}
+.filter-chip.active.data-v-6b43ba52 {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.3);
+}
+.list-section.data-v-6b43ba52 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+}
+.inventory-card.data-v-6b43ba52 {
+  background: #FFFFF0;
+  border-radius: 20rpx;
+  padding: 22rpx 22rpx 18rpx;
+  margin-bottom: 8rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.card-header.data-v-6b43ba52 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.record-no.data-v-6b43ba52 {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+.status-tag.data-v-6b43ba52 {
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: #ffffff;
+}
+.status-tag.status-draft.data-v-6b43ba52 {
+  background: #9ca3af;
+}
+.status-tag.status-in_progress.data-v-6b43ba52 {
+  background: #f59e0b;
+}
+.status-tag.status-completed.data-v-6b43ba52 {
+  background: #22c55e;
+}
+.card-body.data-v-6b43ba52 {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.info-row.data-v-6b43ba52 {
+  font-size: 24rpx;
+  color: #4b5563;
+}
+.label.data-v-6b43ba52 {
+  color: #9ca3af;
+}
+.value.data-v-6b43ba52 {
+  color: #111827;
+}
+.empty-state.data-v-6b43ba52 {
+  padding: 120rpx 0 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #9ca3af;
+}
+.empty-icon.data-v-6b43ba52 {
+  font-size: 80rpx;
+  margin-bottom: 12rpx;
+}
+.empty-text.data-v-6b43ba52 {
+  font-size: 30rpx;
+  margin-bottom: 8rpx;
+}
+.empty-hint.data-v-6b43ba52 {
+  font-size: 24rpx;
+  color: #cbd5e1;
+}
+.export-section.data-v-6b43ba52 {
+  max-width: 702rpx;
+  margin: 0 auto 24rpx;
+}
+.export-btn.data-v-6b43ba52 {
+  background: #FFFFF0;
+  border-radius: 20rpx;
+  padding: 18rpx 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.export-icon.data-v-6b43ba52 {
+  font-size: 28rpx;
+  color: #4b5563;
+}
+.export-text.data-v-6b43ba52 {
+  font-size: 26rpx;
+  color: #111827;
+}

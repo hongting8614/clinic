@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "新建出库单",
+  "usingComponents": {
+    "signature": "/components/signature/index",
+    "batch-selector": "/components/batch-selector/index"
+  }
+}

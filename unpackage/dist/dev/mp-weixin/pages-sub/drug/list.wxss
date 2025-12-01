@@ -1,0 +1,119 @@
+@charset "UTF-8";
+.container.data-v-085ea1b7 {
+  min-height: 100vh;
+  /* 使用统一的蓝色渐变背景 */
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 140rpx;
+}
+.search-section.data-v-085ea1b7 {
+  max-width: 702rpx;
+  margin: 10rpx auto 8rpx;
+  background-color: #FFFFF0;
+  border-radius: 22rpx;
+  padding: 18rpx 20rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.filter-section.data-v-085ea1b7 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 12rpx 16rpx 10rpx;
+  background-color: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+.drug-list.data-v-085ea1b7 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.drug-item.data-v-085ea1b7 {
+  background-color: #FFFFF0;
+  border-radius: 18rpx;
+  padding: 22rpx 24rpx 18rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.drug-header.data-v-085ea1b7 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1px solid #F0F0F0;
+}
+.drug-name.data-v-085ea1b7 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+}
+.drug-tag.data-v-085ea1b7 {
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: normal;
+}
+.tag-high.data-v-085ea1b7 {
+  background-color: #FFF3E0;
+  color: #FF9800;
+}
+.tag-emergency.data-v-085ea1b7 {
+  background-color: #FFEBEE;
+  color: #F44336;
+}
+.drug-actions.data-v-085ea1b7 {
+  display: flex;
+  gap: 10rpx;
+}
+.drug-info.data-v-085ea1b7 {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+  margin-bottom: 20rpx;
+}
+.info-row.data-v-085ea1b7 {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+}
+.info-label.data-v-085ea1b7 {
+  color: #999999;
+  min-width: 140rpx;
+}
+.info-value.data-v-085ea1b7 {
+  color: #333333;
+  flex: 1;
+}
+.drug-footer.data-v-085ea1b7 {
+  padding-top: 15rpx;
+  border-top: 1px solid #F0F0F0;
+}
+.stock-info.data-v-085ea1b7 {
+  font-size: 24rpx;
+  color: #3cc51f;
+}
+.empty-state.data-v-085ea1b7 {
+  padding: 100rpx 0;
+}
+.load-more.data-v-085ea1b7 {
+  padding: 30rpx 0;
+  text-align: center;
+}
+.bottom-actions.data-v-085ea1b7 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+}

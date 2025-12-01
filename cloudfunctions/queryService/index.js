@@ -37,7 +37,7 @@ exports.main = async (event, context) => {
   }
 };
 
-// Q1: 药品综合查询
+// Q1: 药材综合查询
 async function queryDrug(params) {
   const {
     name,
@@ -51,7 +51,7 @@ async function queryDrug(params) {
   
   let whereCondition = {};
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (name) {
     whereCondition.name = db.RegExp({
       regexp: name,
@@ -75,14 +75,14 @@ async function queryDrug(params) {
     });
   }
   
-  // 查询药品基本信息
+  // 查询药材基本信息
   const drugRes = await db.collection('drugs')
     .where(whereCondition)
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get();
   
-  // 查询每个药品的库存分布和有效期信息
+  // 查询每个药材的库存分布和有效期信息
   const drugsWithStock = await Promise.all(
     drugRes.data.map(async (drug) => {
       let stockCondition = { drugId: drug._id };
@@ -153,7 +153,7 @@ async function queryStock(params) {
   
   let whereCondition = {};
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (drugName) {
     whereCondition.drugName = db.RegExp({
       regexp: drugName,
@@ -244,7 +244,7 @@ async function queryClinic(params) {
     whereCondition.location = location;
   }
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (drugName) {
     whereCondition.drugName = db.RegExp({
       regexp: drugName,
@@ -310,7 +310,7 @@ async function queryInbound(params) {
     });
   }
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (drugName) {
     whereCondition.drugName = db.RegExp({
       regexp: drugName,
@@ -385,7 +385,7 @@ async function queryOutbound(params) {
     });
   }
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (drugName) {
     whereCondition.drugName = db.RegExp({
       regexp: drugName,
@@ -448,7 +448,7 @@ async function queryCheck(params) {
     whereCondition.location = location;
   }
   
-  // 药品名称模糊查询
+  // 药材名称模糊查询
   if (drugName) {
     whereCondition.drugName = db.RegExp({
       regexp: drugName,

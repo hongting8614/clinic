@@ -1,4 +1,4 @@
-// 药品列表查询云函数
+// 药材列表查询云函数
 const cloud = require('wx-server-sdk')
 
 cloud.init({
@@ -20,7 +20,7 @@ exports.main = async (event, context) => {
     let query = db.collection('drugs')
     let whereCondition = {}
     
-    // 关键词搜索（药品名称或拼音）
+    // 关键词搜索（药材名称或拼音）
     if (keyword) {
       whereCondition = _.or([
         {

@@ -1,0 +1,405 @@
+@charset "UTF-8";
+/* 整体背景与底部留白 */
+.container.data-v-292f9c84 {
+  min-height: 100vh;
+  /* 使用与首页/门诊/药材工作台一致的蓝色渐变背景 */
+  background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
+  padding: 24rpx 24rpx 140rpx;
+}
+/* 顶部标题卡片 */
+.page-header.data-v-292f9c84 {
+  /* 顶部标题卡片：象牙白圆角卡片，与其它工作台 header-card 对齐 */
+  max-width: 702rpx;
+  margin: 10rpx auto 8rpx;
+  padding: 22rpx 22rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.9) inset, 0 -1rpx 0 rgba(15, 23, 42, 0.06) inset, 0 18rpx 40rpx rgba(15, 23, 42, 0.14);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.page-title.data-v-292f9c84 {
+  font-size: 36rpx;
+  font-weight: 650;
+  color: #0f172a;
+}
+.page-subtitle.data-v-292f9c84 {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: #0d9488;
+}
+.page-actions.data-v-292f9c84 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+}
+.header-btn.data-v-292f9c84 {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.header-btn.primary.data-v-292f9c84 {
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+}
+.btn-icon.data-v-292f9c84 {
+  font-size: 24rpx;
+}
+/* 顶部 Tab 卡片区域 */
+.tab-bar.data-v-292f9c84 {
+  display: flex;
+  /* 居中排布三个 Tab，在 702rpx 内容区域内左右留均匀空白 */
+  justify-content: center;
+  gap: 12rpx;
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 0;
+}
+.tab-item.data-v-292f9c84 {
+  /* 三个 Tab 平均分配整行宽度，覆盖编译生成的固定 width */
+  flex: 1 1 0;
+  width: auto !important;
+  padding: 18rpx 16rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 2rpx solid transparent;
+  box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6rpx;
+  /* 三个 Tab 平均分配整行宽度，覆盖编译生成的固定 width */
+  flex: 1 1 0;
+  width: auto !important;
+  padding: 18rpx 16rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 2rpx solid transparent;
+  box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6rpx;
+}
+.tab-item.active.data-v-292f9c84 {
+  border-color: #06b6d4;
+  box-shadow: 0 10rpx 26rpx rgba(8, 145, 178, 0.3);
+}
+.tab-label.data-v-292f9c84 {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #0f172a;
+}
+.tab-desc.data-v-292f9c84 {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+/* 筛选面板外框（与截图中大筛选卡片保持一致宽度） */
+.filter-panel-wrapper.data-v-292f9c84 {
+  /* 筛选卡片：象牙白卡片轨道，底部留 8rpx */
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+}
+/* 统一筛选卡内部白卡片与明细卡的左右内边距（22rpx） */
+.data-v-292f9c84:deep(.filter-panel) {
+  padding-left: 22rpx;
+  padding-right: 22rpx;
+}
+/* 插槽中的附加筛选区域：整体作为内部浅色块 */
+.filter-extra.data-v-292f9c84 {
+  margin-top: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.filter-row.data-v-292f9c84 {
+  display: flex;
+  flex-direction: row;
+  gap: 10rpx;
+}
+.filter-row--two.data-v-292f9c84 {
+  justify-content: space-between;
+}
+.extra-item.data-v-292f9c84 {
+  flex: 1;
+  background: #f3f4f6;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  padding: 10rpx 18rpx;
+}
+.extra-item--batch.data-v-292f9c84,
+.extra-item--drug.data-v-292f9c84 {
+  border-radius: 18rpx;
+  padding: 12rpx 18rpx;
+}
+.extra-item--operator.data-v-292f9c84 {
+  flex: 1.2;
+}
+.toggle-item.data-v-292f9c84 {
+  flex: 0.8;
+  border-radius: 18rpx;
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 18rpx;
+}
+.extra-label.data-v-292f9c84 {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+.extra-input-wrapper.data-v-292f9c84 {
+  position: relative;
+  flex: 1;
+  background: #eef2ff;
+  border-radius: 999rpx;
+  padding: 8rpx 18rpx 8rpx 46rpx;
+}
+.extra-input-icon.data-v-292f9c84 {
+  position: absolute;
+  left: 18rpx;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+.extra-input.data-v-292f9c84 {
+  font-size: 26rpx;
+  color: #0f172a;
+}
+.toggle.data-v-292f9c84 {
+  width: 86rpx;
+  height: 40rpx;
+  border-radius: 999rpx;
+  background: #e5e7eb;
+  position: relative;
+}
+.toggle.active.data-v-292f9c84 {
+  background: #22c55e;
+}
+.toggle-dot.data-v-292f9c84 {
+  position: absolute;
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 3rpx;
+  left: 4rpx;
+  transition: -webkit-transform 0.2s;
+  transition: transform 0.2s;
+  transition: transform 0.2s, -webkit-transform 0.2s;
+}
+.toggle.active .toggle-dot.data-v-292f9c84 {
+  -webkit-transform: translateX(44rpx);
+          transform: translateX(44rpx);
+}
+/* 时间段快捷筛选卡片 */
+.period-filter-card.data-v-292f9c84 {
+  max-width: 702rpx;
+  margin: 0 auto 0;
+  padding: 22rpx 24rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+}
+.period-title.data-v-292f9c84 {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12rpx;
+}
+.period-chips.data-v-292f9c84 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+.period-chip.data-v-292f9c84 {
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: #f3f4f6;
+  font-size: 24rpx;
+  color: #475569;
+}
+.period-chip.active.data-v-292f9c84 {
+  background: linear-gradient(135deg, #06b6d4, #22c1c3);
+  color: #ffffff;
+  box-shadow: 0 8rpx 20rpx rgba(8, 145, 178, 0.3);
+}
+.period-range.data-v-292f9c84 {
+  font-size: 24rpx;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.range-hint.data-v-292f9c84 {
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+/* 顶部统计信息卡片 */
+.stats-card.data-v-292f9c84 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 18rpx 22rpx;
+  background: #FFFFF0;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12rpx;
+}
+.stat-item.data-v-292f9c84 {
+  text-align: center;
+}
+.stat-value.data-v-292f9c84 {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+.stat-label.data-v-292f9c84 {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+/* 列表/空状态总体卡片，相同外框宽度 */
+.table-section.data-v-292f9c84 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 0 0 10rpx;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* 有数据时：明细卡片列表 */
+.detail-list.data-v-292f9c84 {
+  /* 明细卡内部列表与底部留少量空间 */
+  margin: 0 0 6rpx;
+}
+.detail-card.data-v-292f9c84 {
+  background: #FFFFF0;
+  border-radius: 18rpx;
+  padding: 18rpx 22rpx 14rpx;
+  margin: 0 0 8rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+  border: 1rpx solid #e5e7eb;
+}
+.detail-row.data-v-292f9c84 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4rpx;
+}
+.detail-row-top.data-v-292f9c84 {
+  margin-bottom: 4rpx;
+}
+.detail-no.data-v-292f9c84 {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #111827;
+}
+.detail-main-left.data-v-292f9c84 {
+  flex: 1;
+  margin-right: 10rpx;
+  display: flex;
+  flex-direction: column;
+}
+.detail-drug.data-v-292f9c84 {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+.detail-spec.data-v-292f9c84 {
+  margin-top: 2rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+.detail-main-right.data-v-292f9c84 {
+  min-width: 150rpx;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.detail-qty.data-v-292f9c84 {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2563eb;
+}
+.detail-amount.data-v-292f9c84 {
+  margin-top: 2rpx;
+  font-size: 24rpx;
+  color: #ef4444;
+}
+.detail-row-meta.data-v-292f9c84,
+.detail-row-manufacturer.data-v-292f9c84 {
+  font-size: 22rpx;
+  color: #4b5563;
+}
+.meta-label.data-v-292f9c84 {
+  color: #9ca3af;
+  margin-right: 4rpx;
+}
+.meta-value.data-v-292f9c84 {
+  margin-right: 16rpx;
+}
+.meta-value.mono.data-v-292f9c84 {
+  font-family: "DIN Alternate", "Courier New", monospace;
+}
+/* 无数据时：提示内容占满整个 table-section */
+.empty-state.data-v-292f9c84 {
+  padding: 80rpx 24rpx 90rpx;
+  text-align: center;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+}
+.empty-icon.data-v-292f9c84 {
+  font-size: 88rpx;
+}
+/* 底部导出区域：暂保持原有宽度，不影响入库主列视觉 */
+.export-section.data-v-292f9c84 {
+  max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  display: flex;
+  gap: 18rpx;
+  padding: 0 0 40rpx;
+}
+.export-btn.data-v-292f9c84 {
+  flex: 1;
+  border-radius: 999rpx;
+  padding: 18rpx 18rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+}
+.export-icon.data-v-292f9c84 {
+  font-size: 40rpx;
+}
+.export-text.data-v-292f9c84 {
+  font-size: 24rpx;
+  color: #ffffff;
+}

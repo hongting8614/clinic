@@ -151,6 +151,16 @@
 						</view>
 						<text class="menu-arrow">→</text>
 					</view>
+					<view class="menu-item" @tap="goToPage('/pages/about/index')">
+						<view class="menu-icon-wrapper teal">
+							<text class="menu-icon">📘</text>
+						</view>
+						<view class="menu-content">
+							<text class="menu-title">关于项目</text>
+							<text class="menu-desc">项目说明、电子签名须知</text>
+						</view>
+						<text class="menu-arrow">→</text>
+					</view>
 				</view>
 			</view>
 		</view>

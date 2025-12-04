@@ -1,6 +1,67 @@
 <!-- pages/clinic/index.vue -->
 <template>
   <view class="clinic-page">
+    <!-- 电子签名须知弹窗 -->
+    <view v-if="showEsigNotice" class="esig-mask">
+      <view class="esig-dialog">
+        <view class="esig-title">电子签名使用须知</view>
+
+        <scroll-view
+          scroll-y
+          class="esig-content"
+          @scrolltolower="onEsigScrollToLower"
+        >
+          <view class="esig-text">
+            <view class="esig-section-title">一、这是什么？</view>
+            <view class="esig-section-text">
+              电子签名等同于纸质病历上的签字/盖章，表示您已核对并认可本系统中的相关记录内容。
+            </view>
+
+            <view class="esig-section-title">二、谁可以用？</view>
+            <view class="esig-section-text">
+              仅限已在本系统实名登记、具备相应执业资格和权限的医务人员使用，账号不得外借或共用。
+            </view>
+
+            <view class="esig-section-title">三、签名前请确认</view>
+            <view class="esig-section-text">
+              请确认患者姓名、性别、年龄、诊断、用药及用法用量等信息准确无误后再进行签名。
+            </view>
+
+            <view class="esig-section-title">四、签名后的记录</view>
+            <view class="esig-section-text">
+              已签名记录视为正式医疗文书，如需更正应按规定补记或修改，系统会保留完整操作痕迹。
+            </view>
+
+            <view class="esig-section-title">五、账号安全</view>
+            <view class="esig-section-text">
+              如发现账号或密码可能泄露，请立即修改密码并报告相关负责人，配合进行安全检查。
+            </view>
+
+            <view class="esig-section-title">六、责任说明</view>
+            <view class="esig-section-text">
+              您在本系统中的电子签名具有法律效力，与手写签名承担同等责任，请妥善保管账号并规范使用。
+            </view>
+          </view>
+        </scroll-view>
+
+        <view class="esig-footer">
+          <view class="esig-row" @tap="toggleEsigNoMore">
+            <checkbox :checked="esigNoMore" />
+            <text class="esig-tip">下次不再显示</text>
+          </view>
+          <button
+            class="esig-btn"
+            :disabled="!esigAgreeEnabled"
+            @tap="confirmEsigNotice"
+          >
+            已阅读并同意
+          </button>
+          <view v-if="!esigAgreeEnabled" class="esig-hint">
+            请先向下滑动阅读完整内容后再点击“已阅读并同意”。
+          </view>
+        </view>
+      </view>
+    </view>
     <!-- 顶部标题区域 -->
     <view class="header-card">
       <view class="header-content">
@@ -74,6 +135,16 @@
 
 <script>
 export default {
+  data() {
+    return {
+      showEsigNotice: false,
+      esigAgreeEnabled: false,
+      esigNoMore: false
+    };
+  },
+  onShow() {
+    this.checkEsigNotice();
+  },
   methods: {
     goToPage(url) {
       uni.navigateTo({
@@ -82,6 +153,38 @@ export default {
           uni.showToast({ title: '页面开发中', icon: 'none' })
         }
       })
+    },
+    checkEsigNotice() {
+      try {
+        const closed = uni.getStorageSync('esig_notice_closed');
+        if (!closed) {
+          this.showEsigNotice = true;
+          this.esigAgreeEnabled = false;
+          this.esigNoMore = false;
+        }
+      } catch (e) {
+        this.showEsigNotice = true;
+      }
+    },
+    onEsigScrollToLower() {
+      this.esigAgreeEnabled = true;
+    },
+    toggleEsigNoMore() {
+      this.esigNoMore = !this.esigNoMore;
+    },
+    confirmEsigNotice() {
+      if (!this.esigAgreeEnabled) {
+        uni.showToast({ title: '请先阅读完整内容', icon: 'none' });
+        return;
+      }
+      if (this.esigNoMore) {
+        try {
+          uni.setStorageSync('esig_notice_closed', true);
+        } catch (e) {
+          console.error('保存电子签名须知状态失败', e);
+        }
+      }
+      this.showEsigNotice = false;
     },
     showDevTip() {
       uni.showToast({
@@ -390,5 +493,96 @@ export default {
 .export-text {
   font-size: 26rpx;
   color: #111827;
+}
+
+.esig-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.esig-dialog {
+  width: 86%;
+  max-width: 680rpx;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx 22rpx;
+  box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.esig-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 18rpx;
+  text-align: center;
+}
+
+.esig-content {
+  flex: 1;
+  max-height: 480rpx;
+}
+
+.esig-text {
+  padding-right: 8rpx;
+}
+
+.esig-section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+  color: #111827;
+}
+
+.esig-section-text {
+  font-size: 24rpx;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 14rpx;
+}
+
+.esig-footer {
+  margin-top: 16rpx;
+}
+
+.esig-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.esig-tip {
+  margin-left: 8rpx;
+  font-size: 24rpx;
+  color: #4b5563;
+}
+
+.esig-btn {
+  width: 100%;
+  border-radius: 999rpx;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+.esig-btn[disabled] {
+  background: #9ca3af;
+}
+
+.esig-hint {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #9ca3af;
+  text-align: center;
 }
 </style>

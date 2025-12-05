@@ -124,12 +124,12 @@
       <view id="field-chiefComplaint" class="form-item">
         <view class="label required">主诉</view>
         <view class="disease-input-wrapper">
-          <textarea
+          <input
             v-model="form.chiefComplaint"
+            type="text"
             placeholder="请输入患者自述症状，例如：头部外伤伴头晕"
             maxlength="100"
-            :class="['textarea-uniform', 'textarea-auto', complaintFontSizeClass]"
-            :focus="complaintFocus"
+            class="input-uniform"
             @focus="onComplaintFocus(); onFieldFocus('field-chiefComplaint')"
             @input="onComplaintInput"
             @blur="onComplaintBlur"
@@ -204,13 +204,15 @@
       <view class="form-item">
         <view class="label required">诊断</view>
         <view class="disease-input-wrapper">
-          <textarea
+          <input
             v-model="form.diagnosis"
+            type="text"
             placeholder="请输入初步诊断结果，例如：轻度头部挫伤"
             maxlength="100"
-            :class="['textarea-uniform', 'textarea-auto', diagnosisFontSizeClass]"
+            class="input-uniform"
             @focus="onDiagnosisFocus(); onFieldFocus('field-diagnosis')"
             @input="onDiagnosisInput"
+            @blur="onDiagnosisBlur"
           />
           <view v-if="showDiagnosisList && filteredDiagnosis.length > 0" class="disease-dropdown">
             <scroll-view scroll-y class="disease-scroll">
@@ -231,11 +233,12 @@
       <view class="form-item">
         <view class="label">症状</view>
         <view class="disease-input-wrapper">
-          <textarea
+          <input
             v-model="form.symptom"
+            type="text"
             placeholder="可记录体征/检查所见等补充症状信息（可选）"
             maxlength="150"
-            class="textarea-uniform textarea-auto"
+            class="input-uniform"
             @focus="onFieldFocus('field-symptom')"
           />
         </view>
@@ -274,14 +277,15 @@
       <view class="form-item">
         <view class="label required">处置</view>
         <view class="disease-input-wrapper">
-          <textarea
+          <input
             v-model="form.treatment"
+            type="text"
             placeholder="请输入处理措施，例如：伤口清洗消毒、冷敷"
             maxlength="120"
-            class="textarea-uniform textarea-auto"
+            class="input-uniform"
             @focus="onTreatmentFocus(); onFieldFocus('field-treatment')"
             @input="onTreatmentInput"
-          ></textarea>
+          />
           <view v-if="showTreatmentList && filteredTreatments.length > 0" class="disease-dropdown">
             <scroll-view scroll-y class="disease-scroll">
               <view 
@@ -414,13 +418,13 @@
     <view class="form-section">
       <view class="section-title">备注</view>
       <view class="form-item">
-        <textarea
+        <input
           v-model="form.remark"
+          type="text"
           placeholder="其他说明或建议（可选）"
           maxlength="200"
-          class="textarea-uniform textarea-auto"
-          @focus="onFieldFocus('field-remark')"
-        ></textarea>
+          class="input-uniform"
+        />
       </view>
     </view>
 
@@ -3371,6 +3375,8 @@ export default {
   width: 100%;
 
   input {
+    width: 100%;
+    box-sizing: border-box;
     height: 80rpx;  // 统一高度
     line-height: 1.6;  // 统一行高
     font-size: 26rpx;

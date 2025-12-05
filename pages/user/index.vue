@@ -1082,3 +1082,4 @@ export default {
 	background: linear-gradient(135deg, #2a91e9 0%, #22c1c3 100%);
 	color: #ffffff;
 }
+</style>

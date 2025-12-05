@@ -341,56 +341,147 @@
             未找到匹配的药材
           </view>
         </view>
-        <view v-if="selectedDrug" class="drug-info">
-          <text class="spec">{{ selectedDrug.name }} - {{ selectedDrug.specification }}</text>
-          <text class="stock">
-            {{ form.location === 'land_park' ? '陆园' : '水园' }}库存：{{ availableStock }} {{ selectedDrug.minUnit }}
-          </text>
+      </view>
+
+      <!-- 用药信息展示 -->
+      <view v-if="selectedDrug" class="drug-quick-info">
+        <!-- 药材信息单行展示 -->
+        <view class="drug-info-row">
+          <view class="drug-name-section">
+            <text class="drug-name-text">{{ selectedDrug.name }}</text>
+            <text class="drug-spec-text">{{ selectedDrug.specification }}</text>
+          </view>
+          <view class="drug-stock-section">
+            <text class="stock-label">{{ form.location === 'land_park' ? '陆园' : '水园' }}库存：</text>
+            <text class="stock-value" :class="{ 'stock-warning': availableStock < 10 }">{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+          </view>
         </view>
       </view>
 
-      <!-- 用药信息核心展示 - 快速登记版 -->
-      <view v-if="selectedDrug" class="drug-quick-info">
-        <!-- 药材名称大卡片 -->
-        <view class="drug-name-card">
-          <view class="drug-details">
-            <view class="drug-main-name">{{ selectedDrug.name }}</view>
-            <view class="drug-spec-text">{{ selectedDrug.specification }}</view>
+      <!-- 用药数量输入 -->
+      <view v-if="selectedDrug" class="form-item-inline">
+        <view class="label required">用药数量</view>
+        <input
+          v-model.number="form.quantity"
+          type="number"
+          placeholder="请输入数量"
+          class="input-uniform quantity-input-inline"
+        />
+        <view class="unit-label">{{ getRealMinUnit(selectedDrug) }}</view>
+        <!-- 添加到处方按钮 -->
+        <view class="add-to-prescription-btn" @click="addToPrescription">
+          <text class="btn-icon">+</text>
+          <text class="btn-text">加入处方</text>
+        </view>
+        <!-- 库存不足警告 -->
+        <view v-if="form.quantity > availableStock" class="quantity-warning-inline">
+          <text class="warning-icon">⚠️</text>
+          <text class="warning-text">库存不足！当前库存：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+        </view>
+      </view>
+
+      <!-- 开具处方开关 -->
+      <view class="form-item">
+        <view class="label-row">
+          <view class="label">开具处方</view>
+          <switch 
+            :checked="enablePrescription" 
+            @change="onPrescriptionSwitch"
+            color="#1890ff"
+          />
+        </view>
+      </view>
+
+      <!-- 处方（符合国家规定格式） -->
+      <view v-if="enablePrescription" class="prescription-section">
+        <!-- 医院信息 -->
+        <view class="prescription-hospital">
+          <text class="hospital-name">北京欢乐谷医务室</text>
+        </view>
+        
+        <!-- 处方头部信息 -->
+        <view class="prescription-header-info">
+          <view class="prescription-title-row">
+            <text class="prescription-title">处 方 笺</text>
+          </view>
+          <view class="prescription-no-row">
+            <text class="prescription-no">门诊</text>
+            <text class="prescription-no">处方编号：{{ prescriptionNo }}</text>
+          </view>
+          <view class="prescription-patient-info">
+            <view class="patient-item">
+              <text class="patient-label">姓名：</text>
+              <text class="patient-value">{{ form.patientName || '___' }}</text>
+            </view>
+            <view class="patient-item">
+              <text class="patient-label">性别：</text>
+              <text class="patient-value">{{ form.gender || '___' }}</text>
+            </view>
+            <view class="patient-item">
+              <text class="patient-label">年龄：</text>
+              <text class="patient-value">{{ form.age || '___' }}岁</text>
+            </view>
+          </view>
+          <view class="prescription-diagnosis">
+            <text class="diagnosis-label">临床诊断：</text>
+            <text class="diagnosis-value">{{ form.diagnosis || '___' }}</text>
           </view>
         </view>
         
-        <!-- 快速信息栏 -->
-        <view class="quick-info-bar">
-          <view class="info-tag park-tag">
-            <text class="tag-text">{{ form.location === 'land_park' ? '陆园' : '水园' }}</text>
+        <!-- Rp 标记和药品列表（表格形式） -->
+        <view class="prescription-body">
+          <view class="rp-mark">Rp:</view>
+          
+          <!-- 药品表格 -->
+          <view class="prescription-table">
+            <!-- 表头 -->
+            <view class="table-header">
+              <view class="col-no">序号</view>
+              <view class="col-name">药品名称</view>
+              <view class="col-spec">规格</view>
+              <view class="col-quantity">数量</view>
+              <view class="col-usage">用法用量</view>
+              <view class="col-action">操作</view>
+            </view>
+            
+            <!-- 表格内容 -->
+            <view 
+              v-for="(item, index) in prescriptionList" 
+              :key="index"
+              class="table-row"
+            >
+              <view class="col-no">{{ index + 1 }}</view>
+              <view class="col-name">{{ item.drugName }}</view>
+              <view class="col-spec">{{ item.specification }}</view>
+              <view class="col-quantity">{{ item.quantity }}{{ item.unit }}</view>
+              <view class="col-usage">
+                <text>{{ item.dosage }} {{ item.route }} {{ item.frequency }}</text>
+              </view>
+              <view class="col-action">
+                <view class="delete-btn" @click="removeFromPrescription(index)">
+                  <text class="delete-text">删除</text>
+                </view>
+              </view>
+            </view>
           </view>
-          <view class="info-tag stock-tag" :class="{ 'stock-warning': availableStock < 10 }">
-            <text class="tag-text">库存 {{ availableStock }} {{ selectedDrug.minUnit }}</text>
-          </view>
-          <view class="info-tag unit-tag">
-            <text class="tag-text">{{ selectedDrug.minUnit }}</text>
+          
+          <view class="prescription-blank-line">
+            <text class="blank-text">——————————以下空白——————————</text>
           </view>
         </view>
         
-        <!-- 数量输入大卡片 -->
-        <view class="quantity-card">
-          <view class="quantity-label">
-            <text class="label-text">用药数量</text>
-            <text class="required-star">*</text>
+        <!-- 处方底部 -->
+        <view class="prescription-footer">
+          <view class="footer-signature">
+            <text class="footer-label">医师签名：</text>
+            <text class="footer-value">_____________</text>
+            <text class="footer-date">日期：{{ currentDate }}</text>
           </view>
-          <view class="quantity-input-wrapper">
-            <input
-              v-model.number="form.quantity"
-              type="number"
-              :placeholder="'请输入数量'"
-              class="quantity-input-large"
-            />
-            <view class="quantity-unit-display">{{ selectedDrug.minUnit }}</view>
-          </view>
-          <!-- 库存不足警告 -->
-          <view v-if="form.quantity > availableStock" class="quantity-warning">
-            <text class="warning-text">库存不足！当前库存：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
-          </view>
+        </view>
+        
+        <view class="prescription-note">
+          <text class="note-text">注：本处方仅供医务室内部使用</text>
+          <text class="note-text">药品数量应使用最小单位（片、粒、支等），不使用包装单位</text>
         </view>
       </view>
 
@@ -1197,6 +1288,23 @@ export default {
       selectedBatch: null,
       availableStock: 0,
       
+      // 处方功能开关
+      enablePrescription: false,
+      
+      // 处方列表
+      prescriptionList: [],
+      prescriptionNo: '', // 处方编号
+      currentDate: '', // 当前日期
+      
+      // 用法用量模板
+      dosageTemplates: {
+        '口服': ['0.5g', '1g', '10ml', '20ml', '适量'],
+        '外用': ['适量', '少量', '薄层涂抹'],
+        '含服': ['1片', '适量']
+      },
+      routeOptions: ['口服', '外用', '含服', '舌下含服', '涂擦患处'],
+      frequencyOptions: ['每日3次', '每日2次', '每日1次', '每8小时1次', '每12小时1次', '必要时', '睡前', '即刻', '每日3-4次'],
+      
       // 药材搜索相关
       drugSearchText: '',
       allDrugs: [],
@@ -1334,6 +1442,9 @@ export default {
       this.updateDateTime();
     }, 60000);
     
+    // 初始化处方编号和日期
+    this.initPrescription();
+    
     // 恢复上次选择的园区
     this.restoreLastLocation();
     
@@ -1356,6 +1467,152 @@ export default {
   },
 
   methods: {
+    // 初始化处方信息
+    initPrescription() {
+      // 生成处方编号：格式 年份-流水号（如2025-0001）
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      
+      // 使用时间戳的后4位作为流水号（简化版，实际应该从数据库获取）
+      const timestamp = Date.now();
+      const serialNo = (timestamp % 10000).toString().padStart(4, '0');
+      
+      this.prescriptionNo = `${year}-${serialNo}`;
+      this.currentDate = `${year}年${month}月${day}日`;
+    },
+    
+    // 处方开关切换
+    onPrescriptionSwitch(e) {
+      this.enablePrescription = e.detail.value;
+      
+      // 如果开启处方，初始化处方信息
+      if (this.enablePrescription && !this.prescriptionNo) {
+        this.initPrescription();
+      }
+    },
+    
+    // 从药品规格中提取真正的最小单位
+    getRealMinUnit(drug) {
+      const spec = drug.specification || '';
+      
+      // 常见的最小单位
+      const minUnits = ['片', '粒', '丸', '支', '袋', '包'];
+      
+      // 从规格中查找最小单位
+      for (const unit of minUnits) {
+        if (spec.includes(unit)) {
+          return unit;
+        }
+      }
+      
+      // 如果规格中没有找到，返回原始的minUnit
+      return drug.minUnit;
+    },
+    
+    // 添加到处方
+    addToPrescription() {
+      if (!this.selectedDrug) {
+        uni.showToast({
+          title: '请先选择药材',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (!this.form.quantity || this.form.quantity <= 0) {
+        uni.showToast({
+          title: '请输入有效数量',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (this.form.quantity > this.availableStock) {
+        uni.showToast({
+          title: '库存不足',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 弹出用法用量输入框
+      const that = this;
+      const drugName = this.selectedDrug.name;
+      
+      // 根据药品类型提供示例
+      let example = '0.5g 口服 每日3次';
+      if (drugName.includes('风油精') || drugName.includes('外用')) {
+        example = '适量 外用 每日3-4次';
+      } else if (drugName.includes('水') || drugName.includes('液')) {
+        example = '10ml 口服 每日2次';
+      }
+      
+      uni.showModal({
+        title: '填写用法用量',
+        content: `格式：剂量 途径 频次\n示例：${example}\n\n剂量：0.5g、10ml、适量等\n途径：口服、外用、含服等\n频次：每日3次、必要时等`,
+        editable: true,
+        placeholderText: example,
+        success: (res) => {
+          if (res.confirm && res.content) {
+            // 解析用法用量
+            const usageText = res.content.trim();
+            const parts = usageText.split(/\s+/); // 用空格分割
+            
+            // 添加到处方列表
+            that.prescriptionList.push({
+              drugId: that.selectedDrug._id,
+              drugName: that.selectedDrug.name,
+              specification: that.selectedDrug.specification,
+              quantity: that.form.quantity,
+              unit: that.getRealMinUnit(that.selectedDrug),
+              batchId: that.selectedBatch?._id,
+              batchNumber: that.selectedBatch?.batch,
+              dosage: parts[0] || '',
+              route: parts[1] || '',
+              frequency: parts.slice(2).join(' ') || '' // 频次可能有多个词
+            });
+            
+            // 清空当前选择
+            that.drugSearchText = '';
+            that.selectedDrug = null;
+            that.selectedBatch = null;
+            that.availableStock = 0;
+            that.form.quantity = null;
+            that.showDrugList = false;
+            
+            uni.showToast({
+              title: '已加入处方',
+              icon: 'success'
+            });
+          } else if (res.confirm) {
+            uni.showToast({
+              title: '请填写用法用量',
+              icon: 'none'
+            });
+          }
+        }
+      });
+    },
+    
+    // 从处方中移除
+    removeFromPrescription(index) {
+      uni.showModal({
+        title: '确认删除',
+        content: '确定要从处方中移除这味药吗？',
+        success: (res) => {
+          if (res.confirm) {
+            this.prescriptionList.splice(index, 1);
+            uni.showToast({
+              title: '已移除',
+              icon: 'success'
+            });
+          }
+        }
+      });
+    },
+    
     onFieldFocus(id) {
       this.activeFieldId = id;
     },
@@ -3483,170 +3740,484 @@ export default {
   }
 }
 
-// 用药信息快速登记版
+// 用药信息展示
 .drug-quick-info {
-  margin-top: 20rpx;
-  padding: 0;
+  margin-top: 16rpx;
+  margin-bottom: 16rpx;
 }
 
-// 药材名称大卡片
-.drug-name-card {
+// 药材信息单行展示
+.drug-info-row {
   display: flex;
   align-items: center;
-  padding: 28rpx 32rpx;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-radius: 20rpx;
-  box-shadow: 0 6rpx 20rpx rgba(251, 191, 36, 0.25);
-  border: 3rpx solid #fbbf24;
-  margin-bottom: 20rpx;
-  .drug-details {
+  justify-content: space-between;
+  padding: 16rpx 20rpx;
+  background: #f9fafb;
+  border-radius: 12rpx;
+  border: 2rpx solid #e0e0e0;
+  gap: 16rpx;
+  
+  .drug-name-section {
     flex: 1;
+    min-width: 0;
+    
+    .drug-name-text {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-bottom: 4rpx;
+    }
+    
+    .drug-spec-text {
+      font-size: 24rpx;
+      color: #666;
+      display: block;
+    }
   }
   
-  .drug-main-name {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: #78350f;
-    line-height: 1.4;
-    margin-bottom: 8rpx;
+  .drug-stock-section {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    
+    .stock-label {
+      font-size: 24rpx;
+      color: #666;
+      margin-right: 4rpx;
+    }
+    
+    .stock-value {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: #52c41a;
+      
+      &.stock-warning {
+        color: #dc2626;
+      }
+    }
+  }
+}
+
+// 单行表单项（标签、输入框、单位在同一行）
+.form-item-inline {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  flex-wrap: wrap;
+  
+  .label {
+    font-size: 28rpx;
+    color: #333;
+    font-weight: 500;
+    white-space: nowrap;
+    
+    &.required::before {
+      content: '*';
+      color: #dc2626;
+      margin-right: 4rpx;
+      font-weight: bold;
+    }
   }
   
-  .drug-spec-text {
-    font-size: 24rpx;
-    color: #92400e;
+  .quantity-input-inline {
+    flex: 1;
+    min-width: 200rpx;
+    background: #ffffff !important;
+  }
+  
+  .unit-label {
+    padding: 20rpx 24rpx;
+    background: #e8e8e8;
+    border: 2rpx solid #d0d0d0;
+    border-radius: 12rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    color: #555;
+    min-width: 80rpx;
+    text-align: center;
+    height: 80rpx;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-to-prescription-btn {
+    padding: 20rpx 28rpx;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    gap: 6rpx;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
+    
+    &:active {
+      transform: scale(0.95);
+      box-shadow: 0 2rpx 8rpx rgba(24, 144, 255, 0.2);
+    }
+    
+    .btn-icon {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    
+    .btn-text {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+  }
+  
+  .quantity-warning-inline {
+    width: 100%;
+    margin-top: 8rpx;
+    padding: 12rpx 16rpx;
+    background: #fff5f5;
+    border-radius: 8rpx;
+    border: 1rpx solid #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    
+    .warning-icon {
+      font-size: 28rpx;
+    }
+    
+    .warning-text {
+      font-size: 24rpx;
+      color: #dc2626;
+      flex: 1;
+    }
+  }
+}
+
+// 开关行样式
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  
+  .label {
+    font-size: 28rpx;
+    color: #333;
     font-weight: 500;
   }
 }
 
-// 快速信息栏
-.quick-info-bar {
-  display: flex;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
-  flex-wrap: wrap;
+// 处方区域（符合国家规定格式）
+.prescription-section {
+  margin-top: 24rpx;
+  padding: 0;
+  background: #ffffff;
+  border: 3rpx solid #333;
+  border-radius: 0;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.info-tag {
+// 医院信息
+.prescription-hospital {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24rpx 24rpx;
+  border-bottom: 2rpx solid #333;
+  background: #f5f5f5;
+  
+  .hospital-name {
+    font-size: 36rpx;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 2rpx;
+  }
+}
+
+// 处方头部信息
+.prescription-header-info {
+  border-bottom: 2rpx solid #333;
+  padding: 20rpx 24rpx;
+  padding-bottom: 20rpx;
+  margin-bottom: 0;
+}
+
+.prescription-title-row {
+  text-align: center;
+  margin-bottom: 12rpx;
+  
+  .prescription-title {
+    font-size: 40rpx;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 8rpx;
+  }
+}
+
+.prescription-no-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  
+  .prescription-no {
+    font-size: 24rpx;
+    color: #666;
+  }
+}
+
+.prescription-patient-info {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 12rpx;
+  
+  .patient-item {
+    display: flex;
+    align-items: center;
+    
+    .patient-label {
+      font-size: 26rpx;
+      color: #333;
+    }
+    
+    .patient-value {
+      font-size: 26rpx;
+      color: #000;
+      font-weight: 500;
+      min-width: 80rpx;
+    }
+  }
+}
+
+.prescription-diagnosis {
   display: flex;
   align-items: center;
-  padding: 18rpx 22rpx;
-  background: white;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
-  flex: 1;
-  min-width: 0;
-  .tag-text {
-    font-size: 24rpx;
-    font-weight: 600;
-    color: #334155;
+  
+  .diagnosis-label {
+    font-size: 26rpx;
+    color: #333;
+    white-space: nowrap;
   }
   
-  &.park-tag {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 2rpx solid #60a5fa;
-    
-    .tag-text {
-      color: #1e40af;
-    }
+  .diagnosis-value {
+    font-size: 26rpx;
+    color: #000;
+    font-weight: 500;
+    flex: 1;
   }
+}
+
+// Rp标记和药品列表
+.prescription-body {
+  min-height: 300rpx;
+  padding: 20rpx 24rpx;
+  border-bottom: 2rpx solid #333;
+}
+
+.rp-mark {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 16rpx;
+  font-family: 'Times New Roman', serif;
+}
+
+// 处方表格
+.prescription-table {
+  border: 1rpx solid #d9d9d9;
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+// 表头
+.table-header {
+  display: flex;
+  background: #fafafa;
+  border-bottom: 2rpx solid #d9d9d9;
+  font-weight: 600;
+  font-size: 24rpx;
+  color: #000;
   
-  &.stock-tag {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    border: 2rpx solid #34d399;
+  view {
+    padding: 16rpx 12rpx;
+    text-align: center;
+    border-right: 1rpx solid #d9d9d9;
     
-    .tag-text {
-      color: #065f46;
-    }
-    
-    &.stock-warning {
-      background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-      border: 2rpx solid #f87171;
-      
-      .tag-text {
-        color: #991b1b;
-      }
-    }
-  }
-  
-  &.unit-tag {
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    border: 2rpx solid #818cf8;
-    
-    .tag-text {
-      color: #3730a3;
+    &:last-child {
+      border-right: none;
     }
   }
 }
 
-// 数量输入大卡片
-.quantity-card {
-  padding: 28rpx 32rpx;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
-  border-radius: 20rpx;
-  box-shadow: 0 6rpx 20rpx rgba(20, 184, 166, 0.2);
-  border: 3rpx solid #14b8a6;
+// 表格行
+.table-row {
+  display: flex;
+  border-bottom: 1rpx solid #e8e8e8;
+  font-size: 24rpx;
+  color: #333;
   
-  .quantity-label {
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+  
+  view {
+    padding: 16rpx 12rpx;
+    border-right: 1rpx solid #e8e8e8;
     display: flex;
     align-items: center;
-    margin-bottom: 20rpx;
-    .label-text {
-      font-size: 28rpx;
-      font-weight: bold;
-      color: #0f766e;
+    
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+// 列宽定义
+.col-no {
+  width: 80rpx;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.col-name {
+  width: 200rpx;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.col-spec {
+  width: 180rpx;
+  flex-shrink: 0;
+  font-size: 22rpx;
+  color: #666;
+}
+
+.col-quantity {
+  width: 120rpx;
+  flex-shrink: 0;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.col-usage {
+  flex: 1;
+  min-width: 200rpx;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.col-action {
+  width: 100rpx;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+// 删除按钮
+.delete-btn {
+  padding: 8rpx 16rpx;
+  background: #fff1f0;
+  border: 1rpx solid #ffccc7;
+  border-radius: 4rpx;
+  
+  &:active {
+    background: #ffccc7;
+  }
+  
+  .delete-text {
+    font-size: 22rpx;
+    color: #ff4d4f;
+  }
+}
+
+// "以下空白"分隔线
+.prescription-blank-line {
+  text-align: center;
+  padding: 16rpx 0;
+  
+  .blank-text {
+    font-size: 22rpx;
+    color: #666;
+    letter-spacing: 2rpx;
+  }
+}
+
+// 处方底部签名区
+.prescription-footer {
+  padding: 20rpx 24rpx;
+  
+  .footer-signature {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 32rpx;
+    
+    .footer-label {
+      font-size: 26rpx;
+      color: #333;
+      white-space: nowrap;
     }
     
-    .required-star {
-      color: #dc2626;
-      font-size: 28rpx;
-      margin-left: 6rpx;
-      font-weight: bold;
+    .footer-value {
+      font-size: 24rpx;
+      color: #666;
+      min-width: 200rpx;
+      border-bottom: 1rpx solid #999;
+      padding-bottom: 4rpx;
+      text-align: center;
+    }
+    
+    .footer-date {
+      font-size: 24rpx;
+      color: #666;
     }
   }
+}
+
+// 处方备注
+.prescription-note {
+  padding: 16rpx 24rpx;
+  background: #fafafa;
+  border-top: 1rpx solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
   
-  .quantity-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 16rpx;
-    margin-bottom: 16rpx;
+  .note-text {
+    font-size: 22rpx;
+    color: #999;
+    text-align: center;
+    line-height: 1.6;
+  }
+}
+
+// 库存不足警告样式
+.quantity-warning {
+  margin-top: 12rpx;
+  padding: 12rpx 16rpx;
+  background: #fff5f5;
+  border-radius: 8rpx;
+  border: 1rpx solid #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  
+  .warning-icon {
+    font-size: 28rpx;
   }
   
-  .quantity-input-large {
+  .warning-text {
+    font-size: 24rpx;
+    color: #dc2626;
     flex: 1;
-    padding: 24rpx 28rpx;
-    background: white;
-    border: 4rpx solid #14b8a6;
-    border-radius: 16rpx;
-    font-size: 44rpx;  // 数量输入框保持大字号
-    font-weight: bold;
-    color: #0f766e;
-    text-align: center;
-    box-shadow: 0 4rpx 12rpx rgba(20, 184, 166, 0.15);
-    height: 100rpx;  // 固定高度
-    line-height: 1.2;  // 行高
-    
-    &:focus {
-      border-color: #0d9488;
-      box-shadow: 0 0 0 4rpx rgba(20, 184, 166, 0.2);
-    }
-  }
-  
-  .quantity-unit-display {
-    padding: 24rpx 28rpx;
-    background: white;
-    border: 4rpx solid #5eead4;
-    border-radius: 16rpx;
-    font-size: 44rpx;  // 单位字号与输入框统一
-    font-weight: bold;
-    color: #14b8a6;
-    min-width: 140rpx;  // 增加最小宽度，确保显示完整
-    text-align: center;
-    box-shadow: 0 4rpx 12rpx rgba(20, 184, 166, 0.15);
-    height: 100rpx;  // 与输入框高度统一
-    line-height: 1.2;  // 行高统一
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 

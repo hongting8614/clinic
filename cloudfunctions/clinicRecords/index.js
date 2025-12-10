@@ -2,6 +2,7 @@
 // 门诊用药登记云函数 - v3.2核心功能
 const cloud = require('wx-server-sdk');
 const crypto = require('crypto');
+const symptomStd = require('./symptomStandardizer');
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
@@ -48,6 +49,8 @@ exports.main = async (event, context) => {
         return await seedTestRecords(data, wxContext);
       case 'verifySignature':
         return await verifySignature(data);
+      case 'suggestHvDiagnosis':
+        return await suggestHvDiagnosis(data);
       default:
         return { success: false, error: '未知操作' };
     }
@@ -271,6 +274,47 @@ async function addRecord(data, wxContext) {
     createTime: now
   };
 
+  // 1.1 基于主诉进行症状标准化与简化ICD-10推断（不影响原有字段）
+  try {
+    const complaintText = clinicRecordData.chiefComplaint || '';
+    if (complaintText) {
+      const stdRes = symptomStd.standardizeComplaint(complaintText);
+      if (stdRes && Array.isArray(stdRes.symptomCodes)) {
+        clinicRecordData.symptomCodes = stdRes.symptomCodes;
+        clinicRecordData.severityMax = stdRes.severityMax || 0;
+        clinicRecordData.symptomCategoryStats = stdRes.categories || {};
+
+        // 基于最高严重度和症状组合评估分诊等级
+        const triage = symptomStd.assessTriage(stdRes.symptomCodes, stdRes.severityMax || 0);
+        if (triage) {
+          clinicRecordData.triageLevel = triage.level;
+          clinicRecordData.triageName = triage.name;
+          clinicRecordData.triageAction = triage.action;
+        }
+
+        const diseaseRes = symptomStd.suggestDiseases(stdRes.symptomCodes);
+        if (diseaseRes && diseaseRes.best) {
+          clinicRecordData.icd10Code = diseaseRes.best.icd10Code;
+          clinicRecordData.icd10Name = diseaseRes.best.name;
+          clinicRecordData.urgencyLevel = diseaseRes.best.urgencyLevel || 'low';
+        }
+
+        // 欢乐谷特有疾病规则匹配（HV 完整规则集）
+        const hvRes = symptomStd.suggestHvDiseases(stdRes.symptomCodes);
+        if (hvRes && hvRes.best) {
+          clinicRecordData.hvDiseaseId = hvRes.best.id;
+          clinicRecordData.hvDiseaseName = hvRes.best.name;
+          clinicRecordData.hvDiseaseUrgent = !!hvRes.best.urgent;
+          clinicRecordData.hvDiseaseMedications = hvRes.best.medications || [];
+          clinicRecordData.hvDiseaseTypicalScene = hvRes.best.typicalScene || '';
+          clinicRecordData.hvDiseaseMatchScore = hvRes.best.matchScore || 0;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('[clinicRecords] 症状标准化或ICD-10推断失败（不影响登记保存）:', e);
+  }
+
   // 如果有用药信息，添加到记录中
   if (hasDrugUsage) {
     clinicRecordData.drugId = drugId;
@@ -387,6 +431,45 @@ async function addRecord(data, wxContext) {
       message: '门诊用药登记成功'
     }
   };
+}
+
+// 基于主诉实时获取欢乐谷标准化症状与诊断建议（不落库，仅用于前端提示）
+async function suggestHvDiagnosis(data) {
+  const { chiefComplaint = '' } = data || {};
+
+  if (!chiefComplaint || !chiefComplaint.trim()) {
+    return {
+      success: false,
+      error: '缺少主诉'
+    };
+  }
+
+  try {
+    const stdRes = symptomStd.standardizeComplaint(chiefComplaint);
+    const hvRes = stdRes && Array.isArray(stdRes.symptomCodes)
+      ? symptomStd.suggestHvDiseases(stdRes.symptomCodes)
+      : { best: null, candidates: [] };
+
+    const triage = stdRes && Array.isArray(stdRes.symptomCodes)
+      ? symptomStd.assessTriage(stdRes.symptomCodes, stdRes.severityMax || 0)
+      : null;
+
+    return {
+      success: true,
+      data: {
+        chiefComplaint,
+        standardized: stdRes,
+        hv: hvRes,
+        triage
+      }
+    };
+  } catch (e) {
+    console.error('[clinicRecords] suggestHvDiagnosis error:', e);
+    return {
+      success: false,
+      error: e.message || '诊断建议计算失败'
+    };
+  }
 }
 
 // 获取门诊用药列表

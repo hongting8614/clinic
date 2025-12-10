@@ -72,6 +72,46 @@
         </view>
       </view>
 
+      <!-- 系统诊断建议（基于主诉，欢乐谷规则，仅供参考） -->
+      <view v-if="hvSuggestion && hvSuggestion.name" class="hv-suggestion-card">
+        <view class="hv-suggestion-header">
+          <text class="hv-suggestion-title">系统建议诊断（仅供参考）</text>
+          <text
+            v-if="hvSuggestion.urgent"
+            class="hv-tag hv-tag-danger"
+          >
+            建议优先处理
+          </text>
+          <text
+            v-else
+            class="hv-tag hv-tag-normal"
+          >
+            一般情况
+          </text>
+        </view>
+        <view class="hv-suggestion-body">
+          <view class="hv-row">
+            <text class="hv-label">推荐诊断：</text>
+            <text class="hv-value">{{ hvSuggestion.name }}</text>
+          </view>
+          <view v-if="hvSuggestion.typicalScene" class="hv-row">
+            <text class="hv-label">典型场景：</text>
+            <text class="hv-value hv-scene">{{ hvSuggestion.typicalScene }}</text>
+          </view>
+          <view v-if="hvSuggestion.medications && hvSuggestion.medications.length" class="hv-row">
+            <text class="hv-label">推荐用药：</text>
+            <text class="hv-value">{{ hvSuggestion.medications.join('、') }}</text>
+          </view>
+          <view v-if="hvSuggestion.treatment" class="hv-row">
+            <text class="hv-label">推荐处置：</text>
+            <text class="hv-value">{{ hvSuggestion.treatment }}</text>
+          </view>
+        </view>
+        <view class="hv-suggestion-footer">
+          <button class="hv-apply-btn" @tap="applyHvSuggestion">一键填入诊断/处置</button>
+        </view>
+      </view>
+
       <!-- 姓名 + 性别/年龄 -->
       <view class="form-row">
         <view class="form-item half">
@@ -230,17 +270,33 @@
       </view>
 
       <!-- 症状 -->
-      <view class="form-item">
+      <view id="field-symptom" class="form-item">
         <view class="label">症状</view>
         <view class="disease-input-wrapper">
           <input
             v-model="form.symptom"
             type="text"
-            placeholder="可记录体征/检查所见等补充症状信息（可选）"
+            placeholder="可记录体征/检查所见等补充症状信息（可选，可从主诉自动提取）"
             maxlength="150"
             class="input-uniform"
-            @focus="onFieldFocus('field-symptom')"
+            @focus="onSymptomFocus(); onFieldFocus('field-symptom')"
+            @input="onSymptomInput"
+            @blur="onSymptomBlur"
           />
+          <!-- 症状下拉列表 -->
+          <view v-if="showSymptomList && filteredSymptoms.length > 0" class="disease-dropdown">
+            <scroll-view scroll-y class="disease-scroll">
+              <view
+                v-for="(symptom, idx) in filteredSymptoms"
+                :key="idx"
+                class="disease-item"
+                @click="selectSymptom(symptom)"
+              >
+                <text class="symptom-name">{{ symptom.name || symptom }}</text>
+                <text v-if="symptom.category" class="symptom-category">{{ symptom.category }}</text>
+              </view>
+            </scroll-view>
+          </view>
         </view>
       </view>
 
@@ -599,6 +655,181 @@
 <script>
 import Signature from '@/components/signature/index.vue';
 
+// 欢乐谷主诉-关键词映射库（前端专用，用于主诉下拉联想）
+// 说明：
+// - key 为医生可能输入的关键词（疾病名/症状/场景词）
+// - value 为若干主诉模板，每条包含疾病场景与规范主诉句子
+const hvComplaintKeywordIndex = {
+  // 外伤类 TR-01 皮肤擦伤/挫伤
+  '擦伤': [
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '摔倒后膝盖擦伤、疼痛' },
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '碰撞后手臂蹭破皮、红肿' },
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '被游乐设施擦伤、轻微出血' },
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '摔倒后多处擦伤、疼痛' }
+  ],
+  '挫伤': [
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '摔倒后膝盖擦伤、疼痛' },
+    { diseaseId: 'TR-01', diseaseName: '皮肤擦伤/挫伤', complaint: '碰撞后手臂蹭破皮、红肿' }
+  ],
+
+  // 外伤类 TR-02 关节扭伤
+  '扭伤': [
+    { diseaseId: 'TR-02', diseaseName: '关节扭伤', complaint: '崴脚后脚踝疼痛、肿胀' },
+    { diseaseId: 'TR-02', diseaseName: '关节扭伤', complaint: '跑步摔倒后手腕扭伤、活动受限' },
+    { diseaseId: 'TR-02', diseaseName: '关节扭伤', complaint: '跳跃后膝关节扭伤、不能承重' },
+    { diseaseId: 'TR-02', diseaseName: '关节扭伤', complaint: '手腕扭伤、疼痛、活动困难' }
+  ],
+  '崴脚': [
+    { diseaseId: 'TR-02', diseaseName: '关节扭伤', complaint: '崴脚后脚踝疼痛、肿胀' }
+  ],
+
+  // 外伤类 TR-03 头部轻微外伤
+  '头部外伤': [
+    { diseaseId: 'TR-03', diseaseName: '头部轻微外伤', complaint: '撞到头后头痛、头晕' },
+    { diseaseId: 'TR-03', diseaseName: '头部轻微外伤', complaint: '头部撞伤、起包、恶心' },
+    { diseaseId: 'TR-03', diseaseName: '头部轻微外伤', complaint: '头部碰伤、头痛想吐' },
+    { diseaseId: 'TR-03', diseaseName: '头部轻微外伤', complaint: '头部外伤后头晕、注意力不集中' }
+  ],
+
+  // 外伤类 TR-04 可疑骨折
+  '骨折': [
+    { diseaseId: 'TR-04', diseaseName: '可疑骨折', complaint: '摔倒后手腕畸形、剧痛' },
+    { diseaseId: 'TR-04', diseaseName: '可疑骨折', complaint: '腿部撞击后肿胀变形、不能动' },
+    { diseaseId: 'TR-04', diseaseName: '可疑骨折', complaint: '高处跌落脚踝剧痛、畸形' },
+    { diseaseId: 'TR-04', diseaseName: '可疑骨折', complaint: '手指挤压后畸形、活动异常' }
+  ],
+
+  // 环境类 EN-01 轻度中暑
+  '中暑': [
+    { diseaseId: 'EN-01', diseaseName: '轻度中暑', complaint: '太阳下排队后头晕、口渴、乏力' },
+    { diseaseId: 'EN-01', diseaseName: '轻度中暑', complaint: '天气热感觉头晕、恶心、出汗多' },
+    { diseaseId: 'EN-01', diseaseName: '轻度中暑', complaint: '长时间暴晒后头痛、乏力、口渴' },
+    { diseaseId: 'EN-01', diseaseName: '轻度中暑', complaint: '热天游玩后头晕、心慌、想吐' }
+  ],
+  '暴晒': [
+    { diseaseId: 'EN-01', diseaseName: '轻度中暑', complaint: '长时间暴晒后头痛、乏力、口渴' },
+    { diseaseId: 'EN-02', diseaseName: '热痉挛/热衰竭', complaint: '暴晒后大量出汗、头晕、肌肉痉挛' }
+  ],
+
+  // 环境类 EN-02 热痉挛/热衰竭
+  '热痉挛': [
+    { diseaseId: 'EN-02', diseaseName: '热痉挛/热衰竭', complaint: '高温下活动后头晕、恶心、肌肉抽筋' },
+    { diseaseId: 'EN-02', diseaseName: '热痉挛/热衰竭', complaint: '热天跑步后乏力、头晕、小腿抽筋' },
+    { diseaseId: 'EN-02', diseaseName: '热痉挛/热衰竭', complaint: '暴晒后大量出汗、头晕、肌肉痉挛' },
+    { diseaseId: 'EN-02', diseaseName: '热痉挛/热衰竭', complaint: '高温环境头晕、呕吐、全身无力' }
+  ],
+
+  // 环境类 EN-03 日光性皮炎
+  '晒伤': [
+    { diseaseId: 'EN-03', diseaseName: '日光性皮炎', complaint: '晒伤后皮肤发红、疼痛、灼热感' },
+    { diseaseId: 'EN-03', diseaseName: '日光性皮炎', complaint: '暴晒后皮肤红肿、刺痛、痒' },
+    { diseaseId: 'EN-03', diseaseName: '日光性皮炎', complaint: '晒后皮肤起红斑、脱皮、疼痛' },
+    { diseaseId: 'EN-03', diseaseName: '日光性皮炎', complaint: '太阳晒后皮肤发红起泡、灼痛' }
+  ],
+
+  // 环境类 EN-04 蚊虫叮咬过敏
+  '蚊虫叮咬': [
+    { diseaseId: 'EN-04', diseaseName: '蚊虫叮咬过敏', complaint: '被蚊子咬后红肿、瘙痒' },
+    { diseaseId: 'EN-04', diseaseName: '蚊虫叮咬过敏', complaint: '虫咬后起大包、很痒' },
+    { diseaseId: 'EN-04', diseaseName: '蚊虫叮咬过敏', complaint: '蚊虫叮咬处红肿热痛' },
+    { diseaseId: 'EN-04', diseaseName: '蚊虫叮咬过敏', complaint: '虫咬后皮疹、瘙痒难忍' }
+  ],
+
+  // 消化 GI-01 急性胃肠炎
+  '腹泻': [
+    { diseaseId: 'GI-01', diseaseName: '急性胃肠炎', complaint: '吃坏肚子后呕吐、腹泻、腹痛' },
+    { diseaseId: 'GI-01', diseaseName: '急性胃肠炎', complaint: '进食后恶心呕吐、拉肚子' },
+    { diseaseId: 'GI-01', diseaseName: '急性胃肠炎', complaint: '呕吐腹泻、肚子绞痛、发热' },
+    { diseaseId: 'GI-01', diseaseName: '急性胃肠炎', complaint: '恶心、拉肚子、肚子咕咕叫' }
+  ],
+
+  // 消化 GI-02 功能性消化不良
+  '消化不良': [
+    { diseaseId: 'GI-02', diseaseName: '功能性消化不良', complaint: '吃太多后胃胀、反酸、不舒服' },
+    { diseaseId: 'GI-02', diseaseName: '功能性消化不良', complaint: '饭后胃痛、饱胀感、嗳气' },
+    { diseaseId: 'GI-02', diseaseName: '功能性消化不良', complaint: '胃部不适、食欲不振、腹胀' },
+    { diseaseId: 'GI-02', diseaseName: '功能性消化不良', complaint: '吃东西后胃疼、反酸烧心' }
+  ],
+
+  // 神经 NS-01 晕动病
+  '晕动病': [
+    { diseaseId: 'NS-01', diseaseName: '晕动病', complaint: '坐旋转项目后头晕、恶心、想吐' },
+    { diseaseId: 'NS-01', diseaseName: '晕动病', complaint: '玩游乐设施后头晕、出冷汗、心慌' },
+    { diseaseId: 'NS-01', diseaseName: '晕动病', complaint: '晕车样感觉、头晕恶心、脸色苍白' },
+    { diseaseId: 'NS-01', diseaseName: '晕动病', complaint: '旋转后眩晕、呕吐、乏力' }
+  ],
+  '眩晕': [
+    { diseaseId: 'NS-01', diseaseName: '晕动病', complaint: '旋转后眩晕、呕吐、乏力' },
+    { diseaseId: 'VR-01', diseaseName: '游乐设施后眩晕', complaint: '旋转项目后眩晕、恶心' },
+    { diseaseId: 'VR-02', diseaseName: '前庭性眩晕', complaint: '天旋地转的眩晕、伴呕吐' }
+  ],
+
+  // 神经 NS-02 过度惊吓反应
+  '惊吓': [
+    { diseaseId: 'NS-02', diseaseName: '过度惊吓反应', complaint: '鬼屋出来后心慌、手抖、害怕' },
+    { diseaseId: 'NS-02', diseaseName: '过度惊吓反应', complaint: '受惊吓后心慌、头晕、出汗' },
+    { diseaseId: 'NS-02', diseaseName: '过度惊吓反应', complaint: '惊吓后心跳很快、紧张不安' },
+    { diseaseId: 'NS-02', diseaseName: '过度惊吓反应', complaint: '恐怖项目后恐惧、失眠、噩梦' }
+  ],
+
+  // 心理 PS-01 儿童分离焦虑
+  '走失': [
+    { diseaseId: 'PS-01', diseaseName: '儿童分离焦虑', complaint: '小孩与父母走散后哭闹、害怕' },
+    { diseaseId: 'PS-01', diseaseName: '儿童分离焦虑', complaint: '儿童找不到家长、焦虑哭闹' },
+    { diseaseId: 'PS-01', diseaseName: '儿童分离焦虑', complaint: '孩子分离后恐慌、不肯离开' },
+    { diseaseId: 'PS-01', diseaseName: '儿童分离焦虑', complaint: '儿童焦虑、紧抓不放、哭泣' }
+  ],
+
+  // 心理 PS-02 过度换气综合征
+  '过度换气': [
+    { diseaseId: 'PS-02', diseaseName: '过度换气综合征', complaint: '紧张后呼吸急促、手脚发麻' },
+    { diseaseId: 'PS-02', diseaseName: '过度换气综合征', complaint: '焦虑发作呼吸快、头晕、手麻' },
+    { diseaseId: 'PS-02', diseaseName: '过度换气综合征', complaint: '恐慌时喘不过气、手抽筋' },
+    { diseaseId: 'PS-02', diseaseName: '过度换气综合征', complaint: '呼吸过快、胸口闷、嘴唇发麻' }
+  ],
+
+  // VR-01 游乐设施后眩晕
+  '过山车': [
+    { diseaseId: 'VR-01', diseaseName: '游乐设施后眩晕', complaint: '玩过山车后头晕、站不稳' },
+    { diseaseId: 'MS-01', diseaseName: '颈部挥鞭样损伤', complaint: '坐过山车后脖子痛、僵硬' }
+  ],
+  '游乐设施': [
+    { diseaseId: 'VR-01', diseaseName: '游乐设施后眩晕', complaint: '游乐设施后头昏、平衡差' },
+    { diseaseId: 'MS-01', diseaseName: '颈部挥鞭样损伤', complaint: '游乐设施后颈部酸痛、头晕' }
+  ],
+
+  // VR-02 前庭性眩晕 & VR-03 耳石症
+  '前庭性眩晕': [
+    { diseaseId: 'VR-02', diseaseName: '前庭性眩晕', complaint: '天旋地转的眩晕、伴呕吐' },
+    { diseaseId: 'VR-02', diseaseName: '前庭性眩晕', complaint: '眩晕感觉房子在转、恶心' },
+    { diseaseId: 'VR-02', diseaseName: '前庭性眩晕', complaint: '剧烈眩晕、必须闭眼躺下' },
+    { diseaseId: 'VR-02', diseaseName: '前庭性眩晕', complaint: '旋转性眩晕、伴耳鸣' }
+  ],
+  '耳石症': [
+    { diseaseId: 'VR-03', diseaseName: '耳石症', complaint: '转头时突发眩晕、几秒钟就好' },
+    { diseaseId: 'VR-03', diseaseName: '耳石症', complaint: '起床翻身时短暂天旋地转' },
+    { diseaseId: 'VR-03', diseaseName: '耳石症', complaint: '头位变化时剧烈眩晕、不敢动' },
+    { diseaseId: 'VR-03', diseaseName: '耳石症', complaint: '特定姿势时眩晕发作' }
+  ],
+
+  // GY-01/02/03 痛经
+  '痛经': [
+    { diseaseId: 'GY-01', diseaseName: '轻度痛经', complaint: '来月经肚子隐痛、腰酸' },
+    { diseaseId: 'GY-01', diseaseName: '轻度痛经', complaint: '经期小腹坠痛、乏力' },
+    { diseaseId: 'GY-02', diseaseName: '中度痛经', complaint: '痛经明显、影响游玩' },
+    { diseaseId: 'GY-03', diseaseName: '重度痛经', complaint: '痛经剧痛、出冷汗、想吐' }
+  ],
+
+  // MT-01/02/03 低血糖
+  '低血糖': [
+    { diseaseId: 'MT-01', diseaseName: '轻度低血糖', complaint: '心慌手抖、出冷汗、饥饿感' },
+    { diseaseId: 'MT-01', diseaseName: '轻度低血糖', complaint: '头晕心慌、手抖乏力' },
+    { diseaseId: 'MT-01', diseaseName: '轻度低血糖', complaint: '游玩久了心慌、出汗、饿' },
+    { diseaseId: 'MT-02', diseaseName: '中重度低血糖', complaint: '低血糖意识模糊、反应迟钝' },
+    { diseaseId: 'MT-03', diseaseName: '低血糖昏迷', complaint: '低血糖昏迷、意识丧失' }
+  ]
+};
+
 export default {
   components: {
     Signature
@@ -697,6 +928,10 @@ export default {
           '发热＞38.5℃或持续超过3天请复诊'
         ]
       },
+      // 欢乐谷诊断 / 分诊建议展示
+      hvSuggestion: null,
+      hvSuggestionLoading: false,
+      hvTriage: null,
       // 结构化疾病模板库：每个疾病下多条主诉，每条主诉有独立的症状/诊断/处置
       // 后续可以扩展 drugs 字段
       diseaseTemplateLib: {
@@ -1311,32 +1546,22 @@ export default {
       filteredDrugs: [],
       showDrugList: false,
       
-      // 疾病名称下拉列表
+      // 疾病名称下拉列表（标准疾病名称）
       diseaseOptions: [
-        '感冒',
-        '发烧',
-        '头痛',
-        '头晕',
-        '咳嗽',
-        '腹泻',
-        '腹痛',
-        '恶心呕吐',
-        '外伤',
         '扭伤',
         '擦伤',
-        '割伤',
         '烫伤',
-        '中暑',
-        '晕厥',
+        '磕伤',
+        '冻伤',
+        '腹泻',
+        '头晕',
+        '头痛',
+        '感冒',
+        '脱臼',
+        '骨折',
         '过敏',
-        '皮疹',
-        '咽喉痛',
-        '牙痛',
-        '关节痛',
-        '腰痛',
-        '胸闷',
-        '心慌',
-        '失眠',
+        '痛经',
+        '测血压',
         '其他'
       ],
       filteredDiseases: [],
@@ -1351,10 +1576,20 @@ export default {
       showComplaintList: false,
       complaintSelectedMode: false,  // 主诉是否已选择（自由编辑模式）
       complaintFocus: false,  // 控制主诉输入框聚焦
+      // 症状相关
+      filteredSymptoms: [],
+      showSymptomList: false,
+      standardizedSymptoms: [],  // 从主诉标准化提取的症状列表
+      symptomBlurTimer: null,
+      symptomInputTimer: null,  // 症状输入防抖计时器
+      fetchHvSuggestionTimer: null,  // 获取诊断建议防抖计时器
       // 下拉隐藏延迟计时器
       diseaseBlurTimer: null,
       complaintBlurTimer: null,
       diagnosisBlurTimer: null,
+      // 输入防抖计时器
+      diseaseInputTimer: null,
+      diagnosisInputTimer: null,
       // 年龄输入焦点（用于强制弹出数字键盘）
       ageFocus: false,
       // 园区常用地点词库（来自园区运营文件与现场点位）
@@ -1463,6 +1698,31 @@ export default {
     if (this.dateTimeTimerId) {
       clearInterval(this.dateTimeTimerId);
       this.dateTimeTimerId = null;
+    }
+    // 清理防抖计时器
+    if (this.symptomInputTimer) {
+      clearTimeout(this.symptomInputTimer);
+      this.symptomInputTimer = null;
+    }
+    if (this.fetchHvSuggestionTimer) {
+      clearTimeout(this.fetchHvSuggestionTimer);
+      this.fetchHvSuggestionTimer = null;
+    }
+    if (this.diseaseInputTimer) {
+      clearTimeout(this.diseaseInputTimer);
+      this.diseaseInputTimer = null;
+    }
+    if (this.diagnosisInputTimer) {
+      clearTimeout(this.diagnosisInputTimer);
+      this.diagnosisInputTimer = null;
+    }
+    if (this.complaintInputTimer) {
+      clearTimeout(this.complaintInputTimer);
+      this.complaintInputTimer = null;
+    }
+    if (this.complaintFocusTimer) {
+      clearTimeout(this.complaintFocusTimer);
+      this.complaintFocusTimer = null;
     }
   },
 
@@ -1647,11 +1907,16 @@ export default {
     // 构建多框搜索统一索引：汇总系统模板、结构化模板、用户自定义模板
     buildTemplateIndex() {
       const index = [];
+      const maxIndexSize = 1000; // 限制索引最大数量，避免内存和性能问题
 
       // 1) 结构化模板库 diseaseTemplateLib
-      Object.keys(this.diseaseTemplateLib || {}).forEach(disease => {
+      const diseaseKeys = Object.keys(this.diseaseTemplateLib || {});
+      for (let i = 0; i < diseaseKeys.length && index.length < maxIndexSize; i++) {
+        const disease = diseaseKeys[i];
         const list = this.diseaseTemplateLib[disease] || [];
-        list.forEach((tpl, idx) => {
+        const maxListSize = Math.min(list.length, 50); // 每个疾病最多50条模板
+        for (let j = 0; j < maxListSize && index.length < maxIndexSize; j++) {
+          const tpl = list[j];
           if (tpl && tpl.complaint) {
             index.push({
               disease,
@@ -1660,14 +1925,17 @@ export default {
               diagnoses: tpl.diagnoses || [],
               treatments: tpl.treatments || [],
               source: 'structured',
-              idx
+              idx: j
             });
           }
-        });
-      });
+        }
+      }
 
       // 2) 旧版模板：complaintTemplates + diseaseTemplates + treatmentTemplates
-      Object.keys(this.complaintTemplates || {}).forEach(disease => {
+      if (index.length < maxIndexSize) {
+        const complaintKeys = Object.keys(this.complaintTemplates || {});
+        for (let i = 0; i < complaintKeys.length && index.length < maxIndexSize; i++) {
+          const disease = complaintKeys[i];
         const complaint = this.complaintTemplates[disease];
         const diagnoses = this.diseaseTemplates?.[disease] || [];
         const treatments = this.treatmentTemplates?.[disease] || [];
@@ -1681,13 +1949,20 @@ export default {
             source: 'legacy'
           });
         }
-      });
+        }
+      }
 
       // 3) 用户自定义模板 userDiseaseTemplates
-      Object.keys(this.userDiseaseTemplates || {}).forEach(disease => {
+      if (index.length < maxIndexSize) {
+        const userKeys = Object.keys(this.userDiseaseTemplates || {});
+        for (let i = 0; i < userKeys.length && index.length < maxIndexSize; i++) {
+          const disease = userKeys[i];
         const userTpl = this.userDiseaseTemplates[disease];
-        if (!userTpl) return;
-        (userTpl.complaints || []).forEach((complaint, idx) => {
+          if (!userTpl) continue;
+          const complaints = userTpl.complaints || [];
+          const maxComplaints = Math.min(complaints.length, 20); // 每个疾病最多20条用户模板
+          for (let j = 0; j < maxComplaints && index.length < maxIndexSize; j++) {
+            const complaint = complaints[j];
           if (complaint) {
             index.push({
               disease,
@@ -1696,17 +1971,19 @@ export default {
               diagnoses: userTpl.diagnosis || [],
               treatments: userTpl.treatments || [],
               source: 'user',
-              userIdx: idx
+                userIdx: j
             });
           }
-        });
-      });
+          }
+        }
+      }
 
       this.templateIndex = index;
       console.log(`构建模板索引完成，共 ${index.length} 条记录`);
     },
 
     // 全局搜索：多条件并列搜索(AND逻辑)，同时匹配疾病/主诉/诊断三个关键词
+    // 并结合 hvComplaintKeywordIndex 做主诉关键词→多主诉模板联想
     performGlobalSearch(diseaseKw, complaintKw, diagnosisKw) {
       const dKw = (diseaseKw || '').trim().toLowerCase();
       const cKw = (complaintKw || '').trim().toLowerCase();
@@ -1721,41 +1998,90 @@ export default {
         };
       }
 
-      // 多条件并列过滤：同时满足所有非空关键词
-      const matchedRecords = this.templateIndex.filter(rec => {
+      // 性能优化：限制搜索范围，避免遍历过多数据
+      const maxSearchCount = 500; // 最多搜索500条记录
+      const searchIndex = this.templateIndex.slice(0, maxSearchCount);
+
+      // 多条件并列过滤：同时满足所有非空关键词（基于结构化模板索引）
+      const matchedRecords = [];
+      for (let i = 0; i < searchIndex.length; i++) {
+        const rec = searchIndex[i];
         let match = true;
-        
         // 疾病关键词匹配
         if (dKw) {
-          match = match && rec.disease.toLowerCase().includes(dKw);
+          match = match && rec.disease && rec.disease.toLowerCase().includes(dKw);
         }
-        
         // 主诉关键词匹配
         if (cKw) {
-          match = match && rec.complaint.toLowerCase().includes(cKw);
+          match = match && rec.complaint && rec.complaint.toLowerCase().includes(cKw);
         }
-        
         // 诊断关键词匹配
         if (dgKw) {
-          match = match && (rec.diagnoses || []).some(d => d.toLowerCase().includes(dgKw));
+          match = match && (rec.diagnoses || []).some(d => d && d.toLowerCase().includes(dgKw));
         }
-        
-        return match;
-      });
+        if (match) {
+          matchedRecords.push(rec);
+          // 限制结果数量，找到足够的结果就停止
+          if (matchedRecords.length >= 50) break;
+        }
+      }
 
       // 提取匹配的疾病、主诉、诊断（去重）
       const diseases = Array.from(new Set(matchedRecords.map(r => r.disease)));
-      const complaints = matchedRecords.map((r, idx) => ({
-        key: `${r.disease}_${idx}`,  // 添加唯一 key
+      const baseComplaints = matchedRecords.map((r, idx) => ({
+        key: `${r.disease}_${idx}`,
         label: r.complaint,
         disease: r.disease,
         record: r
       }));
+
       const diagSet = new Set();
       matchedRecords.forEach(r => {
         (r.diagnoses || []).forEach(d => diagSet.add(d));
       });
       const diagnoses = Array.from(diagSet);
+
+      // 基于主诉关键词，追加 hvComplaintKeywordIndex 中的主诉模板（限制数量）
+      const extraComplaints = [];
+      if (cKw) {
+        const keywordKeys = Object.keys(hvComplaintKeywordIndex || {});
+        const maxKeywords = Math.min(keywordKeys.length, 20); // 最多检查20个关键词
+        for (let i = 0; i < maxKeywords && extraComplaints.length < 20; i++) {
+          const key = keywordKeys[i];
+          const k = (key || '').toLowerCase();
+          // 关键词双向包含："中暑" / "扭伤" / "晕动病" 等
+          if (!k) continue;
+          if (k.includes(cKw) || cKw.includes(k)) {
+            const items = hvComplaintKeywordIndex[key] || [];
+            const maxItems = Math.min(items.length, 5); // 每个关键词最多5条
+            for (let j = 0; j < maxItems && extraComplaints.length < 20; j++) {
+              const item = items[j];
+              extraComplaints.push({
+                key: `hv_${key}_${j}`,
+                label: item.complaint,
+                disease: item.diseaseName,
+                record: {
+                  disease: item.diseaseName,
+                  complaint: item.complaint,
+                  symptoms: [],
+                  diagnoses: [item.diseaseName],
+                  treatments: [],
+                  source: 'hv_keyword'
+                }
+            });
+          }
+          }
+        }
+      }
+
+      // 合并去重（按 complaint 文本去重）
+      const mergedMap = new Map();
+      [...baseComplaints, ...extraComplaints].forEach(c => {
+        if (!mergedMap.has(c.label)) {
+          mergedMap.set(c.label, c);
+        }
+      });
+      const complaints = Array.from(mergedMap.values());
 
       return { diseases, complaints, diagnoses };
     },
@@ -1988,8 +2314,15 @@ export default {
       }, 200);
     },
     
-    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉
+    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉（添加防抖）
     onDiseaseInput() {
+      // 清除之前的计时器
+      if (this.diseaseInputTimer) {
+        clearTimeout(this.diseaseInputTimer);
+      }
+      
+      // 防抖处理，延迟200ms执行
+      this.diseaseInputTimer = setTimeout(() => {
       const result = this.performGlobalSearch(
         this.form.diseaseName,
         this.form.chiefComplaint,
@@ -2001,6 +2334,7 @@ export default {
 
       this.showDiseaseList = this.filteredDiseases.length > 0;
       // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
+      }, 200);
       // 如果当前输入的疾病名称与某个疾病完全匹配，则自动按该疾病刷新联动字段
       const kw = (this.form.diseaseName || '').trim();
       if (kw && this.filteredDiseases.includes(kw)) {
@@ -2022,8 +2356,16 @@ export default {
       // 查找该疾病的第一条模板记录
       const record = this.templateIndex.find(r => r.disease === disease);
       if (record) {
-        const mainDiagnosis = (record.diagnoses && record.diagnoses[0]) || '';
-        this.form.diseaseName = mainDiagnosis || disease;
+        // 确保使用标准疾病名称（如果选择的是标准名称，直接使用；否则归类）
+        if (this.diseaseOptions.includes(disease)) {
+          this.form.diseaseName = disease;
+        } else {
+          // 从诊断中分析提取标准疾病名称
+          const mainDiagnosis = (record.diagnoses && record.diagnoses[0]) || '';
+          const analyzedDisease = this.analyzeDiseaseFromDiagnosis(mainDiagnosis || disease);
+          this.form.diseaseName = analyzedDisease || disease;
+        }
+        
         this.form.chiefComplaint = record.complaint;
         if (record.symptoms && record.symptoms.length) {
           this.form.symptom = record.symptoms.join('；');
@@ -2031,6 +2373,11 @@ export default {
         if (record.diagnoses && record.diagnoses.length) {
           // 初步诊断字段使用模板中的完整诊断组合
           this.form.diagnosis = record.diagnoses.join('；');
+          // 再次分析完整诊断，确保疾病名称归类正确
+          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
+          if (fullAnalyzed) {
+            this.form.diseaseName = fullAnalyzed;
+          }
         }
         if (record.treatments && record.treatments.length) {
           this.form.treatment = record.treatments.join('；');
@@ -2042,6 +2389,15 @@ export default {
         // 回退到旧逻辑
         this.loadTemplatesForDisease(disease);
         this.autoFillByDisease(disease);
+        // 确保疾病名称使用标准名称
+        if (!this.diseaseOptions.includes(this.form.diseaseName)) {
+          const analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis || this.form.diseaseName);
+          if (analyzedDisease) {
+            this.form.diseaseName = analyzedDisease;
+          } else {
+            this.form.diseaseName = '其他';
+          }
+        }
       }
     },
     // 依据疾病载入诊断与处置模板
@@ -2074,9 +2430,18 @@ export default {
       // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
       if (complaint) this.form.chiefComplaint = complaint;
       if (diag) {
-        // 疾病名称使用首个诊断，初步诊断使用全部诊断组合
-        this.form.diseaseName = diag;
+        // 初步诊断使用全部诊断组合
         this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+        // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
+        const analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else if (this.diseaseOptions.includes(disease)) {
+          // 如果疾病名称本身是标准名称，直接使用
+          this.form.diseaseName = disease;
+        } else {
+          this.form.diseaseName = '其他';
+        }
       }
       if (merged.length) this.form.treatment = merged.join('；');
     },
@@ -2096,7 +2461,15 @@ export default {
       // 显示下拉（即使为空也显示，基于其他框的关键词）
       this.showDiagnosisList = this.filteredDiagnosis.length > 0;
     },
+    // 诊断输入（添加防抖）
     onDiagnosisInput() {
+      // 清除之前的计时器
+      if (this.diagnosisInputTimer) {
+        clearTimeout(this.diagnosisInputTimer);
+      }
+      
+      // 防抖处理，延迟200ms执行
+      this.diagnosisInputTimer = setTimeout(() => {
       const result = this.performGlobalSearch(
         this.form.diseaseName,
         this.form.chiefComplaint,
@@ -2107,6 +2480,7 @@ export default {
       this.filteredDiagnosis = result.diagnoses;
 
       this.showDiagnosisList = this.filteredDiagnosis.length > 0;
+      }, 200);
     },
     selectDiagnosis(text) {
       // 查找包含该诊断的第一条模板记录
@@ -2115,12 +2489,31 @@ export default {
       );
 
       if (record) {
-        // 疾病名称直接使用所选标准诊断名
-        this.form.diseaseName = text;
+        // 从诊断中分析提取标准疾病名称（强制归类到标准名称）
+        const analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else if (this.diseaseOptions.includes(text)) {
+          // 如果诊断本身就是标准疾病名称，直接使用
+          this.form.diseaseName = text;
+        } else {
+          // 否则尝试从完整诊断文本中分析
+          const fullDiagnosis = record.diagnoses && record.diagnoses.length 
+            ? record.diagnoses.join('；') 
+            : text;
+          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(fullDiagnosis);
+          this.form.diseaseName = fullAnalyzed || '其他';
+        }
+        
         this.form.chiefComplaint = record.complaint;
         // 初步诊断使用该模板下的完整诊断组合
         if (record.diagnoses && record.diagnoses.length) {
           this.form.diagnosis = record.diagnoses.join('；');
+          // 再次分析完整诊断，确保疾病名称归类正确
+          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
+          if (fullAnalyzed) {
+            this.form.diseaseName = fullAnalyzed;
+          }
         } else {
           this.form.diagnosis = text;
         }
@@ -2140,6 +2533,13 @@ export default {
         }
       } else {
         this.form.diagnosis = text;
+        // 从诊断中分析提取标准疾病名称（强制归类）
+        const analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else {
+          this.form.diseaseName = '其他';
+        }
       }
 
       this.showDiagnosisList = false;
@@ -2166,6 +2566,11 @@ export default {
       }
       
       // 情况3：搜索模式 → 触发全局搜索（基于AND逻辑）并显示下拉
+      // 使用防抖避免频繁调用
+      if (this.complaintFocusTimer) {
+        clearTimeout(this.complaintFocusTimer);
+      }
+      this.complaintFocusTimer = setTimeout(() => {
       const result = this.performGlobalSearch(
         this.form.diseaseName,
         this.form.chiefComplaint,
@@ -2177,6 +2582,7 @@ export default {
       
       // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
       this.showComplaintList = this.filteredComplaints.length > 0;
+      }, 150);
     },
     onComplaintInput() {
       const currentComplaint = (this.form.chiefComplaint || '').trim();
@@ -2192,7 +2598,11 @@ export default {
         return;
       }
       
-      // 搜索模式：执行全局搜索并显示下拉
+      // 搜索模式：执行全局搜索并显示下拉（添加防抖）
+      if (this.complaintInputTimer) {
+        clearTimeout(this.complaintInputTimer);
+      }
+      this.complaintInputTimer = setTimeout(() => {
       const result = this.performGlobalSearch(
         this.form.diseaseName,
         this.form.chiefComplaint,
@@ -2203,6 +2613,7 @@ export default {
       this.filteredDiagnosis = result.diagnoses;
 
       this.showComplaintList = this.filteredComplaints.length > 0;
+      }, 200);
     },
     
     onComplaintBlur() {
@@ -2212,6 +2623,366 @@ export default {
       this.complaintBlurTimer = setTimeout(() => {
         this.showComplaintList = false;
       }, 200);
+      // 主诉编辑完成后，根据最新主诉获取系统诊断建议（防抖处理）
+      if (this.fetchHvSuggestionTimer) {
+        clearTimeout(this.fetchHvSuggestionTimer);
+      }
+      this.fetchHvSuggestionTimer = setTimeout(() => {
+      this.fetchHvSuggestion();
+      }, 300);
+    },
+    async fetchHvSuggestion() {
+      const text = (this.form.chiefComplaint || '').trim();
+      if (!text) {
+        this.hvSuggestion = null;
+        this.hvTriage = null;
+        this.standardizedSymptoms = [];
+        // 主诉为空时，清空症状以保持一致
+        this.form.symptom = '';
+        return;
+      }
+
+      this.hvSuggestionLoading = true;
+      try {
+        const res = await wx.cloud.callFunction({
+          name: 'clinicRecords',
+          data: {
+            action: 'suggestHvDiagnosis',
+            data: { chiefComplaint: text }
+          }
+        });
+
+        console.log('[clinic/add] fetchHvSuggestion result:', res);
+
+        const payload = res.result && res.result.success ? res.result.data : null;
+
+        // 提取标准化症状
+        if (payload && payload.standardized && payload.standardized.details) {
+          this.standardizedSymptoms = payload.standardized.details.map(detail => ({
+            code: detail.code,
+            name: detail.standardName || detail.name,
+            category: detail.category,
+            severity: detail.severity || 1,
+            selected: false
+          }));
+          
+          // 根据主诉自动更新症状，保持与主诉一致（用分号连接标准化症状）
+          const symptomText = this.standardizedSymptoms.map(s => s.name).join('；');
+          if (symptomText) {
+            this.form.symptom = symptomText;
+          }
+        } else {
+          this.standardizedSymptoms = [];
+          // 如果没有标准化症状，使用主诉内容作为症状
+          if (text) {
+            this.form.symptom = text;
+          }
+        }
+
+        if (payload && payload.hv && payload.hv.best) {
+          const best = payload.hv.best;
+          this.hvSuggestion = {
+            id: best.id,
+            name: best.name,
+            urgent: best.urgent,
+            medications: best.medications || [],
+            typicalScene: best.typicalScene || '',
+            matchScore: best.matchScore || 0,
+            treatment: best.treatment || ''
+          };
+          this.hvTriage = payload.triage || null;
+        } else {
+          console.log('[clinic/add] 无匹配的欢乐谷诊断建议，payload:', payload);
+          this.hvSuggestion = null;
+          this.hvTriage = null;
+        }
+      } catch (e) {
+        console.error('获取系统诊断建议失败:', e);
+        uni.showToast({
+          title: '系统诊断建议获取失败',
+          icon: 'none',
+          duration: 2000
+        });
+        this.hvTriage = null;
+        this.standardizedSymptoms = [];
+      } finally {
+        this.hvSuggestionLoading = false;
+      }
+    },
+    applyHvSuggestion() {
+      if (!this.hvSuggestion || !this.hvSuggestion.name) return;
+
+      // 每次点击一键填入时，直接用当前系统建议覆盖相关字段
+      // 1）疾病名称与诊断：使用当前建议诊断名
+      this.form.diseaseName = this.hvSuggestion.name;
+      this.form.diagnosis = this.hvSuggestion.name;
+
+      // 2）症状：优先使用标准化症状，否则使用主诉
+      if (this.standardizedSymptoms.length > 0) {
+        this.form.symptom = this.standardizedSymptoms.map(s => s.name).join('；');
+      } else {
+      this.form.symptom = (this.form.chiefComplaint || '').trim();
+      }
+
+      // 3）处置：直接采用本次建议处置，避免保留旧主诉下的处置
+      const suggestTreatment = (this.hvSuggestion.treatment || '').trim();
+      if (suggestTreatment) {
+        this.form.treatment = suggestTreatment;
+      }
+
+      // 回填完成后收起系统建议卡片，保持界面简洁
+      this.hvSuggestion = null;
+      this.hvTriage = null;
+    },
+    // 症状输入框获得焦点
+    onSymptomFocus() {
+      // 清除失焦隐藏计时器
+      if (this.symptomBlurTimer) {
+        clearTimeout(this.symptomBlurTimer);
+        this.symptomBlurTimer = null;
+      }
+      
+      // 如果症状框为空，显示标准化症状建议
+      const currentSymptom = (this.form.symptom || '').trim();
+      if (!currentSymptom && this.standardizedSymptoms.length > 0) {
+        this.filteredSymptoms = this.standardizedSymptoms.map(s => ({
+          name: s.name,
+          category: s.category,
+          code: s.code
+        }));
+        this.showSymptomList = true;
+      } else if (currentSymptom) {
+        // 基于输入内容过滤症状建议
+        this.filterSymptomsByInput(currentSymptom);
+      }
+    },
+    // 症状输入（添加防抖）
+    onSymptomInput() {
+      // 清除之前的计时器
+      if (this.symptomInputTimer) {
+        clearTimeout(this.symptomInputTimer);
+      }
+      
+      // 防抖处理，延迟300ms执行
+      this.symptomInputTimer = setTimeout(() => {
+        const text = (this.form.symptom || '').trim();
+        if (!text) {
+          // 如果清空，显示标准化症状
+          if (this.standardizedSymptoms.length > 0) {
+            this.filteredSymptoms = this.standardizedSymptoms.map(s => ({
+              name: s.name,
+              category: s.category,
+              code: s.code
+            }));
+            this.showSymptomList = true;
+          } else {
+            this.showSymptomList = false;
+          }
+          return;
+        }
+        
+        // 基于输入内容过滤
+        this.filterSymptomsByInput(text);
+      }, 300);
+    },
+    // 根据输入内容过滤症状（优化性能）
+    filterSymptomsByInput(text) {
+      const lowerText = text.toLowerCase();
+      const matched = [];
+      const matchedNames = new Set(); // 用于去重
+      
+      // 1. 从标准化症状中匹配（限制数量）
+      if (this.standardizedSymptoms && this.standardizedSymptoms.length > 0) {
+        for (let i = 0; i < Math.min(this.standardizedSymptoms.length, 50); i++) {
+          const s = this.standardizedSymptoms[i];
+          if (s.name && s.name.toLowerCase().includes(lowerText)) {
+            if (!matchedNames.has(s.name)) {
+              matched.push({
+                name: s.name,
+                category: s.category,
+                code: s.code
+              });
+              matchedNames.add(s.name);
+            }
+          }
+          // 如果已经找到足够的匹配项，提前退出
+          if (matched.length >= 20) break;
+        }
+      }
+      
+      // 2. 从模板索引中提取症状建议（限制遍历数量）
+      if (this.templateIndex && this.templateIndex.length > 0 && matched.length < 20) {
+        const maxIndex = Math.min(this.templateIndex.length, 100); // 最多遍历100条模板
+        for (let i = 0; i < maxIndex; i++) {
+          const rec = this.templateIndex[i];
+          if (rec.symptoms && Array.isArray(rec.symptoms)) {
+            for (let j = 0; j < rec.symptoms.length && matched.length < 20; j++) {
+              const symptom = rec.symptoms[j];
+              if (symptom && typeof symptom === 'string' && symptom.toLowerCase().includes(lowerText)) {
+                if (!matchedNames.has(symptom)) {
+                  matched.push({
+                    name: symptom,
+                    category: '',
+                    code: ''
+                  });
+                  matchedNames.add(symptom);
+                }
+              }
+            }
+          }
+          // 如果已经找到足够的匹配项，提前退出
+          if (matched.length >= 20) break;
+        }
+      }
+      
+      this.filteredSymptoms = matched.slice(0, 20); // 限制最多20条
+      this.showSymptomList = matched.length > 0;
+    },
+    // 症状失焦
+    onSymptomBlur() {
+      // 延迟隐藏下拉，给点击事件留时间
+      this.symptomBlurTimer = setTimeout(() => {
+        this.showSymptomList = false;
+      }, 200);
+    },
+    // 选择症状
+    selectSymptom(symptom) {
+      // 清除失焦隐藏计时器
+      if (this.symptomBlurTimer) {
+        clearTimeout(this.symptomBlurTimer);
+        this.symptomBlurTimer = null;
+      }
+      
+      const currentSymptom = (this.form.symptom || '').trim();
+      const symptomName = typeof symptom === 'string' ? symptom : (symptom.name || '');
+      
+      if (currentSymptom) {
+        // 如果已有内容，追加（用分号分隔）
+        if (!currentSymptom.includes(symptomName)) {
+          this.form.symptom = `${currentSymptom}；${symptomName}`;
+        }
+      } else {
+        // 如果为空，直接填入
+        this.form.symptom = symptomName;
+      }
+      
+      this.showSymptomList = false;
+    },
+    // 切换症状标签（添加到/从症状框移除）
+    toggleSymptomTag(symptom) {
+      symptom.selected = !symptom.selected;
+      
+      const currentSymptom = (this.form.symptom || '').trim();
+      const symptomName = symptom.name;
+      
+      if (symptom.selected) {
+        // 添加到症状框
+        if (currentSymptom) {
+          if (!currentSymptom.includes(symptomName)) {
+            this.form.symptom = `${currentSymptom}；${symptomName}`;
+          }
+        } else {
+          this.form.symptom = symptomName;
+        }
+      } else {
+        // 从症状框移除
+        if (currentSymptom.includes(symptomName)) {
+          const parts = currentSymptom.split('；').filter(s => s.trim() !== symptomName);
+          this.form.symptom = parts.join('；');
+        }
+      }
+    },
+    // 从诊断文本中分析提取标准疾病名称
+    analyzeDiseaseFromDiagnosis(diagnosisText) {
+      if (!diagnosisText) return null;
+      
+      const text = diagnosisText.toLowerCase();
+      
+      // 疾病名称匹配规则（按优先级排序，包含常见医学诊断术语）
+      const diseaseRules = [
+        // 扭伤类
+        { keywords: ['扭伤', '崴', '扭到', '关节扭伤', '脚踝扭伤', '手腕扭伤', '踝关节扭伤', '腕关节扭伤', '软组织扭伤'], disease: '扭伤' },
+        // 擦伤类
+        { keywords: ['擦伤', '蹭破', '擦破', '皮肤擦伤', '挫伤', '表皮擦伤', '浅表擦伤'], disease: '擦伤' },
+        // 烫伤类
+        { keywords: ['烫伤', '烧伤', '灼伤', '烫到', '热烧伤', '化学烧伤'], disease: '烫伤' },
+        // 磕伤类
+        { keywords: ['磕伤', '磕到', '撞伤', '碰伤', '磕碰', '撞击伤', '碰撞伤'], disease: '磕伤' },
+        // 冻伤类
+        { keywords: ['冻伤', '冻到', '冻疮', '冻僵'], disease: '冻伤' },
+        // 腹泻类（包含胃肠炎等）
+        { keywords: ['腹泻', '拉肚子', '拉稀', '泻', '急性胃肠炎', '胃肠炎', '肠胃炎', '肠炎', '急性肠炎', '细菌性肠炎', '病毒性肠炎', '消化不良', '胃肠功能紊乱'], disease: '腹泻' },
+        // 头晕类
+        { keywords: ['头晕', '头昏', '眩晕', '晕', '眼前发黑', '体位性低血压', '低血糖', '贫血性头晕'], disease: '头晕' },
+        // 头痛类
+        { keywords: ['头痛', '头疼', '头部不适', '头胀', '偏头痛', '紧张性头痛', '血管性头痛'], disease: '头痛' },
+        // 感冒类
+        { keywords: ['感冒', '着凉', '受凉', '风寒', '上呼吸道感染', '上感', '普通感冒', '病毒性感冒'], disease: '感冒' },
+        // 脱臼类
+        { keywords: ['脱臼', '脱位', '关节脱位', '肩关节脱位', '肘关节脱位'], disease: '脱臼' },
+        // 骨折类
+        { keywords: ['骨折', '骨裂', '断骨', '闭合性骨折', '开放性骨折', '不完全骨折'], disease: '骨折' },
+        // 过敏类
+        { keywords: ['过敏', '过敏性', '过敏反应', '过敏性皮炎', '过敏性鼻炎', '荨麻疹', '湿疹'], disease: '过敏' },
+        // 痛经类
+        { keywords: ['痛经', '经期疼痛', '月经痛', '原发性痛经', '继发性痛经'], disease: '痛经' },
+        // 测血压类
+        { keywords: ['测血压', '血压', '量血压', '血压监测', '血压检查', '血压测量'], disease: '测血压' }
+      ];
+      
+      // 按优先级匹配
+      for (const rule of diseaseRules) {
+        for (const keyword of rule.keywords) {
+          if (text.includes(keyword.toLowerCase())) {
+            return rule.disease;
+          }
+        }
+      }
+      
+      // 如果没有匹配到，返回 null，保持原值或使用"其他"
+      return null;
+    },
+    onDiagnosisBlur() {
+      // 诊断输入框失焦时，关闭下拉列表
+      this.showDiagnosisList = false;
+      
+      // 根据诊断自动更新处置，保持与诊断一致
+      const diagnosisText = (this.form.diagnosis || '').trim();
+      if (!diagnosisText) {
+        // 诊断为空时，清空处置以保持一致
+        this.form.treatment = '';
+        return;
+      }
+      
+      // 从诊断中分析提取标准疾病名称（强制更新，确保使用标准名称）
+      const analyzedDisease = this.analyzeDiseaseFromDiagnosis(diagnosisText);
+      if (analyzedDisease) {
+        // 如果分析出标准疾病名称，直接更新（确保使用标准名称归类）
+        this.form.diseaseName = analyzedDisease;
+      } else {
+        // 如果无法分析出标准疾病名称，设置为"其他"
+        this.form.diseaseName = '其他';
+      }
+      
+      // 1. 尝试从模板索引中查找包含该诊断的记录
+      const record = this.templateIndex.find(r => 
+        (r.diagnoses || []).some(d => d === diagnosisText || diagnosisText.includes(d))
+      );
+      
+      if (record && record.treatments && record.treatments.length) {
+        // 找到匹配的模板记录，使用其处置
+        this.form.treatment = record.treatments.join('；');
+      } else {
+        // 2. 尝试根据疾病名称查找处置模板
+        const diseaseName = (this.form.diseaseName || '').trim();
+        if (diseaseName) {
+          const treatments = this.treatmentTemplates?.[diseaseName] || [];
+          if (treatments.length > 0) {
+            // 使用前两个处置模板
+            this.form.treatment = treatments.slice(0, 2).join('；');
+          }
+        }
+      }
     },
     selectComplaint(opt) {
       // 清除失焦隐藏计时器
@@ -2827,6 +3598,7 @@ export default {
       this.form.injuryLocation = '';
       this.form.chiefComplaint = '';
       this.form.symptom = '';
+      this.standardizedSymptoms = [];
       this.form.diseaseName = '';
       this.form.diagnosis = '';
       this.form.treatment = '';
@@ -2855,6 +3627,35 @@ export default {
       this.filteredComplaints = [];
       this.showComplaintList = false;
       this.complaintSelectedMode = false; // 重置主诉编辑模式
+      // 症状相关状态
+      this.filteredSymptoms = [];
+      this.showSymptomList = false;
+      this.standardizedSymptoms = [];
+      // 清理计时器
+      if (this.symptomInputTimer) {
+        clearTimeout(this.symptomInputTimer);
+        this.symptomInputTimer = null;
+      }
+      if (this.fetchHvSuggestionTimer) {
+        clearTimeout(this.fetchHvSuggestionTimer);
+        this.fetchHvSuggestionTimer = null;
+      }
+      if (this.diseaseInputTimer) {
+        clearTimeout(this.diseaseInputTimer);
+        this.diseaseInputTimer = null;
+      }
+      if (this.diagnosisInputTimer) {
+        clearTimeout(this.diagnosisInputTimer);
+        this.diagnosisInputTimer = null;
+      }
+      if (this.complaintInputTimer) {
+        clearTimeout(this.complaintInputTimer);
+        this.complaintInputTimer = null;
+      }
+      if (this.complaintFocusTimer) {
+        clearTimeout(this.complaintFocusTimer);
+        this.complaintFocusTimer = null;
+      }
     },
 
     formatDate(dateStr) {
@@ -3659,11 +4460,24 @@ export default {
     }
 
     .disease-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 24rpx 20rpx;
       border-bottom: 1rpx solid #f0f0f0;
       font-size: 26rpx;
       color: #333;
       transition: background 0.2s;
+      
+      .symptom-name {
+        flex: 1;
+      }
+      
+      .symptom-category {
+        font-size: 22rpx;
+        color: #94a3b8;
+        margin-left: 12rpx;
+      }
 
       &:active {
         background: #e6f7ff;
@@ -3671,6 +4485,78 @@ export default {
 
       &:last-child {
         border-bottom: none;
+      }
+    }
+  }
+  
+  // 症状标签区域
+  .symptom-tags {
+    margin-top: 16rpx;
+    padding: 16rpx;
+    background: #f8fafc;
+    border-radius: 12rpx;
+    border: 1rpx solid #e2e8f0;
+    
+    .tags-label {
+      font-size: 24rpx;
+      color: #64748b;
+      margin-bottom: 12rpx;
+      font-weight: 500;
+    }
+    
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12rpx;
+    }
+    
+    .symptom-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 8rpx 16rpx;
+      background: #ffffff;
+      border: 2rpx solid #cbd5e1;
+      border-radius: 20rpx;
+      font-size: 24rpx;
+      color: #475569;
+      transition: all 0.2s;
+      
+      &.active {
+        background: #e0f2fe;
+        border-color: #0ea5e9;
+        color: #0369a1;
+      }
+      
+      .severity-badge {
+        margin-left: 8rpx;
+        padding: 2rpx 8rpx;
+        border-radius: 8rpx;
+        font-size: 20rpx;
+        font-weight: 600;
+        
+        &.severity-1 {
+          background: #dcfce7;
+          color: #16a34a;
+        }
+        
+        &.severity-2 {
+          background: #fef3c7;
+          color: #d97706;
+        }
+        
+        &.severity-3 {
+          background: #fee2e2;
+          color: #dc2626;
+        }
+        
+        &.severity-4 {
+          background: #fce7f3;
+          color: #be185d;
+        }
+      }
+      
+      &:active {
+        transform: scale(0.95);
       }
     }
   }
@@ -4599,5 +5485,138 @@ export default {
   background: #f9fafb;
   color: #4b5563;
   font-size: 28rpx;
+}
+
+/* 系统诊断建议卡片样式 */
+.hv-suggestion-card {
+  margin: 20rpx 24rpx 24rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16rpx;
+  overflow: hidden;
+  /* 立体阴影效果 */
+  box-shadow: 
+    0 2rpx 0 rgba(255, 255, 255, 0.9) inset,
+    0 -2rpx 0 rgba(15, 23, 42, 0.08) inset,
+    0 8rpx 24rpx rgba(15, 23, 42, 0.15),
+    0 4rpx 12rpx rgba(15, 23, 42, 0.1);
+  border: 1rpx solid rgba(148, 163, 184, 0.2);
+  position: relative;
+}
+
+.hv-suggestion-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  opacity: 0.6;
+}
+
+.hv-suggestion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 20rpx 12rpx;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-bottom: 1rpx solid rgba(148, 163, 184, 0.15);
+}
+
+.hv-suggestion-title {
+  font-size: 22rpx;
+  color: #475569;
+  font-weight: 600;
+  flex: 1;
+}
+
+.hv-tag {
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: 12rpx;
+}
+
+.hv-tag-danger {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+  border: 1rpx solid rgba(220, 38, 38, 0.2);
+  box-shadow: 0 2rpx 4rpx rgba(220, 38, 38, 0.1);
+}
+
+.hv-tag-normal {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0369a1;
+  border: 1rpx solid rgba(3, 105, 161, 0.2);
+  box-shadow: 0 2rpx 4rpx rgba(3, 105, 161, 0.1);
+}
+
+.hv-suggestion-body {
+  padding: 16rpx 20rpx;
+}
+
+.hv-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10rpx;
+  line-height: 1.6;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.hv-label {
+  font-size: 22rpx;
+  color: #64748b;
+  font-weight: 500;
+  min-width: 120rpx;
+  flex-shrink: 0;
+}
+
+.hv-value {
+  font-size: 22rpx;
+  color: #1e293b;
+  font-weight: 500;
+  flex: 1;
+  word-wrap: break-word;
+  word-break: break-all;
+  line-height: 1.6;
+}
+
+.hv-scene {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.hv-suggestion-footer {
+  padding: 12rpx 20rpx 16rpx;
+  border-top: 1rpx solid rgba(148, 163, 184, 0.1);
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+}
+
+.hv-apply-btn {
+  width: 100%;
+  padding: 14rpx 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  box-shadow: 
+    0 2rpx 0 rgba(255, 255, 255, 0.2) inset,
+    0 4rpx 8rpx rgba(37, 99, 235, 0.3),
+    0 2rpx 4rpx rgba(37, 99, 235, 0.2);
+  transition: all 0.2s;
+  
+  &:active {
+    transform: translateY(1rpx);
+    box-shadow: 
+      0 1rpx 0 rgba(255, 255, 255, 0.2) inset,
+      0 2rpx 4rpx rgba(37, 99, 235, 0.3);
+  }
 }
 </style>

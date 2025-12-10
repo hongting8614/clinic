@@ -1,8 +1,5 @@
 {
-	"navigationBarTitleText": "库存管理",
-	"usingComponents": {
-		"filter-panel": "../../components/filter-panel/index"
-	}
+	"navigationBarTitleText": "库存管理"
 }
 
 

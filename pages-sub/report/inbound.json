@@ -1,8 +1,5 @@
 {
-	"navigationBarTitleText": "入库报表",
-	"usingComponents": {
-		"filter-panel": "../../components/filter-panel/index"
-	}
+	"navigationBarTitleText": "入库报表"
 }
 
 

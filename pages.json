@@ -36,6 +36,18 @@
 			"style": {
 				"navigationBarTitleText": "弹窗测试"
 			}
+		},
+		{
+			"path": "pages/record/index",
+			"style": {
+				"navigationBarTitleText": "单据管理"
+			}
+		},
+		{
+			"path": "pages/stock/index",
+			"style": {
+				"navigationBarTitleText": "库存管理"
+			}
 		}
 	],
 	
@@ -309,6 +321,18 @@
 					"style": {
 						"navigationBarTitleText": "门诊统计分析"
 					}
+				},
+				{
+					"path": "prescription",
+					"style": {
+						"navigationBarTitleText": "处方查询"
+					}
+				},
+				{
+					"path": "record",
+					"style": {
+						"navigationBarTitleText": "门诊病历查询"
+					}
 				}
 			]
 		},
@@ -410,6 +434,18 @@
 				"text": "我的"
 			}
 		]
+	},
+	
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^batch-selector$": "@/components/batch-selector/index.vue",
+			"^chart$": "@/components/chart/index.vue",
+			"^filter-panel$": "@/components/filter-panel/index.vue",
+			"^icon$": "@/components/icon/index.vue",
+			"^scanner$": "@/components/scanner/index.vue",
+			"^signature$": "@/components/signature/index.vue"
+		}
 	},
 	
 	"uniIdRouter": {}

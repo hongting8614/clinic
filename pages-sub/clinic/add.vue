@@ -256,13 +256,39 @@
           />
           <view v-if="showDiagnosisList && filteredDiagnosis.length > 0" class="disease-dropdown">
             <scroll-view scroll-y class="disease-scroll">
-              <view 
-                v-for="it in filteredDiagnosis" 
-                :key="it"
-                class="disease-item"
-                @click="selectDiagnosis(it)"
-              >
-                {{ it }}
+              <!-- AI智能建议（如果有） -->
+              <view v-if="hvSuggestion && hvSuggestion.name" class="diagnosis-section">
+                <view class="section-divider">
+                  <text class="section-title">🤖 AI智能建议</text>
+                </view>
+                <view 
+                  class="disease-item ai-suggestion-item"
+                  @click="selectDiagnosis(hvSuggestion.name)"
+                >
+                  <view class="diagnosis-content">
+                    <text class="diagnosis-text">{{ hvSuggestion.name }}</text>
+                    <text class="diagnosis-badge ai-badge">AI推荐</text>
+                  </view>
+                  <view v-if="hvSuggestion.typicalScene" class="diagnosis-hint">
+                    {{ hvSuggestion.typicalScene }}
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 模板库参考 -->
+              <view v-if="filteredDiagnosis.filter(d => !hvSuggestion || hvSuggestion.name !== d).length > 0" class="diagnosis-section">
+                <view v-if="hvSuggestion && hvSuggestion.name" class="section-divider">
+                  <text class="section-title">📚 模板库参考</text>
+                </view>
+                <view 
+                  v-for="it in filteredDiagnosis" 
+                  :key="it"
+                  class="disease-item"
+                  :class="{ 'hidden': hvSuggestion && hvSuggestion.name === it }"
+                  @click="selectDiagnosis(it)"
+                >
+                  {{ it }}
+                </view>
               </view>
             </scroll-view>
           </view>
@@ -300,31 +326,38 @@
         </view>
       </view>
 
-      <!-- 疾病名称（带下拉列表） -->
+      <!-- 疾病名称（带下拉列表）+ 选择诊断参考按钮 -->
       <view class="form-item">
         <view class="label required">疾病名称</view>
-        <view class="disease-input-wrapper">
-          <input
-            v-model="form.diseaseName" 
-            type="text" 
-            placeholder="例如：感冒、外伤、中暑等"
-            @input="onDiseaseInput"
-            @focus="onDiseaseFocus(); onFieldFocus('field-diseaseName')"
-            @blur="onDiseaseBlur"
-            class="input-uniform"
-          />
-          <!-- 疾病下拉列表 -->
-          <view v-if="showDiseaseList && filteredDiseases.length > 0" class="disease-dropdown">
-            <scroll-view scroll-y class="disease-scroll">
-              <view 
-                v-for="disease in filteredDiseases" 
-                :key="disease"
-                class="disease-item"
-                @click="selectDisease(disease)"
-              >
-                {{ disease }}
-              </view>
-            </scroll-view>
+        <view class="disease-name-row">
+          <view class="disease-input-wrapper" style="flex: 1;">
+            <input
+              v-model="form.diseaseName" 
+              type="text" 
+              placeholder="例如：感冒、外伤、中暑等"
+              @input="onDiseaseInput"
+              @focus="onDiseaseFocus(); onFieldFocus('field-diseaseName')"
+              @blur="onDiseaseBlur"
+              class="input-uniform"
+            />
+            <!-- 疾病下拉列表 -->
+            <view v-if="showDiseaseList && filteredDiseases.length > 0" class="disease-dropdown">
+              <scroll-view scroll-y class="disease-scroll">
+                <view 
+                  v-for="disease in filteredDiseases" 
+                  :key="disease"
+                  class="disease-item"
+                  @click="selectDisease(disease)"
+                >
+                  {{ disease }}
+                </view>
+              </scroll-view>
+            </view>
+          </view>
+          <!-- 诊断参考按钮 -->
+          <view class="diagnosis-reference-btn-inline" @click="openDiagnosisGuide">
+            <text class="iconfont icon-search"></text>
+            <text>选择诊断参考</text>
           </view>
         </view>
       </view>
@@ -363,7 +396,7 @@
       <view class="section-title">用药信息（可选）</view>
 
       <!-- 药材选择 - 只手动输入 -->
-      <view class="form-item">
+      <view id="field-drug" class="form-item">
         <view class="label">药材名称</view>
         <view class="drug-input-wrapper">
           <input 
@@ -486,7 +519,13 @@
         
         <!-- Rp 标记和药品列表（表格形式） -->
         <view class="prescription-body">
-          <view class="rp-mark">Rp:</view>
+          <view class="prescription-header-actions">
+            <view class="rp-mark">Rp:</view>
+            <view class="add-prescription-btn" @click="quickAddToPrescription">
+              <text class="btn-icon">+</text>
+              <text class="btn-text">添加处方</text>
+            </view>
+          </view>
           
           <!-- 药品表格 -->
           <view class="prescription-table">
@@ -501,6 +540,9 @@
             </view>
             
             <!-- 表格内容 -->
+            <view v-if="prescriptionList.length === 0" class="table-empty">
+              <text class="empty-text">暂无处方药品，请点击"添加处方"按钮添加</text>
+            </view>
             <view 
               v-for="(item, index) in prescriptionList" 
               :key="index"
@@ -1401,6 +1443,93 @@ export default {
           }
         ],
 
+        // 痛经类
+        '痛经': [
+          {
+            complaint: '来月经肚子隐痛、腰酸',
+            symptoms: [
+              '经期下腹部隐痛或胀痛，可放射至腰骶部',
+              '伴腰酸、乏力，疼痛程度较轻，不影响日常活动',
+              '月经量正常或略多，无血块或血块较少'
+            ],
+            diagnoses: [
+              '轻度痛经',
+              '原发性痛经可能'
+            ],
+            treatments: [
+              '热敷腹部、休息',
+              '必要时对症解痉',
+              '注意保暖与规律作息'
+            ],
+            suggestDrugs: ['布洛芬缓释胶囊']
+          },
+          {
+            complaint: '经期小腹坠痛、乏力',
+            symptoms: [
+              '经期下腹部坠痛或胀痛，疼痛程度中等',
+              '伴乏力、腰酸，可能影响部分活动',
+              '月经量正常，可有少量血块',
+              '无恶心、呕吐等严重症状'
+            ],
+            diagnoses: [
+              '中度痛经',
+              '原发性痛经',
+              '寒凝血瘀型痛经可能'
+            ],
+            treatments: [
+              '热敷腹部、休息',
+              '口服解痉止痛药（如布洛芬）',
+              '注意保暖，避免受凉',
+              '规律作息，避免过度劳累'
+            ],
+            suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+          },
+          {
+            complaint: '痛经明显、影响游玩',
+            symptoms: [
+              '经期下腹部明显疼痛，疼痛程度较重',
+              '疼痛影响正常活动，可能需要休息',
+              '可伴腰酸、乏力、情绪不佳',
+              '月经量正常或略多，可有血块'
+            ],
+            diagnoses: [
+              '中度痛经',
+              '原发性痛经',
+              '气滞血瘀型痛经可能'
+            ],
+            treatments: [
+              '热敷腹部、休息',
+              '口服解痉止痛药',
+              '注意保暖与规律作息',
+              '如疼痛持续或加重，建议妇科门诊进一步检查'
+            ],
+            suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+          },
+          {
+            complaint: '痛经剧痛、出冷汗、想吐',
+            symptoms: [
+              '经期下腹部剧烈疼痛，呈痉挛性或持续性',
+              '疼痛难以忍受，严重影响活动',
+              '伴出冷汗、面色苍白、恶心、想吐',
+              '可伴头晕、乏力，甚至需要卧床休息',
+              '月经量正常或略多，血块可能较多'
+            ],
+            diagnoses: [
+              '重度痛经',
+              '原发性痛经',
+              '继发性痛经待排（建议妇科检查）'
+            ],
+            treatments: [
+              '立即休息，平卧休息',
+              '热敷腹部，注意保暖',
+              '口服解痉止痛药（如布洛芬）',
+              '如症状严重或持续不缓解，建议转诊妇科专科',
+              '建议完善妇科检查，排除器质性疾病'
+            ],
+            suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+          }
+        ],
+
         // 测量/监测类
         '测量监测': [
           {
@@ -1873,6 +2002,53 @@ export default {
       });
     },
     
+    // 快速添加到处方（从药材选择区域）
+    quickAddToPrescription() {
+      // 如果没有选择药材，提示用户先选择
+      if (!this.selectedDrug) {
+        uni.showToast({
+          title: '请先选择药材',
+          icon: 'none',
+          duration: 2000
+        });
+        // 滚动到药材选择区域
+        this.$nextTick(() => {
+          uni.pageScrollTo({
+            selector: '#field-drug',
+            duration: 300
+          });
+        });
+        return;
+      }
+      
+      // 如果没有输入数量，提示用户输入
+      if (!this.form.quantity || this.form.quantity <= 0) {
+        uni.showToast({
+          title: '请先输入用药数量',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // 检查库存
+      if (this.form.quantity > this.availableStock) {
+        uni.showModal({
+          title: '库存不足',
+          content: `当前库存：${this.availableStock} ${this.getRealMinUnit(this.selectedDrug)}，是否仍要添加？`,
+          success: (res) => {
+            if (res.confirm) {
+              this.addToPrescription();
+            }
+          }
+        });
+        return;
+      }
+      
+      // 直接调用添加到处方方法
+      this.addToPrescription();
+    },
+    
     onFieldFocus(id) {
       this.activeFieldId = id;
     },
@@ -2084,6 +2260,125 @@ export default {
       const complaints = Array.from(mergedMap.values());
 
       return { diseases, complaints, diagnoses };
+    },
+
+    // 查找最匹配的模板记录（基于多个字段同时匹配）
+    findBestMatchingRecord(diagnosis, complaint, diseaseName) {
+      let bestMatch = null;
+      let bestScore = 0;
+      
+      // 如果所有参数都为空，返回null
+      if (!diagnosis && !complaint && !diseaseName) {
+        return null;
+      }
+      
+      for (const record of this.templateIndex) {
+        let score = 0;
+        
+        // 诊断匹配度（权重最高）
+        if (diagnosis && record.diagnoses && record.diagnoses.length) {
+          const diagnosisMatch = record.diagnoses.some(d => {
+            if (!d) return false;
+            const dLower = d.toLowerCase();
+            const diagnosisLower = diagnosis.toLowerCase();
+            return d === diagnosis || 
+                   dLower === diagnosisLower ||
+                   dLower.includes(diagnosisLower) || 
+                   diagnosisLower.includes(dLower);
+          });
+          if (diagnosisMatch) score += 5; // 诊断匹配权重最高
+        }
+        
+        // 主诉匹配度
+        if (complaint && record.complaint) {
+          const complaintLower = (record.complaint || '').toLowerCase();
+          const inputComplaintLower = complaint.toLowerCase();
+          if (complaintLower === inputComplaintLower) {
+            score += 4; // 完全匹配
+          } else if (complaintLower.includes(inputComplaintLower) || 
+                     inputComplaintLower.includes(complaintLower)) {
+            score += 2; // 部分匹配
+          }
+        }
+        
+        // 疾病名称匹配度
+        if (diseaseName && record.disease) {
+          const diseaseLower = (record.disease || '').toLowerCase();
+          const inputDiseaseLower = diseaseName.toLowerCase();
+          if (diseaseLower === inputDiseaseLower) {
+            score += 3; // 完全匹配
+          } else if (diseaseLower.includes(inputDiseaseLower) || 
+                     inputDiseaseLower.includes(diseaseLower)) {
+            score += 1; // 部分匹配
+          }
+        }
+        
+        // 选择得分最高的记录
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = record;
+        }
+      }
+      
+      // 只有得分大于0的记录才返回（至少有一个字段匹配）
+      return bestScore > 0 ? bestMatch : null;
+    },
+
+    // 智能填充字段：只填充空白字段，保留用户已输入的内容
+    smartFillFields(record, options = {}) {
+      if (!record) return;
+      
+      const {
+        preserveComplaint = false,  // 是否保留主诉
+        preserveSymptom = false,    // 是否保留症状
+        preserveDiagnosis = false,  // 是否保留诊断
+        preserveTreatment = false    // 是否保留处置
+      } = options;
+      
+      // 主诉：如果为空或允许覆盖，则填充
+      if (!preserveComplaint) {
+        const currentComplaint = (this.form.chiefComplaint || '').trim();
+        if (!currentComplaint && record.complaint) {
+          this.form.chiefComplaint = record.complaint;
+        }
+      }
+      
+      // 症状：如果为空或允许覆盖，则填充
+      if (!preserveSymptom) {
+        const currentSymptom = (this.form.symptom || '').trim();
+        if (!currentSymptom && record.symptoms && record.symptoms.length) {
+          this.form.symptom = record.symptoms.join('；');
+        }
+      }
+      
+      // 诊断：如果为空或允许覆盖，则填充
+      if (!preserveDiagnosis) {
+        const currentDiagnosis = (this.form.diagnosis || '').trim();
+        if (!currentDiagnosis && record.diagnoses && record.diagnoses.length) {
+          this.form.diagnosis = record.diagnoses.join('；');
+        }
+      }
+      
+      // 处置：如果为空或允许覆盖，则填充
+      if (!preserveTreatment) {
+        const currentTreatment = (this.form.treatment || '').trim();
+        if (!currentTreatment && record.treatments && record.treatments.length) {
+          this.form.treatment = record.treatments.join('；');
+        }
+      }
+      
+      // 疾病名称：始终更新（用于分类），但基于诊断分析
+      if (record.diagnoses && record.diagnoses.length) {
+        const mainDiagnosis = record.diagnoses[0];
+        const analyzedDisease = this.analyzeDiseaseFromDiagnosis(mainDiagnosis);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else if (record.disease) {
+          this.form.diseaseName = record.disease;
+        }
+      } else if (record.disease) {
+        this.form.diseaseName = record.disease;
+      }
     },
 
     setIdentity(val) {
@@ -2353,40 +2648,28 @@ export default {
       // 选择后关闭下拉
       this.showDiseaseList = false;
 
-      // 查找该疾病的第一条模板记录
+      // 查找该疾病的第一条模板记录（使用最佳匹配）
       const record = this.templateIndex.find(r => r.disease === disease);
       if (record) {
-        // 确保使用标准疾病名称（如果选择的是标准名称，直接使用；否则归类）
+        // 智能填充：只填充空白字段，保留用户已输入的内容
+        this.smartFillFields(record, {
+          preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
+          preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
+          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
+        });
+        
+        // 确保疾病名称使用标准名称
         if (this.diseaseOptions.includes(disease)) {
           this.form.diseaseName = disease;
-        } else {
-          // 从诊断中分析提取标准疾病名称
-          const mainDiagnosis = (record.diagnoses && record.diagnoses[0]) || '';
-          const analyzedDisease = this.analyzeDiseaseFromDiagnosis(mainDiagnosis || disease);
-          this.form.diseaseName = analyzedDisease || disease;
         }
         
-        this.form.chiefComplaint = record.complaint;
-        if (record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
-        }
-        if (record.diagnoses && record.diagnoses.length) {
-          // 初步诊断字段使用模板中的完整诊断组合
-          this.form.diagnosis = record.diagnoses.join('；');
-          // 再次分析完整诊断，确保疾病名称归类正确
-          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
-          if (fullAnalyzed) {
-            this.form.diseaseName = fullAnalyzed;
-          }
-        }
-        if (record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
-        }
+        // 自动选择推荐用药
         if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
           this.applySuggestDrugs(record.suggestDrugs);
         }
       } else {
-        // 回退到旧逻辑
+        // 回退到旧逻辑（如果找不到结构化模板）
         this.loadTemplatesForDisease(disease);
         this.autoFillByDisease(disease);
         // 确保疾病名称使用标准名称
@@ -2430,7 +2713,7 @@ export default {
       // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
       if (complaint) this.form.chiefComplaint = complaint;
       if (diag) {
-        // 初步诊断使用全部诊断组合
+        // 初步诊断使用模板中的完整诊断组合
         this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
         // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
         const analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
@@ -2483,63 +2766,58 @@ export default {
       }, 200);
     },
     selectDiagnosis(text) {
-      // 查找包含该诊断的第一条模板记录
-      const record = this.templateIndex.find(r => 
-        (r.diagnoses || []).some(d => d === text)
+      // 优先检查是否是AI建议的诊断
+      if (this.hvSuggestion && this.hvSuggestion.name === text) {
+        // 使用AI建议的完整信息
+        this.applyHvSuggestion();
+        this.showDiagnosisList = false;
+        return;
+      }
+      
+      // 查找最匹配的模板记录（考虑当前已输入的字段）
+      const bestRecord = this.findBestMatchingRecord(
+        text,  // 选择的诊断
+        this.form.chiefComplaint,  // 当前主诉
+        this.form.diseaseName      // 当前疾病名称
       );
 
-      if (record) {
-        // 从诊断中分析提取标准疾病名称（强制归类到标准名称）
-        const analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
-        if (analyzedDisease) {
-          this.form.diseaseName = analyzedDisease;
-        } else if (this.diseaseOptions.includes(text)) {
-          // 如果诊断本身就是标准疾病名称，直接使用
-          this.form.diseaseName = text;
-        } else {
-          // 否则尝试从完整诊断文本中分析
-          const fullDiagnosis = record.diagnoses && record.diagnoses.length 
-            ? record.diagnoses.join('；') 
-            : text;
-          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(fullDiagnosis);
-          this.form.diseaseName = fullAnalyzed || '其他';
-        }
+      if (bestRecord) {
+        // 智能填充：只填充空白字段，保留用户已输入的内容
+        this.smartFillFields(bestRecord, {
+          preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),  // 如果主诉已输入，保留
+          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),           // 如果症状已输入，保留
+          preserveDiagnosis: false,  // 诊断字段用新选择的替换
+          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())        // 如果处置已输入，保留
+        });
         
-        this.form.chiefComplaint = record.complaint;
-        // 初步诊断使用该模板下的完整诊断组合
-        if (record.diagnoses && record.diagnoses.length) {
-          this.form.diagnosis = record.diagnoses.join('；');
-          // 再次分析完整诊断，确保疾病名称归类正确
-          const fullAnalyzed = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
-          if (fullAnalyzed) {
-            this.form.diseaseName = fullAnalyzed;
+        // 确保诊断字段使用选择的诊断（如果模板中有完整诊断组合，使用组合；否则使用选择的诊断）
+        if (bestRecord.diagnoses && bestRecord.diagnoses.length) {
+          // 检查选择的诊断是否在模板的诊断列表中
+          const hasExactMatch = bestRecord.diagnoses.some(d => d === text);
+          if (hasExactMatch) {
+            // 如果完全匹配，使用模板的完整诊断组合
+            this.form.diagnosis = bestRecord.diagnoses.join('；');
+          } else {
+            // 否则使用选择的诊断
+            this.form.diagnosis = text;
           }
         } else {
           this.form.diagnosis = text;
         }
-        if (record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
-        }
-        if (record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
-        }
-        // 如模板提供推荐用药列表，自动按顺序触发联动药材逻辑
-        if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
-          record.suggestDrugs.forEach(name => {
+        
+        // 自动选择推荐用药
+        if (Array.isArray(bestRecord.suggestDrugs) && bestRecord.suggestDrugs.length) {
+          bestRecord.suggestDrugs.forEach(name => {
             if (name) {
               this.onDrugChip(name);
             }
           });
         }
       } else {
+        // 如果没有找到匹配记录，只更新诊断和疾病名称
         this.form.diagnosis = text;
-        // 从诊断中分析提取标准疾病名称（强制归类）
         const analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
-        if (analyzedDisease) {
-          this.form.diseaseName = analyzedDisease;
-        } else {
-          this.form.diseaseName = '其他';
-        }
+        this.form.diseaseName = analyzedDisease || '其他';
       }
 
       this.showDiagnosisList = false;
@@ -2964,24 +3242,87 @@ export default {
         this.form.diseaseName = '其他';
       }
       
-      // 1. 尝试从模板索引中查找包含该诊断的记录
-      const record = this.templateIndex.find(r => 
-        (r.diagnoses || []).some(d => d === diagnosisText || diagnosisText.includes(d))
+      // 使用最佳匹配逻辑查找最准确的模板记录
+      const bestRecord = this.findBestMatchingRecord(
+        diagnosisText,  // 当前诊断
+        this.form.chiefComplaint,  // 当前主诉
+        this.form.diseaseName      // 当前疾病名称
       );
       
-      if (record && record.treatments && record.treatments.length) {
-        // 找到匹配的模板记录，使用其处置
-        this.form.treatment = record.treatments.join('；');
+      if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
+        // 找到匹配的模板记录，智能填充处置（如果处置为空）
+        if (!this.form.treatment || !this.form.treatment.trim()) {
+          this.form.treatment = bestRecord.treatments.join('；');
+        }
+        // 如果主诉为空，也可以填充主诉（确保字段关联）
+        if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
+          if (bestRecord.complaint) {
+            this.form.chiefComplaint = bestRecord.complaint;
+          }
+        }
+        // 如果症状为空，也可以填充症状
+        if (!this.form.symptom || !this.form.symptom.trim()) {
+          if (bestRecord.symptoms && bestRecord.symptoms.length) {
+            this.form.symptom = bestRecord.symptoms.join('；');
+          }
+        }
       } else {
-        // 2. 尝试根据疾病名称查找处置模板
+        // 如果没有找到完整匹配，尝试根据疾病名称查找处置模板
         const diseaseName = (this.form.diseaseName || '').trim();
-        if (diseaseName) {
+        if (diseaseName && (!this.form.treatment || !this.form.treatment.trim())) {
           const treatments = this.treatmentTemplates?.[diseaseName] || [];
           if (treatments.length > 0) {
             // 使用前两个处置模板
             this.form.treatment = treatments.slice(0, 2).join('；');
           }
         }
+      }
+    },
+    // 打开诊断参考指南（增强版：统一显示AI建议和模板库结果）
+    openDiagnosisGuide() {
+      // 收集所有可用的诊断选项
+      const allDiagnoses = [];
+      
+      // 1. 优先添加系统AI建议的诊断（如果有）
+      if (this.hvSuggestion && this.hvSuggestion.name) {
+        // AI建议的诊断作为第一个选项，标记为高优先级
+        if (!allDiagnoses.includes(this.hvSuggestion.name)) {
+          allDiagnoses.push(this.hvSuggestion.name);
+        }
+      }
+      
+      // 2. 添加模板库匹配的诊断
+      const result = this.performGlobalSearch(
+        this.form.diseaseName,
+        this.form.chiefComplaint,
+        this.form.diagnosis
+      );
+      
+      // 合并模板库的诊断，避免重复
+      result.diagnoses.forEach(diag => {
+        if (!allDiagnoses.includes(diag)) {
+          allDiagnoses.push(diag);
+        }
+      });
+      
+      // 3. 更新过滤列表
+      this.filteredDiagnosis = allDiagnoses;
+      
+      // 4. 显示诊断下拉列表
+      if (this.filteredDiagnosis.length > 0) {
+        this.showDiagnosisList = true;
+        // 聚焦到诊断输入框，触发下拉显示
+        this.$nextTick(() => {
+          // 触发诊断输入框的焦点事件，显示下拉列表
+          this.onDiagnosisFocus();
+        });
+      } else {
+        // 如果没有可用的诊断选项，提示用户
+        uni.showToast({
+          title: '请输入疾病名称或主诉以查看诊断参考',
+          icon: 'none',
+          duration: 2000
+        });
       }
     },
     selectComplaint(opt) {
@@ -2994,20 +3335,18 @@ export default {
       if (!opt || !opt.record) return;
       const rec = opt.record;
 
-      // 自动填充疾病、主诉、症状、诊断、处置
-      const mainDiagnosis = (rec.diagnoses && rec.diagnoses[0]) || '';
-      this.form.diseaseName = mainDiagnosis || rec.disease;
+      // 智能填充：只填充空白字段，保留用户已输入的内容
+      this.smartFillFields(rec, {
+        preserveComplaint: false,  // 主诉用新选择的替换
+        preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
+        preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
+        preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
+      });
+      
+      // 确保主诉字段使用选择的主诉
       this.form.chiefComplaint = rec.complaint;
-      if (rec.symptoms && rec.symptoms.length) {
-        this.form.symptom = rec.symptoms.join('；');
-      }
-      if (rec.diagnoses && rec.diagnoses.length) {
-        // 初步诊断字段使用模板中的完整诊断组合
-        this.form.diagnosis = rec.diagnoses.join('；');
-      }
-      if (rec.treatments && rec.treatments.length) {
-        this.form.treatment = rec.treatments.join('；');
-      }
+      
+      // 自动选择推荐用药
       if (Array.isArray(rec.suggestDrugs) && rec.suggestDrugs.length) {
         this.applySuggestDrugs(rec.suggestDrugs);
       }
@@ -4428,6 +4767,41 @@ export default {
 }
 
 // 疾病名称输入包装器
+// 疾病名称行（输入框 + 按钮在同一行）
+.disease-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  width: 100%;
+}
+
+// 内联诊断参考按钮（在疾病名称同一行）
+.diagnosis-reference-btn-inline {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border-radius: 12rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  white-space: nowrap;
+  height: 80rpx;
+  box-sizing: border-box;
+  transition: all 0.3s;
+  box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
+  
+  .iconfont {
+    font-size: 28rpx;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2rpx 8rpx rgba(24, 144, 255, 0.2);
+  }
+}
+
 .disease-input-wrapper {
   position: relative;
   width: 100%;
@@ -4465,6 +4839,51 @@ export default {
       justify-content: space-between;
       padding: 24rpx 20rpx;
       border-bottom: 1rpx solid #f0f0f0;
+      
+      &.hidden {
+        display: none;
+      }
+      
+      &.ai-suggestion-item {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4rpx solid #3b82f6;
+        border-bottom: 1rpx solid #bae6fd;
+        
+        .diagnosis-content {
+          display: flex;
+          align-items: center;
+          flex: 1;
+          gap: 12rpx;
+        }
+        
+        .diagnosis-text {
+          font-size: 28rpx;
+          color: #1e293b;
+          font-weight: 600;
+          flex: 1;
+        }
+        
+        .diagnosis-badge {
+          padding: 4rpx 12rpx;
+          border-radius: 12rpx;
+          font-size: 20rpx;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+        
+        .ai-badge {
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          color: #ffffff;
+          box-shadow: 0 2rpx 4rpx rgba(37, 99, 235, 0.2);
+        }
+        
+        .diagnosis-hint {
+          font-size: 22rpx;
+          color: #64748b;
+          margin-top: 8rpx;
+          line-height: 1.4;
+        }
+      }
       font-size: 26rpx;
       color: #333;
       transition: background 0.2s;
@@ -4485,6 +4904,20 @@ export default {
 
       &:last-child {
         border-bottom: none;
+      }
+    }
+    
+    .diagnosis-section {
+      .section-divider {
+        padding: 16rpx 20rpx 12rpx;
+        background: #f8fafc;
+        border-bottom: 1rpx solid #e2e8f0;
+        
+        .section-title {
+          font-size: 22rpx;
+          color: #64748b;
+          font-weight: 600;
+        }
       }
     }
   }
@@ -4897,42 +5330,88 @@ export default {
   }
 }
 
-// Rp标记和药品列表
+// Rp标记和药品列表 - 医疗处方样式
 .prescription-body {
   min-height: 300rpx;
-  padding: 20rpx 24rpx;
-  border-bottom: 2rpx solid #333;
+  padding: 24rpx;
+  border: 2rpx solid #333;
+  background: #fff;
+  margin-top: 20rpx;
+}
+
+// 处方头部操作区域 - 医疗处方样式
+.prescription-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding-bottom: 12rpx;
+  border-bottom: 1rpx solid #e0e0e0;
 }
 
 .rp-mark {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: bold;
   color: #000;
-  margin-bottom: 16rpx;
   font-family: 'Times New Roman', serif;
+  letter-spacing: 2rpx;
 }
 
-// 处方表格
-.prescription-table {
-  border: 1rpx solid #d9d9d9;
+// 添加处方按钮（在处方区域）- 医疗处方样式
+.add-prescription-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 10rpx 20rpx;
+  background: #1890ff;
+  border: 1rpx solid #096dd9;
   border-radius: 4rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 2rpx 4rpx rgba(24, 144, 255, 0.2);
+  
+  .btn-icon {
+    font-size: 26rpx;
+    font-weight: bold;
+  }
+  
+  .btn-text {
+    font-size: 24rpx;
+    font-weight: 500;
+  }
+  
+  &:active {
+    background: #096dd9;
+    transform: scale(0.98);
+    box-shadow: 0 1rpx 2rpx rgba(24, 144, 255, 0.3);
+  }
+}
+
+// 处方表格 - 传统医疗处方样式
+.prescription-table {
+  border: 2rpx solid #333;
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 20rpx;
+  background: #fff;
 }
 
-// 表头
+// 表头 - 医疗处方表头样式
 .table-header {
   display: flex;
-  background: #fafafa;
-  border-bottom: 2rpx solid #d9d9d9;
-  font-weight: 600;
-  font-size: 24rpx;
+  background: #f0f0f0;
+  border-bottom: 2rpx solid #333;
+  font-weight: 700;
+  font-size: 26rpx;
   color: #000;
   
   view {
-    padding: 16rpx 12rpx;
+    padding: 20rpx 10rpx;
     text-align: center;
-    border-right: 1rpx solid #d9d9d9;
+    border-right: 1rpx solid #333;
+    word-break: keep-all;
     
     &:last-child {
       border-right: none;
@@ -4940,26 +5419,47 @@ export default {
   }
 }
 
-// 表格行
+// 表格空状态 - 医疗处方样式
+.table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120rpx;
+  padding: 40rpx 20rpx;
+  border-bottom: 2rpx solid #333;
+  
+  .empty-text {
+    font-size: 26rpx;
+    color: #999;
+    text-align: center;
+    line-height: 1.6;
+  }
+}
+
+// 表格行 - 医疗处方行样式
 .table-row {
   display: flex;
-  border-bottom: 1rpx solid #e8e8e8;
-  font-size: 24rpx;
-  color: #333;
+  border-bottom: 1rpx solid #333;
+  font-size: 26rpx;
+  color: #000;
+  background: #fff;
+  min-height: 60rpx;
   
   &:last-child {
-    border-bottom: none;
+    border-bottom: 2rpx solid #333;
   }
   
-  &:hover {
-    background: #f5f5f5;
+  &:nth-child(even) {
+    background: #fafafa;
   }
   
   view {
-    padding: 16rpx 12rpx;
-    border-right: 1rpx solid #e8e8e8;
+    padding: 18rpx 10rpx;
+    border-right: 1rpx solid #333;
     display: flex;
     align-items: center;
+    justify-content: center;
+    word-break: break-all;
     
     &:last-child {
       border-right: none;
@@ -4967,121 +5467,149 @@ export default {
   }
 }
 
-// 列宽定义
+// 列宽定义 - 优化列宽比例
 .col-no {
-  width: 80rpx;
+  width: 60rpx;
   flex-shrink: 0;
   justify-content: center;
+  font-weight: 600;
 }
 
 .col-name {
-  width: 200rpx;
+  width: 220rpx;
   flex-shrink: 0;
-  font-weight: 500;
+  font-weight: 600;
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 16rpx;
+  padding-right: 8rpx;
 }
 
 .col-spec {
-  width: 180rpx;
+  width: 160rpx;
   flex-shrink: 0;
-  font-size: 22rpx;
-  color: #666;
+  font-size: 24rpx;
+  color: #333;
+  justify-content: center;
+  text-align: center;
 }
 
 .col-quantity {
-  width: 120rpx;
+  width: 100rpx;
   flex-shrink: 0;
   justify-content: center;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 26rpx;
 }
 
 .col-usage {
   flex: 1;
-  min-width: 200rpx;
-  font-size: 22rpx;
-  line-height: 1.5;
+  min-width: 240rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 16rpx;
+  padding-right: 16rpx;
 }
 
 .col-action {
-  width: 100rpx;
+  width: 120rpx;
   flex-shrink: 0;
   justify-content: center;
 }
 
-// 删除按钮
+// 删除按钮 - 医疗处方样式
 .delete-btn {
-  padding: 8rpx 16rpx;
-  background: #fff1f0;
-  border: 1rpx solid #ffccc7;
+  padding: 6rpx 12rpx;
+  background: #fff;
+  border: 1rpx solid #ff4d4f;
   border-radius: 4rpx;
+  transition: all 0.2s;
+  cursor: pointer;
   
   &:active {
-    background: #ffccc7;
+    background: #fff1f0;
+    border-color: #cf1322;
+    transform: scale(0.95);
   }
   
   .delete-text {
     font-size: 22rpx;
     color: #ff4d4f;
+    font-weight: 500;
   }
 }
 
-// "以下空白"分隔线
+// "以下空白"分隔线 - 医疗处方样式
 .prescription-blank-line {
   text-align: center;
-  padding: 16rpx 0;
+  padding: 20rpx 0;
+  border-top: 1rpx dashed #999;
+  margin-top: 10rpx;
   
   .blank-text {
-    font-size: 22rpx;
+    font-size: 24rpx;
     color: #666;
-    letter-spacing: 2rpx;
+    letter-spacing: 4rpx;
+    font-weight: 400;
   }
 }
 
-// 处方底部签名区
+// 处方底部签名区 - 医疗处方样式
 .prescription-footer {
-  padding: 20rpx 24rpx;
+  padding: 24rpx;
+  border: 2rpx solid #333;
+  border-top: none;
+  background: #fff;
   
   .footer-signature {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 32rpx;
+    justify-content: space-between;
+    gap: 20rpx;
     
     .footer-label {
-      font-size: 26rpx;
-      color: #333;
+      font-size: 28rpx;
+      color: #000;
       white-space: nowrap;
+      font-weight: 500;
     }
     
     .footer-value {
-      font-size: 24rpx;
-      color: #666;
-      min-width: 200rpx;
-      border-bottom: 1rpx solid #999;
-      padding-bottom: 4rpx;
+      font-size: 26rpx;
+      color: #000;
+      min-width: 180rpx;
+      border-bottom: 2rpx solid #333;
+      padding-bottom: 6rpx;
       text-align: center;
+      font-weight: 500;
     }
     
     .footer-date {
-      font-size: 24rpx;
-      color: #666;
+      font-size: 26rpx;
+      color: #000;
+      font-weight: 500;
     }
   }
 }
 
-// 处方备注
+// 处方备注 - 医疗处方样式
 .prescription-note {
-  padding: 16rpx 24rpx;
-  background: #fafafa;
-  border-top: 1rpx solid #e0e0e0;
+  padding: 20rpx 24rpx;
+  background: #f5f5f5;
+  border: 2rpx solid #333;
+  border-top: none;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 10rpx;
   
   .note-text {
-    font-size: 22rpx;
-    color: #999;
-    text-align: center;
-    line-height: 1.6;
+    font-size: 24rpx;
+    color: #666;
+    text-align: left;
+    line-height: 1.8;
+    font-weight: 400;
   }
 }
 

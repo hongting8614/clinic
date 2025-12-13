@@ -26,6 +26,10 @@ pnpm-debug.log*
 *.tmp
 *.temp
 
+# 构建产物
+unpackage/dist/
+*.map
+
 # 微信开发者工具
 project.config.json
 project.private.config.json

@@ -158,26 +158,30 @@ export default {
 		async loadDrugList() {
 			this.loading = true
 			try {
-				// 查询所有有库存的药材
+				// ⭐ 关键修复：查询药库（drug_storage）中所有有库存的药材
 				const db = wx.cloud.database()
 				const stockResult = await db.collection('stock')
 					.where({
+						location: 'drug_storage',  // ⭐ 只查询药库的库存
 						quantity: db.command.gt(0)  // 库存大于0
 					})
 					.get()
+				
+				console.log('📦 药库库存查询结果:', stockResult.data.length, '条记录')
 				
 				if (!stockResult.data || stockResult.data.length === 0) {
 					this.drugList = []
 					this.filteredDrugList = []
 					uni.showToast({
-						title: '暂无库存药材',
+						title: '药库暂无库存',
 						icon: 'none'
 					})
 					return
 				}
 				
-				// 获取有库存的药材ID列表
+				// 获取有库存的药材ID列表（去重）
 				const drugIds = [...new Set(stockResult.data.map(item => item.drugId))]
+				console.log('📋 有库存的药材ID数量:', drugIds.length)
 				
 				// 查询这些药材的详细信息
 				const result = await this.$api.callFunction('getDrugList', {
@@ -194,12 +198,19 @@ export default {
 					)
 					this.filteredDrugList = this.drugList
 					
-					console.log(`加载了 ${this.drugList.length} 种有库存的药材`)
+					console.log(`✅ 加载了 ${this.drugList.length} 种药库有库存的药材`)
+					
+					if (this.drugList.length === 0) {
+						uni.showToast({
+							title: '药库暂无可出库药材',
+							icon: 'none'
+						})
+					}
 				} else {
 					throw new Error(result.message || '加载失败')
 				}
 			} catch (err) {
-				console.error('加载药材列表失败:', err)
+				console.error('❌ 加载药材列表失败:', err)
 				uni.showToast({
 					title: err.message || '加载失败',
 					icon: 'none'

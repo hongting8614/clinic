@@ -23,12 +23,14 @@ class UnitConverter {
       .replace(/\s+/g, ' ')
     
     // 标准格式: 0.25g×24粒/盒
-    let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+    // 2025-12-23: 扩展支持「板」作为包装单位，例如：10粒/板
+    let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
     if (match) {
+      const rate = parseInt(match[3])
       return {
         dosage: match[1] ? parseFloat(match[1]) : null,
         dosageUnit: match[2] ? match[2].toLowerCase() : null,
-        conversionRate: parseInt(match[3]),
+        conversionRate: isNaN(rate) || rate <= 0 ? 1 : rate,
         minUnit: match[4],
         packUnit: match[5],
         fullSpec: specification,
@@ -37,12 +39,14 @@ class UnitConverter {
     }
     
     // 简化格式: 24粒/盒
-    match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+    // 同样支持 10粒/板 这类不带剂量的规格
+    match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
     if (match) {
+      const rate = parseInt(match[2])
       return {
         dosage: match[1] ? parseFloat(match[1]) : null,
         dosageUnit: null,
-        conversionRate: parseInt(match[2]),
+        conversionRate: isNaN(rate) || rate <= 0 ? 1 : rate,
         minUnit: match[3],
         packUnit: match[4],
         fullSpec: specification,
@@ -69,8 +73,9 @@ class UnitConverter {
   }
   
   static packToMin(packQuantity, conversionRate) {
-    if (conversionRate <= 0) throw new Error('转换率必须大于0')
-    return packQuantity * conversionRate
+    // 兜底，避免因异常规格导致报错
+    const rate = (!conversionRate || conversionRate <= 0) ? 1 : conversionRate
+    return packQuantity * rate
   }
   
   static calcMinUnitPrice(packPrice, conversionRate) {

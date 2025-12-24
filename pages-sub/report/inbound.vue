@@ -1,11 +1,11 @@
 <template>
 	<view class="container">
 		<view class="content-column">
-			<view class="page-header">
+		<view class="page-header">
 				<view class="header-left">
 		      <text class="page-title">入库管理报表</text>
-				</view>
-				<view class="page-actions">
+			</view>
+			<view class="page-actions">
 		      <view class="header-btn ghost" @tap="resetFilters">
 		        <text class="btn-icon">
 		        	↺
@@ -31,7 +31,7 @@
 			</view>
 		</view>
 		
-			<filter-panel
+		<filter-panel
       v-if="activeTab !== 'period'"
 			class="filter-panel-wrapper"
 			:show-date="true"
@@ -49,7 +49,7 @@
       @update:keyword="val => updateFilter('recordNo', val)"
       @search="fetchCurrentTab"
 		>
-				<view class="filter-extra">
+			<view class="filter-extra">
 					<!-- 行1：批号 -->
 					<view class="filter-row">
 						<view class="extra-item extra-item--batch">
@@ -62,9 +62,9 @@
 									placeholder="输入批号"
 									@confirm="fetchCurrentTab"
 								/>
-							</view>
-						</view>
-					</view>
+				</view>
+			</view>
+				</view>
 
 					<!-- 行2：药材名称 -->
 					<view class="filter-row">
@@ -78,7 +78,7 @@
 									placeholder="模糊查询药材名"
 									@confirm="fetchCurrentTab"
 								/>
-							</view>
+				</view>
 						</view>
 					</view>
 
@@ -94,7 +94,7 @@
 			          placeholder="输入发放人"
 			          @confirm="fetchCurrentTab"
 			        />
-			      </view>
+			</view>
 			    </view>
 			    <view class="extra-item toggle-item" @tap="toggleIncludeDraft">
 			      <text class="extra-label">草稿数据</text>
@@ -122,13 +122,13 @@
         <text>当前区间：{{ periodRange.startDate }} ~ {{ periodRange.endDate }}</text>
         <text class="range-hint">系统自动套用时间段，直接生成报表</text>
       </view>
-			</view>
+		</view>
 		
     <view class="stats-card" v-if="statistics">
       <view class="stat-item">
         <text class="stat-value">{{ statistics.totalRecords }}</text>
         <text class="stat-label">记录数</text>
-      </view>
+			</view>
       <view class="stat-item">
         <text class="stat-value">{{ statistics.totalDrugs }}</text>
         <text class="stat-label">药材种类</text>
@@ -145,7 +145,7 @@
 		
     <view v-if="activeTab === 'summary'" class="table-section">
 			<view v-if="summaryRows.length" class="detail-list">
-				<view
+				<view 
 					class="detail-card"
 					v-for="item in summaryRows"
 					:key="item._id"
@@ -155,7 +155,7 @@
 					<view class="detail-row detail-row-top">
 						<text class="detail-no">{{ item.recordNo }}</text>
 						<text class="detail-date">{{ formatDate(item.createTime) }}</text>
-					</view>
+				</view>
 
 					<!-- 医生 + 状态 -->
 					<view class="detail-row detail-row-meta">
@@ -163,8 +163,8 @@
 						<text class="meta-value">{{ item.operator || '-' }}</text>
 						<text class="meta-label">状态</text>
 						<text class="meta-value">{{ renderStatus(item.status) }}</text>
-					</view>
-
+		</view>
+		
 					<!-- 品种数 + 总数量 + 总金额 -->
 					<view class="detail-row detail-row-main">
 						<view class="detail-main-left">
@@ -178,8 +178,8 @@
 				</view>
 			</view>
 			<view v-else class="empty-state">
-				<text class="empty-icon">📊</text>
-				<text class="empty-text">暂无数据</text>
+			<text class="empty-icon">📊</text>
+			<text class="empty-text">暂无数据</text>
 				<text class="empty-hint">调整筛选条件后重新生成报表</text>
 			</view>
 		</view>
@@ -195,20 +195,20 @@
 					<view class="detail-row detail-row-top">
 						<text class="detail-no">{{ item.recordNo }}</text>
 						<text class="detail-date">{{ formatDate(item.date) }}</text>
-					</view>
+			</view>
 
 					<!-- 药名 + 数量 + 金额 -->
 					<view class="detail-row detail-row-main">
 						<view class="detail-main-left">
 							<text class="detail-drug">{{ item.drugName }}</text>
 							<text class="detail-spec">{{ item.specification }}</text>
-						</view>
+			</view>
 						<view class="detail-main-right">
 							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
 							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
-						</view>
-					</view>
-
+			</view>
+		</view>
+		
 					<!-- 批号 + 医生 -->
 					<view class="detail-row detail-row-meta">
 						<text class="meta-label">批号</text>
@@ -223,7 +223,7 @@
 						<text class="meta-value">{{ item.productionDate || '-' }}</text>
 						<text class="meta-label">有效</text>
 						<text class="meta-value">{{ item.expireDate || '-' }}</text>
-					</view>
+				</view>
 
 					<!-- 厂家 -->
 					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
@@ -241,7 +241,7 @@
 		
     <view v-if="activeTab === 'period'" class="table-section">
 			<view v-if="periodRows.length" class="detail-list">
-				<view
+					<view 
 					class="detail-card"
 					v-for="(item, idx) in periodRows"
 					:key="idx"
@@ -257,11 +257,11 @@
 						<view class="detail-main-left">
 							<text class="detail-drug">{{ item.drugName }}</text>
 							<text class="detail-spec">{{ item.specification }}</text>
-						</view>
+				</view>
 						<view class="detail-main-right">
 							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
 							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
-						</view>
+			</view>
 					</view>
 
 					<!-- 批号 + 操作人 -->
@@ -270,7 +270,7 @@
 						<text class="meta-value mono">{{ item.batchNo || '-' }}</text>
 						<text class="meta-label">操作人</text>
 						<text class="meta-value">{{ item.operator || '-' }}</text>
-					</view>
+				</view>
 
 					<!-- 生产 / 有效期 -->
 					<view class="detail-row detail-row-meta">
@@ -284,8 +284,8 @@
 					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
 						<text class="meta-label">厂家</text>
 						<text class="meta-value">{{ item.manufacturer }}</text>
-					</view>
 				</view>
+			</view>
 			</view>
 			<view v-else class="empty-state">
 				<text class="empty-icon">🗓️</text>
@@ -569,8 +569,8 @@ export default {
     async exportExcel() {
       if (!this.hasData) {
         uni.showToast({ title: '暂无数据可导出', icon: 'none' })
-        return
-      }
+				return
+			}
       try {
         uni.showLoading({ title: '生成Excel...', mask: true })
         const payload = this.activeTab === 'period'
@@ -578,13 +578,13 @@ export default {
           : this.buildBasePayload()
         const res = await this.$api.callFunction('reports', {
           action: 'exportInboundExcel',
-          data: {
+					data: {
             ...payload,
             mode: this.activeTab === 'summary' ? 'summary' : 'detail',
             printUser: this.userInfo?.name || ''
           }
         })
-        uni.hideLoading()
+				uni.hideLoading()
         if (res?.success && res.fileID && res.filename) {
           // 获取云临时下载链接
           const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
@@ -592,37 +592,37 @@ export default {
           if (fileUrl) {
             // 自动下载并保存到“医务室”文件夹
             this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
-          } else {
+				} else {
             uni.showToast({ title: '获取下载链接失败', icon: 'none' })
           }
         } else {
           uni.showToast({ title: '生成Excel失败', icon: 'none' })
-        }
-      } catch (err) {
-        uni.hideLoading()
+				}
+			} catch (err) {
+				uni.hideLoading()
         console.error('导出Excel失败:', err)
         uni.showToast({ title: '导出失败', icon: 'none' })
       }
     },
-    async exportPDF() {
+		async exportPDF() {
       if (!this.hasData) {
         uni.showToast({ title: '暂无数据可导出', icon: 'none' })
         return
       }
-      try {
+			try {
         uni.showLoading({ title: '生成PDF...', mask: true })
         const payload = this.activeTab === 'period'
           ? { startDate: this.periodRange.startDate, endDate: this.periodRange.endDate }
           : this.buildBasePayload()
-        const res = await this.$api.callFunction('reports', {
-          action: 'exportInboundPDF',
-          data: {
+				const res = await this.$api.callFunction('reports', {
+					action: 'exportInboundPDF',
+					data: {
             ...payload,
             mode: this.activeTab === 'summary' ? 'summary' : 'detail',
             printUser: this.userInfo?.name || ''
-          }
-        })
-        uni.hideLoading()
+					}
+				})
+				uni.hideLoading()
         if (res?.success && res.fileID) {
           // 用云文件ID生成临时下载链接
           const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
@@ -636,17 +636,17 @@ export default {
           }
           if (fileUrl) {
             this.downloadAndSaveLocal(fileUrl, filename, 'PDF')
-          } else {
+					} else {
             uni.showToast({ title: '获取下载链接失败', icon: 'none' })
-          }
-        } else {
+					}
+				} else {
           uni.showToast({ title: '生成PDF失败', icon: 'none' })
-        }
-      } catch (err) {
-        uni.hideLoading()
-        uni.showToast({ title: '导出失败', icon: 'none' })
-      }
-    },
+				}
+			} catch (err) {
+				uni.hideLoading()
+				uni.showToast({ title: '导出失败', icon: 'none' })
+			}
+		},
     // 通用本地保存方法
     downloadAndSaveLocal(fileUrl, filename, fileType) {
       const fs = wx.getFileSystemManager()
@@ -769,7 +769,7 @@ export default {
 	color: #ffffff;
 	border: none;
 	box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
-
+	
 	&.primary {
 		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
 		color: #ffffff;
@@ -800,7 +800,7 @@ export default {
   background: #ffffff;
   border: 2rpx solid transparent;
   box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.08);
-  display: flex;
+	display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
@@ -852,7 +852,7 @@ export default {
 /* 插槽中的附加筛选区域：整体作为内部浅色块 */
 .filter-extra {
 	margin-top: 12rpx;
-	display: flex;
+			display: flex;
 	flex-direction: column;
 	gap: 10rpx;
 }
@@ -969,7 +969,7 @@ export default {
 }
 
 .period-chips {
-	display: flex;
+		display: flex;
 	flex-wrap: wrap;
 	gap: 10rpx;
 	margin-bottom: 16rpx;
@@ -979,7 +979,7 @@ export default {
 	padding: 10rpx 22rpx;
 	border-radius: 999rpx;
 	background: #f3f4f6;
-	font-size: 24rpx;
+		font-size: 24rpx;
 	color: #475569;
 
 	&.active {
@@ -990,7 +990,7 @@ export default {
 }
 
 .period-range {
-	font-size: 24rpx;
+			font-size: 24rpx;
 	color: #334155;
 	display: flex;
 	flex-direction: column;
@@ -1016,7 +1016,7 @@ export default {
 }
 
 .stat-item {
-	text-align: center;
+				text-align: center;
 }
 
 .stat-value {
@@ -1068,7 +1068,7 @@ export default {
 }
 
 .detail-no {
-	font-size: 26rpx;
+		font-size: 26rpx;
 	font-weight: 600;
 	color: #111827;
 }
@@ -1095,8 +1095,8 @@ export default {
 .detail-main-right {
 	min-width: 150rpx;
 	text-align: right;
-	display: flex;
-	flex-direction: column;
+		display: flex;
+		flex-direction: column;
 	align-items: flex-end;
 }
 
@@ -1108,7 +1108,7 @@ export default {
 
 .detail-amount {
 	margin-top: 2rpx;
-	font-size: 24rpx;
+			font-size: 24rpx;
 	color: #ef4444;
 }
 
@@ -1136,9 +1136,9 @@ export default {
 	padding: 80rpx 24rpx 90rpx;
 	text-align: center;
 	color: #94a3b8;
-	display: flex;
+		display: flex;
 	flex-direction: column;
-	align-items: center;
+		align-items: center;
 	justify-content: center;
 	gap: 10rpx;
 }
@@ -1151,7 +1151,7 @@ export default {
 .export-section {
 	max-width: 702rpx;
 	margin: 0 auto 8rpx;
-	display: flex;
+			display: flex;
 	gap: 18rpx;
 	padding: 0 0 40rpx;
 }
@@ -1160,9 +1160,9 @@ export default {
 	flex: 1;
 	border-radius: 999rpx;
 	padding: 18rpx 18rpx;
-	display: flex;
+				display: flex;
 	flex-direction: row;
-	align-items: center;
+				align-items: center;
 	justify-content: center;
 	gap: 10rpx;
 	background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);

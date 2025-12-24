@@ -15,17 +15,6 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "easycom" : {
-            "autoscan" : true,
-            "custom" : {
-                "^batch-selector$" : "@/components/batch-selector/index.vue",
-                "^chart$" : "@/components/chart/index.vue",
-                "^filter-panel$" : "@/components/filter-panel/index.vue",
-                "^icon$" : "@/components/icon/index.vue",
-                "^scanner$" : "@/components/scanner/index.vue",
-                "^signature$" : "@/components/signature/index.vue"
-            }
-        },
         "permission" : {
             "scope.userLocation" : {
                 "desc" : "用于定位医务室位置"

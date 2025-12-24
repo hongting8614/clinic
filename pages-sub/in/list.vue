@@ -1,12 +1,12 @@
 <template>
 	<view class="container">
-	<!-- 页面头部 -->
-	<view class="page-header">
+		<!-- 页面头部 -->
+		<view class="page-header">
 		<view class="page-header-title">
-			<text class="page-title">入库管理</text>
-		</view>
-		<view class="page-actions">
-			<view class="header-btn primary" @tap="goAdd">新建入库单</view>
+				<text class="page-title">入库管理</text>
+			</view>
+			<view class="page-actions">
+				<view class="header-btn primary" @tap="goAdd">新建入库单</view>
 			<view class="header-btn ghost" @tap="resetFilters">重置</view>
 			<view class="header-btn ghost" @tap="generateList">查询</view>
 		</view>
@@ -25,33 +25,33 @@
 			<text class="count" v-if="statusCounts[status.value] !== undefined">
 				{{ statusCounts[status.value] }}
 			</text>
+			</view>
 		</view>
-	</view>
-	
-	<filter-panel
-		class="panel-wrapper"
-		:keyword="searchKeyword"
+		
+		<filter-panel
+			class="panel-wrapper"
+			:keyword="searchKeyword"
 		keyword-placeholder="搜索单号/药材名称"
-		:show-date="true"
-		:start-date="startDate"
-		:end-date="endDate"
-		:quick-filters="quickFilters"
-		:active-quick-filter="selectedQuickFilter"
-		:show-search-button="false"
-		@update:keyword="onKeywordUpdate"
-		@update:startDate="onStartDateUpdate"
-		@update:endDate="onEndDateUpdate"
-		@quick-filter="selectQuickFilter"
-		@date-change="onDateRangeChange"
-		@search="generateList"
-	>
-	</filter-panel>
-	
-	<view class="result-meta">
+			:show-date="true"
+			:start-date="startDate"
+			:end-date="endDate"
+			:quick-filters="quickFilters"
+			:active-quick-filter="selectedQuickFilter"
+			:show-search-button="false"
+			@update:keyword="onKeywordUpdate"
+			@update:startDate="onStartDateUpdate"
+			@update:endDate="onEndDateUpdate"
+			@quick-filter="selectQuickFilter"
+			@date-change="onDateRangeChange"
+			@search="generateList"
+		>
+		</filter-panel>
+		
+		<view class="result-meta">
 		<text class="meta-item">已选择 {{ recordList.length }} 笔</text>
-		<text class="meta-dot">•</text>
+			<text class="meta-dot">•</text>
 		<text class="meta-item">共计 {{ totalDrugs }} 种药材</text>
-	</view>
+		</view>
 		
 		<!-- 列表 -->
 		<view class="list-container">
@@ -77,9 +77,9 @@
 					</view>
 					<view class="info-item">
 						<text class="info-label">创建时间：</text>
-					<text class="info-value">{{ item.createTime }}</text>
-				</view>
-				<view class="info-item">
+						<text class="info-value">{{ item.createTime }}</text>
+					</view>
+					<view class="info-item">
 					<text class="info-label">药材种类：</text>
 						<text class="info-value">{{ item.items.length }} 种</text>
 					</view>
@@ -109,14 +109,14 @@
 				</text>
 			</view>
 			
-	<!-- 加载更多 -->
-	<view v-if="hasMore" class="load-more" @click="loadMore">
-		<text>加载更多</text>
-	</view>
-	<view v-else-if="recordList.length > 0" class="no-more">
-		<text>没有更多了</text>
-	</view>
-</view>
+			<!-- 加载更多 -->
+			<view v-if="hasMore" class="load-more" @click="loadMore">
+				<text>加载更多</text>
+			</view>
+			<view v-else-if="recordList.length > 0" class="no-more">
+				<text>没有更多了</text>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -191,12 +191,12 @@ export default {
 		this.initPage()
 	},
 	
-computed: {
+	computed: {
 	// 当前状态标签
-	statusLabel() {
+		statusLabel() {
 		const found = this.statusList.find(item => item.value === this.statusFilter)
-		return found ? found.label : '全部'
-	},
+			return found ? found.label : '全部'
+		},
 	// 计算总药材种类数
 	totalDrugs() {
 		const drugSet = new Set()
@@ -208,7 +208,7 @@ computed: {
 			}
 		})
 		return drugSet.size
-	},
+		},
 		dateFilterText() {
 			if (!this.startDate && !this.endDate) {
 				return '全部时间'
@@ -357,39 +357,39 @@ computed: {
 		})
 	},
 	
-async loadCounts() {
-	try {
-		const result = await this.$api.callFunction('inRecords', {
-			action: 'getCounts',
-			data: {}
-		}, false)  // 不显示 loading
-		
-		if (result && result.success) {
+	async loadCounts() {
+		try {
+			const result = await this.$api.callFunction('inRecords', {
+				action: 'getCounts',
+				data: {}
+			}, false)  // 不显示 loading
+			
+			if (result && result.success) {
 			// 更新状态统计数量（新设计）
 			this.statusCounts = {
-				all: result.all || 0,
-				draft: result.draft || 0,
-				pending_review: result.pending_review || 0,
-				completed: result.completed || 0,
-				rejected: result.rejected || 0
-			}
+					all: result.all || 0,
+					draft: result.draft || 0,
+					pending_review: result.pending_review || 0,
+					completed: result.completed || 0,
+					rejected: result.rejected || 0
+				}
 			// 保持原有的statusSummary兼容性
 			this.statusSummary = this.statusCounts
-		} else if (result) {
+			} else if (result) {
 			this.statusCounts = {
-				all: result.all || 0,
-				draft: result.draft || 0,
-				pending_review: result.pending_review || 0,
-				completed: result.completed || 0,
-				rejected: result.rejected || 0
-			}
+					all: result.all || 0,
+					draft: result.draft || 0,
+					pending_review: result.pending_review || 0,
+					completed: result.completed || 0,
+					rejected: result.rejected || 0
+				}
 			this.statusSummary = this.statusCounts
+			}
+		} catch (err) {
+			console.error('加载数量失败:', err)
+			// request.js 已处理错误提示
 		}
-	} catch (err) {
-		console.error('加载数量失败:', err)
-		// request.js 已处理错误提示
-	}
-},
+	},
 	
 	async loadStats() {
 		// 不使用 loading，避免影响用户体验
@@ -471,8 +471,8 @@ async loadCounts() {
 			this.hasMore = true
 			this.loadRecords()
 			this.loadCounts()
-	},
-	
+		},
+		
 	// 切换状态筛选（新方法）
 	changeStatusFilter(status) {
 		this.statusFilter = status
@@ -483,9 +483,9 @@ async loadCounts() {
 		
 		// 振动反馈
 		uni.vibrateShort({ type: 'light' })
-	},
-	
-	refreshList() {
+		},
+		
+		refreshList() {
 			this.page = 1
 			this.recordList = []
 			this.hasMore = true
@@ -566,8 +566,8 @@ async loadCounts() {
 		goReport() {
 			uni.navigateTo({
 				url: '/pages-sub/report/inbound'
-			})
-		},
+		})
+	},
 	
 	goAdd() {
 		uni.navigateTo({
@@ -642,9 +642,9 @@ async loadCounts() {
 					recordNo: 'RK20251028001',
 					status: 'pending_review',
 					operator: '张三',
-				operatorId: 'user_001',
-				createTime: '2025-10-28 09:30:00',
-				items: [
+					operatorId: 'user_001',
+					createTime: '2025-10-28 09:30:00',
+					items: [
 						{ drugName: '阿莫西林胶囊', spec: '0.25g*24粒', quantity: 100 },
 						{ drugName: '布洛芬缓释胶囊', spec: '0.3g*20粒', quantity: 50 }
 					]
@@ -657,9 +657,9 @@ async loadCounts() {
 					operatorId: 'user_002',
 					reviewer: '王五',
 					reviewerId: 'user_003',
-				createTime: '2025-10-27 14:20:00',
-				completeTime: '2025-10-27 15:00:00',
-				items: [
+					createTime: '2025-10-27 14:20:00',
+					completeTime: '2025-10-27 15:00:00',
+					items: [
 						{ drugName: '感冒灵颗粒', spec: '10g*10袋', quantity: 200 }
 					]
 				},
@@ -668,9 +668,9 @@ async loadCounts() {
 					recordNo: 'RK20251027001',
 					status: 'draft',
 					operator: '张三',
-				operatorId: 'user_001',
-				createTime: '2025-10-27 10:00:00',
-				items: [
+					operatorId: 'user_001',
+					createTime: '2025-10-27 10:00:00',
+					items: [
 						{ drugName: '维生素C片', spec: '0.1g*100片', quantity: 50 }
 					]
 				},
@@ -682,9 +682,9 @@ async loadCounts() {
 					operatorId: 'user_002',
 					reviewer: '张三',
 					reviewerId: 'user_001',
-				createTime: '2025-10-26 16:00:00',
-				rejectReason: '批号填写不规范',
-				items: [
+					createTime: '2025-10-26 16:00:00',
+					rejectReason: '批号填写不规范',
+					items: [
 						{ drugName: '阿司匹林肠溶片', spec: '25mg*100片', quantity: 100 }
 					]
 				}

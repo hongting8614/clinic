@@ -76,7 +76,7 @@
             </view>
             <view class="sign-status" v-if="item.signatureStatus">
               <text
-                :class="['sign-badge', item._signVerify?.valid ? 'sign-ok' : (item.signatureStatus === 'unsigned' ? 'sign-none' : 'sign-warn')]"
+                :class="(item._signVerify && item._signVerify.valid) ? 'sign-badge sign-ok' : (item.signatureStatus === 'unsigned' ? 'sign-badge sign-none' : 'sign-badge sign-warn')"
               >
                 {{ renderSignStatus(item) }}
               </text>

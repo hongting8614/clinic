@@ -423,16 +423,20 @@ async function approve(data, wxContext) {
     // 解析规格信息
     const specInfo = UnitConverter.parseSpecification(item.specification || item.spec)
     
+    // ⭐ 关键：入库到药库时，确保使用包装单位
+    // item.unit 应该是包装单位（盒、瓶等）
+    // item.quantity 应该是包装数量
+    
     await updateStock({
       drugId: item.drugId,
       drugName: item.drugName,
       specification: item.specification || item.spec,
-      unit: item.unit,
+      unit: item.unit,  // 包装单位（盒、瓶）⭐
       manufacturer: item.manufacturer,
       batch: item.batch,
       productionDate: item.productionDate,
       expireDate: item.expireDate,
-      quantity: item.quantity,
+      quantity: item.quantity,  // 包装数量 ⭐
       price: item.price || 0,
       location: 'drug_storage', // 统一入库到药库 ⭐
       action: 'in',

@@ -1,6 +1,6 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages-sub/clinic/add"],{
 
-/***/ 398:
+/***/ 440:
 /*!*************************************************************!*\
   !*** D:/AK-PMS/main.js?{"page":"pages-sub%2Fclinic%2Fadd"} ***!
   \*************************************************************/
@@ -13,7 +13,7 @@
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 __webpack_require__(/*! uni-pages */ 26);
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
-var _add = _interopRequireDefault(__webpack_require__(/*! ./pages-sub/clinic/add.vue */ 399));
+var _add = _interopRequireDefault(__webpack_require__(/*! ./pages-sub/clinic/add.vue */ 441));
 // @ts-ignore
 wx.__webpack_require_UNI_MP_PLUGIN__ = __webpack_require__;
 createPage(_add.default);
@@ -21,7 +21,7 @@ createPage(_add.default);
 
 /***/ }),
 
-/***/ 399:
+/***/ 441:
 /*!******************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue ***!
   \******************************************/
@@ -30,11 +30,11 @@ createPage(_add.default);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 400);
-/* harmony import */ var _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./add.vue?vue&type=script&lang=js& */ 402);
+/* harmony import */ var _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 442);
+/* harmony import */ var _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./add.vue?vue&type=script&lang=js& */ 444);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 404);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 32);
+/* harmony import */ var _add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 446);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 32);
 
 var renderjs
 
@@ -44,7 +44,7 @@ var renderjs
 
 /* normalize component */
 
-var component = Object(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+var component = Object(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
   _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -62,7 +62,7 @@ component.options.__file = "pages-sub/clinic/add.vue"
 
 /***/ }),
 
-/***/ 400:
+/***/ 442:
 /*!*************************************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=template&id=0904e2e0&scoped=true& ***!
   \*************************************************************************************/
@@ -71,20 +71,20 @@ component.options.__file = "pages-sub/clinic/add.vue"
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 401);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 443);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["recyclableRender"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["recyclableRender"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["components"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["components"]; });
 
 
 
 /***/ }),
 
-/***/ 401:
+/***/ 443:
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=template&id=0904e2e0&scoped=true& ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -105,13 +105,20 @@ var render = function () {
   var g0 = _vm.showComplaintList && _vm.filteredComplaints.length > 0
   var g1 = _vm.showLocationList && _vm.filteredLocations.length > 0
   var g2 = _vm.showDiagnosisList && _vm.filteredDiagnosis.length > 0
-  var g3 = _vm.showDiseaseList && _vm.filteredDiseases.length > 0
-  var g4 = _vm.showTreatmentList && _vm.filteredTreatments.length > 0
-  var g5 = _vm.showDrugList && _vm.filteredDrugs.length > 0
-  var g6 = g5 ? _vm.filteredDrugs.length : null
-  var g7 =
+  var g3 = g2 ? _vm.filteredDiagnosis.length : null
+  var g4 = _vm.showSymptomList && _vm.filteredSymptoms.length > 0
+  var g5 = _vm.showDiseaseList && _vm.filteredDiseases.length > 0
+  var g6 = _vm.showTreatmentList && _vm.filteredTreatments.length > 0
+  var g7 = _vm.showDrugList && _vm.filteredDrugs.length > 0
+  var g8 = g7 ? _vm.filteredDrugs.length : null
+  var g9 =
     _vm.showDrugList && _vm.drugSearchText && _vm.filteredDrugs.length === 0
-  var m0 = _vm.selectedBatch
+  var m0 = _vm.selectedDrug ? _vm.getRealMinUnit(_vm.selectedDrug) : null
+  var g10 = _vm.enablePrescription ? _vm.prescriptionList.length : null
+  var g11 = _vm.enablePrescription ? _vm.prescriptionList.length : null
+  var g12 =
+    _vm.enablePrescription && g11 > 0 ? _vm.prescriptionList.length : null
+  var m1 = _vm.selectedBatch
     ? _vm.formatDate(_vm.selectedBatch.expiryDate)
     : null
   if (!_vm._isMounted) {
@@ -149,7 +156,13 @@ var render = function () {
         g5: g5,
         g6: g6,
         g7: g7,
+        g8: g8,
+        g9: g9,
         m0: m0,
+        g10: g10,
+        g11: g11,
+        g12: g12,
+        m1: m1,
       },
     }
   )
@@ -162,7 +175,7 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ 402:
+/***/ 444:
 /*!*******************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=script&lang=js& ***!
   \*******************************************************************/
@@ -171,14 +184,14 @@ render._withStripped = true
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=script&lang=js& */ 403);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/babel-loader/lib!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=script&lang=js& */ 445);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ 403:
+/***/ 445:
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=script&lang=js& ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -195,15 +208,406 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 427));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 462));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
+};
+// 欢乐谷主诉-关键词映射库（前端专用，用于主诉下拉联想）
+// 说明：
+// - key 为医生可能输入的关键词（疾病名/症状/场景词）
+// - value 为若干主诉模板，每条包含疾病场景与规范主诉句子
+var hvComplaintKeywordIndex = {
+  // 外伤类 TR-01 皮肤擦伤/挫伤
+  '擦伤': [{
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '摔倒后膝盖擦伤、疼痛'
+  }, {
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '碰撞后手臂蹭破皮、红肿'
+  }, {
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '被游乐设施擦伤、轻微出血'
+  }, {
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '摔倒后多处擦伤、疼痛'
+  }],
+  '挫伤': [{
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '摔倒后膝盖擦伤、疼痛'
+  }, {
+    diseaseId: 'TR-01',
+    diseaseName: '皮肤擦伤/挫伤',
+    complaint: '碰撞后手臂蹭破皮、红肿'
+  }],
+  // 外伤类 TR-02 关节扭伤
+  '扭伤': [{
+    diseaseId: 'TR-02',
+    diseaseName: '关节扭伤',
+    complaint: '崴脚后脚踝疼痛、肿胀'
+  }, {
+    diseaseId: 'TR-02',
+    diseaseName: '关节扭伤',
+    complaint: '跑步摔倒后手腕扭伤、活动受限'
+  }, {
+    diseaseId: 'TR-02',
+    diseaseName: '关节扭伤',
+    complaint: '跳跃后膝关节扭伤、不能承重'
+  }, {
+    diseaseId: 'TR-02',
+    diseaseName: '关节扭伤',
+    complaint: '手腕扭伤、疼痛、活动困难'
+  }],
+  '崴脚': [{
+    diseaseId: 'TR-02',
+    diseaseName: '关节扭伤',
+    complaint: '崴脚后脚踝疼痛、肿胀'
+  }],
+  // 外伤类 TR-03 头部轻微外伤
+  '头部外伤': [{
+    diseaseId: 'TR-03',
+    diseaseName: '头部轻微外伤',
+    complaint: '撞到头后头痛、头晕'
+  }, {
+    diseaseId: 'TR-03',
+    diseaseName: '头部轻微外伤',
+    complaint: '头部撞伤、起包、恶心'
+  }, {
+    diseaseId: 'TR-03',
+    diseaseName: '头部轻微外伤',
+    complaint: '头部碰伤、头痛想吐'
+  }, {
+    diseaseId: 'TR-03',
+    diseaseName: '头部轻微外伤',
+    complaint: '头部外伤后头晕、注意力不集中'
+  }],
+  // 外伤类 TR-04 可疑骨折
+  '骨折': [{
+    diseaseId: 'TR-04',
+    diseaseName: '可疑骨折',
+    complaint: '摔倒后手腕畸形、剧痛'
+  }, {
+    diseaseId: 'TR-04',
+    diseaseName: '可疑骨折',
+    complaint: '腿部撞击后肿胀变形、不能动'
+  }, {
+    diseaseId: 'TR-04',
+    diseaseName: '可疑骨折',
+    complaint: '高处跌落脚踝剧痛、畸形'
+  }, {
+    diseaseId: 'TR-04',
+    diseaseName: '可疑骨折',
+    complaint: '手指挤压后畸形、活动异常'
+  }],
+  // 环境类 EN-01 轻度中暑
+  '中暑': [{
+    diseaseId: 'EN-01',
+    diseaseName: '轻度中暑',
+    complaint: '太阳下排队后头晕、口渴、乏力'
+  }, {
+    diseaseId: 'EN-01',
+    diseaseName: '轻度中暑',
+    complaint: '天气热感觉头晕、恶心、出汗多'
+  }, {
+    diseaseId: 'EN-01',
+    diseaseName: '轻度中暑',
+    complaint: '长时间暴晒后头痛、乏力、口渴'
+  }, {
+    diseaseId: 'EN-01',
+    diseaseName: '轻度中暑',
+    complaint: '热天游玩后头晕、心慌、想吐'
+  }],
+  '暴晒': [{
+    diseaseId: 'EN-01',
+    diseaseName: '轻度中暑',
+    complaint: '长时间暴晒后头痛、乏力、口渴'
+  }, {
+    diseaseId: 'EN-02',
+    diseaseName: '热痉挛/热衰竭',
+    complaint: '暴晒后大量出汗、头晕、肌肉痉挛'
+  }],
+  // 环境类 EN-02 热痉挛/热衰竭
+  '热痉挛': [{
+    diseaseId: 'EN-02',
+    diseaseName: '热痉挛/热衰竭',
+    complaint: '高温下活动后头晕、恶心、肌肉抽筋'
+  }, {
+    diseaseId: 'EN-02',
+    diseaseName: '热痉挛/热衰竭',
+    complaint: '热天跑步后乏力、头晕、小腿抽筋'
+  }, {
+    diseaseId: 'EN-02',
+    diseaseName: '热痉挛/热衰竭',
+    complaint: '暴晒后大量出汗、头晕、肌肉痉挛'
+  }, {
+    diseaseId: 'EN-02',
+    diseaseName: '热痉挛/热衰竭',
+    complaint: '高温环境头晕、呕吐、全身无力'
+  }],
+  // 环境类 EN-03 日光性皮炎
+  '晒伤': [{
+    diseaseId: 'EN-03',
+    diseaseName: '日光性皮炎',
+    complaint: '晒伤后皮肤发红、疼痛、灼热感'
+  }, {
+    diseaseId: 'EN-03',
+    diseaseName: '日光性皮炎',
+    complaint: '暴晒后皮肤红肿、刺痛、痒'
+  }, {
+    diseaseId: 'EN-03',
+    diseaseName: '日光性皮炎',
+    complaint: '晒后皮肤起红斑、脱皮、疼痛'
+  }, {
+    diseaseId: 'EN-03',
+    diseaseName: '日光性皮炎',
+    complaint: '太阳晒后皮肤发红起泡、灼痛'
+  }],
+  // 环境类 EN-04 蚊虫叮咬过敏
+  '蚊虫叮咬': [{
+    diseaseId: 'EN-04',
+    diseaseName: '蚊虫叮咬过敏',
+    complaint: '被蚊子咬后红肿、瘙痒'
+  }, {
+    diseaseId: 'EN-04',
+    diseaseName: '蚊虫叮咬过敏',
+    complaint: '虫咬后起大包、很痒'
+  }, {
+    diseaseId: 'EN-04',
+    diseaseName: '蚊虫叮咬过敏',
+    complaint: '蚊虫叮咬处红肿热痛'
+  }, {
+    diseaseId: 'EN-04',
+    diseaseName: '蚊虫叮咬过敏',
+    complaint: '虫咬后皮疹、瘙痒难忍'
+  }],
+  // 消化 GI-01 急性胃肠炎
+  '腹泻': [{
+    diseaseId: 'GI-01',
+    diseaseName: '急性胃肠炎',
+    complaint: '吃坏肚子后呕吐、腹泻、腹痛'
+  }, {
+    diseaseId: 'GI-01',
+    diseaseName: '急性胃肠炎',
+    complaint: '进食后恶心呕吐、拉肚子'
+  }, {
+    diseaseId: 'GI-01',
+    diseaseName: '急性胃肠炎',
+    complaint: '呕吐腹泻、肚子绞痛、发热'
+  }, {
+    diseaseId: 'GI-01',
+    diseaseName: '急性胃肠炎',
+    complaint: '恶心、拉肚子、肚子咕咕叫'
+  }],
+  // 消化 GI-02 功能性消化不良
+  '消化不良': [{
+    diseaseId: 'GI-02',
+    diseaseName: '功能性消化不良',
+    complaint: '吃太多后胃胀、反酸、不舒服'
+  }, {
+    diseaseId: 'GI-02',
+    diseaseName: '功能性消化不良',
+    complaint: '饭后胃痛、饱胀感、嗳气'
+  }, {
+    diseaseId: 'GI-02',
+    diseaseName: '功能性消化不良',
+    complaint: '胃部不适、食欲不振、腹胀'
+  }, {
+    diseaseId: 'GI-02',
+    diseaseName: '功能性消化不良',
+    complaint: '吃东西后胃疼、反酸烧心'
+  }],
+  // 神经 NS-01 晕动病
+  '晕动病': [{
+    diseaseId: 'NS-01',
+    diseaseName: '晕动病',
+    complaint: '坐旋转项目后头晕、恶心、想吐'
+  }, {
+    diseaseId: 'NS-01',
+    diseaseName: '晕动病',
+    complaint: '玩游乐设施后头晕、出冷汗、心慌'
+  }, {
+    diseaseId: 'NS-01',
+    diseaseName: '晕动病',
+    complaint: '晕车样感觉、头晕恶心、脸色苍白'
+  }, {
+    diseaseId: 'NS-01',
+    diseaseName: '晕动病',
+    complaint: '旋转后眩晕、呕吐、乏力'
+  }],
+  '眩晕': [{
+    diseaseId: 'NS-01',
+    diseaseName: '晕动病',
+    complaint: '旋转后眩晕、呕吐、乏力'
+  }, {
+    diseaseId: 'VR-01',
+    diseaseName: '游乐设施后眩晕',
+    complaint: '旋转项目后眩晕、恶心'
+  }, {
+    diseaseId: 'VR-02',
+    diseaseName: '前庭性眩晕',
+    complaint: '天旋地转的眩晕、伴呕吐'
+  }],
+  // 神经 NS-02 过度惊吓反应
+  '惊吓': [{
+    diseaseId: 'NS-02',
+    diseaseName: '过度惊吓反应',
+    complaint: '鬼屋出来后心慌、手抖、害怕'
+  }, {
+    diseaseId: 'NS-02',
+    diseaseName: '过度惊吓反应',
+    complaint: '受惊吓后心慌、头晕、出汗'
+  }, {
+    diseaseId: 'NS-02',
+    diseaseName: '过度惊吓反应',
+    complaint: '惊吓后心跳很快、紧张不安'
+  }, {
+    diseaseId: 'NS-02',
+    diseaseName: '过度惊吓反应',
+    complaint: '恐怖项目后恐惧、失眠、噩梦'
+  }],
+  // 心理 PS-01 儿童分离焦虑
+  '走失': [{
+    diseaseId: 'PS-01',
+    diseaseName: '儿童分离焦虑',
+    complaint: '小孩与父母走散后哭闹、害怕'
+  }, {
+    diseaseId: 'PS-01',
+    diseaseName: '儿童分离焦虑',
+    complaint: '儿童找不到家长、焦虑哭闹'
+  }, {
+    diseaseId: 'PS-01',
+    diseaseName: '儿童分离焦虑',
+    complaint: '孩子分离后恐慌、不肯离开'
+  }, {
+    diseaseId: 'PS-01',
+    diseaseName: '儿童分离焦虑',
+    complaint: '儿童焦虑、紧抓不放、哭泣'
+  }],
+  // 心理 PS-02 过度换气综合征
+  '过度换气': [{
+    diseaseId: 'PS-02',
+    diseaseName: '过度换气综合征',
+    complaint: '紧张后呼吸急促、手脚发麻'
+  }, {
+    diseaseId: 'PS-02',
+    diseaseName: '过度换气综合征',
+    complaint: '焦虑发作呼吸快、头晕、手麻'
+  }, {
+    diseaseId: 'PS-02',
+    diseaseName: '过度换气综合征',
+    complaint: '恐慌时喘不过气、手抽筋'
+  }, {
+    diseaseId: 'PS-02',
+    diseaseName: '过度换气综合征',
+    complaint: '呼吸过快、胸口闷、嘴唇发麻'
+  }],
+  // VR-01 游乐设施后眩晕
+  '过山车': [{
+    diseaseId: 'VR-01',
+    diseaseName: '游乐设施后眩晕',
+    complaint: '玩过山车后头晕、站不稳'
+  }, {
+    diseaseId: 'MS-01',
+    diseaseName: '颈部挥鞭样损伤',
+    complaint: '坐过山车后脖子痛、僵硬'
+  }],
+  '游乐设施': [{
+    diseaseId: 'VR-01',
+    diseaseName: '游乐设施后眩晕',
+    complaint: '游乐设施后头昏、平衡差'
+  }, {
+    diseaseId: 'MS-01',
+    diseaseName: '颈部挥鞭样损伤',
+    complaint: '游乐设施后颈部酸痛、头晕'
+  }],
+  // VR-02 前庭性眩晕 & VR-03 耳石症
+  '前庭性眩晕': [{
+    diseaseId: 'VR-02',
+    diseaseName: '前庭性眩晕',
+    complaint: '天旋地转的眩晕、伴呕吐'
+  }, {
+    diseaseId: 'VR-02',
+    diseaseName: '前庭性眩晕',
+    complaint: '眩晕感觉房子在转、恶心'
+  }, {
+    diseaseId: 'VR-02',
+    diseaseName: '前庭性眩晕',
+    complaint: '剧烈眩晕、必须闭眼躺下'
+  }, {
+    diseaseId: 'VR-02',
+    diseaseName: '前庭性眩晕',
+    complaint: '旋转性眩晕、伴耳鸣'
+  }],
+  '耳石症': [{
+    diseaseId: 'VR-03',
+    diseaseName: '耳石症',
+    complaint: '转头时突发眩晕、几秒钟就好'
+  }, {
+    diseaseId: 'VR-03',
+    diseaseName: '耳石症',
+    complaint: '起床翻身时短暂天旋地转'
+  }, {
+    diseaseId: 'VR-03',
+    diseaseName: '耳石症',
+    complaint: '头位变化时剧烈眩晕、不敢动'
+  }, {
+    diseaseId: 'VR-03',
+    diseaseName: '耳石症',
+    complaint: '特定姿势时眩晕发作'
+  }],
+  // GY-01/02/03 痛经
+  '痛经': [{
+    diseaseId: 'GY-01',
+    diseaseName: '轻度痛经',
+    complaint: '来月经肚子隐痛、腰酸'
+  }, {
+    diseaseId: 'GY-01',
+    diseaseName: '轻度痛经',
+    complaint: '经期小腹坠痛、乏力'
+  }, {
+    diseaseId: 'GY-02',
+    diseaseName: '中度痛经',
+    complaint: '痛经明显、影响游玩'
+  }, {
+    diseaseId: 'GY-03',
+    diseaseName: '重度痛经',
+    complaint: '痛经剧痛、出冷汗、想吐'
+  }],
+  // MT-01/02/03 低血糖
+  '低血糖': [{
+    diseaseId: 'MT-01',
+    diseaseName: '轻度低血糖',
+    complaint: '心慌手抖、出冷汗、饥饿感'
+  }, {
+    diseaseId: 'MT-01',
+    diseaseName: '轻度低血糖',
+    complaint: '头晕心慌、手抖乏力'
+  }, {
+    diseaseId: 'MT-01',
+    diseaseName: '轻度低血糖',
+    complaint: '游玩久了心慌、出汗、饿'
+  }, {
+    diseaseId: 'MT-02',
+    diseaseName: '中重度低血糖',
+    complaint: '低血糖意识模糊、反应迟钝'
+  }, {
+    diseaseId: 'MT-03',
+    diseaseName: '低血糖昏迷',
+    complaint: '低血糖昏迷、意识丧失'
+  }]
 };
 var _default = {
   components: {
@@ -296,6 +700,7 @@ var _default = {
         '头痛': ['注意休息与补水', '减少长时间屏幕与强光刺激', '频繁发作或伴呕吐/视物模糊请复诊'],
         '感冒': ['多饮水休息，注意保暖与口罩礼仪', '对症用药后观察', '发热＞38.5℃或持续超过3天请复诊']
       },
+      hvTriage: null,
       // 结构化疾病模板库：每个疾病下多条主诉，每条主诉有独立的症状/诊断/处置
       // 后续可以扩展 drugs 字段
       diseaseTemplateLib: {
@@ -459,6 +864,32 @@ var _default = {
           diagnoses: ['不明原因晕厥待排'],
           treatments: ['平卧抬高下肢，监测血压和心率', '建议行心电图及相关检查', '如反复发作或伴胸痛气促等症状应尽快就医']
         }],
+        // 痛经类
+        '痛经': [{
+          complaint: '来月经肚子隐痛、腰酸',
+          symptoms: ['经期下腹部隐痛或胀痛，可放射至腰骶部', '伴腰酸、乏力，疼痛程度较轻，不影响日常活动', '月经量正常或略多，无血块或血块较少'],
+          diagnoses: ['轻度痛经', '原发性痛经可能'],
+          treatments: ['热敷腹部、休息', '必要时对症解痉', '注意保暖与规律作息'],
+          suggestDrugs: ['布洛芬缓释胶囊']
+        }, {
+          complaint: '经期小腹坠痛、乏力',
+          symptoms: ['经期下腹部坠痛或胀痛，疼痛程度中等', '伴乏力、腰酸，可能影响部分活动', '月经量正常，可有少量血块', '无恶心、呕吐等严重症状'],
+          diagnoses: ['中度痛经', '原发性痛经', '寒凝血瘀型痛经可能'],
+          treatments: ['热敷腹部、休息', '口服解痉止痛药（如布洛芬）', '注意保暖，避免受凉', '规律作息，避免过度劳累'],
+          suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+        }, {
+          complaint: '痛经明显、影响游玩',
+          symptoms: ['经期下腹部明显疼痛，疼痛程度较重', '疼痛影响正常活动，可能需要休息', '可伴腰酸、乏力、情绪不佳', '月经量正常或略多，可有血块'],
+          diagnoses: ['中度痛经', '原发性痛经', '气滞血瘀型痛经可能'],
+          treatments: ['热敷腹部、休息', '口服解痉止痛药', '注意保暖与规律作息', '如疼痛持续或加重，建议妇科门诊进一步检查'],
+          suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+        }, {
+          complaint: '痛经剧痛、出冷汗、想吐',
+          symptoms: ['经期下腹部剧烈疼痛，呈痉挛性或持续性', '疼痛难以忍受，严重影响活动', '伴出冷汗、面色苍白、恶心、想吐', '可伴头晕、乏力，甚至需要卧床休息', '月经量正常或略多，血块可能较多'],
+          diagnoses: ['重度痛经', '原发性痛经', '继发性痛经待排（建议妇科检查）'],
+          treatments: ['立即休息，平卧休息', '热敷腹部，注意保暖', '口服解痉止痛药（如布洛芬）', '如症状严重或持续不缓解，建议转诊妇科专科', '建议完善妇科检查，排除器质性疾病'],
+          suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
+        }],
         // 测量/监测类
         '测量监测': [{
           complaint: '因自觉不适前来测量血压',
@@ -521,13 +952,40 @@ var _default = {
       selectedDrug: null,
       selectedBatch: null,
       availableStock: 0,
+      // 处方功能开关
+      enablePrescription: false,
+      // 处方列表
+      prescriptionList: [],
+      prescriptionNo: '',
+      // 处方编号
+      currentDate: '',
+      // 当前日期
+
+      // 当前正在编辑的药品信息
+      currentDrug: {
+        dosage: '',
+        frequency: '',
+        route: '',
+        usage: ''
+      },
+      // 用法用量选择器索引
+      frequencyIndex: 0,
+      routeIndex: 0,
+      // 用法用量模板
+      dosageTemplates: {
+        '口服': ['0.5g', '1g', '10ml', '20ml', '适量'],
+        '外用': ['适量', '少量', '薄层涂抹'],
+        '含服': ['1片', '适量']
+      },
+      routeOptions: ['口服', '外用', '含服', '舌下含服', '涂擦患处', '肌肉注射', '静脉注射'],
+      frequencyOptions: ['即刻', '每日3次', '每日2次', '每日1次', '每8小时1次', '每12小时1次', '必要时', '睡前', '每日3-4次', '隔日1次'],
       // 药材搜索相关
       drugSearchText: '',
       allDrugs: [],
       filteredDrugs: [],
       showDrugList: false,
-      // 疾病名称下拉列表
-      diseaseOptions: ['感冒', '发烧', '头痛', '头晕', '咳嗽', '腹泻', '腹痛', '恶心呕吐', '外伤', '扭伤', '擦伤', '割伤', '烫伤', '中暑', '晕厥', '过敏', '皮疹', '咽喉痛', '牙痛', '关节痛', '腰痛', '胸闷', '心慌', '失眠', '其他'],
+      // 疾病名称下拉列表（标准疾病名称）
+      diseaseOptions: ['扭伤', '擦伤', '烫伤', '磕伤', '冻伤', '腹泻', '头晕', '头痛', '感冒', '脱臼', '骨折', '过敏', '痛经', '测血压', '其他'],
       filteredDiseases: [],
       showDiseaseList: false,
       // 诊断/处置下拉
@@ -542,10 +1000,23 @@ var _default = {
       // 主诉是否已选择（自由编辑模式）
       complaintFocus: false,
       // 控制主诉输入框聚焦
+      // 症状相关
+      filteredSymptoms: [],
+      showSymptomList: false,
+      standardizedSymptoms: [],
+      // 从主诉标准化提取的症状列表
+      symptomBlurTimer: null,
+      symptomInputTimer: null,
+      // 症状输入防抖计时器
+      fetchHvSuggestionTimer: null,
+      // 获取诊断建议防抖计时器
       // 下拉隐藏延迟计时器
       diseaseBlurTimer: null,
       complaintBlurTimer: null,
       diagnosisBlurTimer: null,
+      // 输入防抖计时器
+      diseaseInputTimer: null,
+      diagnosisInputTimer: null,
       // 年龄输入焦点（用于强制弹出数字键盘）
       ageFocus: false,
       // 园区常用地点词库（来自园区运营文件与现场点位）
@@ -617,6 +1088,14 @@ var _default = {
       if (length > 50) return 'font-small';
       if (length > 30) return 'font-medium';
       return '';
+    },
+    // 当前选择的用药频次标签
+    currentFrequencyLabel: function currentFrequencyLabel() {
+      return this.frequencyOptions[this.frequencyIndex] || '请选择';
+    },
+    // 当前选择的给药途径标签
+    currentRouteLabel: function currentRouteLabel() {
+      return this.routeOptions[this.routeIndex] || '请选择';
     }
   },
   onLoad: function onLoad() {
@@ -626,6 +1105,9 @@ var _default = {
     this.dateTimeTimerId = setInterval(function () {
       _this.updateDateTime();
     }, 60000);
+
+    // 初始化处方编号和日期
+    this.initPrescription();
 
     // 恢复上次选择的园区
     this.restoreLastLocation();
@@ -645,8 +1127,308 @@ var _default = {
       clearInterval(this.dateTimeTimerId);
       this.dateTimeTimerId = null;
     }
+    // 清理防抖计时器
+    if (this.symptomInputTimer) {
+      clearTimeout(this.symptomInputTimer);
+      this.symptomInputTimer = null;
+    }
+    if (this.fetchHvSuggestionTimer) {
+      clearTimeout(this.fetchHvSuggestionTimer);
+      this.fetchHvSuggestionTimer = null;
+    }
+    if (this.diseaseInputTimer) {
+      clearTimeout(this.diseaseInputTimer);
+      this.diseaseInputTimer = null;
+    }
+    if (this.diagnosisInputTimer) {
+      clearTimeout(this.diagnosisInputTimer);
+      this.diagnosisInputTimer = null;
+    }
+    if (this.complaintInputTimer) {
+      clearTimeout(this.complaintInputTimer);
+      this.complaintInputTimer = null;
+    }
+    if (this.complaintFocusTimer) {
+      clearTimeout(this.complaintFocusTimer);
+      this.complaintFocusTimer = null;
+    }
+  },
+  watch: {
+    // 监听主诉字段变化，清空时联动清空所有相关字段
+    'form.chiefComplaint': function formChiefComplaint(newVal, oldVal) {
+      var _this2 = this;
+      var newComplaint = (newVal || '').trim();
+      var oldComplaint = (oldVal || '').trim();
+
+      // 从有内容变为空
+      if (oldComplaint && !newComplaint) {
+        // 检查是否有已填写的相关字段
+        var hasRelatedData = this.form.symptom || this.form.diagnosis || this.form.diseaseName || this.form.treatment || this.prescriptionList.length > 0;
+        if (hasRelatedData) {
+          // 延迟执行，避免与输入事件冲突
+          this.$nextTick(function () {
+            uni.showModal({
+              title: '清空确认',
+              content: '清空主诉将同时清空症状、诊断、疾病名称、处置和处方等相关信息，是否继续？',
+              confirmText: '确认清空',
+              cancelText: '取消',
+              confirmColor: '#dc2626',
+              success: function success(res) {
+                if (res.confirm) {
+                  _this2.clearAllRelatedFields();
+                } else {
+                  // 恢复主诉内容
+                  _this2.form.chiefComplaint = oldComplaint;
+                }
+              }
+            });
+          });
+        } else {
+          // 没有相关数据，直接清空
+          this.clearAllRelatedFields();
+        }
+      }
+    }
   },
   methods: {
+    // ✨ 清空所有相关字段（主诉清空时调用）
+    clearAllRelatedFields: function clearAllRelatedFields() {
+      // 1. 清空就诊信息相关字段
+      this.form.symptom = ''; // 症状
+      this.form.diagnosis = ''; // 诊断
+      this.form.diseaseName = ''; // 疾病名称
+      this.form.treatment = ''; // 处置
+
+      // 2. 清空用药信息
+      this.selectedDrug = null; // 选中的药材
+      this.form.drugId = ''; // 药材ID
+      this.form.quantity = null; // 用药数量
+      this.drugSearchText = ''; // 药材搜索文本
+
+      // 3. 清空处方列表
+      this.prescriptionList = []; // 处方列表
+
+      // 4. 清空辅助数据
+      this.standardizedSymptoms = []; // 标准化症状
+      this.hvTriage = null; // 分诊建议
+
+      // 5. 重置模式
+      this.complaintSelectedMode = false;
+
+      // 6. 关闭所有下拉列表
+      this.showSymptomList = false;
+      this.showDiagnosisList = false;
+      this.showDiseaseList = false;
+      this.showTreatmentList = false;
+      this.showDrugList = false;
+      this.showComplaintList = false;
+      console.log('[clinic/add] 已清空主诉及所有相关字段');
+    },
+    // 初始化处方信息
+    initPrescription: function initPrescription() {
+      // 生成处方编号：格式 年份-流水号（如2025-0001）
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = (now.getMonth() + 1).toString().padStart(2, '0');
+      var day = now.getDate().toString().padStart(2, '0');
+
+      // 使用时间戳的后4位作为流水号（简化版，实际应该从数据库获取）
+      var timestamp = Date.now();
+      var serialNo = (timestamp % 10000).toString().padStart(4, '0');
+      this.prescriptionNo = "".concat(year, "-").concat(serialNo);
+      this.currentDate = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
+    },
+    // 用药频次选择器变化
+    onFrequencyChange: function onFrequencyChange(e) {
+      this.frequencyIndex = e.detail.value;
+      this.currentDrug.frequency = this.frequencyOptions[this.frequencyIndex];
+    },
+    // 给药途径选择器变化
+    onRouteChange: function onRouteChange(e) {
+      this.routeIndex = e.detail.value;
+      this.currentDrug.route = this.routeOptions[this.routeIndex];
+    },
+    // 处方开关切换
+    onPrescriptionSwitch: function onPrescriptionSwitch(e) {
+      this.enablePrescription = e.detail.value;
+
+      // 如果开启处方，初始化处方信息
+      if (this.enablePrescription && !this.prescriptionNo) {
+        this.initPrescription();
+      }
+    },
+    // 从药品规格中提取真正的最小单位
+    getRealMinUnit: function getRealMinUnit(drug) {
+      var spec = drug.specification || '';
+
+      // 常见的最小单位
+      var minUnits = ['片', '粒', '丸', '支', '袋', '包'];
+
+      // 从规格中查找最小单位
+      for (var _i = 0, _minUnits = minUnits; _i < _minUnits.length; _i++) {
+        var unit = _minUnits[_i];
+        if (spec.includes(unit)) {
+          return unit;
+        }
+      }
+
+      // 如果规格中没有找到，返回原始的minUnit
+      return drug.minUnit;
+    },
+    // 添加到处方
+    addToPrescription: function addToPrescription() {
+      if (!this.selectedDrug) {
+        uni.showToast({
+          title: '请先选择药材',
+          icon: 'none'
+        });
+        return;
+      }
+      if (!this.form.quantity || this.form.quantity <= 0) {
+        uni.showToast({
+          title: '请输入有效数量',
+          icon: 'none'
+        });
+        return;
+      }
+      if (this.form.quantity > this.availableStock) {
+        uni.showToast({
+          title: '库存不足',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 弹出用法用量输入框
+      var that = this;
+      var drugName = this.selectedDrug.name;
+
+      // 根据药品类型提供示例
+      var example = '0.5g 口服 每日3次';
+      if (drugName.includes('风油精') || drugName.includes('外用')) {
+        example = '适量 外用 每日3-4次';
+      } else if (drugName.includes('水') || drugName.includes('液')) {
+        example = '10ml 口服 每日2次';
+      }
+      uni.showModal({
+        title: '填写用法用量',
+        content: "\u683C\u5F0F\uFF1A\u5242\u91CF \u9014\u5F84 \u9891\u6B21\n\u793A\u4F8B\uFF1A".concat(example, "\n\n\u5242\u91CF\uFF1A0.5g\u300110ml\u3001\u9002\u91CF\u7B49\n\u9014\u5F84\uFF1A\u53E3\u670D\u3001\u5916\u7528\u3001\u542B\u670D\u7B49\n\u9891\u6B21\uFF1A\u6BCF\u65E53\u6B21\u3001\u5FC5\u8981\u65F6\u7B49"),
+        editable: true,
+        placeholderText: example,
+        success: function success(res) {
+          if (res.confirm && res.content) {
+            var _that$selectedBatch, _that$selectedBatch2;
+            // 解析用法用量
+            var usageText = res.content.trim();
+
+            // 过滤掉格式说明文本（如果用户没有修改直接确认）
+            if (usageText.includes('格式') || usageText.includes('示例') || usageText.includes('剂量：') || usageText.includes('途径：') || usageText.includes('频次：')) {
+              uni.showToast({
+                title: '请填写实际用法用量',
+                icon: 'none'
+              });
+              return;
+            }
+            var parts = usageText.split(/\s+/); // 用空格分割
+
+            // 添加到处方列表
+            that.prescriptionList.push({
+              drugId: that.selectedDrug._id,
+              drugName: that.selectedDrug.name,
+              specification: that.selectedDrug.specification,
+              quantity: that.form.quantity,
+              unit: that.getRealMinUnit(that.selectedDrug),
+              batchId: (_that$selectedBatch = that.selectedBatch) === null || _that$selectedBatch === void 0 ? void 0 : _that$selectedBatch._id,
+              batchNumber: (_that$selectedBatch2 = that.selectedBatch) === null || _that$selectedBatch2 === void 0 ? void 0 : _that$selectedBatch2.batch,
+              dosage: parts[0] || '',
+              route: parts[1] || '',
+              frequency: parts.slice(2).join(' ') || '' // 频次可能有多个词
+            });
+
+            // 清空当前选择
+            that.drugSearchText = '';
+            that.selectedDrug = null;
+            that.selectedBatch = null;
+            that.availableStock = 0;
+            that.form.quantity = null;
+            that.showDrugList = false;
+            uni.showToast({
+              title: '已加入处方',
+              icon: 'success'
+            });
+          } else if (res.confirm) {
+            uni.showToast({
+              title: '请填写用法用量',
+              icon: 'none'
+            });
+          }
+        }
+      });
+    },
+    // 从处方中移除
+    removeFromPrescription: function removeFromPrescription(index) {
+      var _this3 = this;
+      uni.showModal({
+        title: '确认删除',
+        content: '确定要从处方中移除这味药吗？',
+        success: function success(res) {
+          if (res.confirm) {
+            _this3.prescriptionList.splice(index, 1);
+            uni.showToast({
+              title: '已移除',
+              icon: 'success'
+            });
+          }
+        }
+      });
+    },
+    // 快速添加到处方（从药材选择区域）
+    quickAddToPrescription: function quickAddToPrescription() {
+      var _this4 = this;
+      // 如果没有选择药材，提示用户先选择
+      if (!this.selectedDrug) {
+        uni.showToast({
+          title: '请先选择药材',
+          icon: 'none',
+          duration: 2000
+        });
+        // 滚动到药材选择区域
+        this.$nextTick(function () {
+          uni.pageScrollTo({
+            selector: '#field-drug',
+            duration: 300
+          });
+        });
+        return;
+      }
+
+      // 如果没有输入数量，提示用户输入
+      if (!this.form.quantity || this.form.quantity <= 0) {
+        uni.showToast({
+          title: '请先输入用药数量',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+
+      // 检查库存
+      if (this.form.quantity > this.availableStock) {
+        uni.showModal({
+          title: '库存不足',
+          content: "\u5F53\u524D\u5E93\u5B58\uFF1A".concat(this.availableStock, " ").concat(this.getRealMinUnit(this.selectedDrug), "\uFF0C\u662F\u5426\u4ECD\u8981\u6DFB\u52A0\uFF1F"),
+          success: function success(res) {
+            if (res.confirm) {
+              _this4.addToPrescription();
+            }
+          }
+        });
+        return;
+      }
+
+      // 直接调用添加到处方方法
+      this.addToPrescription();
+    },
     onFieldFocus: function onFieldFocus(id) {
       this.activeFieldId = id;
     },
@@ -678,13 +1460,17 @@ var _default = {
     },
     // 构建多框搜索统一索引：汇总系统模板、结构化模板、用户自定义模板
     buildTemplateIndex: function buildTemplateIndex() {
-      var _this2 = this;
       var index = [];
+      var maxIndexSize = 1000; // 限制索引最大数量，避免内存和性能问题
 
       // 1) 结构化模板库 diseaseTemplateLib
-      Object.keys(this.diseaseTemplateLib || {}).forEach(function (disease) {
-        var list = _this2.diseaseTemplateLib[disease] || [];
-        list.forEach(function (tpl, idx) {
+      var diseaseKeys = Object.keys(this.diseaseTemplateLib || {});
+      for (var i = 0; i < diseaseKeys.length && index.length < maxIndexSize; i++) {
+        var disease = diseaseKeys[i];
+        var list = this.diseaseTemplateLib[disease] || [];
+        var maxListSize = Math.min(list.length, 50); // 每个疾病最多50条模板
+        for (var j = 0; j < maxListSize && index.length < maxIndexSize; j++) {
+          var tpl = list[j];
           if (tpl && tpl.complaint) {
             index.push({
               disease: disease,
@@ -693,52 +1479,64 @@ var _default = {
               diagnoses: tpl.diagnoses || [],
               treatments: tpl.treatments || [],
               source: 'structured',
-              idx: idx
+              idx: j
             });
           }
-        });
-      });
+        }
+      }
 
       // 2) 旧版模板：complaintTemplates + diseaseTemplates + treatmentTemplates
-      Object.keys(this.complaintTemplates || {}).forEach(function (disease) {
-        var _this2$diseaseTemplat, _this2$treatmentTempl;
-        var complaint = _this2.complaintTemplates[disease];
-        var diagnoses = ((_this2$diseaseTemplat = _this2.diseaseTemplates) === null || _this2$diseaseTemplat === void 0 ? void 0 : _this2$diseaseTemplat[disease]) || [];
-        var treatments = ((_this2$treatmentTempl = _this2.treatmentTemplates) === null || _this2$treatmentTempl === void 0 ? void 0 : _this2$treatmentTempl[disease]) || [];
-        if (complaint) {
-          index.push({
-            disease: disease,
-            complaint: complaint,
-            symptoms: [],
-            diagnoses: diagnoses,
-            treatments: treatments,
-            source: 'legacy'
-          });
-        }
-      });
-
-      // 3) 用户自定义模板 userDiseaseTemplates
-      Object.keys(this.userDiseaseTemplates || {}).forEach(function (disease) {
-        var userTpl = _this2.userDiseaseTemplates[disease];
-        if (!userTpl) return;
-        (userTpl.complaints || []).forEach(function (complaint, idx) {
+      if (index.length < maxIndexSize) {
+        var complaintKeys = Object.keys(this.complaintTemplates || {});
+        for (var _i2 = 0; _i2 < complaintKeys.length && index.length < maxIndexSize; _i2++) {
+          var _this$diseaseTemplate, _this$treatmentTempla;
+          var _disease = complaintKeys[_i2];
+          var complaint = this.complaintTemplates[_disease];
+          var diagnoses = ((_this$diseaseTemplate = this.diseaseTemplates) === null || _this$diseaseTemplate === void 0 ? void 0 : _this$diseaseTemplate[_disease]) || [];
+          var treatments = ((_this$treatmentTempla = this.treatmentTemplates) === null || _this$treatmentTempla === void 0 ? void 0 : _this$treatmentTempla[_disease]) || [];
           if (complaint) {
             index.push({
-              disease: disease,
+              disease: _disease,
               complaint: complaint,
               symptoms: [],
-              diagnoses: userTpl.diagnosis || [],
-              treatments: userTpl.treatments || [],
-              source: 'user',
-              userIdx: idx
+              diagnoses: diagnoses,
+              treatments: treatments,
+              source: 'legacy'
             });
           }
-        });
-      });
+        }
+      }
+
+      // 3) 用户自定义模板 userDiseaseTemplates
+      if (index.length < maxIndexSize) {
+        var userKeys = Object.keys(this.userDiseaseTemplates || {});
+        for (var _i3 = 0; _i3 < userKeys.length && index.length < maxIndexSize; _i3++) {
+          var _disease2 = userKeys[_i3];
+          var userTpl = this.userDiseaseTemplates[_disease2];
+          if (!userTpl) continue;
+          var complaints = userTpl.complaints || [];
+          var maxComplaints = Math.min(complaints.length, 20); // 每个疾病最多20条用户模板
+          for (var _j = 0; _j < maxComplaints && index.length < maxIndexSize; _j++) {
+            var _complaint = complaints[_j];
+            if (_complaint) {
+              index.push({
+                disease: _disease2,
+                complaint: _complaint,
+                symptoms: [],
+                diagnoses: userTpl.diagnosis || [],
+                treatments: userTpl.treatments || [],
+                source: 'user',
+                userIdx: _j
+              });
+            }
+          }
+        }
+      }
       this.templateIndex = index;
       console.log("\u6784\u5EFA\u6A21\u677F\u7D22\u5F15\u5B8C\u6210\uFF0C\u5171 ".concat(index.length, " \u6761\u8BB0\u5F55"));
     },
     // 全局搜索：多条件并列搜索(AND逻辑)，同时匹配疾病/主诉/诊断三个关键词
+    // 并结合 hvComplaintKeywordIndex 做主诉关键词→多主诉模板联想
     performGlobalSearch: function performGlobalSearch(diseaseKw, complaintKw, diagnosisKw) {
       var dKw = (diseaseKw || '').trim().toLowerCase();
       var cKw = (complaintKw || '').trim().toLowerCase();
@@ -753,37 +1551,43 @@ var _default = {
         };
       }
 
-      // 多条件并列过滤：同时满足所有非空关键词
-      var matchedRecords = this.templateIndex.filter(function (rec) {
-        var match = true;
+      // 性能优化：限制搜索范围，避免遍历过多数据
+      var maxSearchCount = 500; // 最多搜索500条记录
+      var searchIndex = this.templateIndex.slice(0, maxSearchCount);
 
+      // 多条件并列过滤：同时满足所有非空关键词（基于结构化模板索引）
+      var matchedRecords = [];
+      for (var i = 0; i < searchIndex.length; i++) {
+        var rec = searchIndex[i];
+        var match = true;
         // 疾病关键词匹配
         if (dKw) {
-          match = match && rec.disease.toLowerCase().includes(dKw);
+          match = match && rec.disease && rec.disease.toLowerCase().includes(dKw);
         }
-
         // 主诉关键词匹配
         if (cKw) {
-          match = match && rec.complaint.toLowerCase().includes(cKw);
+          match = match && rec.complaint && rec.complaint.toLowerCase().includes(cKw);
         }
-
         // 诊断关键词匹配
         if (dgKw) {
           match = match && (rec.diagnoses || []).some(function (d) {
-            return d.toLowerCase().includes(dgKw);
+            return d && d.toLowerCase().includes(dgKw);
           });
         }
-        return match;
-      });
+        if (match) {
+          matchedRecords.push(rec);
+          // 限制结果数量，找到足够的结果就停止
+          if (matchedRecords.length >= 50) break;
+        }
+      }
 
       // 提取匹配的疾病、主诉、诊断（去重）
       var diseases = Array.from(new Set(matchedRecords.map(function (r) {
         return r.disease;
       })));
-      var complaints = matchedRecords.map(function (r, idx) {
+      var baseComplaints = matchedRecords.map(function (r, idx) {
         return {
           key: "".concat(r.disease, "_").concat(idx),
-          // 添加唯一 key
           label: r.complaint,
           disease: r.disease,
           record: r
@@ -796,11 +1600,175 @@ var _default = {
         });
       });
       var diagnoses = Array.from(diagSet);
+
+      // 基于主诉关键词，追加 hvComplaintKeywordIndex 中的主诉模板（限制数量）
+      var extraComplaints = [];
+      if (cKw) {
+        var keywordKeys = Object.keys(hvComplaintKeywordIndex || {});
+        var maxKeywords = Math.min(keywordKeys.length, 20); // 最多检查20个关键词
+        for (var _i4 = 0; _i4 < maxKeywords && extraComplaints.length < 20; _i4++) {
+          var key = keywordKeys[_i4];
+          var k = (key || '').toLowerCase();
+          // 关键词双向包含："中暑" / "扭伤" / "晕动病" 等
+          if (!k) continue;
+          if (k.includes(cKw) || cKw.includes(k)) {
+            var items = hvComplaintKeywordIndex[key] || [];
+            var maxItems = Math.min(items.length, 5); // 每个关键词最多5条
+            for (var j = 0; j < maxItems && extraComplaints.length < 20; j++) {
+              var item = items[j];
+              extraComplaints.push({
+                key: "hv_".concat(key, "_").concat(j),
+                label: item.complaint,
+                disease: item.diseaseName,
+                record: {
+                  disease: item.diseaseName,
+                  complaint: item.complaint,
+                  symptoms: [],
+                  diagnoses: [item.diseaseName],
+                  treatments: [],
+                  source: 'hv_keyword'
+                }
+              });
+            }
+          }
+        }
+      }
+
+      // 合并去重（按 complaint 文本去重）
+      var mergedMap = new Map();
+      [].concat((0, _toConsumableArray2.default)(baseComplaints), extraComplaints).forEach(function (c) {
+        if (!mergedMap.has(c.label)) {
+          mergedMap.set(c.label, c);
+        }
+      });
+      var complaints = Array.from(mergedMap.values());
       return {
         diseases: diseases,
         complaints: complaints,
         diagnoses: diagnoses
       };
+    },
+    // 查找最匹配的模板记录（基于多个字段同时匹配）
+    findBestMatchingRecord: function findBestMatchingRecord(diagnosis, complaint, diseaseName) {
+      var bestMatch = null;
+      var bestScore = 0;
+
+      // 如果所有参数都为空，返回null
+      if (!diagnosis && !complaint && !diseaseName) {
+        return null;
+      }
+      var _iterator = _createForOfIteratorHelper(this.templateIndex),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var record = _step.value;
+          var score = 0;
+
+          // 诊断匹配度（权重最高）
+          if (diagnosis && record.diagnoses && record.diagnoses.length) {
+            var diagnosisMatch = record.diagnoses.some(function (d) {
+              if (!d) return false;
+              var dLower = d.toLowerCase();
+              var diagnosisLower = diagnosis.toLowerCase();
+              return d === diagnosis || dLower === diagnosisLower || dLower.includes(diagnosisLower) || diagnosisLower.includes(dLower);
+            });
+            if (diagnosisMatch) score += 5; // 诊断匹配权重最高
+          }
+
+          // 主诉匹配度
+          if (complaint && record.complaint) {
+            var complaintLower = (record.complaint || '').toLowerCase();
+            var inputComplaintLower = complaint.toLowerCase();
+            if (complaintLower === inputComplaintLower) {
+              score += 4; // 完全匹配
+            } else if (complaintLower.includes(inputComplaintLower) || inputComplaintLower.includes(complaintLower)) {
+              score += 2; // 部分匹配
+            }
+          }
+
+          // 疾病名称匹配度
+          if (diseaseName && record.disease) {
+            var diseaseLower = (record.disease || '').toLowerCase();
+            var inputDiseaseLower = diseaseName.toLowerCase();
+            if (diseaseLower === inputDiseaseLower) {
+              score += 3; // 完全匹配
+            } else if (diseaseLower.includes(inputDiseaseLower) || inputDiseaseLower.includes(diseaseLower)) {
+              score += 1; // 部分匹配
+            }
+          }
+
+          // 选择得分最高的记录
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = record;
+          }
+        }
+
+        // 只有得分大于0的记录才返回（至少有一个字段匹配）
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      return bestScore > 0 ? bestMatch : null;
+    },
+    // 智能填充字段：只填充空白字段，保留用户已输入的内容
+    smartFillFields: function smartFillFields(record) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      if (!record) return;
+      var _options$preserveComp = options.preserveComplaint,
+        preserveComplaint = _options$preserveComp === void 0 ? false : _options$preserveComp,
+        _options$preserveSymp = options.preserveSymptom,
+        preserveSymptom = _options$preserveSymp === void 0 ? false : _options$preserveSymp,
+        _options$preserveDiag = options.preserveDiagnosis,
+        preserveDiagnosis = _options$preserveDiag === void 0 ? false : _options$preserveDiag,
+        _options$preserveTrea = options.preserveTreatment,
+        preserveTreatment = _options$preserveTrea === void 0 ? false : _options$preserveTrea;
+
+      // 主诉：如果为空或允许覆盖，则填充
+      if (!preserveComplaint) {
+        var currentComplaint = (this.form.chiefComplaint || '').trim();
+        if (!currentComplaint && record.complaint) {
+          this.form.chiefComplaint = record.complaint;
+        }
+      }
+
+      // 症状：如果为空或允许覆盖，则填充
+      if (!preserveSymptom) {
+        var currentSymptom = (this.form.symptom || '').trim();
+        if (!currentSymptom && record.symptoms && record.symptoms.length) {
+          this.form.symptom = record.symptoms.join('；');
+        }
+      }
+
+      // 诊断：如果为空或允许覆盖，则填充
+      if (!preserveDiagnosis) {
+        var currentDiagnosis = (this.form.diagnosis || '').trim();
+        if (!currentDiagnosis && record.diagnoses && record.diagnoses.length) {
+          this.form.diagnosis = record.diagnoses.join('；');
+        }
+      }
+
+      // 处置：如果为空或允许覆盖，则填充
+      if (!preserveTreatment) {
+        var currentTreatment = (this.form.treatment || '').trim();
+        if (!currentTreatment && record.treatments && record.treatments.length) {
+          this.form.treatment = record.treatments.join('；');
+        }
+      }
+
+      // 疾病名称：始终更新（用于分类），但基于诊断分析
+      if (record.diagnoses && record.diagnoses.length) {
+        var mainDiagnosis = record.diagnoses[0];
+        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(mainDiagnosis);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else if (record.disease) {
+          this.form.diseaseName = record.disease;
+        }
+      } else if (record.disease) {
+        this.form.diseaseName = record.disease;
+      }
     },
     setIdentity: function setIdentity(val) {
       if (!this.form) return;
@@ -811,7 +1779,7 @@ var _default = {
       this.form.visitType = val;
     },
     openLocationSelector: function openLocationSelector() {
-      var _this3 = this;
+      var _this5 = this;
       var itemList = this.locations.map(function (l) {
         return l.label;
       });
@@ -819,9 +1787,9 @@ var _default = {
         itemList: itemList,
         success: function success(res) {
           var idx = res.tapIndex;
-          var target = _this3.locations[idx];
+          var target = _this5.locations[idx];
           if (target) {
-            _this3.selectLocation(target.value);
+            _this5.selectLocation(target.value);
           }
         }
       });
@@ -857,7 +1825,7 @@ var _default = {
     },
     // 加载所有药材
     loadAllDrugs: function loadAllDrugs() {
-      var _this4 = this;
+      var _this6 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
         var res;
         return _regenerator.default.wrap(function _callee$(_context) {
@@ -878,7 +1846,7 @@ var _default = {
               case 3:
                 res = _context.sent;
                 if (res.result.success) {
-                  _this4.allDrugs = res.result.data.list || [];
+                  _this6.allDrugs = res.result.data.list || [];
                 }
                 _context.next = 10;
                 break;
@@ -896,20 +1864,20 @@ var _default = {
     },
     // 药材输入框获得焦点
     onDrugInputFocus: function onDrugInputFocus() {
-      var _this5 = this;
+      var _this7 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this5.showDrugList = true;
+                _this7.showDrugList = true;
 
                 // 如果没有输入内容，显示当前园区的所有药材
-                if (!_this5.drugSearchText || _this5.drugSearchText.trim() === '') {
+                if (!_this7.drugSearchText || _this7.drugSearchText.trim() === '') {
                   // 没有输入内容，显示所有药材
-                  _this5.filteredDrugs = _this5.allDrugs;
+                  _this7.filteredDrugs = _this7.allDrugs;
                 } else {
-                  _this5.onDrugSearch();
+                  _this7.onDrugSearch();
                 }
               case 2:
               case "end":
@@ -921,7 +1889,7 @@ var _default = {
     },
     // 加载当前园区的药材
     loadLocationDrugs: function loadLocationDrugs() {
-      var _this6 = this;
+      var _this8 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
         var res, stockList;
         return _regenerator.default.wrap(function _callee3$(_context3) {
@@ -938,7 +1906,7 @@ var _default = {
                   data: {
                     action: 'getStockList',
                     data: {
-                      location: _this6.form.location,
+                      location: _this8.form.location,
                       pageSize: 1000
                     }
                   }
@@ -948,7 +1916,7 @@ var _default = {
                 uni.hideLoading();
                 if (res.result.success) {
                   stockList = res.result.data.list || []; // 过滤出有库存的药材
-                  _this6.filteredDrugs = stockList.filter(function (item) {
+                  _this8.filteredDrugs = stockList.filter(function (item) {
                     return item.quantity > 0;
                   }).map(function (item) {
                     return {
@@ -961,10 +1929,10 @@ var _default = {
                       stock: item.quantity
                     };
                   });
-                  console.log("\u52A0\u8F7D\u4E86".concat(_this6.filteredDrugs.length, "\u79CD\u836F\u6750"));
+                  console.log("\u52A0\u8F7D\u4E86".concat(_this8.filteredDrugs.length, "\u79CD\u836F\u6750"));
                 } else {
                   // 如果获取失败，显示所有药材
-                  _this6.filteredDrugs = _this6.allDrugs.slice(0, 50);
+                  _this8.filteredDrugs = _this8.allDrugs.slice(0, 50);
                 }
                 _context3.next = 14;
                 break;
@@ -974,7 +1942,7 @@ var _default = {
                 console.error('加载园区药材失败:', _context3.t0);
                 uni.hideLoading();
                 // 失败时显示所有药材
-                _this6.filteredDrugs = _this6.allDrugs.slice(0, 50);
+                _this8.filteredDrugs = _this8.allDrugs.slice(0, 50);
               case 14:
               case "end":
                 return _context3.stop();
@@ -1044,7 +2012,7 @@ var _default = {
       this.showDiseaseList = this.filteredDiseases.length > 0;
     },
     onDiseaseBlur: function onDiseaseBlur() {
-      var _this7 = this;
+      var _this9 = this;
       var text = (this.form.diseaseName || '').trim();
       if (text) {
         // 1）先按疾病大类精确匹配
@@ -1068,25 +2036,38 @@ var _default = {
 
       // 延迟隐藏下拉，给点击事件留时间
       this.diseaseBlurTimer = setTimeout(function () {
-        _this7.showDiseaseList = false;
+        _this9.showDiseaseList = false;
       }, 200);
     },
-    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉
+    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉（添加防抖）
     onDiseaseInput: function onDiseaseInput() {
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
-      this.showDiseaseList = this.filteredDiseases.length > 0;
-      // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
+      var _this10 = this;
+      // 清除之前的计时器
+      if (this.diseaseInputTimer) {
+        clearTimeout(this.diseaseInputTimer);
+      }
+
+      // 防抖处理，延迟200ms执行
+      this.diseaseInputTimer = setTimeout(function () {
+        var result = _this10.performGlobalSearch(_this10.form.diseaseName, _this10.form.chiefComplaint, _this10.form.diagnosis);
+        _this10.filteredDiseases = result.diseases;
+        _this10.filteredComplaints = result.complaints;
+        _this10.filteredDiagnosis = result.diagnoses;
+        _this10.showDiseaseList = _this10.filteredDiseases.length > 0;
+        // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
+      }, 200);
       // 如果当前输入的疾病名称与某个疾病完全匹配，则自动按该疾病刷新联动字段
       var kw = (this.form.diseaseName || '').trim();
       if (kw && this.filteredDiseases.includes(kw)) {
         this.selectDisease(kw);
       }
     },
-    // 选择疾病：自动填充第一条匹配的主诉/诊断/处置
+    // 选择疾病：自动填充主诉/诊断/处置（默认强制填充，保证反向联动）
+    // options.forceFill=true 时，无论当前字段是否已有内容，都用模板覆盖
     selectDisease: function selectDisease(disease) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        forceFill: true
+      };
       // 清除失焦隐藏计时器
       if (this.diseaseBlurTimer) {
         clearTimeout(this.diseaseBlurTimer);
@@ -1096,53 +2077,72 @@ var _default = {
       // 选择后关闭下拉
       this.showDiseaseList = false;
 
-      // 查找该疾病的第一条模板记录
+      // 查找该疾病的第一条模板记录（使用最佳匹配）
       var record = this.templateIndex.find(function (r) {
         return r.disease === disease;
       });
       if (record) {
-        var mainDiagnosis = record.diagnoses && record.diagnoses[0] || '';
-        this.form.diseaseName = mainDiagnosis || disease;
-        this.form.chiefComplaint = record.complaint;
-        if (record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
+        var force = (options === null || options === void 0 ? void 0 : options.forceFill) === true;
+        // 智能填充：默认强制覆盖，满足“先选疾病反向自动填充”需求
+        this.smartFillFields(record, {
+          preserveComplaint: !force && !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+          preserveSymptom: !force && !!(this.form.symptom && this.form.symptom.trim()),
+          preserveDiagnosis: !force && !!(this.form.diagnosis && this.form.diagnosis.trim()),
+          preserveTreatment: !force && !!(this.form.treatment && this.form.treatment.trim())
+        });
+
+        // 如果模板记录里缺少部分字段，兜底再用疾病模板填充缺失项
+        var needComplaint = !this.form.chiefComplaint;
+        var needDiagnosis = !this.form.diagnosis;
+        var needTreatment = !this.form.treatment;
+        if (needComplaint || needDiagnosis || needTreatment) {
+          this.autoFillByDisease(disease);
         }
-        if (record.diagnoses && record.diagnoses.length) {
-          // 初步诊断字段使用模板中的完整诊断组合
-          this.form.diagnosis = record.diagnoses.join('；');
+
+        // 确保疾病名称使用标准名称
+        if (this.diseaseOptions.includes(disease)) {
+          this.form.diseaseName = disease;
         }
-        if (record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
-        }
+
+        // 自动选择推荐用药
         if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
           this.applySuggestDrugs(record.suggestDrugs);
         }
       } else {
-        // 回退到旧逻辑
+        // 回退到旧逻辑（如果找不到结构化模板）
         this.loadTemplatesForDisease(disease);
         this.autoFillByDisease(disease);
+        // 确保疾病名称使用标准名称
+        if (!this.diseaseOptions.includes(this.form.diseaseName)) {
+          var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis || this.form.diseaseName);
+          if (analyzedDisease) {
+            this.form.diseaseName = analyzedDisease;
+          } else {
+            this.form.diseaseName = '其他';
+          }
+        }
       }
     },
     // 依据疾病载入诊断与处置模板
     loadTemplatesForDisease: function loadTemplatesForDisease(disease) {
-      var _this$diseaseTemplate, _this$diseaseTemplate2, _this$treatmentTempla;
-      var baseDiag = ((_this$diseaseTemplate = this.diseaseTemplates) === null || _this$diseaseTemplate === void 0 ? void 0 : _this$diseaseTemplate[disease]) || [];
+      var _this$diseaseTemplate2, _this$diseaseTemplate3, _this$treatmentTempla2;
+      var baseDiag = ((_this$diseaseTemplate2 = this.diseaseTemplates) === null || _this$diseaseTemplate2 === void 0 ? void 0 : _this$diseaseTemplate2[disease]) || [];
       // 合并结构化模板中的诊断
-      var structDiag = (((_this$diseaseTemplate2 = this.diseaseTemplateLib) === null || _this$diseaseTemplate2 === void 0 ? void 0 : _this$diseaseTemplate2[disease]) || []).flatMap(function (t) {
+      var structDiag = (((_this$diseaseTemplate3 = this.diseaseTemplateLib) === null || _this$diseaseTemplate3 === void 0 ? void 0 : _this$diseaseTemplate3[disease]) || []).flatMap(function (t) {
         return t.diagnoses || [];
       });
       var diag = Array.from(new Set([].concat((0, _toConsumableArray2.default)(baseDiag || []), (0, _toConsumableArray2.default)(structDiag))));
-      var treat = ((_this$treatmentTempla = this.treatmentTemplates) === null || _this$treatmentTempla === void 0 ? void 0 : _this$treatmentTempla[disease]) || [];
+      var treat = ((_this$treatmentTempla2 = this.treatmentTemplates) === null || _this$treatmentTempla2 === void 0 ? void 0 : _this$treatmentTempla2[disease]) || [];
       this.filteredDiagnosis = diag;
       this.filteredTreatments = treat;
     },
     // 自动按疾病填入主诉/诊断/处置（可编辑）
     autoFillByDisease: function autoFillByDisease(disease) {
-      var _this$complaintTempla, _this$diseaseTemplate3, _this$treatmentTempla2, _this$treatmentCautio;
+      var _this$complaintTempla, _this$diseaseTemplate4, _this$treatmentTempla3, _this$treatmentCautio;
       var complaint = (_this$complaintTempla = this.complaintTemplates) === null || _this$complaintTempla === void 0 ? void 0 : _this$complaintTempla[disease];
-      var diagList = ((_this$diseaseTemplate3 = this.diseaseTemplates) === null || _this$diseaseTemplate3 === void 0 ? void 0 : _this$diseaseTemplate3[disease]) || [];
+      var diagList = ((_this$diseaseTemplate4 = this.diseaseTemplates) === null || _this$diseaseTemplate4 === void 0 ? void 0 : _this$diseaseTemplate4[disease]) || [];
       var diag = diagList[0];
-      var treats = (((_this$treatmentTempla2 = this.treatmentTemplates) === null || _this$treatmentTempla2 === void 0 ? void 0 : _this$treatmentTempla2[disease]) || []).slice(0, 2);
+      var treats = (((_this$treatmentTempla3 = this.treatmentTemplates) === null || _this$treatmentTempla3 === void 0 ? void 0 : _this$treatmentTempla3[disease]) || []).slice(0, 2);
       // 附加注意事项/复诊提示
       var cautions = ((_this$treatmentCautio = this.treatmentCautions) === null || _this$treatmentCautio === void 0 ? void 0 : _this$treatmentCautio[disease]) || [];
       var merged = [];
@@ -1156,9 +2156,18 @@ var _default = {
       // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
       if (complaint) this.form.chiefComplaint = complaint;
       if (diag) {
-        // 疾病名称使用首个诊断，初步诊断使用全部诊断组合
-        this.form.diseaseName = diag;
+        // 初步诊断使用模板中的完整诊断组合
         this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+        // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
+        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else if (this.diseaseOptions.includes(disease)) {
+          // 如果疾病名称本身是标准名称，直接使用
+          this.form.diseaseName = disease;
+        } else {
+          this.form.diseaseName = '其他';
+        }
       }
       if (merged.length) this.form.treatment = merged.join('；');
     },
@@ -1174,52 +2183,81 @@ var _default = {
       // 显示下拉（即使为空也显示，基于其他框的关键词）
       this.showDiagnosisList = this.filteredDiagnosis.length > 0;
     },
+    // 诊断输入（添加防抖）
     onDiagnosisInput: function onDiagnosisInput() {
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
-      this.showDiagnosisList = this.filteredDiagnosis.length > 0;
+      var _this11 = this;
+      // 清除之前的计时器
+      if (this.diagnosisInputTimer) {
+        clearTimeout(this.diagnosisInputTimer);
+      }
+
+      // 防抖处理，延迟200ms执行
+      this.diagnosisInputTimer = setTimeout(function () {
+        var result = _this11.performGlobalSearch(_this11.form.diseaseName, _this11.form.chiefComplaint, _this11.form.diagnosis);
+        _this11.filteredDiseases = result.diseases;
+        _this11.filteredComplaints = result.complaints;
+        _this11.filteredDiagnosis = result.diagnoses;
+        _this11.showDiagnosisList = _this11.filteredDiagnosis.length > 0;
+      }, 200);
     },
     selectDiagnosis: function selectDiagnosis(text) {
-      var _this8 = this;
-      // 查找包含该诊断的第一条模板记录
-      var record = this.templateIndex.find(function (r) {
-        return (r.diagnoses || []).some(function (d) {
-          return d === text;
+      var _this12 = this;
+      // 查找最匹配的模板记录（考虑当前已输入的字段）
+      var bestRecord = this.findBestMatchingRecord(text,
+      // 选择的诊断
+      this.form.chiefComplaint,
+      // 当前主诉
+      this.form.diseaseName // 当前疾病名称
+      );
+
+      if (bestRecord) {
+        // 智能填充：只填充空白字段，保留用户已输入的内容
+        this.smartFillFields(bestRecord, {
+          preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+          // 如果主诉已输入，保留
+          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
+          // 如果症状已输入，保留
+          preserveDiagnosis: false,
+          // 诊断字段用新选择的替换
+          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim()) // 如果处置已输入，保留
         });
-      });
-      if (record) {
-        // 疾病名称直接使用所选标准诊断名
-        this.form.diseaseName = text;
-        this.form.chiefComplaint = record.complaint;
-        // 初步诊断使用该模板下的完整诊断组合
-        if (record.diagnoses && record.diagnoses.length) {
-          this.form.diagnosis = record.diagnoses.join('；');
+
+        // 确保诊断字段使用选择的诊断（如果模板中有完整诊断组合，使用组合；否则使用选择的诊断）
+        if (bestRecord.diagnoses && bestRecord.diagnoses.length) {
+          // 检查选择的诊断是否在模板的诊断列表中
+          var hasExactMatch = bestRecord.diagnoses.some(function (d) {
+            return d === text;
+          });
+          if (hasExactMatch) {
+            // 如果完全匹配，使用模板的完整诊断组合
+            this.form.diagnosis = bestRecord.diagnoses.join('；');
+          } else {
+            // 否则使用选择的诊断
+            this.form.diagnosis = text;
+          }
         } else {
           this.form.diagnosis = text;
         }
-        if (record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
-        }
-        if (record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
-        }
-        // 如模板提供推荐用药列表，自动按顺序触发联动药材逻辑
-        if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
-          record.suggestDrugs.forEach(function (name) {
+
+        // 自动选择推荐用药
+        if (Array.isArray(bestRecord.suggestDrugs) && bestRecord.suggestDrugs.length) {
+          bestRecord.suggestDrugs.forEach(function (name) {
             if (name) {
-              _this8.onDrugChip(name);
+              _this12.onDrugChip(name);
             }
           });
         }
       } else {
+        // 如果没有找到匹配记录，只更新诊断和疾病名称
         this.form.diagnosis = text;
+        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
+        this.form.diseaseName = analyzedDisease || '其他';
       }
       this.showDiagnosisList = false;
     },
     // 主诉获得焦点：根据编辑模式决定是否触发搜索
     onComplaintFocus: function onComplaintFocus() {
+      var _this13 = this;
       // 清除失焦隐藏计时器
       if (this.complaintBlurTimer) {
         clearTimeout(this.complaintBlurTimer);
@@ -1239,15 +2277,22 @@ var _default = {
       }
 
       // 情况3：搜索模式 → 触发全局搜索（基于AND逻辑）并显示下拉
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
+      // 使用防抖避免频繁调用
+      if (this.complaintFocusTimer) {
+        clearTimeout(this.complaintFocusTimer);
+      }
+      this.complaintFocusTimer = setTimeout(function () {
+        var result = _this13.performGlobalSearch(_this13.form.diseaseName, _this13.form.chiefComplaint, _this13.form.diagnosis);
+        _this13.filteredDiseases = result.diseases;
+        _this13.filteredComplaints = result.complaints;
+        _this13.filteredDiagnosis = result.diagnoses;
 
-      // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
-      this.showComplaintList = this.filteredComplaints.length > 0;
+        // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
+        _this13.showComplaintList = _this13.filteredComplaints.length > 0;
+      }, 150);
     },
     onComplaintInput: function onComplaintInput() {
+      var _this14 = this;
       var currentComplaint = (this.form.chiefComplaint || '').trim();
 
       // 如果内容被清空，重置为搜索模式
@@ -1261,24 +2306,458 @@ var _default = {
         return;
       }
 
-      // 搜索模式：执行全局搜索并显示下拉
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
-      this.showComplaintList = this.filteredComplaints.length > 0;
+      // 搜索模式：执行全局搜索并显示下拉（添加防抖）
+      if (this.complaintInputTimer) {
+        clearTimeout(this.complaintInputTimer);
+      }
+      this.complaintInputTimer = setTimeout(function () {
+        var result = _this14.performGlobalSearch(_this14.form.diseaseName, _this14.form.chiefComplaint, _this14.form.diagnosis);
+        _this14.filteredDiseases = result.diseases;
+        _this14.filteredComplaints = result.complaints;
+        _this14.filteredDiagnosis = result.diagnoses;
+        _this14.showComplaintList = _this14.filteredComplaints.length > 0;
+      }, 200);
     },
     onComplaintBlur: function onComplaintBlur() {
-      var _this9 = this;
+      var _this15 = this;
       // 失焦时重置聚焦状态
       this.complaintFocus = false;
       // 延迟隐藏下拉，给点击事件留时间
       this.complaintBlurTimer = setTimeout(function () {
-        _this9.showComplaintList = false;
+        _this15.showComplaintList = false;
+      }, 200);
+      // 主诉编辑完成后，根据最新主诉获取系统诊断建议（防抖处理）
+      if (this.fetchHvSuggestionTimer) {
+        clearTimeout(this.fetchHvSuggestionTimer);
+      }
+      this.fetchHvSuggestionTimer = setTimeout(function () {
+        _this15.fetchHvSuggestion();
+      }, 300);
+    },
+    fetchHvSuggestion: function fetchHvSuggestion() {
+      var _this16 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
+        var text, res, payload, symptomText;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                text = (_this16.form.chiefComplaint || '').trim();
+                if (text) {
+                  _context4.next = 6;
+                  break;
+                }
+                _this16.hvTriage = null;
+                _this16.standardizedSymptoms = [];
+                // 主诉为空时，清空症状以保持一致
+                _this16.form.symptom = '';
+                return _context4.abrupt("return");
+              case 6:
+                _context4.prev = 6;
+                _context4.next = 9;
+                return wx.cloud.callFunction({
+                  name: 'clinicRecords',
+                  data: {
+                    action: 'suggestHvDiagnosis',
+                    data: {
+                      chiefComplaint: text
+                    }
+                  }
+                });
+              case 9:
+                res = _context4.sent;
+                console.log('[clinic/add] fetchHvSuggestion result:', res);
+                payload = res.result && res.result.success ? res.result.data : null; // 提取标准化症状
+                if (payload && payload.standardized && payload.standardized.details) {
+                  _this16.standardizedSymptoms = payload.standardized.details.map(function (detail) {
+                    return {
+                      code: detail.code,
+                      name: detail.standardName || detail.name,
+                      category: detail.category,
+                      severity: detail.severity || 1,
+                      selected: false
+                    };
+                  });
+
+                  // 根据主诉自动更新症状，保持与主诉一致（用分号连接标准化症状）
+                  symptomText = _this16.standardizedSymptoms.map(function (s) {
+                    return s.name;
+                  }).join('；');
+                  if (symptomText) {
+                    _this16.form.symptom = symptomText;
+                  }
+                } else {
+                  _this16.standardizedSymptoms = [];
+                  // 如果没有标准化症状，使用主诉内容作为症状
+                  if (text) {
+                    _this16.form.symptom = text;
+                  }
+                }
+                _this16.hvTriage = payload.triage || null;
+                _context4.next = 21;
+                break;
+              case 16:
+                _context4.prev = 16;
+                _context4.t0 = _context4["catch"](6);
+                console.error('获取标准化症状失败:', _context4.t0);
+                _this16.hvTriage = null;
+                _this16.standardizedSymptoms = [];
+              case 21:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, null, [[6, 16]]);
+      }))();
+    },
+    // 症状输入框获得焦点
+    onSymptomFocus: function onSymptomFocus() {
+      // 清除失焦隐藏计时器
+      if (this.symptomBlurTimer) {
+        clearTimeout(this.symptomBlurTimer);
+        this.symptomBlurTimer = null;
+      }
+
+      // 如果症状框为空，显示标准化症状建议
+      var currentSymptom = (this.form.symptom || '').trim();
+      if (!currentSymptom && this.standardizedSymptoms.length > 0) {
+        this.filteredSymptoms = this.standardizedSymptoms.map(function (s) {
+          return {
+            name: s.name,
+            category: s.category,
+            code: s.code
+          };
+        });
+        this.showSymptomList = true;
+      } else if (currentSymptom) {
+        // 基于输入内容过滤症状建议
+        this.filterSymptomsByInput(currentSymptom);
+      }
+    },
+    // 症状输入（添加防抖）
+    onSymptomInput: function onSymptomInput() {
+      var _this17 = this;
+      // 清除之前的计时器
+      if (this.symptomInputTimer) {
+        clearTimeout(this.symptomInputTimer);
+      }
+
+      // 防抖处理，延迟300ms执行
+      this.symptomInputTimer = setTimeout(function () {
+        var text = (_this17.form.symptom || '').trim();
+        if (!text) {
+          // 如果清空，显示标准化症状
+          if (_this17.standardizedSymptoms.length > 0) {
+            _this17.filteredSymptoms = _this17.standardizedSymptoms.map(function (s) {
+              return {
+                name: s.name,
+                category: s.category,
+                code: s.code
+              };
+            });
+            _this17.showSymptomList = true;
+          } else {
+            _this17.showSymptomList = false;
+          }
+          return;
+        }
+
+        // 基于输入内容过滤
+        _this17.filterSymptomsByInput(text);
+      }, 300);
+    },
+    // 根据输入内容过滤症状（优化性能）
+    filterSymptomsByInput: function filterSymptomsByInput(text) {
+      var lowerText = text.toLowerCase();
+      var matched = [];
+      var matchedNames = new Set(); // 用于去重
+
+      // 1. 从标准化症状中匹配（限制数量）
+      if (this.standardizedSymptoms && this.standardizedSymptoms.length > 0) {
+        for (var i = 0; i < Math.min(this.standardizedSymptoms.length, 50); i++) {
+          var s = this.standardizedSymptoms[i];
+          if (s.name && s.name.toLowerCase().includes(lowerText)) {
+            if (!matchedNames.has(s.name)) {
+              matched.push({
+                name: s.name,
+                category: s.category,
+                code: s.code
+              });
+              matchedNames.add(s.name);
+            }
+          }
+          // 如果已经找到足够的匹配项，提前退出
+          if (matched.length >= 20) break;
+        }
+      }
+
+      // 2. 从模板索引中提取症状建议（限制遍历数量）
+      if (this.templateIndex && this.templateIndex.length > 0 && matched.length < 20) {
+        var maxIndex = Math.min(this.templateIndex.length, 100); // 最多遍历100条模板
+        for (var _i5 = 0; _i5 < maxIndex; _i5++) {
+          var rec = this.templateIndex[_i5];
+          if (rec.symptoms && Array.isArray(rec.symptoms)) {
+            for (var j = 0; j < rec.symptoms.length && matched.length < 20; j++) {
+              var symptom = rec.symptoms[j];
+              if (symptom && typeof symptom === 'string' && symptom.toLowerCase().includes(lowerText)) {
+                if (!matchedNames.has(symptom)) {
+                  matched.push({
+                    name: symptom,
+                    category: '',
+                    code: ''
+                  });
+                  matchedNames.add(symptom);
+                }
+              }
+            }
+          }
+          // 如果已经找到足够的匹配项，提前退出
+          if (matched.length >= 20) break;
+        }
+      }
+      this.filteredSymptoms = matched.slice(0, 20); // 限制最多20条
+      this.showSymptomList = matched.length > 0;
+    },
+    // 症状失焦
+    onSymptomBlur: function onSymptomBlur() {
+      var _this18 = this;
+      // 延迟隐藏下拉，给点击事件留时间
+      this.symptomBlurTimer = setTimeout(function () {
+        _this18.showSymptomList = false;
       }, 200);
     },
+    // 选择症状
+    selectSymptom: function selectSymptom(symptom) {
+      // 清除失焦隐藏计时器
+      if (this.symptomBlurTimer) {
+        clearTimeout(this.symptomBlurTimer);
+        this.symptomBlurTimer = null;
+      }
+      var currentSymptom = (this.form.symptom || '').trim();
+      var symptomName = typeof symptom === 'string' ? symptom : symptom.name || '';
+      if (currentSymptom) {
+        // 如果已有内容，追加（用分号分隔）
+        if (!currentSymptom.includes(symptomName)) {
+          this.form.symptom = "".concat(currentSymptom, "\uFF1B").concat(symptomName);
+        }
+      } else {
+        // 如果为空，直接填入
+        this.form.symptom = symptomName;
+      }
+      this.showSymptomList = false;
+    },
+    // 切换症状标签（添加到/从症状框移除）
+    toggleSymptomTag: function toggleSymptomTag(symptom) {
+      symptom.selected = !symptom.selected;
+      var currentSymptom = (this.form.symptom || '').trim();
+      var symptomName = symptom.name;
+      if (symptom.selected) {
+        // 添加到症状框
+        if (currentSymptom) {
+          if (!currentSymptom.includes(symptomName)) {
+            this.form.symptom = "".concat(currentSymptom, "\uFF1B").concat(symptomName);
+          }
+        } else {
+          this.form.symptom = symptomName;
+        }
+      } else {
+        // 从症状框移除
+        if (currentSymptom.includes(symptomName)) {
+          var parts = currentSymptom.split('；').filter(function (s) {
+            return s.trim() !== symptomName;
+          });
+          this.form.symptom = parts.join('；');
+        }
+      }
+    },
+    // 从诊断文本中分析提取标准疾病名称
+    analyzeDiseaseFromDiagnosis: function analyzeDiseaseFromDiagnosis(diagnosisText) {
+      if (!diagnosisText) return null;
+      var text = diagnosisText.toLowerCase();
+
+      // 疾病名称匹配规则（按优先级排序，包含常见医学诊断术语）
+      var diseaseRules = [
+      // 扭伤类
+      {
+        keywords: ['扭伤', '崴', '扭到', '关节扭伤', '脚踝扭伤', '手腕扭伤', '踝关节扭伤', '腕关节扭伤', '软组织扭伤'],
+        disease: '扭伤'
+      },
+      // 擦伤类
+      {
+        keywords: ['擦伤', '蹭破', '擦破', '皮肤擦伤', '挫伤', '表皮擦伤', '浅表擦伤'],
+        disease: '擦伤'
+      },
+      // 烫伤类
+      {
+        keywords: ['烫伤', '烧伤', '灼伤', '烫到', '热烧伤', '化学烧伤'],
+        disease: '烫伤'
+      },
+      // 磕伤类
+      {
+        keywords: ['磕伤', '磕到', '撞伤', '碰伤', '磕碰', '撞击伤', '碰撞伤'],
+        disease: '磕伤'
+      },
+      // 冻伤类
+      {
+        keywords: ['冻伤', '冻到', '冻疮', '冻僵'],
+        disease: '冻伤'
+      },
+      // 腹泻类（包含胃肠炎等）
+      {
+        keywords: ['腹泻', '拉肚子', '拉稀', '泻', '急性胃肠炎', '胃肠炎', '肠胃炎', '肠炎', '急性肠炎', '细菌性肠炎', '病毒性肠炎', '消化不良', '胃肠功能紊乱'],
+        disease: '腹泻'
+      },
+      // 头晕类
+      {
+        keywords: ['头晕', '头昏', '眩晕', '晕', '眼前发黑', '体位性低血压', '低血糖', '贫血性头晕'],
+        disease: '头晕'
+      },
+      // 头痛类
+      {
+        keywords: ['头痛', '头疼', '头部不适', '头胀', '偏头痛', '紧张性头痛', '血管性头痛'],
+        disease: '头痛'
+      },
+      // 感冒类
+      {
+        keywords: ['感冒', '着凉', '受凉', '风寒', '上呼吸道感染', '上感', '普通感冒', '病毒性感冒'],
+        disease: '感冒'
+      },
+      // 脱臼类
+      {
+        keywords: ['脱臼', '脱位', '关节脱位', '肩关节脱位', '肘关节脱位'],
+        disease: '脱臼'
+      },
+      // 骨折类
+      {
+        keywords: ['骨折', '骨裂', '断骨', '闭合性骨折', '开放性骨折', '不完全骨折'],
+        disease: '骨折'
+      },
+      // 过敏类
+      {
+        keywords: ['过敏', '过敏性', '过敏反应', '过敏性皮炎', '过敏性鼻炎', '荨麻疹', '湿疹'],
+        disease: '过敏'
+      },
+      // 痛经类
+      {
+        keywords: ['痛经', '经期疼痛', '月经痛', '原发性痛经', '继发性痛经'],
+        disease: '痛经'
+      },
+      // 测血压类
+      {
+        keywords: ['测血压', '血压', '量血压', '血压监测', '血压检查', '血压测量'],
+        disease: '测血压'
+      }];
+
+      // 按优先级匹配
+      for (var _i6 = 0, _diseaseRules = diseaseRules; _i6 < _diseaseRules.length; _i6++) {
+        var rule = _diseaseRules[_i6];
+        var _iterator2 = _createForOfIteratorHelper(rule.keywords),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var keyword = _step2.value;
+            if (text.includes(keyword.toLowerCase())) {
+              return rule.disease;
+            }
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      }
+
+      // 如果没有匹配到，返回 null，保持原值或使用"其他"
+      return null;
+    },
+    onDiagnosisBlur: function onDiagnosisBlur() {
+      // 诊断输入框失焦时，关闭下拉列表
+      this.showDiagnosisList = false;
+
+      // 根据诊断自动更新处置，保持与诊断一致
+      var diagnosisText = (this.form.diagnosis || '').trim();
+      if (!diagnosisText) {
+        // 诊断为空时，清空处置以保持一致
+        this.form.treatment = '';
+        return;
+      }
+
+      // 从诊断中分析提取标准疾病名称（强制更新，确保使用标准名称）
+      var analyzedDisease = this.analyzeDiseaseFromDiagnosis(diagnosisText);
+      if (analyzedDisease) {
+        // 如果分析出标准疾病名称，直接更新（确保使用标准名称归类）
+        this.form.diseaseName = analyzedDisease;
+      } else {
+        // 如果无法分析出标准疾病名称，设置为"其他"
+        this.form.diseaseName = '其他';
+      }
+
+      // 使用最佳匹配逻辑查找最准确的模板记录
+      var bestRecord = this.findBestMatchingRecord(diagnosisText,
+      // 当前诊断
+      this.form.chiefComplaint,
+      // 当前主诉
+      this.form.diseaseName // 当前疾病名称
+      );
+
+      if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
+        // 找到匹配的模板记录，智能填充处置（如果处置为空）
+        if (!this.form.treatment || !this.form.treatment.trim()) {
+          this.form.treatment = bestRecord.treatments.join('；');
+        }
+        // 如果主诉为空，也可以填充主诉（确保字段关联）
+        if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
+          if (bestRecord.complaint) {
+            this.form.chiefComplaint = bestRecord.complaint;
+          }
+        }
+        // 如果症状为空，也可以填充症状
+        if (!this.form.symptom || !this.form.symptom.trim()) {
+          if (bestRecord.symptoms && bestRecord.symptoms.length) {
+            this.form.symptom = bestRecord.symptoms.join('；');
+          }
+        }
+      } else {
+        // 如果没有找到完整匹配，尝试根据疾病名称查找处置模板
+        var diseaseName = (this.form.diseaseName || '').trim();
+        if (diseaseName && (!this.form.treatment || !this.form.treatment.trim())) {
+          var _this$treatmentTempla4;
+          var treatments = ((_this$treatmentTempla4 = this.treatmentTemplates) === null || _this$treatmentTempla4 === void 0 ? void 0 : _this$treatmentTempla4[diseaseName]) || [];
+          if (treatments.length > 0) {
+            // 使用前两个处置模板
+            this.form.treatment = treatments.slice(0, 2).join('；');
+          }
+        }
+      }
+    },
+    // 打开诊断参考指南
+    openDiagnosisGuide: function openDiagnosisGuide() {
+      var _this19 = this;
+      // 添加模板库匹配的诊断
+      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
+
+      // 更新过滤列表
+      this.filteredDiagnosis = result.diagnoses;
+
+      // 4. 显示诊断下拉列表
+      if (this.filteredDiagnosis.length > 0) {
+        this.showDiagnosisList = true;
+        // 聚焦到诊断输入框，触发下拉显示
+        this.$nextTick(function () {
+          // 触发诊断输入框的焦点事件，显示下拉列表
+          _this19.onDiagnosisFocus();
+        });
+      } else {
+        // 如果没有可用的诊断选项，提示用户
+        uni.showToast({
+          title: '请输入疾病名称或主诉以查看诊断参考',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    },
     selectComplaint: function selectComplaint(opt) {
-      var _this10 = this;
+      var _this20 = this;
       // 清除失焦隐藏计时器
       if (this.complaintBlurTimer) {
         clearTimeout(this.complaintBlurTimer);
@@ -1287,20 +2766,19 @@ var _default = {
       if (!opt || !opt.record) return;
       var rec = opt.record;
 
-      // 自动填充疾病、主诉、症状、诊断、处置
-      var mainDiagnosis = rec.diagnoses && rec.diagnoses[0] || '';
-      this.form.diseaseName = mainDiagnosis || rec.disease;
+      // 智能填充：只填充空白字段，保留用户已输入的内容
+      this.smartFillFields(rec, {
+        preserveComplaint: false,
+        // 主诉用新选择的替换
+        preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
+        preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
+        preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
+      });
+
+      // 确保主诉字段使用选择的主诉
       this.form.chiefComplaint = rec.complaint;
-      if (rec.symptoms && rec.symptoms.length) {
-        this.form.symptom = rec.symptoms.join('；');
-      }
-      if (rec.diagnoses && rec.diagnoses.length) {
-        // 初步诊断字段使用模板中的完整诊断组合
-        this.form.diagnosis = rec.diagnoses.join('；');
-      }
-      if (rec.treatments && rec.treatments.length) {
-        this.form.treatment = rec.treatments.join('；');
-      }
+
+      // 自动选择推荐用药
       if (Array.isArray(rec.suggestDrugs) && rec.suggestDrugs.length) {
         this.applySuggestDrugs(rec.suggestDrugs);
       }
@@ -1311,24 +2789,24 @@ var _default = {
 
       // 自动聚焦到主诉输入框，方便立即编辑
       this.$nextTick(function () {
-        _this10.complaintFocus = false;
-        _this10.$nextTick(function () {
-          _this10.complaintFocus = true;
+        _this20.complaintFocus = false;
+        _this20.$nextTick(function () {
+          _this20.complaintFocus = true;
         });
       });
     },
     // 处置输入与选择
     onTreatmentFocus: function onTreatmentFocus() {
       if (!this.form.treatment || this.form.treatment.trim() === '') {
-        var _this$treatmentTempla3;
-        var src = ((_this$treatmentTempla3 = this.treatmentTemplates) === null || _this$treatmentTempla3 === void 0 ? void 0 : _this$treatmentTempla3[this.form.diseaseName]) || [];
+        var _this$treatmentTempla5;
+        var src = ((_this$treatmentTempla5 = this.treatmentTemplates) === null || _this$treatmentTempla5 === void 0 ? void 0 : _this$treatmentTempla5[this.form.diseaseName]) || [];
         this.filteredTreatments = src;
         this.showTreatmentList = src.length > 0;
       }
     },
     onTreatmentInput: function onTreatmentInput() {
-      var _this$treatmentTempla4;
-      var src = ((_this$treatmentTempla4 = this.treatmentTemplates) === null || _this$treatmentTempla4 === void 0 ? void 0 : _this$treatmentTempla4[this.form.diseaseName]) || [];
+      var _this$treatmentTempla6;
+      var src = ((_this$treatmentTempla6 = this.treatmentTemplates) === null || _this$treatmentTempla6 === void 0 ? void 0 : _this$treatmentTempla6[this.form.diseaseName]) || [];
       var text = (this.form.treatment || '').trim().toLowerCase();
       if (!text) {
         this.filteredTreatments = src;
@@ -1410,7 +2888,7 @@ var _default = {
     },
     // 提交后提示保存模板
     promptSaveTemplate: function promptSaveTemplate() {
-      var _this11 = this;
+      var _this21 = this;
       var disease = (this.form.diseaseName || '').trim();
       var complaint = (this.form.chiefComplaint || '').trim();
       var diagnosis = (this.form.diagnosis || '').trim();
@@ -1427,7 +2905,7 @@ var _default = {
         cancelText: '跳过',
         success: function success(res) {
           if (res.confirm) {
-            _this11.saveCurrentAsTemplate();
+            _this21.saveCurrentAsTemplate();
           }
         }
       });
@@ -1441,31 +2919,31 @@ var _default = {
       }
     },
     ensureStockLoaded: function ensureStockLoaded() {
-      var _this12 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        return _regenerator.default.wrap(function _callee4$(_context4) {
+      var _this22 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+        return _regenerator.default.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                if (!(!_this12.filteredDrugs || _this12.filteredDrugs.length === 0)) {
-                  _context4.next = 8;
+                if (!(!_this22.filteredDrugs || _this22.filteredDrugs.length === 0)) {
+                  _context5.next = 8;
                   break;
                 }
-                _context4.prev = 1;
-                _context4.next = 4;
-                return _this12.loadLocationDrugs();
+                _context5.prev = 1;
+                _context5.next = 4;
+                return _this22.loadLocationDrugs();
               case 4:
-                _context4.next = 8;
+                _context5.next = 8;
                 break;
               case 6:
-                _context4.prev = 6;
-                _context4.t0 = _context4["catch"](1);
+                _context5.prev = 6;
+                _context5.t0 = _context5["catch"](1);
               case 8:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, null, [[1, 6]]);
+        }, _callee5, null, [[1, 6]]);
       }))();
     },
     isPrescriptionDrug: function isPrescriptionDrug(name) {
@@ -1474,25 +2952,25 @@ var _default = {
       return (this.rxDrugNames || []).includes(n);
     },
     applySuggestDrugs: function applySuggestDrugs(list) {
-      var _this13 = this;
+      var _this23 = this;
       if (!Array.isArray(list) || !list.length) return;
       list.forEach(function (name) {
         var n = (name || '').trim();
         if (!n) return;
-        if (_this13.isPrescriptionDrug(n)) {
-          _this13.appendTreatment("".concat(n, "\uFF08\u5904\u65B9\u836F\uFF0C\u9700\u5F00\u5177\u5904\u65B9\u5355\uFF0C\u5728\u9646\u56ED/\u6C34\u56ED\u836F\u623F\u53D1\u836F\uFF09"));
+        if (_this23.isPrescriptionDrug(n)) {
+          _this23.appendTreatment("".concat(n, "\uFF08\u5904\u65B9\u836F\uFF0C\u9700\u5F00\u5177\u5904\u65B9\u5355\uFF0C\u5728\u9646\u56ED/\u6C34\u56ED\u836F\u623F\u53D1\u836F\uFF09"));
         } else {
-          _this13.onDrugChip(n);
+          _this23.onDrugChip(n);
         }
       });
     },
     findDrugByName: function findDrugByName(name) {
-      var _this14 = this;
+      var _this24 = this;
       var target = this.normalizeText(name);
       var inList = function inList(list) {
         return (list || []).find(function (d) {
-          var n1 = _this14.normalizeText(d.name || d.drugName);
-          var n2 = _this14.normalizeText(d.specification || d.spec);
+          var n1 = _this24.normalizeText(d.name || d.drugName);
+          var n2 = _this24.normalizeText(d.specification || d.spec);
           return n1.includes(target) || target.includes(n1) || n2.includes(target);
         });
       };
@@ -1501,39 +2979,39 @@ var _default = {
       return found;
     },
     onDrugChip: function onDrugChip(name) {
-      var _this15 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+      var _this25 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
         var drug;
-        return _regenerator.default.wrap(function _callee5$(_context5) {
+        return _regenerator.default.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
                 // 1) 先附加“（一次）”到处置文本
-                _this15.appendTreatment("".concat(name, "\uFF08\u4E00\u6B21\uFF09"));
+                _this25.appendTreatment("".concat(name, "\uFF08\u4E00\u6B21\uFF09"));
                 // 2) 加载当前园区库存，并尝试选中对应药材
-                _context5.next = 3;
-                return _this15.ensureStockLoaded();
+                _context6.next = 3;
+                return _this25.ensureStockLoaded();
               case 3:
-                drug = _this15.findDrugByName(name);
+                drug = _this25.findDrugByName(name);
                 if (!(drug && drug._id)) {
-                  _context5.next = 15;
+                  _context6.next = 15;
                   break;
                 }
-                _context5.prev = 5;
-                _context5.next = 8;
-                return _this15.onDrugSelect(drug);
+                _context6.prev = 5;
+                _context6.next = 8;
+                return _this25.onDrugSelect(drug);
               case 8:
                 uni.showToast({
                   title: "\u5DF2\u9009\u4E2D\u836F\u6750\uFF1A".concat(drug.name),
                   icon: 'none'
                 });
-                _context5.next = 13;
+                _context6.next = 13;
                 break;
               case 11:
-                _context5.prev = 11;
-                _context5.t0 = _context5["catch"](5);
+                _context6.prev = 11;
+                _context6.t0 = _context6["catch"](5);
               case 13:
-                _context5.next = 16;
+                _context6.next = 16;
                 break;
               case 15:
                 uni.showToast({
@@ -1542,10 +3020,10 @@ var _default = {
                 });
               case 16:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, null, [[5, 11]]);
+        }, _callee6, null, [[5, 11]]);
       }))();
     },
     // 恢复上次选择的园区
@@ -1631,23 +3109,23 @@ var _default = {
       this.showLocationList = false;
     },
     onDrugSelect: function onDrugSelect(drug) {
-      var _this16 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
+      var _this26 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
         var res;
-        return _regenerator.default.wrap(function _callee6$(_context6) {
+        return _regenerator.default.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
                 // 先设置基本信息
-                _this16.form.drugId = drug._id;
-                _this16.showDrugSelector = false;
+                _this26.form.drugId = drug._id;
+                _this26.showDrugSelector = false;
 
                 // 从药材档案获取完整信息
-                _context6.prev = 2;
+                _context7.prev = 2;
                 uni.showLoading({
                   title: '加载药材信息...'
                 });
-                _context6.next = 6;
+                _context7.next = 6;
                 return wx.cloud.callFunction({
                   name: 'drugManage',
                   data: {
@@ -1658,10 +3136,10 @@ var _default = {
                   }
                 });
               case 6:
-                res = _context6.sent;
+                res = _context7.sent;
                 if (res.result.success && res.result.data) {
                   // 使用完整的药材信息
-                  _this16.selectedDrug = _objectSpread(_objectSpread({}, res.result.data), {}, {
+                  _this26.selectedDrug = _objectSpread(_objectSpread({}, res.result.data), {}, {
                     _id: res.result.data._id,
                     drugCode: res.result.data.drugCode || res.result.data.code || '',
                     name: res.result.data.name,
@@ -1673,100 +3151,100 @@ var _default = {
                   });
                 } else {
                   // 如果获取失败，使用传入的drug数据
-                  _this16.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
+                  _this26.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
                     minUnit: drug.minUnit || drug.unit || '个',
                     packUnit: drug.packUnit || drug.unit || '盒',
                     conversionRate: drug.conversionRate || 1
                   });
                 }
-                _context6.next = 14;
+                _context7.next = 14;
                 break;
               case 10:
-                _context6.prev = 10;
-                _context6.t0 = _context6["catch"](2);
-                console.error('获取药材详情失败:', _context6.t0);
+                _context7.prev = 10;
+                _context7.t0 = _context7["catch"](2);
+                console.error('获取药材详情失败:', _context7.t0);
                 // 使用传入的drug数据
-                _this16.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
+                _this26.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
                   minUnit: drug.minUnit || drug.unit || '个',
                   packUnit: drug.packUnit || drug.unit || '盒',
                   conversionRate: drug.conversionRate || 1
                 });
               case 14:
-                _context6.prev = 14;
+                _context7.prev = 14;
                 uni.hideLoading();
-                return _context6.finish(14);
+                return _context7.finish(14);
               case 17:
-                _context6.next = 19;
-                return _this16.loadBatches();
+                _context7.next = 19;
+                return _this26.loadBatches();
               case 19:
               case "end":
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, null, [[2, 10, 14, 17]]);
+        }, _callee7, null, [[2, 10, 14, 17]]);
       }))();
     },
     loadBatches: function loadBatches() {
-      var _this17 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
+      var _this27 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
         var res, batches, parkName;
-        return _regenerator.default.wrap(function _callee7$(_context7) {
+        return _regenerator.default.wrap(function _callee8$(_context8) {
           while (1) {
-            switch (_context7.prev = _context7.next) {
+            switch (_context8.prev = _context8.next) {
               case 0:
                 uni.showLoading({
                   title: '加载库存...'
                 });
-                _context7.prev = 1;
-                _context7.next = 4;
+                _context8.prev = 1;
+                _context8.next = 4;
                 return wx.cloud.callFunction({
                   name: 'stockManage',
                   data: {
                     action: 'getBatchesByDrugId',
                     data: {
-                      drugId: _this17.form.drugId,
-                      location: _this17.form.location,
+                      drugId: _this27.form.drugId,
+                      location: _this27.form.location,
                       enableFIFO: true
                     }
                   }
                 });
               case 4:
-                res = _context7.sent;
+                res = _context8.sent;
                 if (res.result.success && res.result.data.length > 0) {
                   batches = res.result.data;
-                  _this17.selectedBatch = batches[0];
-                  _this17.availableStock = batches.reduce(function (sum, b) {
+                  _this27.selectedBatch = batches[0];
+                  _this27.availableStock = batches.reduce(function (sum, b) {
                     return sum + b.quantity;
                   }, 0);
                 } else {
-                  _this17.selectedBatch = null;
-                  _this17.availableStock = 0;
-                  parkName = _this17.form.location === 'land_park' ? '陆园' : '水园';
+                  _this27.selectedBatch = null;
+                  _this27.availableStock = 0;
+                  parkName = _this27.form.location === 'land_park' ? '陆园' : '水园';
                   uni.showToast({
                     title: "".concat(parkName, "\u8BE5\u836F\u6750\u5E93\u5B58\u4E0D\u8DB3"),
                     icon: 'none',
                     duration: 2000
                   });
                 }
-                _context7.next = 11;
+                _context8.next = 11;
                 break;
               case 8:
-                _context7.prev = 8;
-                _context7.t0 = _context7["catch"](1);
+                _context8.prev = 8;
+                _context8.t0 = _context8["catch"](1);
                 uni.showToast({
                   title: '加载库存失败',
                   icon: 'none'
                 });
               case 11:
-                _context7.prev = 11;
+                _context8.prev = 11;
                 uni.hideLoading();
-                return _context7.finish(11);
+                return _context8.finish(11);
               case 14:
               case "end":
-                return _context7.stop();
+                return _context8.stop();
             }
           }
-        }, _callee7, null, [[1, 8, 11, 14]]);
+        }, _callee8, null, [[1, 8, 11, 14]]);
       }))();
     },
     openSignature: function openSignature() {
@@ -1791,213 +3269,213 @@ var _default = {
       });
     },
     handleSubmit: function handleSubmit() {
-      var _this18 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
+      var _this28 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
         var hasValidDrugUsage, submitData, intQuantity, res;
-        return _regenerator.default.wrap(function _callee8$(_context8) {
+        return _regenerator.default.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
-                if (!(!_this18.form.location || _this18.form.location !== 'land_park' && _this18.form.location !== 'water_park')) {
-                  _context8.next = 3;
+                if (!(!_this28.form.location || _this28.form.location !== 'land_park' && _this28.form.location !== 'water_park')) {
+                  _context9.next = 3;
                   break;
                 }
                 uni.showToast({
                   title: '请选择就诊园区',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 3:
-                if (!(!_this18.form.name || _this18.form.name.trim() === '')) {
-                  _context8.next = 6;
+                if (!(!_this28.form.name || _this28.form.name.trim() === '')) {
+                  _context9.next = 6;
                   break;
                 }
                 uni.showToast({
                   title: '请输入患者姓名',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 6:
-                if (_this18.form.gender) {
-                  _context8.next = 9;
+                if (_this28.form.gender) {
+                  _context9.next = 9;
                   break;
                 }
                 uni.showToast({
                   title: '请选择性别',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 9:
-                if (!(!_this18.form.age || _this18.form.age <= 0)) {
-                  _context8.next = 12;
+                if (!(!_this28.form.age || _this28.form.age <= 0)) {
+                  _context9.next = 12;
                   break;
                 }
                 uni.showToast({
                   title: '请输入有效的年龄',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 12:
-                if (_this18.form.identity) {
-                  _context8.next = 15;
+                if (_this28.form.identity) {
+                  _context9.next = 15;
                   break;
                 }
                 uni.showToast({
                   title: '请选择身份',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 15:
-                if (_this18.form.visitType) {
-                  _context8.next = 18;
+                if (_this28.form.visitType) {
+                  _context9.next = 18;
                   break;
                 }
                 uni.showToast({
                   title: '请选择接诊类型',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 18:
-                if (!(_this18.form.visitType === 'outcall' && (!_this18.form.injuryLocation || _this18.form.injuryLocation.trim() === ''))) {
-                  _context8.next = 21;
+                if (!(_this28.form.visitType === 'outcall' && (!_this28.form.injuryLocation || _this28.form.injuryLocation.trim() === ''))) {
+                  _context9.next = 21;
                   break;
                 }
                 uni.showToast({
                   title: '出诊时需填写受伤地点',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 21:
-                if (!(!_this18.form.chiefComplaint || _this18.form.chiefComplaint.trim() === '')) {
-                  _context8.next = 24;
+                if (!(!_this28.form.chiefComplaint || _this28.form.chiefComplaint.trim() === '')) {
+                  _context9.next = 24;
                   break;
                 }
                 uni.showToast({
                   title: '请输入主诉',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 24:
-                if (!(!_this18.form.diseaseName || _this18.form.diseaseName.trim() === '')) {
-                  _context8.next = 27;
+                if (!(!_this28.form.diseaseName || _this28.form.diseaseName.trim() === '')) {
+                  _context9.next = 27;
                   break;
                 }
                 uni.showToast({
                   title: '请输入疾病名称',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 27:
-                if (!(!_this18.form.diagnosis || _this18.form.diagnosis.trim() === '')) {
-                  _context8.next = 30;
+                if (!(!_this28.form.diagnosis || _this28.form.diagnosis.trim() === '')) {
+                  _context9.next = 30;
                   break;
                 }
                 uni.showToast({
                   title: '请输入诊断',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 30:
-                if (!(!_this18.form.treatment || _this18.form.treatment.trim() === '')) {
-                  _context8.next = 33;
+                if (!(!_this28.form.treatment || _this28.form.treatment.trim() === '')) {
+                  _context9.next = 33;
                   break;
                 }
                 uni.showToast({
                   title: '请输入处置措施',
                   icon: 'none'
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 33:
                 // 用药信息为选填：仅当选择了药材且数量>0时，才视为用药登记
                 hasValidDrugUsage = false;
-                if (!_this18.selectedDrug) {
-                  _context8.next = 47;
+                if (!_this28.selectedDrug) {
+                  _context9.next = 47;
                   break;
                 }
-                if (!(_this18.form.quantity && _this18.form.quantity > 0)) {
-                  _context8.next = 42;
+                if (!(_this28.form.quantity && _this28.form.quantity > 0)) {
+                  _context9.next = 42;
                   break;
                 }
-                if (!(_this18.form.quantity > _this18.availableStock)) {
-                  _context8.next = 39;
+                if (!(_this28.form.quantity > _this28.availableStock)) {
+                  _context9.next = 39;
                   break;
                 }
                 uni.showToast({
-                  title: "\u5E93\u5B58\u4E0D\u8DB3\uFF0C\u6700\u591A".concat(_this18.availableStock).concat(_this18.selectedDrug.minUnit),
+                  title: "\u5E93\u5B58\u4E0D\u8DB3\uFF0C\u6700\u591A".concat(_this28.availableStock).concat(_this28.selectedDrug.minUnit),
                   icon: 'none',
                   duration: 3000
                 });
-                return _context8.abrupt("return");
+                return _context9.abrupt("return");
               case 39:
                 hasValidDrugUsage = true;
-                _context8.next = 47;
+                _context9.next = 47;
                 break;
               case 42:
                 // 选择了药材但未填写有效数量，视为本次不登记用药，清空用药相关状态
-                _this18.form.drugId = '';
-                _this18.form.quantity = null;
-                _this18.selectedDrug = null;
-                _this18.selectedBatch = null;
-                _this18.availableStock = 0;
+                _this28.form.drugId = '';
+                _this28.form.quantity = null;
+                _this28.selectedDrug = null;
+                _this28.selectedBatch = null;
+                _this28.availableStock = 0;
               case 47:
-                _this18.submitting = true;
+                _this28.submitting = true;
                 uni.showLoading({
                   title: '保存中...'
                 });
-                _context8.prev = 49;
+                _context9.prev = 49;
                 // 准备数据
                 submitData = {
-                  visitDateTime: _this18.form.visitDateTime,
-                  name: _this18.form.name.trim(),
-                  gender: _this18.form.gender,
-                  age: _this18.form.age,
-                  identity: _this18.form.identity,
-                  location: _this18.form.location,
+                  visitDateTime: _this28.form.visitDateTime,
+                  name: _this28.form.name.trim(),
+                  gender: _this28.form.gender,
+                  age: _this28.form.age,
+                  identity: _this28.form.identity,
+                  location: _this28.form.location,
                   // 园区（陆园/水园）
-                  visitType: _this18.form.visitType,
-                  isOutcall: _this18.form.visitType === 'outcall',
-                  injuryLocation: _this18.form.injuryLocation.trim(),
-                  chiefComplaint: _this18.form.chiefComplaint.trim(),
-                  diseaseName: _this18.form.diseaseName.trim(),
-                  diagnosis: _this18.form.diagnosis.trim(),
-                  treatment: _this18.form.treatment.trim(),
-                  remark: _this18.form.remark.trim()
+                  visitType: _this28.form.visitType,
+                  isOutcall: _this28.form.visitType === 'outcall',
+                  injuryLocation: _this28.form.injuryLocation.trim(),
+                  chiefComplaint: _this28.form.chiefComplaint.trim(),
+                  diseaseName: _this28.form.diseaseName.trim(),
+                  diagnosis: _this28.form.diagnosis.trim(),
+                  treatment: _this28.form.treatment.trim(),
+                  remark: _this28.form.remark.trim()
                 }; // 如果有有效用药信息，云函数会从对应园区扣减库存
-                if (hasValidDrugUsage && _this18.selectedDrug && _this18.form.quantity) {
+                if (hasValidDrugUsage && _this28.selectedDrug && _this28.form.quantity) {
                   // 确保数量是整数，避免小数
-                  intQuantity = Math.floor(_this18.form.quantity);
+                  intQuantity = Math.floor(_this28.form.quantity);
                   submitData.drugInfo = {
-                    drugId: _this18.form.drugId,
+                    drugId: _this28.form.drugId,
                     // 系统内部ID（主键）
-                    drugCode: _this18.selectedDrug.drugCode || _this18.selectedDrug.code || '',
+                    drugCode: _this28.selectedDrug.drugCode || _this28.selectedDrug.code || '',
                     // 药材代码（业务编码）
-                    drugName: _this18.selectedDrug.name,
-                    specification: _this18.selectedDrug.specification,
-                    unit: _this18.selectedDrug.minUnit,
+                    drugName: _this28.selectedDrug.name,
+                    specification: _this28.selectedDrug.specification,
+                    unit: _this28.selectedDrug.minUnit,
                     quantity: intQuantity,
-                    batchId: _this18.selectedBatch._id,
-                    batch: _this18.selectedBatch.batch,
-                    location: _this18.form.location,
+                    batchId: _this28.selectedBatch._id,
+                    batch: _this28.selectedBatch.batch,
+                    location: _this28.form.location,
                     // 关联园区
-                    minUnit: _this18.selectedDrug.minUnit,
-                    packUnit: _this18.selectedDrug.packUnit,
-                    conversionRate: _this18.selectedDrug.conversionRate
+                    minUnit: _this28.selectedDrug.minUnit,
+                    packUnit: _this28.selectedDrug.packUnit,
+                    conversionRate: _this28.selectedDrug.conversionRate
                   };
 
                   // 兼容旧字段
-                  submitData.drugId = _this18.form.drugId; // 系统内部ID（主键）
-                  submitData.drugCode = _this18.selectedDrug.drugCode || _this18.selectedDrug.code || ''; // 药材代码（业务编码）
-                  submitData.drugName = _this18.selectedDrug.name;
-                  submitData.specification = _this18.selectedDrug.specification;
-                  submitData.batchId = _this18.selectedBatch._id;
+                  submitData.drugId = _this28.form.drugId; // 系统内部ID（主键）
+                  submitData.drugCode = _this28.selectedDrug.drugCode || _this28.selectedDrug.code || ''; // 药材代码（业务编码）
+                  submitData.drugName = _this28.selectedDrug.name;
+                  submitData.specification = _this28.selectedDrug.specification;
+                  submitData.batchId = _this28.selectedBatch._id;
                   submitData.quantityMin = intQuantity;
-                  submitData.minUnit = _this18.selectedDrug.minUnit;
-                  submitData.packUnit = _this18.selectedDrug.packUnit;
-                  submitData.conversionRate = _this18.selectedDrug.conversionRate;
-                  submitData.patient = _this18.form.name.trim();
-                  submitData.symptom = (_this18.form.symptom || _this18.form.chiefComplaint || '').trim();
+                  submitData.minUnit = _this28.selectedDrug.minUnit;
+                  submitData.packUnit = _this28.selectedDrug.packUnit;
+                  submitData.conversionRate = _this28.selectedDrug.conversionRate;
+                  submitData.patient = _this28.form.name.trim();
+                  submitData.symptom = (_this28.form.symptom || _this28.form.chiefComplaint || '').trim();
                 }
-                _context8.next = 54;
+                _context9.next = 54;
                 return wx.cloud.callFunction({
                   name: 'clinicRecords',
                   data: {
@@ -2006,11 +3484,11 @@ var _default = {
                   }
                 });
               case 54:
-                res = _context8.sent;
+                res = _context9.sent;
                 if (res.result.success) {
                   // 提示保存为模板
-                  _this18.promptSaveTemplate();
-                  if (_this18.continueAfterSubmit) {
+                  _this28.promptSaveTemplate();
+                  if (_this28.continueAfterSubmit) {
                     // 连续登记模式：立即清空表单
                     uni.showToast({
                       title: '登记成功，可继续登记',
@@ -2018,7 +3496,7 @@ var _default = {
                       duration: 2000
                     });
                     setTimeout(function () {
-                      _this18.resetForm();
+                      _this28.resetForm();
                       // 滚动到顶部
                       uni.pageScrollTo({
                         scrollTop: 0,
@@ -2033,7 +3511,7 @@ var _default = {
                     });
                     setTimeout(function () {
                       // 确保离开页面前也重置一次，避免热更新或返回后残留
-                      _this18.resetForm();
+                      _this28.resetForm();
                       uni.navigateBack();
                     }, 1500);
                   }
@@ -2043,27 +3521,27 @@ var _default = {
                     icon: 'none'
                   });
                 }
-                _context8.next = 62;
+                _context9.next = 62;
                 break;
               case 58:
-                _context8.prev = 58;
-                _context8.t0 = _context8["catch"](49);
-                console.error('登记失败:', _context8.t0);
+                _context9.prev = 58;
+                _context9.t0 = _context9["catch"](49);
+                console.error('登记失败:', _context9.t0);
                 uni.showToast({
                   title: '登记失败',
                   icon: 'none'
                 });
               case 62:
-                _context8.prev = 62;
-                _this18.submitting = false;
+                _context9.prev = 62;
+                _this28.submitting = false;
                 uni.hideLoading();
-                return _context8.finish(62);
+                return _context9.finish(62);
               case 66:
               case "end":
-                return _context8.stop();
+                return _context9.stop();
             }
           }
-        }, _callee8, null, [[49, 58, 62, 66]]);
+        }, _callee9, null, [[49, 58, 62, 66]]);
       }))();
     },
     resetForm: function resetForm() {
@@ -2083,6 +3561,7 @@ var _default = {
       this.form.injuryLocation = '';
       this.form.chiefComplaint = '';
       this.form.symptom = '';
+      this.standardizedSymptoms = [];
       this.form.diseaseName = '';
       this.form.diagnosis = '';
       this.form.treatment = '';
@@ -2111,6 +3590,35 @@ var _default = {
       this.filteredComplaints = [];
       this.showComplaintList = false;
       this.complaintSelectedMode = false; // 重置主诉编辑模式
+      // 症状相关状态
+      this.filteredSymptoms = [];
+      this.showSymptomList = false;
+      this.standardizedSymptoms = [];
+      // 清理计时器
+      if (this.symptomInputTimer) {
+        clearTimeout(this.symptomInputTimer);
+        this.symptomInputTimer = null;
+      }
+      if (this.fetchHvSuggestionTimer) {
+        clearTimeout(this.fetchHvSuggestionTimer);
+        this.fetchHvSuggestionTimer = null;
+      }
+      if (this.diseaseInputTimer) {
+        clearTimeout(this.diseaseInputTimer);
+        this.diseaseInputTimer = null;
+      }
+      if (this.diagnosisInputTimer) {
+        clearTimeout(this.diagnosisInputTimer);
+        this.diagnosisInputTimer = null;
+      }
+      if (this.complaintInputTimer) {
+        clearTimeout(this.complaintInputTimer);
+        this.complaintInputTimer = null;
+      }
+      if (this.complaintFocusTimer) {
+        clearTimeout(this.complaintFocusTimer);
+        this.complaintFocusTimer = null;
+      }
     },
     formatDate: function formatDate(dateStr) {
       if (!dateStr) return '';
@@ -2141,14 +3649,14 @@ var _default = {
     },
     // 生成日报
     generateDailyReport: function generateDailyReport() {
-      var _this19 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
+      var _this29 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10() {
         var today, year, month, day, dateStr, location, locationName, records, res, report, stats, tableData, reportDate;
-        return _regenerator.default.wrap(function _callee9$(_context9) {
+        return _regenerator.default.wrap(function _callee10$(_context10) {
           while (1) {
-            switch (_context9.prev = _context9.next) {
+            switch (_context10.prev = _context10.next) {
               case 0:
-                _context9.prev = 0;
+                _context10.prev = 0;
                 uni.showLoading({
                   title: '生成中...'
                 });
@@ -2159,9 +3667,9 @@ var _default = {
                 month = String(today.getMonth() + 1).padStart(2, '0');
                 day = String(today.getDate()).padStart(2, '0');
                 dateStr = "".concat(year, "-").concat(month, "-").concat(day); // 必须先选择就诊园区
-                location = _this19.form.location;
+                location = _this29.form.location;
                 if (!(!location || location !== 'land_park' && location !== 'water_park')) {
-                  _context9.next = 13;
+                  _context10.next = 13;
                   break;
                 }
                 uni.hideLoading();
@@ -2170,14 +3678,14 @@ var _default = {
                   icon: 'none'
                 });
                 // 如有需要，可同时弹出园区选择提示
-                _this19.showLocationTip = true;
-                return _context9.abrupt("return");
+                _this29.showLocationTip = true;
+                return _context10.abrupt("return");
               case 13:
                 locationName = location === 'land_park' ? '陆园' : '水园'; // 查询当日的所有门诊记录
                 // 查询 clinic_records 集合（完整门诊登记信息）
                 records = [];
-                _context9.prev = 15;
-                _context9.next = 18;
+                _context10.prev = 15;
+                _context10.next = 18;
                 return wx.cloud.callFunction({
                   name: 'clinicRecords',
                   data: {
@@ -2192,19 +3700,19 @@ var _default = {
                   }
                 });
               case 18:
-                res = _context9.sent;
+                res = _context10.sent;
                 if (res.result && res.result.success && res.result.data && res.result.data.list) {
                   records = res.result.data.list;
                 }
-                _context9.next = 25;
+                _context10.next = 25;
                 break;
               case 22:
-                _context9.prev = 22;
-                _context9.t0 = _context9["catch"](15);
-                console.error('查询门诊记录失败:', _context9.t0);
+                _context10.prev = 22;
+                _context10.t0 = _context10["catch"](15);
+                console.error('查询门诊记录失败:', _context10.t0);
               case 25:
                 if (!(records.length === 0)) {
-                  _context9.next = 29;
+                  _context10.next = 29;
                   break;
                 }
                 uni.hideLoading();
@@ -2213,12 +3721,12 @@ var _default = {
                   icon: 'none',
                   duration: 2000
                 });
-                return _context9.abrupt("return");
+                return _context10.abrupt("return");
               case 29:
                 // 生成文档和统计信息
-                report = _this19.formatDailyReport(records, dateStr, locationName);
-                stats = _this19.calculateStats(records); // 准备详细的表格数据
-                tableData = _this19.prepareTableData(records);
+                report = _this29.formatDailyReport(records, dateStr, locationName);
+                stats = _this29.calculateStats(records); // 准备详细的表格数据
+                tableData = _this29.prepareTableData(records);
                 uni.hideLoading();
 
                 // 跳转到日报显示页面
@@ -2239,24 +3747,24 @@ var _default = {
                     });
                   }
                 });
-                _context9.next = 42;
+                _context10.next = 42;
                 break;
               case 37:
-                _context9.prev = 37;
-                _context9.t1 = _context9["catch"](0);
-                console.error('生成日报失败:', _context9.t1);
+                _context10.prev = 37;
+                _context10.t1 = _context10["catch"](0);
+                console.error('生成日报失败:', _context10.t1);
                 uni.hideLoading();
                 uni.showToast({
-                  title: '生成失败：' + (_context9.t1.message || '未知错误'),
+                  title: '生成失败：' + (_context10.t1.message || '未知错误'),
                   icon: 'none',
                   duration: 3000
                 });
               case 42:
               case "end":
-                return _context9.stop();
+                return _context10.stop();
             }
           }
-        }, _callee9, null, [[0, 37], [15, 22]]);
+        }, _callee10, null, [[0, 37], [15, 22]]);
       }))();
     },
     // 格式化日报
@@ -2454,7 +3962,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 404:
+/***/ 446:
 /*!****************************************************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& ***!
   \****************************************************************************************************/
@@ -2463,14 +3971,14 @@ exports.default = _default;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!./node_modules/postcss-loader/src??ref--8-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 405);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/postcss-loader/src??ref--8-oneOf-1-3!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 447);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ 405:
+/***/ 447:
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!./node_modules/postcss-loader/src??ref--8-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& ***!
   \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -2483,5 +3991,5 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ })
 
-},[[398,"common/runtime","common/vendor"]]]);
+},[[440,"common/runtime","common/vendor"]]]);
 //# sourceMappingURL=../../../.sourcemap/mp-weixin/pages-sub/clinic/add.js.map

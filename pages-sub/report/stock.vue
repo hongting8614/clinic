@@ -5,7 +5,7 @@
 			<text class="page-title">库存报表</text>
 			<text class="page-subtitle">当前库存结构与风险总览</text>
 		</view>
-
+		
 		<!-- 筛选区域 -->
 		<view class="filter-card">
 			<view class="filter-row">
@@ -43,20 +43,20 @@
 				</view>
 			</view>
 		</view>
-
+		
 		<!-- 概览卡片 -->
 		<view class="summary-section">
-			<view class="summary-card">
+				<view class="summary-card">
 				<view class="summary-label">药材种类</view>
 				<text class="summary-value">{{ summary.totalDrugs }}</text>
 				<text class="summary-unit">种</text>
-			</view>
-			<view class="summary-card">
+				</view>
+				<view class="summary-card">
 				<view class="summary-label">总库存数量</view>
 				<text class="summary-value">{{ summary.totalQuantity }}</text>
 				<text class="summary-unit">件</text>
-			</view>
-			<view class="summary-card warning">
+				</view>
+				<view class="summary-card warning">
 				<view class="summary-label">库存预警药材</view>
 				<text class="summary-value">{{ summary.warningCount }}</text>
 				<text class="summary-unit">种</text>
@@ -67,11 +67,11 @@
 				<text class="summary-unit">批</text>
 			</view>
 		</view>
-
+		
 		<!-- 明细卡片列表 -->
 		<view class="table-section">
 			<scroll-view scroll-y class="table-body">
-				<view
+				<view 
 					v-for="(item, index) in displayList"
 					:key="item._id"
 					class="detail-card"
@@ -83,20 +83,20 @@
 							<text class="detail-spec">{{ item.specification || '-' }}</text>
 						</view>
 						<text class="detail-no">#{{ index + 1 }}</text>
-					</view>
-
+		</view>
+		
 					<!-- 数量 + 状态 -->
 					<view class="detail-row detail-row-main">
 						<view class="detail-main-left">
 							<text class="meta-label">单位</text>
 							<text class="meta-value">{{ item.unit || '-' }}</text>
-						</view>
+		</view>
 						<view class="detail-main-right">
 							<text class="detail-qty">{{ item.quantity }}</text>
 							<text class="detail-status" :class="'status-' + (item.statusTag || 'normal')">{{ item.statusText }}</text>
-						</view>
-					</view>
-
+			</view>
+		</view>
+		
 					<!-- 批号 -->
 					<view class="detail-row detail-row-meta">
 						<text class="meta-label">批号</text>
@@ -115,7 +115,7 @@
 					</view>
 				</view>
 			</scroll-view>
-		</view>
+			</view>
 	</view>
 </template>
 
@@ -469,20 +469,20 @@ export default {
 	border-radius: 22rpx;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
-
-.filter-row {
-	display: flex;
+	
+	.filter-row {
+		display: flex;
 	flex-direction: row;
 	align-items: center;
 	margin-bottom: 8rpx;
 }
 
 .filter-row:last-child {
-	margin-bottom: 0;
-}
-
-.filter-item {
-	flex: 1;
+			margin-bottom: 0;
+		}
+		
+		.filter-item {
+			flex: 1;
 }
 
 .label {
@@ -493,8 +493,8 @@ export default {
 }
 
 .search-box {
-	display: flex;
-	align-items: center;
+			display: flex;
+			align-items: center;
 	padding: 8rpx 14rpx;
 	border-radius: 999rpx;
 	background: #f3f4f6;
@@ -507,7 +507,7 @@ export default {
 }
 
 .search-input {
-	flex: 1;
+				flex: 1;
 	font-size: 24rpx;
 	color: #111827;
 }
@@ -552,7 +552,7 @@ export default {
 }
 
 .action-buttons {
-	display: flex;
+		display: flex;
 	flex-direction: row;
 	align-items: center;
 	gap: 10rpx;
@@ -562,9 +562,9 @@ export default {
 	font-size: 22rpx;
 	padding: 0 14rpx;
 	border-radius: 999rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 	height: 56rpx;
 	line-height: 56rpx;
 }
@@ -599,15 +599,15 @@ export default {
 	gap: 8rpx;
 }
 
-
-.summary-card {
+		
+		.summary-card {
 	background: #ffffff;
 	border-radius: 18rpx;
 	padding: 16rpx 14rpx 12rpx;
 	box-shadow: none;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 	justify-content: center;
 	text-align: center;
 }
@@ -618,10 +618,10 @@ export default {
 
 .summary-card.danger {
 	border-left: 4rpx solid #ef4444;
-}
-
-.summary-label {
-	font-size: 24rpx;
+			}
+			
+			.summary-label {
+				font-size: 24rpx;
 	color: #6b7280;
 	margin-bottom: 6rpx;
 }
@@ -644,9 +644,9 @@ export default {
 	padding-bottom: 8rpx;
 	background: transparent;
 }
-
-.table-header {
-	display: flex;
+	
+	.table-header {
+		display: flex;
 	align-items: center;
 	padding: 16rpx 10rpx;
 	background: #f9fafb;
@@ -654,15 +654,15 @@ export default {
  	font-size: 22rpx;
  	color: #4b5563;
  	font-weight: 600;
+	}
+	
+	.table-body {
+		max-height: 800rpx;
 }
-
-.table-body {
-	max-height: 800rpx;
-}
-
-.table-row {
-	display: flex;
-	align-items: center;
+		
+		.table-row {
+			display: flex;
+			align-items: center;
 	padding: 14rpx 10rpx;
 	font-size: 22rpx;
 	color: #111827;
@@ -670,16 +670,16 @@ export default {
 }
 
 .table-row:last-child {
-	border-bottom: none;
-}
-
-.col {
+				border-bottom: none;
+			}
+			
+			.col {
 	padding: 0 4rpx;
 }
 
 .w-no {
 	width: 70rpx;
-	text-align: center;
+				text-align: center;
 }
 
 .w-name {
@@ -761,9 +761,9 @@ export default {
 }
 
 .detail-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	margin-top: 6rpx;
 }
 
@@ -784,7 +784,7 @@ export default {
 }
 
 .detail-drug {
-	font-size: 28rpx;
+			font-size: 28rpx;
 	font-weight: 600;
 	color: #111827;
 }

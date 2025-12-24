@@ -24,9 +24,6 @@
     <!-- 园区选择提示弹窗（悬浮窗） -->
     <view v-if="showLocationTip" class="location-modal-overlay">
       <view class="location-modal">
-        <view class="modal-icon-row">
-          <view class="modal-icon-circle">园</view>
-        </view>
         <view class="modal-title">请选择当前所在园区</view>
         <view class="modal-subtitle">当前：{{ currentLocationLabel }}，用于统计门诊登记、日报等数据</view>
 
@@ -72,45 +69,6 @@
         </view>
       </view>
 
-      <!-- 系统诊断建议（基于主诉，欢乐谷规则，仅供参考） -->
-      <view v-if="hvSuggestion && hvSuggestion.name" class="hv-suggestion-card">
-        <view class="hv-suggestion-header">
-          <text class="hv-suggestion-title">系统建议诊断（仅供参考）</text>
-          <text
-            v-if="hvSuggestion.urgent"
-            class="hv-tag hv-tag-danger"
-          >
-            建议优先处理
-          </text>
-          <text
-            v-else
-            class="hv-tag hv-tag-normal"
-          >
-            一般情况
-          </text>
-        </view>
-        <view class="hv-suggestion-body">
-          <view class="hv-row">
-            <text class="hv-label">推荐诊断：</text>
-            <text class="hv-value">{{ hvSuggestion.name }}</text>
-          </view>
-          <view v-if="hvSuggestion.typicalScene" class="hv-row">
-            <text class="hv-label">典型场景：</text>
-            <text class="hv-value hv-scene">{{ hvSuggestion.typicalScene }}</text>
-          </view>
-          <view v-if="hvSuggestion.medications && hvSuggestion.medications.length" class="hv-row">
-            <text class="hv-label">推荐用药：</text>
-            <text class="hv-value">{{ hvSuggestion.medications.join('、') }}</text>
-          </view>
-          <view v-if="hvSuggestion.treatment" class="hv-row">
-            <text class="hv-label">推荐处置：</text>
-            <text class="hv-value">{{ hvSuggestion.treatment }}</text>
-          </view>
-        </view>
-        <view class="hv-suggestion-footer">
-          <button class="hv-apply-btn" @tap="applyHvSuggestion">一键填入诊断/处置</button>
-        </view>
-      </view>
 
       <!-- 姓名 + 性别/年龄 -->
       <view class="form-row">
@@ -243,6 +201,7 @@
       <!-- 诊断 -->
       <view class="form-item">
         <view class="label required">诊断</view>
+        <view class="label-hint">医生根据检查做出的专业判断</view>
         <view class="disease-input-wrapper">
           <input
             v-model="form.diagnosis"
@@ -256,35 +215,12 @@
           />
           <view v-if="showDiagnosisList && filteredDiagnosis.length > 0" class="disease-dropdown">
             <scroll-view scroll-y class="disease-scroll">
-              <!-- AI智能建议（如果有） -->
-              <view v-if="hvSuggestion && hvSuggestion.name" class="diagnosis-section">
-                <view class="section-divider">
-                  <text class="section-title">🤖 AI智能建议</text>
-                </view>
-                <view 
-                  class="disease-item ai-suggestion-item"
-                  @click="selectDiagnosis(hvSuggestion.name)"
-                >
-                  <view class="diagnosis-content">
-                    <text class="diagnosis-text">{{ hvSuggestion.name }}</text>
-                    <text class="diagnosis-badge ai-badge">AI推荐</text>
-                  </view>
-                  <view v-if="hvSuggestion.typicalScene" class="diagnosis-hint">
-                    {{ hvSuggestion.typicalScene }}
-                  </view>
-                </view>
-              </view>
-              
               <!-- 模板库参考 -->
-              <view v-if="filteredDiagnosis.filter(d => !hvSuggestion || hvSuggestion.name !== d).length > 0" class="diagnosis-section">
-                <view v-if="hvSuggestion && hvSuggestion.name" class="section-divider">
-                  <text class="section-title">📚 模板库参考</text>
-                </view>
+              <view v-if="filteredDiagnosis.length > 0" class="diagnosis-section">
                 <view 
                   v-for="it in filteredDiagnosis" 
                   :key="it"
                   class="disease-item"
-                  :class="{ 'hidden': hvSuggestion && hvSuggestion.name === it }"
                   @click="selectDiagnosis(it)"
                 >
                   {{ it }}
@@ -298,11 +234,12 @@
       <!-- 症状 -->
       <view id="field-symptom" class="form-item">
         <view class="label">症状</view>
+        <view class="label-hint">患者表现出的具体症状和体征</view>
         <view class="disease-input-wrapper">
           <input
             v-model="form.symptom"
             type="text"
-            placeholder="可记录体征/检查所见等补充症状信息（可选，可从主诉自动提取）"
+            placeholder="例如：头晕、恶心、局部红肿等（可选，可从主诉自动提取）"
             maxlength="150"
             class="input-uniform"
             @focus="onSymptomFocus(); onFieldFocus('field-symptom')"
@@ -329,6 +266,7 @@
       <!-- 疾病名称（带下拉列表）+ 选择诊断参考按钮 -->
       <view class="form-item">
         <view class="label required">疾病名称</view>
+        <view class="label-hint">疾病的大类分类，用于统计分析</view>
         <view class="disease-name-row">
           <view class="disease-input-wrapper" style="flex: 1;">
             <input
@@ -354,12 +292,7 @@
               </scroll-view>
             </view>
           </view>
-          <!-- 诊断参考按钮 -->
-          <view class="diagnosis-reference-btn-inline" @click="openDiagnosisGuide">
-            <text class="iconfont icon-search"></text>
-            <text>选择诊断参考</text>
-          </view>
-        </view>
+                  </view>
       </view>
 
       <!-- 处置 -->
@@ -447,25 +380,76 @@
         </view>
       </view>
 
-      <!-- 用药数量输入 -->
-      <view v-if="selectedDrug" class="form-item-inline">
-        <view class="label required">用药数量</view>
-        <input
-          v-model.number="form.quantity"
-          type="number"
-          placeholder="请输入数量"
-          class="input-uniform quantity-input-inline"
-        />
-        <view class="unit-label">{{ getRealMinUnit(selectedDrug) }}</view>
-        <!-- 添加到处方按钮 -->
-        <view class="add-to-prescription-btn" @click="addToPrescription">
-          <text class="btn-icon">+</text>
-          <text class="btn-text">加入处方</text>
+      <!-- 用药数量和用法输入 -->
+      <view v-if="selectedDrug" class="drug-usage-section">
+        <!-- 用药数量 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <view class="label required">用药数量</view>
+            <view class="quantity-input-group">
+              <input
+                v-model.number="form.quantity"
+                type="number"
+                placeholder="数量"
+                class="input-uniform"
+              />
+              <text class="unit-text">{{ getRealMinUnit(selectedDrug) }}</text>
+            </view>
+            <!-- 库存不足警告 -->
+            <view v-if="form.quantity > availableStock" class="quantity-warning">
+              <text class="warning-icon">⚠️</text>
+              <text class="warning-text">库存不足！当前：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+            </view>
+          </view>
+          
+          <!-- 单次剂量 -->
+          <view class="form-item half">
+            <view class="label">单次剂量</view>
+            <view class="dosage-input-group">
+              <input
+                v-model="currentDrug.dosage"
+                type="text"
+                placeholder="如：1片"
+                class="input-uniform"
+              />
+            </view>
+          </view>
         </view>
-        <!-- 库存不足警告 -->
-        <view v-if="form.quantity > availableStock" class="quantity-warning-inline">
-          <text class="warning-icon">⚠️</text>
-          <text class="warning-text">库存不足！当前库存：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+
+        <!-- 用药频次和途径 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <view class="label">用药频次</view>
+            <picker mode="selector" :range="frequencyOptions" :value="frequencyIndex" @change="onFrequencyChange">
+              <view class="picker-input">{{ currentFrequencyLabel }}</view>
+            </picker>
+          </view>
+          
+          <view class="form-item half">
+            <view class="label">给药途径</view>
+            <picker mode="selector" :range="routeOptions" :value="routeIndex" @change="onRouteChange">
+              <view class="picker-input">{{ currentRouteLabel }}</view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 用法说明 -->
+        <view class="form-item">
+          <view class="label">用法说明</view>
+          <input
+            v-model="currentDrug.usage"
+            type="text"
+            placeholder="如：饭后服用，多饮水"
+            class="input-uniform"
+          />
+        </view>
+
+        <!-- 添加到处方按钮 -->
+        <view class="add-prescription-action">
+          <button class="add-prescription-btn" @click="addToPrescription">
+            <text class="btn-icon">➕</text>
+            <text class="btn-text">加入处方</text>
+          </button>
         </view>
       </view>
 
@@ -483,103 +467,135 @@
 
       <!-- 处方（符合国家规定格式） -->
       <view v-if="enablePrescription" class="prescription-section">
-        <!-- 医院信息 -->
-        <view class="prescription-hospital">
-          <text class="hospital-name">北京欢乐谷医务室</text>
+        <!-- 医院信息头部 -->
+        <view class="prescription-hospital-header">
+          <view class="hospital-logo">🏥</view>
+          <view class="hospital-info">
+            <text class="hospital-name">北京欢乐谷医务室</text>
+            <text class="hospital-subtitle">Beijing Happy Valley Medical Office</text>
+          </view>
         </view>
         
-        <!-- 处方头部信息 -->
-        <view class="prescription-header-info">
-          <view class="prescription-title-row">
-            <text class="prescription-title">处 方 笺</text>
+        <!-- 处方标题 -->
+        <view class="prescription-title-section">
+          <text class="prescription-main-title">门诊处方笺</text>
+          <text class="prescription-type-badge">普通处方</text>
+        </view>
+        
+        <!-- 处方编号和日�� -->
+        <view class="prescription-meta-info">
+          <view class="meta-item">
+            <text class="meta-label">处方编号：</text>
+            <text class="meta-value">{{ prescriptionNo }}</text>
           </view>
-          <view class="prescription-no-row">
-            <text class="prescription-no">门诊</text>
-            <text class="prescription-no">处方编号：{{ prescriptionNo }}</text>
+          <view class="meta-item">
+            <text class="meta-label">开具日期：</text>
+            <text class="meta-value">{{ currentDate }}</text>
           </view>
-          <view class="prescription-patient-info">
-            <view class="patient-item">
-              <text class="patient-label">姓名：</text>
-              <text class="patient-value">{{ form.patientName || '___' }}</text>
+        </view>
+        
+        <!-- 患者信息卡片 -->
+        <view class="prescription-patient-card">
+          <view class="patient-info-row">
+            <view class="patient-info-item">
+              <text class="info-label">姓名</text>
+              <text class="info-value">{{ form.name || '___' }}</text>
             </view>
-            <view class="patient-item">
-              <text class="patient-label">性别：</text>
-              <text class="patient-value">{{ form.gender || '___' }}</text>
+            <view class="patient-info-item">
+              <text class="info-label">性别</text>
+              <text class="info-value">{{ form.gender || '___' }}</text>
             </view>
-            <view class="patient-item">
-              <text class="patient-label">年龄：</text>
-              <text class="patient-value">{{ form.age || '___' }}岁</text>
+            <view class="patient-info-item">
+              <text class="info-label">年龄</text>
+              <text class="info-value">{{ form.age || '___' }}岁</text>
+            </view>
+            <view class="patient-info-item">
+              <text class="info-label">身份</text>
+              <text class="info-value">{{ form.identity || '___' }}</text>
             </view>
           </view>
-          <view class="prescription-diagnosis">
+          <view class="patient-diagnosis-row">
             <text class="diagnosis-label">临床诊断：</text>
             <text class="diagnosis-value">{{ form.diagnosis || '___' }}</text>
           </view>
         </view>
         
-        <!-- Rp 标记和药品列表（表格形式） -->
+        <!-- Rp 标记和药品列表 -->
         <view class="prescription-body">
-          <view class="prescription-header-actions">
-            <view class="rp-mark">Rp:</view>
-            <view class="add-prescription-btn" @click="quickAddToPrescription">
-              <text class="btn-icon">+</text>
-              <text class="btn-text">添加处方</text>
-            </view>
+          <view class="prescription-rp-header">
+            <text class="rp-symbol">Rp:</text>
           </view>
           
-          <!-- 药品表格 -->
-          <view class="prescription-table">
-            <!-- 表头 -->
-            <view class="table-header">
-              <view class="col-no">序号</view>
-              <view class="col-name">药品名称</view>
-              <view class="col-spec">规格</view>
-              <view class="col-quantity">数量</view>
-              <view class="col-usage">用法用量</view>
-              <view class="col-action">操作</view>
+          <!-- 药品列表 -->
+          <view class="prescription-drugs-list">
+            <view v-if="prescriptionList.length === 0" class="drugs-empty">
+              <text class="empty-icon">💊</text>
+              <text class="empty-text">暂无处方药品</text>
+              <text class="empty-hint">请在上方选择药品并添加到处方</text>
             </view>
             
-            <!-- 表格内容 -->
-            <view v-if="prescriptionList.length === 0" class="table-empty">
-              <text class="empty-text">暂无处方药品，请点击"添加处方"按钮添加</text>
-            </view>
             <view 
               v-for="(item, index) in prescriptionList" 
               :key="index"
-              class="table-row"
+              class="prescription-drug-item"
             >
-              <view class="col-no">{{ index + 1 }}</view>
-              <view class="col-name">{{ item.drugName }}</view>
-              <view class="col-spec">{{ item.specification }}</view>
-              <view class="col-quantity">{{ item.quantity }}{{ item.unit }}</view>
-              <view class="col-usage">
-                <text>{{ item.dosage }} {{ item.route }} {{ item.frequency }}</text>
-              </view>
-              <view class="col-action">
-                <view class="delete-btn" @click="removeFromPrescription(index)">
-                  <text class="delete-text">删除</text>
+              <!-- 药品名称和规格（合并显示） -->
+              <view class="drug-item-header">
+                <view class="drug-name-spec">
+                  <text class="drug-name">{{ item.drugName }}</text>
+                  <text v-if="item.specification" class="drug-spec">（{{ item.specification }}）</text>
+                  <text class="drug-quantity">{{ item.dosage || item.quantity + item.unit }}</text>
                 </view>
+                <view class="drug-actions">
+                  <text class="action-btn delete" @click="removeFromPrescription(index)">删除</text>
+                </view>
+              </view>
+              
+              <!-- 用法用量（简洁格式） -->
+              <view class="drug-usage-row">
+                <text class="usage-label">用法：</text>
+                <text class="usage-value">{{ item.dosage || '' }} {{ item.route || '' }} {{ item.frequency || '' }}</text>
               </view>
             </view>
           </view>
           
+          <!-- 处方统计 -->
+          <view v-if="prescriptionList.length > 0" class="prescription-summary">
+            <text class="summary-text">共 {{ prescriptionList.length }} 种药品</text>
+          </view>
+          
           <view class="prescription-blank-line">
-            <text class="blank-text">——————————以下空白——————————</text>
+            <text class="blank-text">————————— 以下空白 —————————</text>
           </view>
         </view>
         
-        <!-- 处方底部 -->
-        <view class="prescription-footer">
-          <view class="footer-signature">
-            <text class="footer-label">医师签名：</text>
-            <text class="footer-value">_____________</text>
-            <text class="footer-date">日期：{{ currentDate }}</text>
+        <!-- 处方底部签名区 -->
+        <view class="prescription-footer-section">
+          <view class="footer-row">
+            <view class="footer-item">
+              <text class="footer-label">医师签名：</text>
+              <view class="signature-placeholder">
+                <text class="placeholder-text">（见下方电子签名）</text>
+              </view>
+            </view>
           </view>
         </view>
         
-        <view class="prescription-note">
-          <text class="note-text">注：本处方仅供医务室内部使用</text>
-          <text class="note-text">药品数量应使用最小单位（片、粒、支等），不使用包装单位</text>
+        <!-- 处方说明 -->
+        <view class="prescription-notes">
+          <view class="note-title">📌 处方说明</view>
+          <view class="note-item">
+            <text class="note-bullet">•</text>
+            <text class="note-text">本处方仅供医务室内部使用，请妥善保管</text>
+          </view>
+          <view class="note-item">
+            <text class="note-bullet">•</text>
+            <text class="note-text">药品数量使用最小单位（片、粒、支等）</text>
+          </view>
+          <view class="note-item">
+            <text class="note-bullet">•</text>
+            <text class="note-text">请按医嘱用药，如有不适请及时就诊</text>
+          </view>
         </view>
       </view>
 
@@ -970,9 +986,6 @@ export default {
           '发热＞38.5℃或持续超过3天请复诊'
         ]
       },
-      // 欢乐谷诊断 / 分诊建议展示
-      hvSuggestion: null,
-      hvSuggestionLoading: false,
       hvTriage: null,
       // 结构化疾病模板库：每个疾病下多条主诉，每条主诉有独立的症状/诊断/处置
       // 后续可以扩展 drugs 字段
@@ -1660,14 +1673,26 @@ export default {
       prescriptionNo: '', // 处方编号
       currentDate: '', // 当前日期
       
+      // 当前正在编辑的药品信息
+      currentDrug: {
+        dosage: '',
+        frequency: '',
+        route: '',
+        usage: ''
+      },
+      
+      // 用法用量选择器索引
+      frequencyIndex: 0,
+      routeIndex: 0,
+      
       // 用法用量模板
       dosageTemplates: {
         '口服': ['0.5g', '1g', '10ml', '20ml', '适量'],
         '外用': ['适量', '少量', '薄层涂抹'],
         '含服': ['1片', '适量']
       },
-      routeOptions: ['口服', '外用', '含服', '舌下含服', '涂擦患处'],
-      frequencyOptions: ['每日3次', '每日2次', '每日1次', '每8小时1次', '每12小时1次', '必要时', '睡前', '即刻', '每日3-4次'],
+      routeOptions: ['口服', '外用', '含服', '舌下含服', '涂擦患处', '肌肉注射', '静脉注射'],
+      frequencyOptions: ['即刻', '每日3次', '每日2次', '每日1次', '每8小时1次', '每12小时1次', '必要时', '睡前', '每日3-4次', '隔日1次'],
       
       // 药材搜索相关
       drugSearchText: '',
@@ -1796,6 +1821,16 @@ export default {
       if (length > 50) return 'font-small';
       if (length > 30) return 'font-medium';
       return '';
+    },
+    
+    // 当前选择的用药频次标签
+    currentFrequencyLabel() {
+      return this.frequencyOptions[this.frequencyIndex] || '请选择';
+    },
+    
+    // 当前选择的给药途径标签
+    currentRouteLabel() {
+      return this.routeOptions[this.routeIndex] || '请选择';
     }
   },
 
@@ -1855,7 +1890,85 @@ export default {
     }
   },
 
+  watch: {
+    // 监听主诉字段变化，清空时联动清空所有相关字段
+    'form.chiefComplaint'(newVal, oldVal) {
+      const newComplaint = (newVal || '').trim();
+      const oldComplaint = (oldVal || '').trim();
+      
+      // 从有内容变为空
+      if (oldComplaint && !newComplaint) {
+        // 检查是否有已填写的相关字段
+        const hasRelatedData = 
+          this.form.symptom || 
+          this.form.diagnosis || 
+          this.form.diseaseName || 
+          this.form.treatment || 
+          this.prescriptionList.length > 0;
+        
+        if (hasRelatedData) {
+          // 延迟执行，避免与输入事件冲突
+          this.$nextTick(() => {
+            uni.showModal({
+              title: '清空确认',
+              content: '清空主诉将同时清空症状、诊断、疾病名称、处置和处方等相关信息，是否继续？',
+              confirmText: '确认清空',
+              cancelText: '取消',
+              confirmColor: '#dc2626',
+              success: (res) => {
+                if (res.confirm) {
+                  this.clearAllRelatedFields();
+                } else {
+                  // 恢复主诉内容
+                  this.form.chiefComplaint = oldComplaint;
+                }
+              }
+            });
+          });
+        } else {
+          // 没有相关数据，直接清空
+          this.clearAllRelatedFields();
+        }
+      }
+    }
+  },
+
   methods: {
+    // ✨ 清空所有相关字段（主诉清空时调用）
+    clearAllRelatedFields() {
+      // 1. 清空就诊信息相关字段
+      this.form.symptom = '';           // 症状
+      this.form.diagnosis = '';         // 诊断
+      this.form.diseaseName = '';       // 疾病名称
+      this.form.treatment = '';         // 处置
+      
+      // 2. 清空用药信息
+      this.selectedDrug = null;         // 选中的药材
+      this.form.drugId = '';            // 药材ID
+      this.form.quantity = null;        // 用药数量
+      this.drugSearchText = '';         // 药材搜索文本
+      
+      // 3. 清空处方列表
+      this.prescriptionList = [];       // 处方列表
+      
+      // 4. 清空辅助数据
+      this.standardizedSymptoms = [];   // 标准化症状
+      this.hvTriage = null;             // 分诊建议
+      
+      // 5. 重置模式
+      this.complaintSelectedMode = false;
+      
+      // 6. 关闭所有下拉列表
+      this.showSymptomList = false;
+      this.showDiagnosisList = false;
+      this.showDiseaseList = false;
+      this.showTreatmentList = false;
+      this.showDrugList = false;
+      this.showComplaintList = false;
+      
+      console.log('[clinic/add] 已清空主诉及所有相关字段');
+    },
+    
     // 初始化处方信息
     initPrescription() {
       // 生成处方编号：格式 年份-流水号（如2025-0001）
@@ -1870,6 +1983,18 @@ export default {
       
       this.prescriptionNo = `${year}-${serialNo}`;
       this.currentDate = `${year}年${month}月${day}日`;
+    },
+    
+    // 用药频次选择器变化
+    onFrequencyChange(e) {
+      this.frequencyIndex = e.detail.value;
+      this.currentDrug.frequency = this.frequencyOptions[this.frequencyIndex];
+    },
+    
+    // 给药途径选择器变化
+    onRouteChange(e) {
+      this.routeIndex = e.detail.value;
+      this.currentDrug.route = this.routeOptions[this.routeIndex];
     },
     
     // 处方开关切换
@@ -1947,6 +2072,16 @@ export default {
           if (res.confirm && res.content) {
             // 解析用法用量
             const usageText = res.content.trim();
+            
+            // 过滤掉格式说明文本（如果用户没有修改直接确认）
+            if (usageText.includes('格式') || usageText.includes('示例') || usageText.includes('剂量：') || usageText.includes('途径：') || usageText.includes('频次：')) {
+              uni.showToast({
+                title: '请填写实际用法用量',
+                icon: 'none'
+              });
+              return;
+            }
+            
             const parts = usageText.split(/\s+/); // 用空格分割
             
             // 添加到处方列表
@@ -2637,8 +2772,9 @@ export default {
       }
     },
 
-    // 选择疾病：自动填充第一条匹配的主诉/诊断/处置
-    selectDisease(disease) {
+    // 选择疾病：自动填充主诉/诊断/处置（默认强制填充，保证反向联动）
+    // options.forceFill=true 时，无论当前字段是否已有内容，都用模板覆盖
+    selectDisease(disease, options = { forceFill: true }) {
       // 清除失焦隐藏计时器
       if (this.diseaseBlurTimer) {
         clearTimeout(this.diseaseBlurTimer);
@@ -2651,13 +2787,22 @@ export default {
       // 查找该疾病的第一条模板记录（使用最佳匹配）
       const record = this.templateIndex.find(r => r.disease === disease);
       if (record) {
-        // 智能填充：只填充空白字段，保留用户已输入的内容
+        const force = options?.forceFill === true;
+        // 智能填充：默认强制覆盖，满足“先选疾病反向自动填充”需求
         this.smartFillFields(record, {
-          preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
-          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
-          preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
-          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
+          preserveComplaint: !force && !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+          preserveSymptom: !force && !!(this.form.symptom && this.form.symptom.trim()),
+          preserveDiagnosis: !force && !!(this.form.diagnosis && this.form.diagnosis.trim()),
+          preserveTreatment: !force && !!(this.form.treatment && this.form.treatment.trim())
         });
+        
+        // 如果模板记录里缺少部分字段，兜底再用疾病模板填充缺失项
+        const needComplaint = !this.form.chiefComplaint;
+        const needDiagnosis = !this.form.diagnosis;
+        const needTreatment = !this.form.treatment;
+        if (needComplaint || needDiagnosis || needTreatment) {
+          this.autoFillByDisease(disease);
+        }
         
         // 确保疾病名称使用标准名称
         if (this.diseaseOptions.includes(disease)) {
@@ -2766,14 +2911,6 @@ export default {
       }, 200);
     },
     selectDiagnosis(text) {
-      // 优先检查是否是AI建议的诊断
-      if (this.hvSuggestion && this.hvSuggestion.name === text) {
-        // 使用AI建议的完整信息
-        this.applyHvSuggestion();
-        this.showDiagnosisList = false;
-        return;
-      }
-      
       // 查找最匹配的模板记录（考虑当前已输入的字段）
       const bestRecord = this.findBestMatchingRecord(
         text,  // 选择的诊断
@@ -2912,15 +3049,12 @@ export default {
     async fetchHvSuggestion() {
       const text = (this.form.chiefComplaint || '').trim();
       if (!text) {
-        this.hvSuggestion = null;
         this.hvTriage = null;
         this.standardizedSymptoms = [];
         // 主诉为空时，清空症状以保持一致
         this.form.symptom = '';
         return;
       }
-
-      this.hvSuggestionLoading = true;
       try {
         const res = await wx.cloud.callFunction({
           name: 'clinicRecords',
@@ -2957,60 +3091,12 @@ export default {
           }
         }
 
-        if (payload && payload.hv && payload.hv.best) {
-          const best = payload.hv.best;
-          this.hvSuggestion = {
-            id: best.id,
-            name: best.name,
-            urgent: best.urgent,
-            medications: best.medications || [],
-            typicalScene: best.typicalScene || '',
-            matchScore: best.matchScore || 0,
-            treatment: best.treatment || ''
-          };
-          this.hvTriage = payload.triage || null;
-        } else {
-          console.log('[clinic/add] 无匹配的欢乐谷诊断建议，payload:', payload);
-          this.hvSuggestion = null;
-          this.hvTriage = null;
-        }
+        this.hvTriage = payload.triage || null;
       } catch (e) {
-        console.error('获取系统诊断建议失败:', e);
-        uni.showToast({
-          title: '系统诊断建议获取失败',
-          icon: 'none',
-          duration: 2000
-        });
+        console.error('获取标准化症状失败:', e);
         this.hvTriage = null;
         this.standardizedSymptoms = [];
-      } finally {
-        this.hvSuggestionLoading = false;
       }
-    },
-    applyHvSuggestion() {
-      if (!this.hvSuggestion || !this.hvSuggestion.name) return;
-
-      // 每次点击一键填入时，直接用当前系统建议覆盖相关字段
-      // 1）疾病名称与诊断：使用当前建议诊断名
-      this.form.diseaseName = this.hvSuggestion.name;
-      this.form.diagnosis = this.hvSuggestion.name;
-
-      // 2）症状：优先使用标准化症状，否则使用主诉
-      if (this.standardizedSymptoms.length > 0) {
-        this.form.symptom = this.standardizedSymptoms.map(s => s.name).join('；');
-      } else {
-      this.form.symptom = (this.form.chiefComplaint || '').trim();
-      }
-
-      // 3）处置：直接采用本次建议处置，避免保留旧主诉下的处置
-      const suggestTreatment = (this.hvSuggestion.treatment || '').trim();
-      if (suggestTreatment) {
-        this.form.treatment = suggestTreatment;
-      }
-
-      // 回填完成后收起系统建议卡片，保持界面简洁
-      this.hvSuggestion = null;
-      this.hvTriage = null;
     },
     // 症状输入框获得焦点
     onSymptomFocus() {
@@ -3278,35 +3364,17 @@ export default {
         }
       }
     },
-    // 打开诊断参考指南（增强版：统一显示AI建议和模板库结果）
+    // 打开诊断参考指南
     openDiagnosisGuide() {
-      // 收集所有可用的诊断选项
-      const allDiagnoses = [];
-      
-      // 1. 优先添加系统AI建议的诊断（如果有）
-      if (this.hvSuggestion && this.hvSuggestion.name) {
-        // AI建议的诊断作为第一个选项，标记为高优先级
-        if (!allDiagnoses.includes(this.hvSuggestion.name)) {
-          allDiagnoses.push(this.hvSuggestion.name);
-        }
-      }
-      
-      // 2. 添加模板库匹配的诊断
+      // 添加模板库匹配的诊断
       const result = this.performGlobalSearch(
         this.form.diseaseName,
         this.form.chiefComplaint,
         this.form.diagnosis
       );
       
-      // 合并模板库的诊断，避免重复
-      result.diagnoses.forEach(diag => {
-        if (!allDiagnoses.includes(diag)) {
-          allDiagnoses.push(diag);
-        }
-      });
-      
-      // 3. 更新过滤列表
-      this.filteredDiagnosis = allDiagnoses;
+      // 更新过滤列表
+      this.filteredDiagnosis = result.diagnoses;
       
       // 4. 显示诊断下拉列表
       if (this.filteredDiagnosis.length > 0) {
@@ -4775,32 +4843,6 @@ export default {
   width: 100%;
 }
 
-// 内联诊断参考按钮（在疾病名称同一行）
-.diagnosis-reference-btn-inline {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-  padding: 20rpx 24rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  border-radius: 12rpx;
-  color: #ffffff;
-  font-size: 24rpx;
-  white-space: nowrap;
-  height: 80rpx;
-  box-sizing: border-box;
-  transition: all 0.3s;
-  box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
-  
-  .iconfont {
-    font-size: 28rpx;
-  }
-  
-  &:active {
-    transform: scale(0.95);
-    box-shadow: 0 2rpx 8rpx rgba(24, 144, 255, 0.2);
-  }
-}
 
 .disease-input-wrapper {
   position: relative;
@@ -4842,47 +4884,6 @@ export default {
       
       &.hidden {
         display: none;
-      }
-      
-      &.ai-suggestion-item {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border-left: 4rpx solid #3b82f6;
-        border-bottom: 1rpx solid #bae6fd;
-        
-        .diagnosis-content {
-          display: flex;
-          align-items: center;
-          flex: 1;
-          gap: 12rpx;
-        }
-        
-        .diagnosis-text {
-          font-size: 28rpx;
-          color: #1e293b;
-          font-weight: 600;
-          flex: 1;
-        }
-        
-        .diagnosis-badge {
-          padding: 4rpx 12rpx;
-          border-radius: 12rpx;
-          font-size: 20rpx;
-          font-weight: 500;
-          white-space: nowrap;
-        }
-        
-        .ai-badge {
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-          color: #ffffff;
-          box-shadow: 0 2rpx 4rpx rgba(37, 99, 235, 0.2);
-        }
-        
-        .diagnosis-hint {
-          font-size: 22rpx;
-          color: #64748b;
-          margin-top: 8rpx;
-          line-height: 1.4;
-        }
       }
       font-size: 26rpx;
       color: #333;
@@ -5203,10 +5204,6 @@ export default {
     display: flex;
     align-items: center;
     gap: 8rpx;
-    
-    .warning-icon {
-      font-size: 28rpx;
-    }
     
     .warning-text {
       font-size: 24rpx;
@@ -5624,10 +5621,6 @@ export default {
   align-items: center;
   gap: 8rpx;
   
-  .warning-icon {
-    font-size: 28rpx;
-  }
-  
   .warning-text {
     font-size: 24rpx;
     color: #dc2626;
@@ -5926,26 +5919,6 @@ export default {
   border: 1rpx solid rgba(148, 163, 184, 0.35);
 }
 
-.modal-icon-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8rpx;
-}
-
-.modal-icon-circle {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 40%, #e0f2fe 100%);
-  color: #ffffff;
-  font-size: 32rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 18rpx rgba(37, 99, 235, 0.45);
-  border: 3rpx solid rgba(255,255,255,0.9);
-}
 
 .modal-title {
   font-size: 32rpx;
@@ -6015,136 +5988,544 @@ export default {
   font-size: 28rpx;
 }
 
-/* 系统诊断建议卡片样式 */
-.hv-suggestion-card {
-  margin: 20rpx 24rpx 24rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 16rpx;
-  overflow: hidden;
-  /* 立体阴影效果 */
-  box-shadow: 
-    0 2rpx 0 rgba(255, 255, 255, 0.9) inset,
-    0 -2rpx 0 rgba(15, 23, 42, 0.08) inset,
-    0 8rpx 24rpx rgba(15, 23, 42, 0.15),
-    0 4rpx 12rpx rgba(15, 23, 42, 0.1);
-  border: 1rpx solid rgba(148, 163, 184, 0.2);
-  position: relative;
-}
+/* ==================== 新版处方样式（符合医疗规范） ==================== */
 
-.hv-suggestion-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4rpx;
-  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-  opacity: 0.6;
-}
-
-.hv-suggestion-header {
+// 医院信息头部
+.prescription-hospital-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16rpx 20rpx 12rpx;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  border-bottom: 1rpx solid rgba(148, 163, 184, 0.15);
+  justify-content: center;
+  padding: 24rpx 20rpx;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-bottom: 3rpx solid #000;
+  gap: 16rpx;
+  
+  .hospital-logo {
+    font-size: 48rpx;
+  }
+  
+  .hospital-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .hospital-name {
+      font-size: 36rpx;
+      font-weight: bold;
+      color: #000;
+      letter-spacing: 2rpx;
+      margin-bottom: 4rpx;
+    }
+    
+    .hospital-subtitle {
+      font-size: 20rpx;
+      color: #666;
+      letter-spacing: 1rpx;
+    }
+  }
 }
 
-.hv-suggestion-title {
-  font-size: 22rpx;
-  color: #475569;
-  font-weight: 600;
-  flex: 1;
-}
-
-.hv-tag {
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
-  font-size: 20rpx;
-  font-weight: 500;
-  white-space: nowrap;
-  margin-left: 12rpx;
-}
-
-.hv-tag-danger {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  color: #dc2626;
-  border: 1rpx solid rgba(220, 38, 38, 0.2);
-  box-shadow: 0 2rpx 4rpx rgba(220, 38, 38, 0.1);
-}
-
-.hv-tag-normal {
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-  color: #0369a1;
-  border: 1rpx solid rgba(3, 105, 161, 0.2);
-  box-shadow: 0 2rpx 4rpx rgba(3, 105, 161, 0.1);
-}
-
-.hv-suggestion-body {
-  padding: 16rpx 20rpx;
-}
-
-.hv-row {
+// 处方标题区域
+.prescription-title-section {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 10rpx;
-  line-height: 1.6;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background: #fff;
+  border-bottom: 2rpx solid #000;
+  gap: 16rpx;
   
-  &:last-child {
-    margin-bottom: 0;
+  .prescription-main-title {
+    font-size: 40rpx;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 8rpx;
+  }
+  
+  .prescription-type-badge {
+    padding: 6rpx 16rpx;
+    background: #fef3c7;
+    border: 2rpx solid #f59e0b;
+    border-radius: 6rpx;
+    font-size: 22rpx;
+    color: #92400e;
+    font-weight: 600;
   }
 }
 
-.hv-label {
-  font-size: 22rpx;
-  color: #64748b;
-  font-weight: 500;
-  min-width: 120rpx;
-  flex-shrink: 0;
+// 处方元信息（编号、日期）
+.prescription-meta-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 24rpx;
+  background: #fafafa;
+  border-bottom: 2rpx solid #000;
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    
+    .meta-label {
+      font-size: 24rpx;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .meta-value {
+      font-size: 24rpx;
+      color: #000;
+      font-weight: 600;
+      margin-left: 4rpx;
+    }
+  }
 }
 
-.hv-value {
-  font-size: 22rpx;
-  color: #1e293b;
-  font-weight: 500;
-  flex: 1;
-  word-wrap: break-word;
-  word-break: break-all;
-  line-height: 1.6;
+// 患者信息卡片
+.prescription-patient-card {
+  padding: 20rpx 24rpx;
+  background: #fff;
+  border-bottom: 2rpx solid #000;
+  
+  .patient-info-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20rpx;
+    margin-bottom: 12rpx;
+    
+    .patient-info-item {
+      display: flex;
+      align-items: center;
+      
+      .info-label {
+        font-size: 26rpx;
+        color: #666;
+        margin-right: 8rpx;
+      }
+      
+      .info-value {
+        font-size: 26rpx;
+        color: #000;
+        font-weight: 600;
+        min-width: 60rpx;
+      }
+    }
+  }
+  
+  .patient-diagnosis-row {
+    display: flex;
+    align-items: flex-start;
+    
+    .diagnosis-label {
+      font-size: 26rpx;
+      color: #666;
+      white-space: nowrap;
+      margin-right: 8rpx;
+    }
+    
+    .diagnosis-value {
+      font-size: 26rpx;
+      color: #000;
+      font-weight: 600;
+      flex: 1;
+      line-height: 1.5;
+    }
+  }
 }
 
-.hv-scene {
-  color: #7c3aed;
-  font-weight: 600;
+// 处方主体区域
+.prescription-body {
+  padding: 24rpx;
+  background: #fff;
+  min-height: 300rpx;
+  
+  .prescription-drugs-header {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+    margin-bottom: 20rpx;
+    padding-bottom: 12rpx;
+    border-bottom: 2rpx dashed #ccc;
+    
+    .rp-symbol {
+      font-size: 40rpx;
+      font-weight: bold;
+      color: #000;
+      font-family: 'Times New Roman', serif;
+    }
+    
+    .drugs-title {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+  
+  .prescription-drugs-list {
+    .drugs-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60rpx 20rpx;
+      
+      .empty-icon {
+        font-size: 64rpx;
+        margin-bottom: 16rpx;
+      }
+      
+      .empty-text {
+        font-size: 28rpx;
+        color: #999;
+        margin-bottom: 8rpx;
+      }
+      
+      .empty-hint {
+        font-size: 24rpx;
+        color: #bbb;
+        text-align: center;
+        line-height: 1.5;
+      }
+    }
+    
+    .prescription-drug-item {
+      padding: 16rpx 0;
+      border-bottom: 1rpx solid #e5e5e5;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .drug-item-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12rpx;
+        margin-bottom: 8rpx;
+        
+        .drug-number {
+          font-size: 26rpx;
+          font-weight: 600;
+          color: #666;
+          min-width: 40rpx;
+        }
+        
+        .drug-main-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 4rpx;
+          
+          .drug-name {
+            font-size: 28rpx;
+            font-weight: 600;
+            color: #000;
+            line-height: 1.4;
+          }
+          
+          .drug-spec {
+            font-size: 24rpx;
+            color: #666;
+          }
+        }
+        
+        .drug-quantity {
+          display: flex;
+          align-items: baseline;
+          gap: 4rpx;
+          white-space: nowrap;
+          
+          .quantity-value {
+            font-size: 28rpx;
+            font-weight: bold;
+            color: #000;
+          }
+          
+          .quantity-unit {
+            font-size: 24rpx;
+            color: #666;
+          }
+        }
+        
+        .drug-actions {
+          display: flex;
+          align-items: center;
+          
+          .action-btn {
+            padding: 6rpx 12rpx;
+            border-radius: 6rpx;
+            font-size: 22rpx;
+            font-weight: 500;
+            transition: all 0.2s;
+            
+            &.delete {
+              color: #ef4444;
+              background: #fef2f2;
+              border: 1rpx solid #fca5a5;
+              
+              &:active {
+                background: #fee2e2;
+                transform: scale(0.95);
+              }
+            }
+          }
+        }
+      }
+      
+      .drug-item-usage {
+        display: flex;
+        align-items: flex-start;
+        padding-left: 52rpx;
+        
+        .usage-label {
+          font-size: 24rpx;
+          color: #666;
+          white-space: nowrap;
+          margin-right: 8rpx;
+        }
+        
+        .usage-text {
+          font-size: 24rpx;
+          color: #333;
+          line-height: 1.5;
+          flex: 1;
+        }
+      }
+    }
+  }
+  
+  .prescription-summary {
+    margin-top: 20rpx;
+    padding-top: 16rpx;
+    border-top: 2rpx dashed #ccc;
+    text-align: right;
+    
+    .summary-text {
+      font-size: 26rpx;
+      color: #666;
+      font-weight: 500;
+    }
+  }
 }
 
-.hv-suggestion-footer {
-  padding: 12rpx 20rpx 16rpx;
-  border-top: 1rpx solid rgba(148, 163, 184, 0.1);
-  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+// 处方底部签名区
+.prescription-footer-section {
+  padding: 24rpx;
+  background: #fafafa;
+  border-top: 2rpx solid #000;
+  
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .footer-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      
+      &:not(:last-child) {
+        margin-right: 20rpx;
+      }
+      
+      .footer-label {
+        font-size: 24rpx;
+        color: #333;
+        white-space: nowrap;
+        margin-right: 8rpx;
+      }
+      
+      .signature-placeholder {
+        flex: 1;
+        border-bottom: 2rpx solid #000;
+        padding-bottom: 4rpx;
+        text-align: center;
+        
+        .placeholder-text {
+          font-size: 22rpx;
+          color: #999;
+        }
+      }
+    }
+  }
 }
 
-.hv-apply-btn {
-  width: 100%;
-  padding: 14rpx 0;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: #ffffff;
-  border: none;
+// 处方说明
+.prescription-notes {
+  padding: 20rpx 24rpx;
+  background: #fffbeb;
+  border-top: 2rpx dashed #f59e0b;
+  
+  .note-title {
+    font-size: 26rpx;
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 12rpx;
+  }
+  
+  .note-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .note-bullet {
+      font-size: 24rpx;
+      color: #f59e0b;
+      margin-right: 8rpx;
+      line-height: 1.5;
+    }
+    
+    .note-text {
+      font-size: 24rpx;
+      color: #78350f;
+      line-height: 1.5;
+      flex: 1;
+    }
+  }
+}
+
+// 用药使用区域样式
+.drug-usage-section {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background: #f9fafb;
   border-radius: 12rpx;
-  font-size: 24rpx;
-  font-weight: 600;
-  box-shadow: 
-    0 2rpx 0 rgba(255, 255, 255, 0.2) inset,
-    0 4rpx 8rpx rgba(37, 99, 235, 0.3),
-    0 2rpx 4rpx rgba(37, 99, 235, 0.2);
-  transition: all 0.2s;
+  border: 2rpx solid #e5e7eb;
+}
+
+.quantity-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   
-  &:active {
-    transform: translateY(1rpx);
-    box-shadow: 
-      0 1rpx 0 rgba(255, 255, 255, 0.2) inset,
-      0 2rpx 4rpx rgba(37, 99, 235, 0.3);
+  input {
+    flex: 1;
+  }
+  
+  .unit-text {
+    font-size: 26rpx;
+    color: #666;
+    font-weight: 600;
+    white-space: nowrap;
   }
 }
+
+.dosage-input-group {
+  display: flex;
+  align-items: center;
+  
+  input {
+    flex: 1;
+  }
+}
+
+.picker-input {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: #fafafa;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.add-prescription-action {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: center;
+  
+  .add-prescription-btn {
+    padding: 16rpx 40rpx;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+    transition: all 0.3s;
+    
+    &:active {
+      transform: scale(0.95);
+      box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.2);
+    }
+    
+    .btn-icon {
+      font-size: 32rpx;
+      color: #fff;
+      font-weight: bold;
+    }
+    
+    .btn-text {
+      font-size: 28rpx;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+// 药品快速信息展示
+.drug-quick-info {
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 12rpx;
+  border: 2rpx solid #86efac;
+  
+  .drug-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16rpx;
+    
+    .drug-name-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4rpx;
+      
+      .drug-name-text {
+        font-size: 28rpx;
+        font-weight: 600;
+        color: #065f46;
+      }
+      
+      .drug-spec-text {
+        font-size: 24rpx;
+        color: #047857;
+      }
+    }
+    
+    .drug-stock-section {
+      display: flex;
+      align-items: baseline;
+      white-space: nowrap;
+      
+      .stock-label {
+        font-size: 24rpx;
+        color: #047857;
+        margin-right: 4rpx;
+      }
+      
+      .stock-value {
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #10b981;
+        
+        &.stock-warning {
+          color: #dc2626;
+        }
+      }
+    }
+  }
+}
+
 </style>

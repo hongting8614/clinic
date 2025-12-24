@@ -20,8 +20,8 @@
 					<text class="value">{{ operator }}</text>
 				</view>
 			</view>
-			<view class="info-row">
-				<view class="info-item full">
+		<view class="info-row">
+			<view class="info-item full">
 					<text class="label">备注</text>
 					<input 
 						class="input-value" 
@@ -29,8 +29,8 @@
 						placeholder="请输入备注信息（选填）"
 						placeholder-class="placeholder"
 					/>
-				</view>
 			</view>
+		</view>
 		</view>
 		
 		<!-- 智能输入框 -->
@@ -104,7 +104,7 @@
 					<view class="inline-form-title">📝 新建药材档案</view>
 					
 				<!-- 药材名称 -->
-				<view class="inline-form-item">
+					<view class="inline-form-item">
 					<text class="inline-label">药材名称 <text class="required">*</text></text>
 					<view class="input-with-voice">
 						<input 
@@ -117,18 +117,18 @@
 							<text class="voice-icon">🎤</text>
 						</view>
 					</view>
-				</view>
+					</view>
 					
 					<!-- 规格 -->
 					<view class="inline-form-item">
 						<text class="inline-label">规格 <text class="required">*</text></text>
 						<view class="input-with-voice">
-							<input 
+						<input 
 								class="inline-input voice-input" 
-								v-model="newDrug.spec" 
-								placeholder="如：0.25g×24粒/盒"
-								placeholder-class="placeholder"
-							/>
+							v-model="newDrug.spec" 
+							placeholder="如：0.25g×24粒/盒"
+							placeholder-class="placeholder"
+						/>
 							<view class="voice-btn" @tap="startVoiceInput('spec')">
 								<text class="voice-icon">🎤</text>
 							</view>
@@ -352,21 +352,21 @@ export default {
 	
 	data() {
 		return {
-		// 基本信息
-		recordNo: '',
-		currentDate: '',
-		operator: '',
+			// 基本信息
+			recordNo: '',
+			currentDate: '',
+			operator: '',
 		remark: '',
-		drugList: [],
-		operatorSign: '',
-		
+			drugList: [],
+			operatorSign: '',
+			
 		// 药材搜索相关
-		searchKeyword: '',
-		searchFocused: false,
-		showSearchResult: false,
-		searchResults: [],
-		searchTimer: null,
-		isSearchingAPI: false,
+			searchKeyword: '',
+			searchFocused: false,
+			showSearchResult: false,
+			searchResults: [],
+			searchTimer: null,
+			isSearchingAPI: false,
 			
 			// 新建药材（内联表单）
 			showCreateForm: false,
@@ -503,8 +503,8 @@ export default {
 				}))
 				
 				// 显示搜索结果，隐藏创建表单
-				this.showSearchResult = true
-				this.showCreateForm = false
+					this.showSearchResult = true
+					this.showCreateForm = false
 				
 				// 显示数据来源提示
 				const sourceText = {
@@ -518,19 +518,19 @@ export default {
 					duration: 1500
 				})
 				
-			} else {
+				} else {
 				// 未找到，提示手动创建
 				this.showSearchResult = false
+					this.activateCreateFormManual(keyword)
+				}
+				
+			} catch (err) {
+				console.error('搜索失败:', err)
+				this.isSearchingAPI = false
+				// 出错也激活手动创建
 				this.activateCreateFormManual(keyword)
 			}
-			
-		} catch (err) {
-			console.error('搜索失败:', err)
-			this.isSearchingAPI = false
-			// 出错也激活手动创建
-			this.activateCreateFormManual(keyword)
-		}
-	},
+		},
 		
 		// 激活创建表单（API数据）⭐
 		activateCreateFormWithAPI(apiData) {
@@ -697,30 +697,30 @@ export default {
 				const currentScrollTop = res.scrollTop || 0
 				
 				// 立即清空搜索和隐藏结果
-				this.searchKeyword = ''
-				this.searchResults = []
-				this.showSearchResult = false
-				this.showCreateForm = false
-				this.isSearchingAPI = false
-				
+		this.searchKeyword = ''
+		this.searchResults = []
+		this.showSearchResult = false
+		this.showCreateForm = false
+		this.isSearchingAPI = false
+		
 				// 使用nextTick确保DOM更新后再添加药材
-				this.$nextTick(() => {
+		this.$nextTick(() => {
 					// 添加药材到列表顶部
-					this.drugList.unshift({
-						drugId: drug._id,
-						drugName: drug.name,
-						specification: drug.spec || drug.specification,
-						unit: drug.packUnit || drug.unit || '盒',
-						manufacturer: drug.manufacturer || '',
-						batch: '',
-						productionDate: '',
-						expireDate: '',
-						daysToExpiry: null,
-						quantity: '',
-						price: '',
-						amount: 0,
-						hasError: false
-					})
+			this.drugList.unshift({
+				drugId: drug._id,
+				drugName: drug.name,
+				specification: drug.spec || drug.specification,
+				unit: drug.packUnit || drug.unit || '盒',
+				manufacturer: drug.manufacturer || '',
+				batch: '',
+				productionDate: '',
+				expireDate: '',
+				daysToExpiry: null,
+				quantity: '',
+				price: '',
+				amount: 0,
+				hasError: false
+			})
 					
 					// 立即补偿滚动位置（新增药材卡片高度约450rpx）
 					this.$nextTick(() => {
@@ -728,18 +728,18 @@ export default {
 							scrollTop: currentScrollTop + uni.upx2px(450),
 							duration: 0  // 无动画，瞬间完成
 						})
-					})
-					
-					// 用户反馈
-					uni.showToast({
+			})
+			
+			// 用户反馈
+			uni.showToast({
 						title: '已添加到列表',
-						icon: 'success',
+				icon: 'success',
 						duration: 1500
-					})
-					
-					// 振动反馈
-					wx.vibrateShort({ type: 'light' })
-				})
+			})
+			
+			// 振动反馈
+			wx.vibrateShort({ type: 'light' })
+		})
 			}).exec()
 		},
 		
@@ -984,17 +984,17 @@ export default {
 				uni.hideLoading()
 				console.error('查询失败:', err)
 				
-				uni.showModal({
+					uni.showModal({
 					title: '查询失败',
 					content: '条形码查询失败，是否手动新建药材？',
-					confirmText: '新建',
-					cancelText: '取消',
-					success: (modalRes) => {
-						if (modalRes.confirm) {
-							this.newDrug.barcode = barcode
-							this.showCreateDrug = true
+						confirmText: '新建',
+						cancelText: '取消',
+						success: (modalRes) => {
+							if (modalRes.confirm) {
+								this.newDrug.barcode = barcode
+								this.showCreateDrug = true
+							}
 						}
-					}
 				})
 			}
 		},
@@ -1329,14 +1329,14 @@ export default {
 			try {
 				const userInfo = uni.getStorageSync('userInfo')
 				
-			const result = await wx.cloud.callFunction({
-				name: 'inRecords',
-				data: {
-					action: 'create',
+				const result = await wx.cloud.callFunction({
+					name: 'inRecords',
 					data: {
-						recordNo: this.recordNo,
+						action: 'create',
+						data: {
+							recordNo: this.recordNo,
 						remark: this.remark,
-						items: this.drugList.map(item => ({
+							items: this.drugList.map(item => ({
 								drugId: item.drugId,
 								drugName: item.drugName,
 								specification: item.specification,
@@ -1582,9 +1582,9 @@ export default {
 	transform: translateY(-10rpx);
 	
 	&.show {
-		max-height: 600rpx;
+	max-height: 600rpx;
 		opacity: 1;
-		overflow-y: auto;
+	overflow-y: auto;
 		transform: translateY(0);
 	}
 	

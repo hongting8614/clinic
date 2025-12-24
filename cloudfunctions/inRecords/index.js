@@ -26,7 +26,7 @@ class UnitConverter {
       .replace(/\s+/g, ' ')
     
     // 标准格式: 0.25g×24粒/盒
-    let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+    let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
     if (match) {
       return {
         dosage: match[1] ? parseFloat(match[1]) : null,
@@ -39,8 +39,8 @@ class UnitConverter {
       }
     }
     
-    // 简化格式: 24粒/盒
-    match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+    // 简化格式: 24粒/盒 或 10粒/板
+    match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
     if (match) {
       return {
         dosage: match[1] ? parseFloat(match[1]) : null,

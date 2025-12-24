@@ -379,6 +379,91 @@ export default {
 			}
 		},
 		
+		// FIFO自动分配批次 ⭐ 新增
+		async autoAllocateBatch(index) {
+			const item = this.drugList[index]
+			
+			if (!item) return
+			
+			// 如果数量为空或无效，清空分配结果
+			if (!item.quantity || item.quantity <= 0) {
+				this.$set(item, 'batchAllocation', [])
+				this.$set(item, 'batchCount', 0)
+				this.$set(item, 'hasNearExpiry', false)
+				return
+			}
+			
+			// 检查drugId
+			if (!item.drugId) {
+				uni.showToast({
+					title: '药材ID缺失，无法分配批次',
+					icon: 'none'
+				})
+				return
+			}
+			
+			uni.showLoading({ title: '分配批次中...' })
+			
+			try {
+				const result = await wx.cloud.callFunction({
+					name: 'stockManage',
+					data: {
+						action: 'allocateBatchesFIFO',
+						data: {
+							drugId: item.drugId,
+							requiredQuantity: item.quantity,
+							location: 'drug_storage'
+						}
+					}
+				})
+				
+				console.log('FIFO分配结果:', result.result)
+				
+				if (result.result.success) {
+					const { allocation, batchCount, hasNearExpiry } = result.result.data
+					
+					// 保存分配结果
+					this.$set(item, 'batchAllocation', allocation)
+					this.$set(item, 'batchCount', batchCount)
+					this.$set(item, 'hasNearExpiry', hasNearExpiry)
+					
+					// 近效期提示
+					if (hasNearExpiry) {
+						uni.showModal({
+							title: '近效期提示',
+							content: `${item.drugName} 包含近效期批次，是否继续？`,
+							success: (res) => {
+								if (!res.confirm) {
+									item.quantity = ''
+									this.$set(item, 'batchAllocation', [])
+									this.$set(item, 'batchCount', 0)
+									this.$set(item, 'hasNearExpiry', false)
+								}
+							}
+						})
+					} else {
+						uni.showToast({
+							title: `已分配 ${batchCount} 个批次`,
+							icon: 'success',
+							duration: 1500
+						})
+					}
+				} else {
+					throw new Error(result.result.message)
+				}
+			} catch (err) {
+				console.error('批次分配失败:', err)
+				uni.showToast({
+					title: err.message || '分配失败',
+					icon: 'none',
+					duration: 2000
+				})
+				this.$set(item, 'batchAllocation', [])
+			} finally {
+				uni.hideLoading()
+			}
+		},
+		
 		// 保存草稿
 		async saveDraft() {
 			if (this.drugList.length === 0) {
@@ -1048,6 +1133,147 @@ export default {
 		color: #ffffff;
 		border: none;
 		box-shadow: 0 6rpx 16rpx rgba(0, 160, 255, 0.25);
+	}
+}
+
+// FIFO批次分配结果样式 ⭐ 新增
+.batch-allocation {
+	margin-top: 20rpx;
+	background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+	border-radius: 12rpx;
+	padding: 20rpx;
+	border-left: 4rpx solid #0EA5E9;
+}
+
+.allocation-title {
+	display: flex;
+	align-items: center;
+	margin-bottom: 15rpx;
+	padding-bottom: 12rpx;
+	border-bottom: 1rpx solid #BAE6FD;
+	
+	.title-icon {
+		font-size: 28rpx;
+		margin-right: 8rpx;
+	}
+	
+	.title-text {
+		font-size: 26rpx;
+		font-weight: bold;
+		color: #0369A1;
+		flex: 1;
+	}
+	
+	.batch-count {
+		font-size: 22rpx;
+		color: #0284C7;
+		background-color: #FFFFFF;
+		padding: 4rpx 12rpx;
+		border-radius: 20rpx;
+	}
+}
+
+.allocation-item {
+	background-color: #FFFFFF;
+	border-radius: 10rpx;
+	padding: 15rpx;
+	margin-bottom: 12rpx;
+	border: 1rpx solid #E0F2FE;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+	
+	&.near-expiry {
+		background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+		border-color: #FED7AA;
+	}
+}
+
+.alloc-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10rpx;
+	padding-bottom: 8rpx;
+	border-bottom: 1rpx dashed #E5E7EB;
+}
+
+.alloc-batch-label {
+	font-size: 24rpx;
+	font-weight: bold;
+	color: #0369A1;
+}
+
+.expiry-badge {
+	font-size: 20rpx;
+	color: #EA580C;
+	background-color: #FFF7ED;
+	padding: 4rpx 10rpx;
+	border-radius: 12rpx;
+	border: 1rpx solid #FDBA74;
+}
+
+.alloc-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 6rpx;
+	font-size: 24rpx;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.alloc-label {
+	color: #6B7280;
+	min-width: 100rpx;
+}
+
+.alloc-value {
+	color: #111827;
+	font-weight: 500;
+	flex: 1;
+	
+	&.text-warning {
+		color: #EA580C;
+		font-weight: bold;
+	}
+}
+
+.alloc-stock {
+	font-size: 22rpx;
+	color: #9CA3AF;
+	margin-left: 8rpx;
+}
+
+.days-badge {
+	font-size: 20rpx;
+	color: #DC2626;
+	background-color: #FEE2E2;
+	padding: 2rpx 8rpx;
+	border-radius: 10rpx;
+	margin-left: 8rpx;
+}
+
+.near-expiry-tip {
+	display: flex;
+	align-items: center;
+	background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+	padding: 12rpx 16rpx;
+	border-radius: 8rpx;
+	margin-top: 12rpx;
+	border-left: 3rpx solid #F59E0B;
+	
+	.tip-icon {
+		font-size: 24rpx;
+		margin-right: 8rpx;
+	}
+	
+	.tip-text {
+		font-size: 22rpx;
+		color: #92400E;
+		flex: 1;
 	}
 }
 </style>

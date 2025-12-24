@@ -1579,42 +1579,33 @@
   gap: 12rpx;
   margin-bottom: 8rpx;
 }
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-number.data-v-0904e2e0 {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #666;
-  min-width: 40rpx;
-}
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-main-info.data-v-0904e2e0 {
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-name-spec.data-v-0904e2e0 {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 4rpx;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8rpx;
 }
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-main-info .drug-name.data-v-0904e2e0 {
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-name-spec .drug-name.data-v-0904e2e0 {
   font-size: 28rpx;
   font-weight: 600;
   color: #000;
   line-height: 1.4;
 }
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-main-info .drug-spec.data-v-0904e2e0 {
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-name-spec .drug-spec.data-v-0904e2e0 {
   font-size: 24rpx;
   color: #666;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-quantity-wrapper.data-v-0904e2e0 {
+  white-space: nowrap;
+  margin-left: auto;
+  margin-right: 12rpx;
 }
 .prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-quantity.data-v-0904e2e0 {
-  display: flex;
-  align-items: baseline;
-  gap: 4rpx;
-  white-space: nowrap;
-}
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-quantity .quantity-value.data-v-0904e2e0 {
-  font-size: 28rpx;
-  font-weight: bold;
+  font-size: 26rpx;
+  font-weight: 600;
   color: #000;
-}
-.prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-quantity .quantity-unit.data-v-0904e2e0 {
-  font-size: 24rpx;
-  color: #666;
+  white-space: nowrap;
 }
 .prescription-body .prescription-drugs-list .prescription-drug-item .drug-item-header .drug-actions.data-v-0904e2e0 {
   display: flex;
@@ -1653,6 +1644,34 @@
   color: #333;
   line-height: 1.5;
   flex: 1;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-usage-row.data-v-0904e2e0 {
+  display: flex;
+  align-items: flex-start;
+  padding-left: 52rpx;
+  margin-top: 8rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-usage-row .usage-label.data-v-0904e2e0 {
+  font-size: 24rpx;
+  color: #666;
+  white-space: nowrap;
+  margin-right: 8rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-usage-row .usage-value.data-v-0904e2e0 {
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.5;
+  flex: 1;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-usage-note.data-v-0904e2e0 {
+  padding-left: 52rpx;
+  margin-top: 4rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .drug-usage-note .usage-note-text.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #888;
+  line-height: 1.5;
+  font-style: italic;
 }
 .prescription-body .prescription-summary.data-v-0904e2e0 {
   margin-top: 20rpx;

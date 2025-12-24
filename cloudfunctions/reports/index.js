@@ -1276,7 +1276,7 @@ function parseSpecification(specification) {
     .replace(/／/g, '/')
     .replace(/\s+/g, ' ')
 
-  let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+  let match = spec.match(/^(\d+\.?\d*)(mg|g|ml|μg|mcg|ug)?\s*[×xX*]\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
   if (match) {
     return {
       dosage: match[1] ? parseFloat(match[1]) : null,
@@ -1289,7 +1289,7 @@ function parseSpecification(specification) {
     }
   }
 
-  match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包)$/i)
+  match = spec.match(/^(\d+\.?\d*)?\s*[×xX*]?\s*(\d+)\s*(片|粒|支|瓶|袋|丸|滴|ml|毫升|ML)\s*[/／]\s*(盒|瓶|袋|桶|箱|包|板)$/i)
   if (match) {
     return {
       dosage: match[1] ? parseFloat(match[1]) : null,
@@ -2681,6 +2681,10 @@ async function fetchOutboundRecords(params = {}) {
     condition.status = status
   } else if (!includeDraft) {
     condition.status = _.neq('draft')
+  }
+  // 添加出库方向（目标园区）筛选
+  if (toLocation) {
+    condition.toLocation = toLocation
   }
 
   let query = db.collection('out_records')

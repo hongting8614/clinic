@@ -201,7 +201,6 @@
       <!-- 诊断 -->
       <view class="form-item">
         <view class="label required">诊断</view>
-        <view class="label-hint">医生根据检查做出的专业判断</view>
         <view class="disease-input-wrapper">
           <input
             v-model="form.diagnosis"
@@ -234,7 +233,6 @@
       <!-- 症状 -->
       <view id="field-symptom" class="form-item">
         <view class="label">症状</view>
-        <view class="label-hint">患者表现出的具体症状和体征</view>
         <view class="disease-input-wrapper">
           <input
             v-model="form.symptom"
@@ -266,7 +264,6 @@
       <!-- 疾病名称（带下拉列表）+ 选择诊断参考按钮 -->
       <view class="form-item">
         <view class="label required">疾病名称</view>
-        <view class="label-hint">疾病的大类分类，用于统计分析</view>
         <view class="disease-name-row">
           <view class="disease-input-wrapper" style="flex: 1;">
             <input
@@ -409,7 +406,7 @@
               <input
                 v-model="currentDrug.dosage"
                 type="text"
-                placeholder="如：1片"
+                :placeholder="getDosagePlaceholder(selectedDrug)"
                 class="input-uniform"
               />
             </view>
@@ -539,22 +536,22 @@
               :key="index"
               class="prescription-drug-item"
             >
-              <!-- 药品名称和规格（合并显示） -->
+              <!-- 药品名称和规格 - 单行显示 -->
               <view class="drug-item-header">
                 <view class="drug-name-spec">
                   <text class="drug-name">{{ item.drugName }}</text>
                   <text v-if="item.specification" class="drug-spec">（{{ item.specification }}）</text>
-                  <text class="drug-quantity">{{ item.dosage || item.quantity + item.unit }}</text>
+                  <text class="drug-quantity">{{ item.quantity }}{{ item.unit }}</text>
                 </view>
                 <view class="drug-actions">
-                  <text class="action-btn delete" @click="removeFromPrescription(index)">删除</text>
+                  <text class="action-btn delete" @click="removeFromPrescription(index)">[删除]</text>
                 </view>
               </view>
               
-              <!-- 用法用量（简洁格式） -->
-              <view class="drug-usage-row">
+              <!-- 用法用量（格式化显示） -->
+              <view v-if="item.dosage || item.route || item.frequency" class="drug-usage-row">
                 <text class="usage-label">用法：</text>
-                <text class="usage-value">{{ item.dosage || '' }} {{ item.route || '' }} {{ item.frequency || '' }}</text>
+                <text class="usage-value">{{ formatUsage(item) }}</text>
               </view>
             </view>
           </view>
@@ -1530,14 +1527,14 @@ export default {
             diagnoses: [
               '重度痛经',
               '原发性痛经',
-              '继发性痛经待排（建议妇科检查）'
+              '继发性痛经待排'
             ],
             treatments: [
               '立即休息，平卧休息',
               '热敷腹部，注意保暖',
               '口服解痉止痛药（如布洛芬）',
-              '如症状严重或持续不缓解，建议转诊妇科专科',
-              '建议完善妇科检查，排除器质性疾病'
+              '建议完善妇科检查，排除器质性疾病',
+              '如症状严重或持续不缓解，建议转诊妇科专科'
             ],
             suggestDrugs: ['布洛芬缓释胶囊', '元胡止痛片']
           }
@@ -2025,6 +2022,52 @@ export default {
       return drug.minUnit;
     },
     
+    // 从药品规格中提取默认单次剂量
+    // 如果有剂量单位（如0.1g, 5mg），返回剂量；否则返回最小单位（如1片、1粒）
+    getDefaultDosage(drug) {
+      if (!drug) return '';
+      
+      const spec = drug.specification || '';
+      
+      // 尝试匹配剂量格式：如 0.25g、5mg、10ml 等
+      // 匹配模式：数字 + 单位（g, mg, ml, μg, mcg, ug等）
+      // 优先匹配规格开头的剂量部分（如 "0.25g×24粒/盒" 中的 "0.25g"）
+      const dosageMatch = spec.match(/^(\d+\.?\d*)\s*(mg|g|ml|μg|mcg|ug|毫升|ML)/i);
+      if (dosageMatch) {
+        // 找到剂量单位，返回剂量值+单位
+        return `${dosageMatch[1]}${dosageMatch[2].toLowerCase()}`;
+      }
+      
+      // 如果开头没有，尝试匹配整个规格中的第一个剂量（如 "24粒/盒" 中没有剂量，但 "0.25g×24粒/盒" 中有）
+      const anyDosageMatch = spec.match(/(\d+\.?\d*)\s*(mg|g|ml|μg|mcg|ug|毫升|ML)/i);
+      if (anyDosageMatch) {
+        return `${anyDosageMatch[1]}${anyDosageMatch[2].toLowerCase()}`;
+      }
+      
+      // 如果没有找到剂量单位，返回最小单位（如1片、1粒）
+      const minUnit = this.getRealMinUnit(drug);
+      return `1${minUnit}`;
+    },
+    
+    // 获取单次剂量占位符文本
+    getDosagePlaceholder(drug) {
+      if (!drug) return '如：1片';
+      
+      const spec = drug.specification || '';
+      
+      // 检查是否有剂量单位
+      const hasDosageUnit = /(\d+\.?\d*)\s*(mg|g|ml|μg|mcg|ug|毫升|ML)/i.test(spec);
+      
+      if (hasDosageUnit) {
+        // 有剂量单位，提示可以输入剂量或单位
+        return '如：0.1g、5mg等';
+      } else {
+        // 没有剂量单位，提示输入最小单位
+        const minUnit = this.getRealMinUnit(drug);
+        return `如：1${minUnit}`;
+      }
+    },
+    
     // 添加到处方
     addToPrescription() {
       if (!this.selectedDrug) {
@@ -2051,73 +2094,57 @@ export default {
         return;
       }
       
-      // 弹出用法用量输入框
-      const that = this;
-      const drugName = this.selectedDrug.name;
+      // 使用表单中的用法用量数据
+      const dosage = (this.currentDrug.dosage || '').trim();
+      const route = (this.currentDrug.route || '').trim();
+      const frequency = (this.currentDrug.frequency || '').trim();
       
-      // 根据药品类型提供示例
-      let example = '0.5g 口服 每日3次';
-      if (drugName.includes('风油精') || drugName.includes('外用')) {
-        example = '适量 外用 每日3-4次';
-      } else if (drugName.includes('水') || drugName.includes('液')) {
-        example = '10ml 口服 每日2次';
-      }
-      
-      uni.showModal({
-        title: '填写用法用量',
-        content: `格式：剂量 途径 频次\n示例：${example}\n\n剂量：0.5g、10ml、适量等\n途径：口服、外用、含服等\n频次：每日3次、必要时等`,
-        editable: true,
-        placeholderText: example,
-        success: (res) => {
-          if (res.confirm && res.content) {
-            // 解析用法用量
-            const usageText = res.content.trim();
-            
-            // 过滤掉格式说明文本（如果用户没有修改直接确认）
-            if (usageText.includes('格式') || usageText.includes('示例') || usageText.includes('剂量：') || usageText.includes('途径：') || usageText.includes('频次：')) {
-              uni.showToast({
-                title: '请填写实际用法用量',
-                icon: 'none'
-              });
-              return;
-            }
-            
-            const parts = usageText.split(/\s+/); // 用空格分割
-            
-            // 添加到处方列表
-            that.prescriptionList.push({
-              drugId: that.selectedDrug._id,
-              drugName: that.selectedDrug.name,
-              specification: that.selectedDrug.specification,
-              quantity: that.form.quantity,
-              unit: that.getRealMinUnit(that.selectedDrug),
-              batchId: that.selectedBatch?._id,
-              batchNumber: that.selectedBatch?.batch,
-              dosage: parts[0] || '',
-              route: parts[1] || '',
-              frequency: parts.slice(2).join(' ') || '' // 频次可能有多个词
-            });
-            
-            // 清空当前选择
-            that.drugSearchText = '';
-            that.selectedDrug = null;
-            that.selectedBatch = null;
-            that.availableStock = 0;
-            that.form.quantity = null;
-            that.showDrugList = false;
-            
-            uni.showToast({
-              title: '已加入处方',
-              icon: 'success'
-            });
-          } else if (res.confirm) {
-            uni.showToast({
-              title: '请填写用法用量',
-              icon: 'none'
-            });
-          }
-        }
+      // 添加到处方列表
+      this.prescriptionList.push({
+        drugId: this.selectedDrug._id,
+        drugName: this.selectedDrug.name,
+        specification: this.selectedDrug.specification,
+        quantity: this.form.quantity,
+        unit: this.getRealMinUnit(this.selectedDrug),
+        batchId: this.selectedBatch?._id,
+        batchNumber: this.selectedBatch?.batch,
+        dosage: dosage,
+        route: route,
+        frequency: frequency,
+        usage: (this.currentDrug.usage || '').trim()
       });
+      
+      // 清空当前选择
+      this.drugSearchText = '';
+      this.selectedDrug = null;
+      this.selectedBatch = null;
+      this.availableStock = 0;
+      this.form.quantity = null;
+      this.showDrugList = false;
+      
+      // 重置当前药品信息
+      this.currentDrug = {
+        dosage: '',
+        frequency: '',
+        route: '',
+        usage: ''
+      };
+      this.frequencyIndex = 0;
+      this.routeIndex = 0;
+      
+      uni.showToast({
+        title: '已加入处方',
+        icon: 'success'
+      });
+    },
+    
+    // 格式化用法用量显示
+    formatUsage(item) {
+      const parts = [];
+      if (item.dosage) parts.push(item.dosage);
+      if (item.route) parts.push(item.route);
+      if (item.frequency) parts.push(item.frequency);
+      return parts.join(' ');
     },
     
     // 从处方中移除
@@ -3731,6 +3758,11 @@ export default {
         };
       } finally {
         uni.hideLoading();
+      }
+      
+      // 初始化单次剂量（从规格中提取）
+      if (this.selectedDrug) {
+        this.currentDrug.dosage = this.getDefaultDosage(this.selectedDrug);
       }
       
       // 加载该园区的批次和库存
@@ -6201,18 +6233,12 @@ export default {
         gap: 12rpx;
         margin-bottom: 8rpx;
         
-        .drug-number {
-          font-size: 26rpx;
-          font-weight: 600;
-          color: #666;
-          min-width: 40rpx;
-        }
-        
-        .drug-main-info {
+        .drug-name-spec {
           flex: 1;
           display: flex;
-          flex-direction: column;
-          gap: 4rpx;
+          align-items: baseline;
+          flex-wrap: wrap;
+          gap: 8rpx;
           
           .drug-name {
             font-size: 28rpx;
@@ -6227,22 +6253,17 @@ export default {
           }
         }
         
-        .drug-quantity {
-          display: flex;
-          align-items: baseline;
-          gap: 4rpx;
+        .drug-quantity-wrapper {
           white-space: nowrap;
-          
-          .quantity-value {
-            font-size: 28rpx;
-            font-weight: bold;
-            color: #000;
-          }
-          
-          .quantity-unit {
-            font-size: 24rpx;
-            color: #666;
-          }
+          margin-left: auto;
+          margin-right: 12rpx;
+        }
+        
+        .drug-quantity {
+          font-size: 26rpx;
+          font-weight: 600;
+          color: #000;
+          white-space: nowrap;
         }
         
         .drug-actions {
@@ -6287,6 +6308,39 @@ export default {
           color: #333;
           line-height: 1.5;
           flex: 1;
+        }
+      }
+      
+      .drug-usage-row {
+        display: flex;
+        align-items: flex-start;
+        padding-left: 52rpx;
+        margin-top: 8rpx;
+        
+        .usage-label {
+          font-size: 24rpx;
+          color: #666;
+          white-space: nowrap;
+          margin-right: 8rpx;
+        }
+        
+        .usage-value {
+          font-size: 24rpx;
+          color: #333;
+          line-height: 1.5;
+          flex: 1;
+        }
+      }
+      
+      .drug-usage-note {
+        padding-left: 52rpx;
+        margin-top: 4rpx;
+        
+        .usage-note-text {
+          font-size: 22rpx;
+          color: #888;
+          line-height: 1.5;
+          font-style: italic;
         }
       }
     }

@@ -353,11 +353,18 @@ async function complete(data, wxContext) {
       
       if (parkStock.data.length > 0) {
         // 已存在，累加最小单位
-        await db.collection('stock').doc(parkStock.data[0]._id).update({
-          data: {
+        // 确保单位是最小单位（修复：如果原来单位是包装单位，需要更新为最小单位）
+        const existingStock = parkStock.data[0]
+        const updateData = {
             quantity: _.inc(item.minQuantity),  // 增加最小单位 ⭐
             updateTime: now
           }
+        // 如果当前单位不是最小单位，更新为单位
+        if (existingStock.unit !== item.minUnit && item.minUnit) {
+          updateData.unit = item.minUnit
+        }
+        await db.collection('stock').doc(existingStock._id).update({
+          data: updateData
         })
       } else {
         // 不存在，新建库存记录（最小单位）⭐

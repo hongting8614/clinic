@@ -40,6 +40,10 @@ exports.main = async (event, context) => {
       case 'getNearExpiryList':
         return await getNearExpiryList(data)
       
+      // FIFO批次分配算法 ⭐ 新增
+      case 'allocateBatchesFIFO':
+        return await allocateBatchesFIFO(data)
+      
       default:
         return {
           success: false,
@@ -366,6 +370,139 @@ async function getNearExpiryList(data) {
   return {
     success: true,
     data: result.data
+  }
+}
+
+/**
+ * FIFO批次分配算法 ⭐
+ * @param {Object} data - 参数对象
+ * @param {String} data.drugId - 药材ID
+ * @param {Number} data.requiredQuantity - 需要的数量
+ * @param {String} data.location - 库存位置（默认：drug_storage）
+ * @returns {Object} 分配结果 {success, data: {allocation, totalAllocated, batchCount, hasNearExpiry}}
+ */
+async function allocateBatchesFIFO(data) {
+  const { drugId, requiredQuantity, location } = data
+  
+  console.log('=== FIFO批次分配开始 ===')
+  console.log('药材ID:', drugId)
+  console.log('需要数量:', requiredQuantity)
+  console.log('库存位置:', location || 'drug_storage')
+  
+  // 1. 参数验证
+  if (!drugId) {
+    return {
+      success: false,
+      message: '药材ID不能为空'
+    }
+  }
+  
+  if (!requiredQuantity || requiredQuantity <= 0) {
+    return {
+      success: false,
+      message: '出库数量必须大于0'
+    }
+  }
+  
+  try {
+    // 2. 查询所有可用批次（按FIFO排序）
+    const batches = await db.collection('stock')
+      .where({
+        drugId: drugId,
+        location: location || 'drug_storage',
+        quantity: _.gt(0)
+      })
+      .orderBy('expireDate', 'asc')   // FIFO：最早有效期优先
+      .orderBy('createTime', 'asc')   // 同一天的按入库时间
+      .get()
+    
+    console.log('查询到批次数量:', batches.data.length)
+    
+    if (batches.data.length === 0) {
+      return {
+        success: false,
+        message: '该药材暂无库存'
+      }
+    }
+    
+    // 3. 检查总库存是否足够
+    const totalStock = batches.data.reduce((sum, b) => sum + b.quantity, 0)
+    console.log('总库存:', totalStock)
+    
+    if (totalStock < requiredQuantity) {
+      return {
+        success: false,
+        message: `库存不足，当前总库存：${totalStock}，需要：${requiredQuantity}`,
+        totalStock: totalStock
+      }
+    }
+    
+    // 4. FIFO分配算法
+    const allocation = []
+    let remaining = requiredQuantity
+    const now = new Date()
+    
+    for (const batch of batches.data) {
+      if (remaining <= 0) break
+      
+      // 检查是否过期
+      const expireDate = new Date(batch.expireDate)
+      if (expireDate < now) {
+        console.warn(`批次 ${batch.batch} 已过期，跳过`)
+        continue
+      }
+      
+      // 检查是否近效期（90天内）
+      const daysToExpire = Math.floor((expireDate - now) / (1000 * 60 * 60 * 24))
+      const isNearExpiry = daysToExpire <= 90
+      
+      // 从当前批次分配
+      const allocateQty = Math.min(remaining, batch.quantity)
+      
+      console.log(`从批次 ${batch.batch} 分配 ${allocateQty}，剩余库存 ${batch.quantity}`)
+      
+      allocation.push({
+        batchId: batch._id,
+        batch: batch.batch,
+        quantity: allocateQty,
+        availableQuantity: batch.quantity,
+        expireDate: batch.expireDate,
+        productionDate: batch.productionDate,
+        price: batch.price || 0,
+        isNearExpiry: isNearExpiry,
+        daysToExpire: daysToExpire,
+        location: batch.location,
+        // 添加药材基本信息
+        drugId: batch.drugId,
+        drugName: batch.drugName,
+        specification: batch.specification,
+        unit: batch.unit
+      })
+      
+      remaining -= allocateQty
+    }
+    
+    console.log('分配完成，共分配批次数:', allocation.length)
+    console.log('剩余未分配数量:', remaining)
+    
+    // 5. 返回分配结果
+    return {
+      success: true,
+      data: {
+        allocation: allocation,
+        totalAllocated: requiredQuantity - remaining,
+        batchCount: allocation.length,
+        hasNearExpiry: allocation.some(a => a.isNearExpiry)
+      },
+      message: `成功分配 ${allocation.length} 个批次`
+    }
+    
+  } catch (err) {
+    console.error('FIFO分配失败:', err)
+    return {
+      success: false,
+      message: err.message || 'FIFO分配失败'
+    }
   }
 }
 

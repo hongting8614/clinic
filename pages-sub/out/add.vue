@@ -117,8 +117,42 @@
 					</view>
 					
 					<view class="drug-input-section">
-					<!-- 批次信息（已选中） -->
-					<view v-if="item.batch" class="batch-info-selected">
+					<!-- FIFO自动分配结果展示 -->
+					<view v-if="item.batchAllocation && item.batchAllocation.length > 0" class="batch-allocation-result">
+						<view class="allocation-header">
+							<text class="allocation-title">✅ 已自动分配 {{ item.batchCount }} 个批次</text>
+							<text v-if="item.hasNearExpiry" class="near-expiry-tag">⚠️ 含近效期</text>
+						</view>
+						
+						<view class="allocation-list">
+							<view 
+								v-for="(batch, bIndex) in item.batchAllocation" 
+								:key="bIndex"
+								class="allocation-item"
+								:class="{ 'near-expiry': batch.isNearExpiry }"
+							>
+								<view class="allocation-row">
+									<text class="allocation-label">批号：</text>
+									<text class="allocation-value">{{ batch.batch }}</text>
+									<text class="allocation-quantity">{{ batch.quantity }} {{ item.unit }}</text>
+								</view>
+								<view class="allocation-row">
+									<text class="allocation-label">有效期：</text>
+									<text class="allocation-value" :class="{ 'text-warning': batch.isNearExpiry }">
+										{{ batch.expireDate }}
+										<text v-if="batch.isNearExpiry" class="days-hint">({{ batch.daysToExpire }}天后到期)</text>
+									</text>
+								</view>
+							</view>
+						</view>
+						
+						<view class="allocation-actions">
+							<text class="action-btn" @tap="clearAllocation(index)">🔄 重新分配</text>
+						</view>
+					</view>
+					
+					<!-- 批次信息（手动选中单个批次） -->
+					<view v-else-if="item.batch" class="batch-info-selected">
 						<view class="batch-info-row">
 							<text class="batch-label">批号：</text>
 							<text class="batch-value">{{ item.batch }}</text>
@@ -136,7 +170,7 @@
 					<!-- 批次选择按钮（未选中时显示） -->
 					<view v-else class="batch-select-row">
 						<batch-selector
-							button-text="🔍 选择批次"
+							button-text="🔍 手动选择批次"
 							button-type="info"
 							button-size="small"
 							:drug-id="item.drugId"
@@ -156,9 +190,17 @@
 								v-model.number="item.quantity" 
 								type="number"
 								:placeholder="`最多${item.stockQuantity || 0}`"
-								@blur="validateQuantity(index)"
+								@blur="onQuantityBlur(index)"
+								@input="onQuantityInput(index)"
 							/>
 							<text class="input-unit">{{ item.unit }}</text>
+						</view>
+						
+						<!-- 自动分配按钮 -->
+						<view v-if="item.quantity && item.quantity > 0 && !item.batchAllocation" class="auto-allocate-hint">
+							<text class="hint-icon">💡</text>
+							<text class="hint-text">输入数量后自动FIFO分配批次</text>
+							<text class="action-link" @tap="autoAllocateBatch(index)">立即分配</text>
 						</view>
 					
 					<!-- 单位转换提示 -->
@@ -377,6 +419,56 @@ export default {
 					icon: 'none'
 				})
 			}
+		},
+		
+		// 数量输入事件（实时触发）
+		onQuantityInput(index) {
+			const item = this.drugList[index]
+			if (!item) return
+			
+			// 清除之前的定时器
+			if (this.quantityInputTimer) {
+				clearTimeout(this.quantityInputTimer)
+			}
+			
+			// 防抖处理，500ms后自动触发分配
+			this.quantityInputTimer = setTimeout(() => {
+				if (item.quantity && item.quantity > 0 && !item.batchAllocation) {
+					// 自动触发FIFO分配
+					this.autoAllocateBatch(index)
+				}
+			}, 500)
+		},
+		
+		// 数量失焦事件
+		onQuantityBlur(index) {
+			this.validateQuantity(index)
+			
+			// 如果还没有分配批次，提示用户
+			const item = this.drugList[index]
+			if (item && item.quantity > 0 && !item.batchAllocation && !item.batch) {
+				uni.showToast({
+					title: '请点击"立即分配"按钮分配批次',
+					icon: 'none',
+					duration: 2000
+				})
+			}
+		},
+		
+		// 清除分配结果
+		clearAllocation(index) {
+			const item = this.drugList[index]
+			if (!item) return
+			
+			this.$set(item, 'batchAllocation', [])
+			this.$set(item, 'batchCount', 0)
+			this.$set(item, 'hasNearExpiry', false)
+			
+			uni.showToast({
+				title: '已清除分配结果',
+				icon: 'success',
+				duration: 1000
+			})
 		},
 		
 		// FIFO自动分配批次 ⭐ 新增
@@ -1137,6 +1229,151 @@ export default {
 }
 
 // FIFO批次分配结果样式 ⭐ 新增
+.batch-allocation-result {
+	background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+	border-radius: 12rpx;
+	padding: 20rpx;
+	margin-bottom: 15rpx;
+	border-left: 4rpx solid #0EA5E9;
+}
+
+.allocation-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15rpx;
+	padding-bottom: 12rpx;
+	border-bottom: 1rpx solid #BAE6FD;
+}
+
+.allocation-title {
+	font-size: 26rpx;
+	font-weight: bold;
+	color: #0369A1;
+	flex: 1;
+}
+
+.near-expiry-tag {
+	font-size: 22rpx;
+	color: #EA580C;
+	background-color: #FFF7ED;
+	padding: 4rpx 12rpx;
+	border-radius: 12rpx;
+	border: 1rpx solid #FDBA74;
+}
+
+.allocation-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12rpx;
+	margin-bottom: 15rpx;
+}
+
+.allocation-item {
+	background-color: #FFFFFF;
+	border-radius: 10rpx;
+	padding: 15rpx;
+	border: 1rpx solid #E0F2FE;
+	
+	&.near-expiry {
+		background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+		border-color: #FED7AA;
+	}
+}
+
+.allocation-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8rpx;
+	font-size: 24rpx;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.allocation-label {
+	color: #6B7280;
+	min-width: 100rpx;
+}
+
+.allocation-value {
+	color: #111827;
+	font-weight: 500;
+	flex: 1;
+	
+	&.text-warning {
+		color: #EA580C;
+	}
+}
+
+.allocation-quantity {
+	font-size: 26rpx;
+	font-weight: bold;
+	color: #0369A1;
+	background-color: #E0F2FE;
+	padding: 4rpx 12rpx;
+	border-radius: 8rpx;
+	margin-left: 10rpx;
+}
+
+.days-hint {
+	font-size: 20rpx;
+	color: #DC2626;
+	background-color: #FEE2E2;
+	padding: 2rpx 8rpx;
+	border-radius: 10rpx;
+	margin-left: 8rpx;
+}
+
+.allocation-actions {
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 12rpx;
+	border-top: 1rpx solid #E0F2FE;
+}
+
+.action-btn {
+	font-size: 24rpx;
+	color: #0369A1;
+	background-color: #FFFFFF;
+	padding: 8rpx 20rpx;
+	border-radius: 20rpx;
+	border: 1rpx solid #BAE6FD;
+}
+
+// 自动分配提示
+.auto-allocate-hint {
+	display: flex;
+	align-items: center;
+	background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+	padding: 12rpx 16rpx;
+	border-radius: 8rpx;
+	margin-top: 12rpx;
+	border-left: 3rpx solid #F59E0B;
+	
+	.hint-icon {
+		font-size: 24rpx;
+		margin-right: 8rpx;
+	}
+	
+	.hint-text {
+		font-size: 22rpx;
+		color: #92400E;
+		flex: 1;
+	}
+	
+	.action-link {
+		font-size: 24rpx;
+		color: #0369A1;
+		font-weight: bold;
+		padding: 4rpx 12rpx;
+		background-color: #FFFFFF;
+		border-radius: 12rpx;
+		margin-left: 10rpx;
+	}
+}
+
 .batch-allocation {
 	margin-top: 20rpx;
 	background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);

@@ -372,7 +372,7 @@
           </view>
           <view class="drug-stock-section">
             <text class="stock-label">{{ form.location === 'land_park' ? '陆园' : '水园' }}库存：</text>
-            <text class="stock-value" :class="{ 'stock-warning': availableStock < 10 }">{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+            <text class="stock-value" :class="{ 'stock-warning': availableStock < 10 }">{{ availableStock }} {{ getRealMinUnit(selectedDrug) }}</text>
           </view>
         </view>
       </view>
@@ -395,7 +395,7 @@
             <!-- 库存不足警告 -->
             <view v-if="form.quantity > availableStock" class="quantity-warning">
               <text class="warning-icon">⚠️</text>
-              <text class="warning-text">库存不足！当前：{{ availableStock }} {{ selectedDrug.minUnit }}</text>
+              <text class="warning-text">库存不足！当前：{{ availableStock }} {{ getRealMinUnit(selectedDrug) }}</text>
             </view>
           </view>
           
@@ -540,8 +540,7 @@
               <view class="drug-item-header">
                 <view class="drug-name-spec">
                   <text class="drug-name">{{ item.drugName }}</text>
-                  <text v-if="item.specification" class="drug-spec">（{{ item.specification }}）</text>
-                  <text class="drug-quantity">{{ item.quantity }}{{ item.unit }}</text>
+                  <text class="drug-spec-quantity">{{ formatSpecQuantity(item) }}</text>
                 </view>
                 <view class="drug-actions">
                   <text class="action-btn delete" @click="removeFromPrescription(index)">[删除]</text>
@@ -2114,7 +2113,7 @@ export default {
         usage: (this.currentDrug.usage || '').trim()
       });
       
-      // 清空当前选择
+      // 清空当前选择（但保留用法用量，方便连续添加相似药品）
       this.drugSearchText = '';
       this.selectedDrug = null;
       this.selectedBatch = null;
@@ -2122,20 +2121,56 @@ export default {
       this.form.quantity = null;
       this.showDrugList = false;
       
-      // 重置当前药品信息
-      this.currentDrug = {
-        dosage: '',
-        frequency: '',
-        route: '',
-        usage: ''
-      };
-      this.frequencyIndex = 0;
-      this.routeIndex = 0;
+      // 保留用法用量信息，方便用户连续添加药品
+      // 如果需要清空，用户可以手动修改
+      // this.currentDrug = {
+      //   dosage: '',
+      //   frequency: '',
+      //   route: '',
+      //   usage: ''
+      // };
+      // this.frequencyIndex = 0;
+      // this.routeIndex = 0;
       
       uni.showToast({
         title: '已加入处方',
-        icon: 'success'
+        icon: 'success',
+        duration: 1500
       });
+      
+      // 自动滚动到处方区域，让用户看到添加结果
+      this.$nextTick(() => {
+        uni.pageScrollTo({
+          selector: '.prescription-section',
+          duration: 300
+        });
+      });
+    },
+    
+    // 格式化规格和数量显示（例如：0.3gX1粒）
+    formatSpecQuantity(item) {
+      const parts = [];
+      
+      // 提取基本规格（去除包装信息）
+      if (item.specification) {
+        // 匹配规格中的基本单位部分，如 "0.3g" 从 "0.3g*20粒" 中提取
+        const baseSpecMatch = item.specification.match(/^(\d+\.?\d*\s*(?:mg|g|ml|μg|mcg|ug|毫升|ML))/i);
+        if (baseSpecMatch) {
+          // 如果有基本规格（如 0.3g），只使用基本规格
+          parts.push(baseSpecMatch[1]);
+        } else {
+          // 如果没有匹配到基本规格，使用完整规格
+          parts.push(item.specification);
+        }
+      }
+      
+      // 添加实际数量
+      if (item.quantity && item.unit) {
+        const quantityStr = `X${item.quantity}${item.unit}`;
+        parts.push(quantityStr);
+      }
+      
+      return parts.length > 0 ? parts.join('') : '';
     },
     
     // 格式化用法用量显示
@@ -2144,7 +2179,7 @@ export default {
       if (item.dosage) parts.push(item.dosage);
       if (item.route) parts.push(item.route);
       if (item.frequency) parts.push(item.frequency);
-      return parts.join(' ');
+      return parts.join('  ');
     },
     
     // 从处方中移除
@@ -2723,6 +2758,87 @@ export default {
       this.drugSearchText = drug.name;
       this.onDrugSelect(drug);
       this.showDrugList = false;
+      
+      // 选择药材后自动联动填充默认值
+      this.autoFillDrugDefaults(drug);
+    },
+    
+    // 自动填充药材默认值（联动功能）
+    autoFillDrugDefaults(drug) {
+      // 1. 根据药材类型自动设置默认用药数量
+      if (!this.form.quantity || this.form.quantity === 0) {
+        // 根据药材名称智能推荐数量
+        if (drug.name.includes('创可贴') || drug.name.includes('纱布') || drug.name.includes('棉签')) {
+          this.form.quantity = 1; // 外用材料默认1个
+        } else if (drug.name.includes('片') || drug.name.includes('粒') || drug.name.includes('胶囊')) {
+          this.form.quantity = 2; // 口服药默认2片/粒
+        } else if (drug.name.includes('水') || drug.name.includes('液')) {
+          this.form.quantity = 10; // 液体默认10ml
+        } else {
+          this.form.quantity = 1; // 其他默认1
+        }
+      }
+      
+      // 2. 根据药材类型自动设置单次剂量
+      if (!this.currentDrug.dosage) {
+        if (drug.name.includes('布洛芬')) {
+          this.currentDrug.dosage = '0.3g';
+        } else if (drug.name.includes('片') || drug.name.includes('粒')) {
+          this.currentDrug.dosage = '1片';
+        } else if (drug.name.includes('胶囊')) {
+          this.currentDrug.dosage = '1粒';
+        } else if (drug.specification) {
+          this.currentDrug.dosage = drug.specification;
+        }
+      }
+      
+      // 3. 根据药材类型自动设置给药途径
+      if (!this.currentDrug.route) {
+        if (drug.name.includes('创可贴') || drug.name.includes('碘伏') || drug.name.includes('纱布') || 
+            drug.name.includes('湿润烧伤膏') || drug.name.includes('红霉素眼膏')) {
+          this.currentDrug.route = '外用';
+          this.routeIndex = 1; // 外用
+        } else if (drug.name.includes('含片') || drug.name.includes('草珊瑚')) {
+          this.currentDrug.route = '含服';
+          this.routeIndex = 2; // 含服
+        } else if (drug.name.includes('速效救心丸')) {
+          this.currentDrug.route = '舌下含服';
+          this.routeIndex = 3; // 舌下含服
+        } else {
+          this.currentDrug.route = '口服';
+          this.routeIndex = 0; // 口服
+        }
+      }
+      
+      // 4. 根据药材类型自动设置用药频次
+      if (!this.currentDrug.frequency) {
+        if (drug.name.includes('创可贴') || drug.name.includes('纱布') || drug.name.includes('碘伏')) {
+          this.currentDrug.frequency = '即刻';
+          this.frequencyIndex = 0; // 即刻
+        } else if (drug.name.includes('速效救心丸')) {
+          this.currentDrug.frequency = '必要时';
+          this.frequencyIndex = 6; // 必要时
+        } else if (drug.name.includes('布洛芬') || drug.name.includes('止痛')) {
+          this.currentDrug.frequency = '每日3次';
+          this.frequencyIndex = 1; // 每日3次
+        } else {
+          this.currentDrug.frequency = '即刻';
+          this.frequencyIndex = 0; // 即刻
+        }
+      }
+      
+      // 5. 自动开启处方功能
+      if (!this.enablePrescription) {
+        this.enablePrescription = true;
+      }
+      
+      // 提示用户已自动填充
+      console.log('✅ 已自动填充药材默认值:', {
+        quantity: this.form.quantity,
+        dosage: this.currentDrug.dosage,
+        route: this.currentDrug.route,
+        frequency: this.currentDrug.frequency
+      });
     },
 
     // 疾病名称获得焦点：显示下拉列表
@@ -3933,17 +4049,20 @@ export default {
           // 确保数量是整数，避免小数
           const intQuantity = Math.floor(this.form.quantity);
           
+          // 获取真正的最小单位（从规格中提取，如"粒"）
+          const realMinUnit = this.getRealMinUnit(this.selectedDrug);
+          
           submitData.drugInfo = {
             drugId: this.form.drugId,  // 系统内部ID（主键）
             drugCode: this.selectedDrug.drugCode || this.selectedDrug.code || '',  // 药材代码（业务编码）
               drugName: this.selectedDrug.name,
               specification: this.selectedDrug.specification,
-            unit: this.selectedDrug.minUnit,
+            unit: realMinUnit,
             quantity: intQuantity,
               batchId: this.selectedBatch._id,
             batch: this.selectedBatch.batch,
             location: this.form.location,  // 关联园区
-              minUnit: this.selectedDrug.minUnit,
+              minUnit: realMinUnit,
               packUnit: this.selectedDrug.packUnit,
             conversionRate: this.selectedDrug.conversionRate
           };
@@ -3955,7 +4074,7 @@ export default {
           submitData.specification = this.selectedDrug.specification;
           submitData.batchId = this.selectedBatch._id;
           submitData.quantityMin = intQuantity;
-          submitData.minUnit = this.selectedDrug.minUnit;
+          submitData.minUnit = realMinUnit;
           submitData.packUnit = this.selectedDrug.packUnit;
           submitData.conversionRate = this.selectedDrug.conversionRate;
           submitData.patient = this.form.name.trim();

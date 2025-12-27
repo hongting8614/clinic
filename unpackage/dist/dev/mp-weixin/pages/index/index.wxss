@@ -1036,6 +1036,9 @@
 /* 门诊报表双卡 */
 .section-header {
 	margin-bottom: 25rpx;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 .section-title {
 	display: block;
@@ -1043,6 +1046,18 @@
 	font-weight: bold;
 	color: #2c3e50;
 	margin-bottom: 8rpx;
+}
+.debug-btn {
+	padding: 8rpx 20rpx;
+	font-size: 24rpx;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #ffffff;
+	border-radius: 999rpx;
+	border: none;
+	box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+.debug-btn::after {
+	border: none;
 }
 .section-subtitle {
 	display: block;

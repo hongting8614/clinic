@@ -5,7 +5,6 @@
     "pages/material/index",
     "pages/user/index",
     "pages/about/index",
-    "pages/test/dialog",
     "pages/record/index",
     "pages/stock/index"
   ],

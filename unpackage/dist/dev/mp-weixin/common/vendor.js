@@ -837,8 +837,8 @@ function populateParameters(result) {
   var parameters = {
     appId: "__UNI__AKPMS",
     appName: "爱康医务室管理系统",
-    appVersion: "1.0.0",
-    appVersionCode: "100",
+    appVersion: "3.16.2",
+    appVersionCode: "31602",
     appLanguage: getAppLanguage(hostLanguage),
     uniCompileVersion: "4.87",
     uniCompilerVersion: "4.87",
@@ -938,8 +938,8 @@ var getAppBaseInfo = {
     result = sortObject(Object.assign(result, {
       appId: "__UNI__AKPMS",
       appName: "爱康医务室管理系统",
-      appVersion: "1.0.0",
-      appVersionCode: "100",
+      appVersion: "3.16.2",
+      appVersionCode: "31602",
       appLanguage: getAppLanguage(hostLanguage),
       hostVersion: version,
       hostLanguage: hostLanguage,
@@ -11187,107 +11187,7 @@ if ( true && module.exports) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 45 */
-/*!***********************************!*\
-  !*** D:/AK-PMS/utils/tabSwipe.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createTabSwipeMixin = createTabSwipeMixin;
-exports.getTabRoutes = getTabRoutes;
-var TAB_ROUTES = ['/pages/index/index', '/pages/stock/index', '/pages/record/index', '/pages/user/index'];
-function clampTabIndex(index) {
-  if (index < 0) {
-    return 0;
-  }
-  if (index >= TAB_ROUTES.length) {
-    return TAB_ROUTES.length - 1;
-  }
-  return index;
-}
-function createTabSwipeMixin(currentIndex) {
-  var safeIndex = clampTabIndex(currentIndex);
-  return {
-    data: function data() {
-      return {
-        _tabSwipeStartX: 0,
-        _tabSwipeStartY: 0,
-        _tabSwipeStartTime: 0,
-        _tabSwipeLock: false
-      };
-    },
-    methods: {
-      onTabTouchStart: function onTabTouchStart(e) {
-        if (!e.changedTouches || e.changedTouches.length === 0) {
-          return;
-        }
-        var touch = e.changedTouches[0];
-        this._tabSwipeStartX = touch.pageX || touch.clientX || 0;
-        this._tabSwipeStartY = touch.pageY || touch.clientY || 0;
-        this._tabSwipeStartTime = Date.now();
-        this._tabSwipeLock = false;
-      },
-      onTabTouchEnd: function onTabTouchEnd(e) {
-        var _this = this;
-        if (this._tabSwipeLock) {
-          return;
-        }
-        if (!e.changedTouches || e.changedTouches.length === 0) {
-          return;
-        }
-        var touch = e.changedTouches[0];
-        var endX = touch.pageX || touch.clientX || 0;
-        var endY = touch.pageY || touch.clientY || 0;
-        var deltaX = endX - this._tabSwipeStartX;
-        var deltaY = endY - this._tabSwipeStartY;
-        var deltaTime = Date.now() - this._tabSwipeStartTime;
-        var MIN_DISTANCE = 80;
-        var MAX_VERTICAL_OFFSET = 100;
-        var MAX_DURATION = 800;
-        if (Math.abs(deltaX) < MIN_DISTANCE) {
-          return;
-        }
-        if (Math.abs(deltaY) > MAX_VERTICAL_OFFSET) {
-          return;
-        }
-        if (deltaTime > MAX_DURATION) {
-          return;
-        }
-        var direction = deltaX < 0 ? 1 : -1;
-        var nextIndex = safeIndex + direction;
-        if (nextIndex < 0 || nextIndex >= TAB_ROUTES.length) {
-          return;
-        }
-        this._tabSwipeLock = true;
-        var targetUrl = TAB_ROUTES[nextIndex];
-        uni.switchTab({
-          url: targetUrl,
-          fail: function fail() {
-            _this._tabSwipeLock = false;
-          },
-          complete: function complete() {
-            setTimeout(function () {
-              _this._tabSwipeLock = false;
-            }, 300);
-          }
-        });
-      }
-    }
-  };
-}
-function getTabRoutes() {
-  return [].concat(TAB_ROUTES);
-}
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
+/* 45 */,
 /* 46 */,
 /* 47 */,
 /* 48 */,
@@ -11311,8 +11211,7 @@ function getTabRoutes() {
 /* 66 */,
 /* 67 */,
 /* 68 */,
-/* 69 */,
-/* 70 */
+/* 69 */
 /*!*******************************!*\
   !*** D:/AK-PMS/utils/auth.js ***!
   \*******************************/
@@ -11585,6 +11484,7 @@ exports.authMixin = authMixin;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
+/* 70 */,
 /* 71 */,
 /* 72 */,
 /* 73 */,
@@ -11608,16 +11508,7 @@ exports.authMixin = authMixin;
 /* 91 */,
 /* 92 */,
 /* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */
+/* 94 */
 /*!*********************************!*\
   !*** D:/AK-PMS/utils/common.js ***!
   \*********************************/
@@ -11625,15 +11516,13 @@ exports.authMixin = authMixin;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(wx, uni) {
+/* WEBPACK VAR INJECTION */(function(uni) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
 var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
 var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
 /**
@@ -11755,265 +11644,6 @@ var Common = /*#__PURE__*/function () {
     }
 
     /**
-     * 汉字转拼音首字母
-     * @param {String} str 汉字字符串
-     * @returns {String} 拼音首字母
-     */
-  }, {
-    key: "toPinyin",
-    value: function toPinyin(str) {
-      // 简化版拼音首字母转换
-      // 实际项目中建议使用专业的拼音库，如 pinyin-pro
-      var pinyinMap = {
-        '阿': 'A',
-        '啊': 'A',
-        '哎': 'A',
-        '爱': 'A',
-        '安': 'A',
-        '八': 'B',
-        '把': 'B',
-        '白': 'B',
-        '百': 'B',
-        '半': 'B',
-        '草': 'C',
-        '层': 'C',
-        '查': 'C',
-        '长': 'C',
-        '常': 'C',
-        '的': 'D',
-        '地': 'D',
-        '点': 'D',
-        '定': 'D',
-        '东': 'D',
-        '二': 'E',
-        '发': 'F',
-        '方': 'F',
-        '放': 'F',
-        '非': 'F',
-        '分': 'F',
-        '个': 'G',
-        '给': 'G',
-        '根': 'G',
-        '更': 'G',
-        '工': 'G',
-        '哈': 'H',
-        '还': 'H',
-        '好': 'H',
-        '和': 'H',
-        '很': 'H',
-        '基': 'J',
-        '机': 'J',
-        '几': 'J',
-        '己': 'J',
-        '济': 'J',
-        '可': 'K',
-        '克': 'K',
-        '口': 'K',
-        '快': 'K',
-        '拉': 'L',
-        '来': 'L',
-        '老': 'L',
-        '了': 'L',
-        '里': 'L',
-        '马': 'M',
-        '吗': 'M',
-        '么': 'M',
-        '们': 'M',
-        '米': 'M',
-        '那': 'N',
-        '哪': 'N',
-        '呢': 'N',
-        '能': 'N',
-        '你': 'N',
-        '片': 'P',
-        '平': 'P',
-        '破': 'P',
-        '普': 'P',
-        '七': 'Q',
-        '期': 'Q',
-        '其': 'Q',
-        '起': 'Q',
-        '前': 'Q',
-        '人': 'R',
-        '日': 'R',
-        '如': 'R',
-        '三': 'S',
-        '色': 'S',
-        '上': 'S',
-        '少': 'S',
-        '生': 'S',
-        '他': 'T',
-        '她': 'T',
-        '它': 'T',
-        '太': 'T',
-        '特': 'T',
-        '我': 'W',
-        '五': 'W',
-        '物': 'W',
-        '西': 'X',
-        '下': 'X',
-        '先': 'X',
-        '现': 'X',
-        '小': 'X',
-        '一': 'Y',
-        '也': 'Y',
-        '要': 'Y',
-        '业': 'Y',
-        '用': 'Y',
-        '在': 'Z',
-        '早': 'Z',
-        '怎': 'Z',
-        '这': 'Z',
-        '中': 'Z'
-      };
-      var result = '';
-      for (var i = 0; i < str.length; i++) {
-        var char = str[i];
-        result += pinyinMap[char] || char.toUpperCase();
-      }
-      return result;
-    }
-
-    /**
-     * 金额格式化
-     * @param {Number} amount 金额
-     * @returns {String} 格式化后的金额
-     */
-  }, {
-    key: "formatMoney",
-    value: function formatMoney(amount) {
-      if (!amount) return '¥0.00';
-      return "\xA5".concat(amount.toFixed(2));
-    }
-
-    /**
-     * 上传图片到云存储
-     * @param {String} filePath 本地文件路径
-     * @param {String} cloudPath 云端路径
-     * @returns {Promise<String>} 云端文件ID
-     */
-  }, {
-    key: "uploadImage",
-    value: function () {
-      var _uploadImage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(filePath, cloudPath) {
-        var res;
-        return _regenerator.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.prev = 0;
-                _context.next = 3;
-                return wx.cloud.uploadFile({
-                  cloudPath: cloudPath,
-                  filePath: filePath
-                });
-              case 3:
-                res = _context.sent;
-                return _context.abrupt("return", res.fileID);
-              case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
-                console.error('图片上传失败:', _context.t0);
-                throw _context.t0;
-              case 11:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[0, 7]]);
-      }));
-      function uploadImage(_x, _x2) {
-        return _uploadImage.apply(this, arguments);
-      }
-      return uploadImage;
-    }()
-    /**
-     * 获取临时文件URL
-     * @param {Array<String>} fileList 文件ID列表
-     * @returns {Promise<Array>} 临时URL列表
-     */
-  }, {
-    key: "getTempFileURL",
-    value: function () {
-      var _getTempFileURL = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(fileList) {
-        var res;
-        return _regenerator.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
-                return wx.cloud.getTempFileURL({
-                  fileList: fileList
-                });
-              case 3:
-                res = _context2.sent;
-                return _context2.abrupt("return", res.fileList);
-              case 7:
-                _context2.prev = 7;
-                _context2.t0 = _context2["catch"](0);
-                console.error('获取临时URL失败:', _context2.t0);
-                throw _context2.t0;
-              case 11:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, null, [[0, 7]]);
-      }));
-      function getTempFileURL(_x3) {
-        return _getTempFileURL.apply(this, arguments);
-      }
-      return getTempFileURL;
-    }()
-    /**
-     * 防抖函数
-     * @param {Function} func 要防抖的函数
-     * @param {Number} delay 延迟时间（毫秒）
-     * @returns {Function} 防抖后的函数
-     */
-  }, {
-    key: "debounce",
-    value: function debounce(func) {
-      var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
-      var timer = null;
-      return function () {
-        var _this = this;
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(function () {
-          func.apply(_this, args);
-        }, delay);
-      };
-    }
-
-    /**
-     * 节流函数
-     * @param {Function} func 要节流的函数
-     * @param {Number} delay 延迟时间（毫秒）
-     * @returns {Function} 节流后的函数
-     */
-  }, {
-    key: "throttle",
-    value: function throttle(func) {
-      var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
-      var timer = null;
-      var lastTime = 0;
-      return function () {
-        var now = Date.now();
-        if (now - lastTime >= delay) {
-          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-          }
-          func.apply(this, args);
-          lastTime = now;
-        }
-      };
-    }
-
-    /**
      * 获取系统信息（兼容新旧API）
      * @returns {Object} 系统信息对象
      */
@@ -12048,7 +11678,7 @@ var Common = /*#__PURE__*/function () {
   return Common;
 }();
 exports.default = Common;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ })
 ]]);

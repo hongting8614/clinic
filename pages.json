@@ -31,12 +31,7 @@
 				"navigationBarTitleText": "关于项目"
 			}
 		},
-		{
-			"path": "pages/test/dialog",
-			"style": {
-				"navigationBarTitleText": "弹窗测试"
-			}
-		},
+
 		{
 			"path": "pages/record/index",
 			"style": {

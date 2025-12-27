@@ -16,6 +16,10 @@ exports.main = async (event, context) => {
       case 'getList':
         return await getList(data)
       
+      // 获取库存列表（按园区，按药材汇总）⭐ 新增
+      case 'getStockList':
+        return await getStockList(data)
+      
       // 获取批次列表
       case 'getBatchList':
         return await getBatchList(data)
@@ -90,6 +94,157 @@ async function getList(data) {
     }
   } catch (err) {
     console.error('获取库存列表失败:', err)
+    return {
+      success: false,
+      message: err.message || '获取失败'
+    }
+  }
+}
+
+// 获取库存列表（按园区，按药材汇总）⭐ 新增 - 用于门诊开方
+async function getStockList(data) {
+  const { 
+    location, 
+    page = 1, 
+    pageSize = 1000,
+    keyword = '' 
+  } = data
+  
+  try {
+    if (!location) {
+      return {
+        success: false,
+        message: '园区参数不能为空'
+      }
+    }
+    
+    // 构建查询条件
+    const whereCondition = {
+      location: location,
+      quantity: _.gt(0)  // 只查询有库存的
+    }
+    
+    // 如果有关键词，添加名称模糊查询
+    if (keyword && keyword.trim()) {
+      whereCondition.drugName = db.RegExp({
+        regexp: keyword.trim(),
+        options: 'i'
+      })
+    }
+    
+    // 查询所有符合条件的库存记录
+    const stockRes = await db.collection('stock')
+      .where(whereCondition)
+      .get()
+    
+    const records = stockRes.data || []
+    
+    // 按 drugId 汇总
+    const groupedMap = {}
+    
+    for (const item of records) {
+      const drugId = item.drugId
+      if (!drugId) continue
+      
+      if (!groupedMap[drugId]) {
+        groupedMap[drugId] = {
+          drugId: drugId,
+          drugName: item.drugName || '',
+          specification: item.specification || item.spec || '',
+          minUnit: item.minUnit || item.unit || '',
+          packUnit: item.packUnit || item.unit || '',
+          conversionRate: item.conversionRate || 1,
+          quantity: 0,  // 总数量（最小单位）
+          batches: []  // 批次列表
+        }
+      }
+      
+      const group = groupedMap[drugId]
+      const qty = Number(item.quantity) || 0
+      group.quantity += qty
+      
+      // 添加批次信息
+      if (qty > 0) {
+        group.batches.push({
+          _id: item._id,
+          batch: item.batch || '',
+          quantity: qty,
+          expireDate: item.expireDate,
+          productionDate: item.productionDate
+        })
+      }
+    }
+    
+    // 尝试从药品档案获取完整信息（补充缺失的字段）
+    const drugIds = Object.keys(groupedMap)
+    if (drugIds.length > 0) {
+      try {
+        const drugsRes = await db.collection('drugs')
+          .where({
+            _id: _.in(drugIds)
+          })
+          .get()
+        
+        const drugsMap = {}
+        drugsRes.data.forEach(drug => {
+          drugsMap[drug._id] = drug
+        })
+        
+        // 补充药品档案中的信息
+        for (const drugId in groupedMap) {
+          const drug = drugsMap[drugId]
+          if (drug) {
+            const group = groupedMap[drugId]
+            // 如果库存记录中没有这些字段，从药品档案中获取
+            if (!group.specification || group.specification === '') {
+              group.specification = drug.specification || drug.spec || ''
+            }
+            if (!group.minUnit || group.minUnit === '') {
+              group.minUnit = drug.minUnit || drug.unit || ''
+            }
+            if (!group.packUnit || group.packUnit === '') {
+              group.packUnit = drug.packUnit || drug.unit || ''
+            }
+            if (!group.conversionRate || group.conversionRate === 1) {
+              group.conversionRate = drug.conversionRate || 1
+            }
+            // 确保药品名称是最新的
+            if (drug.drugName || drug.name) {
+              group.drugName = drug.drugName || drug.name
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('从药品档案获取信息失败，使用库存记录中的信息:', err)
+        // 继续使用库存记录中的信息
+      }
+    }
+    
+    // 转换为数组并排序
+    let list = Object.values(groupedMap)
+    list.sort((a, b) => {
+      // 按药品名称排序
+      const nameA = (a.drugName || '').toLowerCase()
+      const nameB = (b.drugName || '').toLowerCase()
+      return nameA.localeCompare(nameB)
+    })
+    
+    // 分页
+    const start = (page - 1) * pageSize
+    const end = start + pageSize
+    const pagedList = list.slice(start, end)
+    
+    return {
+      success: true,
+      data: {
+        list: pagedList,
+        total: list.length,
+        page: page,
+        pageSize: pageSize
+      }
+    }
+  } catch (err) {
+    console.error('获取园区库存列表失败:', err)
     return {
       success: false,
       message: err.message || '获取失败'
@@ -179,10 +334,25 @@ async function getBatchesByDrugId(data) {
     const expireDate = new Date(batch.expireDate)
     const isNearExpiry = expireDate <= threeMonthsLater
     
+    // 确保 quantity 是数字类型
+    const quantity = Number(batch.quantity) || 0
+    
     return {
       ...batch,
-      isNearExpiry: isNearExpiry
+      quantity: quantity,  // 确保是数字类型
+      isNearExpiry: isNearExpiry,
+      daysToExpiry: Math.floor((expireDate - now) / (1000 * 60 * 60 * 24))
     }
+  })
+  
+  console.log('  ✅ 返回批次列表:', batchList.length, '个')
+  batchList.forEach((batch, i) => {
+    console.log(`    批次${i + 1}:`, {
+      batch: batch.batch,
+      quantity: batch.quantity,
+      location: batch.location,
+      expireDate: batch.expireDate
+    })
   })
   
   return {

@@ -1,5 +1,5 @@
 <template>
-	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
+	<view class="page">
 		<!-- 用户信息卡片 - 科技风格 -->
 		<view class="user-profile">
 			<view class="profile-bg">
@@ -218,10 +218,8 @@
 
 <script>
 import { login, checkLogin, getUserInfo } from '@/utils/auth.js'
-import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
-	mixins: [createTabSwipeMixin(3)],
 	data() {
 		return {
 			userInfo: {

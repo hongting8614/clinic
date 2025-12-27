@@ -1,0 +1,13 @@
+{
+  "name": "createClinicRecordsCollection",
+  "version": "1.0.0",
+  "description": "临时云函数：创建 clinic_records 集合",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
+
+
+
+

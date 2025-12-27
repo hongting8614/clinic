@@ -1,11 +1,8 @@
 import App from './App'
 import * as api from './utils/api.js'
-// import uviewPlus from 'uview-plus'
 
 // #ifndef VUE3
 import Vue from 'vue'
-// import './uni.promisify.adaptor'
-// Vue.use(uviewPlus)
 
 // 全局注入 API
 Vue.prototype.$api = api
@@ -22,7 +19,6 @@ app.$mount()
 import { createSSRApp } from 'vue'
 export function createApp() {
   const app = createSSRApp(App)
-  // app.use(uviewPlus)
   return {
     app
   }

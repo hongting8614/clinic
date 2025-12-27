@@ -1673,6 +1673,98 @@
   line-height: 1.5;
   font-style: italic;
 }
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info.data-v-0904e2e0 {
+  margin-top: 12rpx;
+  padding: 12rpx;
+  background: #f0f9ff;
+  border-radius: 8rpx;
+  border: 1rpx solid #bfdbfe;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-allocation-header.data-v-0904e2e0 {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 8rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-allocation-header .batch-label.data-v-0904e2e0 {
+  font-size: 24rpx;
+  color: #1e40af;
+  font-weight: 600;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-allocation-header .batch-count.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #3b82f6;
+  background: #dbeafe;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-allocation-header .near-expiry-tag.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+  font-weight: 600;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item.data-v-0904e2e0 {
+  padding: 8rpx;
+  margin-bottom: 6rpx;
+  background: #ffffff;
+  border-radius: 6rpx;
+  border: 1rpx solid #e0e7ff;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item.data-v-0904e2e0:last-child {
+  margin-bottom: 0;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item.near-expiry.data-v-0904e2e0 {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item.near-expiry .batch-number.data-v-0904e2e0 {
+  color: #dc2626;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-row.data-v-0904e2e0 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-row .batch-number.data-v-0904e2e0 {
+  font-size: 24rpx;
+  color: #1e293b;
+  font-weight: 500;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-row .batch-quantity.data-v-0904e2e0 {
+  font-size: 24rpx;
+  color: #3b82f6;
+  font-weight: 600;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-detail.data-v-0904e2e0 {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-detail .batch-expiry.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #64748b;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-allocation-info .batch-item .batch-detail .batch-days.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #dc2626;
+  font-weight: 500;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-single-info.data-v-0904e2e0 {
+  margin-top: 8rpx;
+  padding-left: 52rpx;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-single-info .batch-label.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #666;
+}
+.prescription-body .prescription-drugs-list .prescription-drug-item .batch-single-info .batch-value.data-v-0904e2e0 {
+  font-size: 22rpx;
+  color: #333;
+}
 .prescription-body .prescription-summary.data-v-0904e2e0 {
   margin-top: 20rpx;
   padding-top: 16rpx;

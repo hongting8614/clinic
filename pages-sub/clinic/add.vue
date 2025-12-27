@@ -552,6 +552,36 @@
                 <text class="usage-label">用法：</text>
                 <text class="usage-value">{{ formatUsage(item) }}</text>
               </view>
+              
+              <!-- ✨ FIFO 批次分配信息展示 -->
+              <view v-if="item.batchAllocation && item.batchAllocation.length > 0" class="batch-allocation-info">
+                <view class="batch-allocation-header">
+                  <text class="batch-label">📦 批次分配：</text>
+                  <text class="batch-count">{{ item.batchCount }}个批次</text>
+                  <text v-if="item.hasNearExpiry" class="near-expiry-tag">⚠️ 近效期</text>
+                </view>
+                <view 
+                  v-for="(batch, bIndex) in item.batchAllocation" 
+                  :key="bIndex"
+                  class="batch-item"
+                  :class="{ 'near-expiry': batch.isNearExpiry }"
+                >
+                  <view class="batch-row">
+                    <text class="batch-number">批次{{ bIndex + 1 }}：{{ batch.batch }}</text>
+                    <text class="batch-quantity">{{ batch.quantity }}{{ item.unit }}</text>
+                  </view>
+                  <view class="batch-detail">
+                    <text class="batch-expiry">有效期：{{ formatDate(batch.expireDate) }}</text>
+                    <text v-if="batch.isNearExpiry" class="batch-days">({{ batch.daysToExpire }}天后过期)</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 兼容旧的单批次显示 -->
+              <view v-else-if="item.batchNumber" class="batch-single-info">
+                <text class="batch-label">批次：</text>
+                <text class="batch-value">{{ item.batchNumber }}</text>
+              </view>
             </view>
           </view>
           
@@ -643,6 +673,7 @@
           <text class="required">*</text>
         </view>
         <Signature
+          :key="signatureKey"
           v-model="form.doctorSign"
           title="医生签名"
           @change="onDoctorSignChange"
@@ -1669,6 +1700,9 @@ export default {
       prescriptionNo: '', // 处方编号
       currentDate: '', // 当前日期
       
+      // 签名组件key，用于强制重新渲染
+      signatureKey: 0,
+      
       // 当前正在编辑的药品信息
       currentDrug: {
         dosage: '',
@@ -2067,78 +2101,200 @@ export default {
       }
     },
     
-    // 添加到处方
-    addToPrescription() {
+    // 添加到处方（使用 FIFO 自动分配批次）
+    async addToPrescription() {
+      // 1. 验证：是否选择药品
       if (!this.selectedDrug) {
         uni.showToast({
           title: '请先选择药材',
-          icon: 'none'
+          icon: 'none',
+          duration: 2000
         });
         return;
       }
       
+      // 2. 验证：是否输入数量
       if (!this.form.quantity || this.form.quantity <= 0) {
         uni.showToast({
           title: '请输入有效数量',
-          icon: 'none'
+          icon: 'none',
+          duration: 2000
         });
         return;
       }
       
-      if (this.form.quantity > this.availableStock) {
+      // 3. 调用 FIFO 云函数自动分配批次
+      uni.showLoading({ title: '分配批次中...' });
+      
+      try {
+        const res = await wx.cloud.callFunction({
+          name: 'stockManage',
+          data: {
+            action: 'allocateBatchesFIFO',
+            data: {
+              drugId: this.selectedDrug._id,
+              requiredQuantity: this.form.quantity,
+              location: this.form.location
+            }
+          }
+        });
+        
+        uni.hideLoading();
+        
+        console.log('[FIFO分配结果]:', res.result);
+        
+        if (res.result.success) {
+          const allocation = res.result.data;
+          
+          // 4. 检查是否有近效期药品
+          if (allocation.hasNearExpiry) {
+            // 找出近效期的批次
+            const nearExpiryBatches = allocation.allocation.filter(b => b.isNearExpiry);
+            const nearExpiryInfo = nearExpiryBatches.map(b => 
+              `批次${b.batch}：${b.daysToExpire}天后过期`
+            ).join('\n');
+            
+            // 显示近效期提示，让用户确认
+            uni.showModal({
+              title: '⚠️ 近效期提示',
+              content: `检测到近效期药品（90天内过期）：\n\n${nearExpiryInfo}\n\n是否继续添加到处方？`,
+              confirmText: '继续添加',
+              cancelText: '取消',
+              success: (modalRes) => {
+                if (modalRes.confirm) {
+                  // 用户确认后添加
+                  this.doAddToPrescription(allocation);
+                }
+              }
+            });
+          } else {
+            // 5. 没有近效期，直接添加
+            this.doAddToPrescription(allocation);
+          }
+        } else {
+          // FIFO 分配失败（库存不足等）
+          const errorMsg = res.result.message || '批次分配失败';
+          
+          // 如果是库存不足，给用户选择是否继续
+          if (errorMsg.includes('库存不足')) {
+            uni.showModal({
+              title: '库存不足提醒',
+              content: `${errorMsg}\n\n是否仍要添加到处方？`,
+              confirmText: '仍要添加',
+              cancelText: '取消',
+              success: (modalRes) => {
+                if (modalRes.confirm) {
+                  // 用户确认后，使用空的分配信息添加
+                  this.doAddToPrescription(null);
+                }
+              }
+            });
+          } else {
+            // 其他错误，直接提示
+            uni.showToast({
+              title: errorMsg,
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        }
+      } catch (err) {
+        uni.hideLoading();
+        console.error('[FIFO分配异常]:', err);
         uni.showToast({
-          title: '库存不足',
-          icon: 'none'
+          title: '批次分配失败',
+          icon: 'none',
+          duration: 2000
         });
-        return;
       }
-      
+    },
+    
+    // 执行添加到处方的核心逻辑
+    // @param {Object} allocation - FIFO分配结果（可选）
+    doAddToPrescription(allocation = null) {
       // 使用表单中的用法用量数据
       const dosage = (this.currentDrug.dosage || '').trim();
       const route = (this.currentDrug.route || '').trim();
       const frequency = (this.currentDrug.frequency || '').trim();
       
-      // 添加到处方列表
-      this.prescriptionList.push({
+      // 构建处方项基本信息
+      const prescriptionItem = {
+        // 药品基本信息
         drugId: this.selectedDrug._id,
         drugName: this.selectedDrug.name,
         specification: this.selectedDrug.specification,
+        manufacturer: this.selectedDrug.manufacturer,
+        
+        // 数量和单位
         quantity: this.form.quantity,
         unit: this.getRealMinUnit(this.selectedDrug),
-        batchId: this.selectedBatch?._id,
-        batchNumber: this.selectedBatch?.batch,
+        packUnit: this.selectedDrug.packUnit,
+        minUnit: this.selectedDrug.minUnit,
+        conversionRate: this.selectedDrug.conversionRate,
+        
+        // 用法用量
         dosage: dosage,
         route: route,
         frequency: frequency,
-        usage: (this.currentDrug.usage || '').trim()
-      });
+        usage: (this.currentDrug.usage || '').trim(),
+        
+        // 完整的 drug 对象引用（用于后续处理）
+        drug: this.selectedDrug
+      };
       
-      // 清空当前选择（但保留用法用量，方便连续添加相似药品）
-      this.drugSearchText = '';
-      this.selectedDrug = null;
-      this.selectedBatch = null;
-      this.availableStock = 0;
+      // 如果有 FIFO 分配结果，使用分配的批次信息
+      if (allocation && allocation.allocation && allocation.allocation.length > 0) {
+        // ✅ 使用 FIFO 分配的批次信息
+        prescriptionItem.batchAllocation = allocation.allocation; // 完整的批次分配信息
+        prescriptionItem.batchCount = allocation.batchCount; // 批次数量
+        prescriptionItem.hasNearExpiry = allocation.hasNearExpiry; // 是否有近效期
+        
+        // 为了兼容性，设置第一个批次为主批次
+        const firstBatch = allocation.allocation[0];
+        prescriptionItem.batchId = firstBatch.batchId;
+        prescriptionItem.batchNumber = firstBatch.batch;
+        prescriptionItem.expiryDate = firstBatch.expireDate;
+        prescriptionItem.batch = {
+          _id: firstBatch.batchId,
+          batch: firstBatch.batch,
+          expireDate: firstBatch.expireDate,
+          quantity: firstBatch.quantity
+        };
+      } else {
+        // ✅ 没有 FIFO 分配结果，使用旧的批次选择方式（兼容）
+        prescriptionItem.batchId = this.selectedBatch?._id;
+        prescriptionItem.batchNumber = this.selectedBatch?.batch;
+        prescriptionItem.expiryDate = this.selectedBatch?.expireDate;
+        prescriptionItem.batch = this.selectedBatch;
+        prescriptionItem.batchAllocation = null;
+        prescriptionItem.batchCount = this.selectedBatch ? 1 : 0;
+        prescriptionItem.hasNearExpiry = false;
+      }
+      
+      // 添加到处方列表
+      this.prescriptionList.push(prescriptionItem);
+      
+      // ✅ 自动开启处方开关
+      if (!this.enablePrescription) {
+        this.enablePrescription = true;
+      }
+      
+      // ✅ 清空数量输入框
       this.form.quantity = null;
-      this.showDrugList = false;
       
-      // 保留用法用量信息，方便用户连续添加药品
-      // 如果需要清空，用户可以手动修改
-      // this.currentDrug = {
-      //   dosage: '',
-      //   frequency: '',
-      //   route: '',
-      //   usage: ''
-      // };
-      // this.frequencyIndex = 0;
-      // this.routeIndex = 0;
+      // ✅ 重新加载批次和库存
+      if (this.selectedDrug && this.selectedDrug._id) {
+        this.loadBatches();
+      }
       
+      // 成功提示
       uni.showToast({
-        title: '已加入处方',
+        title: `已加入处方：${this.selectedDrug.name}`,
         icon: 'success',
-        duration: 1500
+        duration: 2000
       });
       
-      // 自动滚动到处方区域，让用户看到添加结果
+      // ✅ 滚动到处方区域，让用户看到添加结果
       this.$nextTick(() => {
         uni.pageScrollTo({
           selector: '.prescription-section',
@@ -2709,6 +2865,28 @@ export default {
       }
     },
 
+    // 药材输入框获得焦点
+    onDrugInputFocus() {
+      // 检查是否已选择园区
+      if (!this.form.location) {
+        uni.showToast({
+          title: '请先选择就诊园区',
+          icon: 'none',
+          duration: 2000
+        });
+        this.showLocationTip = true;
+        return;
+      }
+      
+      // 如果没有搜索内容，加载当前园区的所有药材
+      if (!this.drugSearchText || this.drugSearchText.trim() === '') {
+        this.loadLocationDrugs();
+      }
+      
+      // 显示药品下拉列表
+      this.showDrugList = true;
+    },
+
     // 药材搜索
     onDrugSearch() {
       if (!this.drugSearchText || this.drugSearchText.trim() === '') {
@@ -3062,12 +3240,12 @@ export default {
       );
 
       if (bestRecord) {
-        // 智能填充：只填充空白字段，保留用户已输入的内容
+        // 智能填充：强制更新症状和处置，确保与诊断一致
         this.smartFillFields(bestRecord, {
           preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),  // 如果主诉已输入，保留
-          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),           // 如果症状已输入，保留
+          preserveSymptom: false,           // ⚠️ 强制更新症状，确保与诊断一致
           preserveDiagnosis: false,  // 诊断字段用新选择的替换
-          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())        // 如果处置已输入，保留
+          preserveTreatment: false        // ⚠️ 强制更新处置，确保与诊断一致
         });
         
         // 确保诊断字段使用选择的诊断（如果模板中有完整诊断组合，使用组合；否则使用选择的诊断）
@@ -3831,8 +4009,8 @@ export default {
       this.showDrugSelector = false;
       
       // 从药材档案获取完整信息
+      uni.showLoading({ title: '加载药材信息...' });
       try {
-        uni.showLoading({ title: '加载药材信息...' });
         const res = await wx.cloud.callFunction({
           name: 'drugManage',
           data: {
@@ -3873,6 +4051,7 @@ export default {
           conversionRate: drug.conversionRate || 1
         };
       } finally {
+        // 关闭第一个loading
         uni.hideLoading();
       }
       
@@ -3881,13 +4060,29 @@ export default {
         this.currentDrug.dosage = this.getDefaultDosage(this.selectedDrug);
       }
       
-      // 加载该园区的批次和库存
+      // 加载该园区的批次和库存（loadBatches内部会管理loading状态）
       await this.loadBatches();
     },
 
     async loadBatches() {
+      if (!this.form.drugId || !this.form.location) {
+        console.warn('[loadBatches] 缺少必要参数:', {
+          drugId: this.form.drugId,
+          location: this.form.location
+        });
+        this.selectedBatch = null;
+        this.availableStock = 0;
+        return;
+      }
+      
       uni.showLoading({ title: '加载库存...' });
       try {
+        console.log('[loadBatches] 查询参数:', {
+          drugId: this.form.drugId,
+          location: this.form.location,
+          enableFIFO: true
+        });
+        
         const res = await wx.cloud.callFunction({
           name: 'stockManage',
           data: {
@@ -3900,11 +4095,24 @@ export default {
           }
         });
 
-        if (res.result.success && res.result.data.length > 0) {
+        console.log('[loadBatches] 查询结果:', res.result);
+
+        if (res.result.success && res.result.data && res.result.data.length > 0) {
           const batches = res.result.data;
+          console.log('[loadBatches] 找到批次:', batches.length, '个');
+          console.log('[loadBatches] 批次详情:', batches);
+          
           this.selectedBatch = batches[0];
-          this.availableStock = batches.reduce((sum, b) => sum + b.quantity, 0);
+          // 确保数量是数字类型
+          this.availableStock = batches.reduce((sum, b) => {
+            const qty = Number(b.quantity) || 0;
+            console.log('[loadBatches] 批次数量:', b.batch, '=', qty);
+            return sum + qty;
+          }, 0);
+          
+          console.log('[loadBatches] 总库存:', this.availableStock);
         } else {
+          console.warn('[loadBatches] 未找到批次或查询失败:', res.result);
           this.selectedBatch = null;
           this.availableStock = 0;
           const parkName = this.form.location === 'land_park' ? '陆园' : '水园';
@@ -3915,10 +4123,13 @@ export default {
           });
         }
       } catch (err) {
+        console.error('[loadBatches] 查询异常:', err);
         uni.showToast({
           title: '加载库存失败',
           icon: 'none'
         });
+        this.selectedBatch = null;
+        this.availableStock = 0;
       } finally {
         uni.hideLoading();
       }
@@ -3999,8 +4210,169 @@ export default {
       }
 
       // 用药信息为选填：仅当选择了药材且数量>0时，才视为用药登记
+      // 优先检查处方列表，如果有处方列表，使用处方列表；否则使用单个药品
       let hasValidDrugUsage = false;
-      if (this.selectedDrug) {
+      let drugItems = []; // 需要提交的药品列表
+      
+      // 优先使用处方列表
+      if (this.prescriptionList && this.prescriptionList.length > 0) {
+        // 验证处方列表中每个药品的库存
+        for (let i = 0; i < this.prescriptionList.length; i++) {
+          const item = this.prescriptionList[i];
+          if (!item.drugId || !item.quantity || item.quantity <= 0) {
+            continue;
+          }
+          
+          // 获取药品详细信息
+          try {
+            console.log('🔍 [提交处方] 获取药品详细信息:', {
+              drugId: item.drugId,
+              drugName: item.drugName,
+              index: i
+            });
+            
+            const drugRes = await wx.cloud.callFunction({
+              name: 'drugManage',
+              data: {
+                action: 'getDetail',
+                data: { id: item.drugId }
+              }
+            });
+            
+            console.log('📦 [提交处方] 药品信息查询结果:', {
+              success: drugRes.result?.success,
+              hasData: !!drugRes.result?.data,
+              error: drugRes.result?.error
+            });
+            
+            if (!drugRes.result.success || !drugRes.result.data) {
+              uni.hideLoading();
+              this.submitting = false;
+              
+              // 提供更详细的错误信息
+              let errorMsg = `药品${item.drugName || ''}信息获取失败`;
+              if (drugRes.result?.error) {
+                errorMsg += `\n\n错误详情: ${drugRes.result.error}`;
+              }
+              if (!item.drugId) {
+                errorMsg += `\n\n可能原因: 药品ID为空`;
+              } else {
+                errorMsg += `\n\n药品ID: ${item.drugId}`;
+              }
+              errorMsg += `\n\n建议: 请重新选择该药品后再添加到处方`;
+              
+              console.error('❌ [提交处方] 药品信息获取失败:', {
+                drugId: item.drugId,
+                drugName: item.drugName,
+                error: drugRes.result?.error
+              });
+              
+              uni.showModal({
+                title: '药品信息获取失败',
+                content: errorMsg,
+                showCancel: false,
+                confirmText: '知道了'
+              });
+              return;
+            }
+            
+            const drug = drugRes.result.data;
+            
+            // 获取批次信息
+            console.log('🔍 [提交处方] 获取批次信息:', {
+              drugId: item.drugId,
+              drugName: item.drugName,
+              location: this.form.location,
+              locationName: this.form.location === 'land_park' ? '陆园' : '水园'
+            });
+            
+            const batchRes = await wx.cloud.callFunction({
+              name: 'stockManage',
+              data: {
+                action: 'getBatchesByDrugId',
+                data: {
+                  drugId: item.drugId,
+                  location: this.form.location,
+                  enableFIFO: true
+                }
+              }
+            });
+            
+            console.log('📦 [提交处方] 批次查询结果:', {
+              success: batchRes.result.success,
+              dataLength: batchRes.result.data ? batchRes.result.data.length : 0,
+              message: batchRes.result.message
+            });
+            
+            if (!batchRes.result.success || !batchRes.result.data || batchRes.result.data.length === 0) {
+              // 提供更详细的错误信息
+              const locationName = this.form.location === 'land_park' ? '陆园' : '水园';
+              let errorMsg = `药品${item.drugName || ''}当前库存取货失败`;
+              
+              if (!batchRes.result.success) {
+                errorMsg += `\n\n失败原因: ${batchRes.result.message || '查询失败'}`;
+              } else if (!batchRes.result.data || batchRes.result.data.length === 0) {
+                errorMsg += `\n\n失败原因: ${locationName}暂无库存`;
+                errorMsg += `\n\n建议: 请检查该药品是否已入库到${locationName}`;
+              }
+              
+              console.error('❌ [提交处方] 批次获取失败:', errorMsg);
+              
+              uni.hideLoading();
+              this.submitting = false;
+              uni.showModal({
+                title: '库存获取失败',
+                content: errorMsg,
+                showCancel: false,
+                confirmText: '知道了'
+              });
+              return;
+            }
+            
+            const batches = batchRes.result.data;
+            const totalStock = batches.reduce((sum, b) => sum + b.quantity, 0);
+            const batch = item.batchId 
+              ? batches.find(b => b._id === item.batchId) || batches[0]
+              : batches[0];
+            
+            // 验证库存
+            if (item.quantity > totalStock) {
+              uni.hideLoading();
+              this.submitting = false;
+              uni.showToast({
+                title: `${item.drugName || ''}库存不足，最多${totalStock}${drug.minUnit || item.unit}`,
+                icon: 'none',
+                duration: 3000
+              });
+              return;
+            }
+            
+            // 添加到药品列表
+            drugItems.push({
+              drugId: item.drugId,
+              drugName: item.drugName || drug.name,
+              specification: item.specification || drug.specification,
+              quantity: Math.floor(item.quantity),
+              unit: item.unit || drug.minUnit,
+              batchId: batch._id,
+              batch: batch.batch,
+              drug: drug
+            });
+          } catch (err) {
+            console.error(`获取药品${item.drugName}信息失败:`, err);
+            uni.hideLoading();
+            this.submitting = false;
+            uni.showToast({
+              title: `获取${item.drugName || ''}信息失败`,
+              icon: 'none'
+            });
+            return;
+          }
+        }
+        
+        hasValidDrugUsage = drugItems.length > 0;
+      } else if (this.selectedDrug) {
+        // 使用单个药品（原有逻辑）
         if (this.form.quantity && this.form.quantity > 0) {
           // 验证库存（园区使用最小单位，直接比较）
           if (this.form.quantity > this.availableStock) {
@@ -4011,6 +4383,18 @@ export default {
             });
             return;
           }
+          
+          drugItems.push({
+            drugId: this.form.drugId,
+            drugName: this.selectedDrug.name,
+            specification: this.selectedDrug.specification,
+            quantity: Math.floor(this.form.quantity),
+            unit: this.getRealMinUnit(this.selectedDrug),
+            batchId: this.selectedBatch._id,
+            batch: this.selectedBatch.batch,
+            drug: this.selectedDrug
+          });
+          
           hasValidDrugUsage = true;
         } else {
           // 选择了药材但未填写有效数量，视为本次不登记用药，清空用药相关状态
@@ -4026,8 +4410,8 @@ export default {
       uni.showLoading({ title: '保存中...' });
 
       try {
-        // 准备数据
-        const submitData = {
+        // 准备基础数据
+        const baseData = {
           visitDateTime: this.form.visitDateTime,
           name: this.form.name.trim(),
           gender: this.form.gender,
@@ -4044,88 +4428,223 @@ export default {
           remark: this.form.remark.trim()
         };
 
-        // 如果有有效用药信息，云函数会从对应园区扣减库存
-        if (hasValidDrugUsage && this.selectedDrug && this.form.quantity) {
-          // 确保数量是整数，避免小数
-          const intQuantity = Math.floor(this.form.quantity);
+        // 如果有多个药品，需要为每个药品创建一条记录
+        if (drugItems.length > 1) {
+          // 多个药品：为每个药品创建一条门诊记录
+          let successCount = 0;
+          let failCount = 0;
           
-          // 获取真正的最小单位（从规格中提取，如"粒"）
-          const realMinUnit = this.getRealMinUnit(this.selectedDrug);
+          for (let i = 0; i < drugItems.length; i++) {
+            const item = drugItems[i];
+            const submitData = { ...baseData };
+            
+            // 设置药品信息
+            const realMinUnit = item.unit || item.drug.minUnit;
+            // 确保quantityMin是数字类型且大于0
+            const quantityMin = Math.floor(Number(item.quantity)) || 0;
+            if (quantityMin <= 0) {
+              console.warn(`药品${item.drugName}的数量无效:`, item.quantity);
+              failCount++;
+              continue;
+            }
+            
+            submitData.drugId = item.drugId;
+            submitData.drugName = item.drugName;
+            submitData.specification = item.specification || item.drug.specification;
+            submitData.batchId = item.batchId;
+            submitData.quantityMin = quantityMin; // 确保是数字类型
+            submitData.minUnit = realMinUnit;
+            submitData.packUnit = item.drug.packUnit || item.drug.unit;
+            submitData.conversionRate = item.drug.conversionRate || 1;
+            submitData.patient = this.form.name.trim();
+            submitData.symptom = (this.form.symptom || this.form.chiefComplaint || '').trim();
+            
+            // 构建drugInfo（使用quantityMin而不是item.quantity）
+            submitData.drugInfo = `${item.drugName} ${quantityMin}${realMinUnit}`;
+            
+            try {
+              const res = await wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'add',
+                  data: submitData
+                }
+              });
+              
+              if (res.result.success) {
+                successCount++;
+              } else {
+                failCount++;
+                console.error(`药品${item.drugName}提交失败:`, res.result.error);
+              }
+            } catch (err) {
+              failCount++;
+              console.error(`药品${item.drugName}提交异常:`, err);
+            }
+          }
           
-          submitData.drugInfo = {
-            drugId: this.form.drugId,  // 系统内部ID（主键）
-            drugCode: this.selectedDrug.drugCode || this.selectedDrug.code || '',  // 药材代码（业务编码）
-              drugName: this.selectedDrug.name,
-              specification: this.selectedDrug.specification,
-            unit: realMinUnit,
-            quantity: intQuantity,
-              batchId: this.selectedBatch._id,
-            batch: this.selectedBatch.batch,
-            location: this.form.location,  // 关联园区
-              minUnit: realMinUnit,
-              packUnit: this.selectedDrug.packUnit,
-            conversionRate: this.selectedDrug.conversionRate
-          };
+          if (failCount > 0) {
+            uni.showToast({
+              title: `部分药品提交失败(${successCount}/${drugItems.length})`,
+              icon: 'none',
+              duration: 3000
+            });
+          } else {
+            // 提示保存为模板
+            this.promptSaveTemplate();
+            
+            if (this.continueAfterSubmit) {
+              uni.showToast({
+                title: '登记成功，可继续登记',
+                icon: 'success',
+                duration: 2000
+              });
+              setTimeout(() => {
+                this.resetForm();
+                uni.pageScrollTo({
+                  scrollTop: 0,
+                  duration: 300
+                });
+              }, 800);
+            } else {
+              uni.showToast({
+                title: '登记成功',
+                icon: 'success'
+              });
+              setTimeout(() => {
+                this.resetForm();
+                uni.navigateBack();
+              }, 1500);
+            }
+          }
+        } else if (drugItems.length === 1) {
+          // 单个药品：使用原有逻辑
+          const item = drugItems[0];
+          const submitData = { ...baseData };
           
-          // 兼容旧字段
-          submitData.drugId = this.form.drugId;  // 系统内部ID（主键）
-          submitData.drugCode = this.selectedDrug.drugCode || this.selectedDrug.code || '';  // 药材代码（业务编码）
-          submitData.drugName = this.selectedDrug.name;
-          submitData.specification = this.selectedDrug.specification;
-          submitData.batchId = this.selectedBatch._id;
-          submitData.quantityMin = intQuantity;
+          const realMinUnit = item.unit || item.drug.minUnit;
+          // 确保quantityMin是数字类型且大于0
+          const quantityMin = Math.floor(Number(item.quantity)) || 0;
+          if (quantityMin <= 0) {
+            uni.showToast({
+              title: '药品数量无效',
+              icon: 'none'
+            });
+            this.submitting = false;
+            uni.hideLoading();
+            return;
+          }
+          
+          submitData.drugId = item.drugId;
+          submitData.drugName = item.drugName;
+          submitData.specification = item.specification || item.drug.specification;
+          submitData.batchId = item.batchId;
+          submitData.quantityMin = quantityMin; // 确保是数字类型
           submitData.minUnit = realMinUnit;
-          submitData.packUnit = this.selectedDrug.packUnit;
-          submitData.conversionRate = this.selectedDrug.conversionRate;
+          submitData.packUnit = item.drug.packUnit || item.drug.unit;
+          submitData.conversionRate = item.drug.conversionRate || 1;
           submitData.patient = this.form.name.trim();
           submitData.symptom = (this.form.symptom || this.form.chiefComplaint || '').trim();
-        }
-
-        const res = await wx.cloud.callFunction({
-          name: 'clinicRecords',
-          data: {
-            action: 'add',
-            data: submitData
-          }
-        });
-
-        if (res.result.success) {
-          // 提示保存为模板
-          this.promptSaveTemplate();
           
-          if (this.continueAfterSubmit) {
-            // 连续登记模式：立即清空表单
-          uni.showToast({
-              title: '登记成功，可继续登记',
-              icon: 'success',
-              duration: 2000
+          submitData.drugInfo = {
+            drugId: item.drugId,
+            drugCode: item.drug.drugCode || item.drug.code || '',
+            drugName: item.drugName,
+            specification: item.specification || item.drug.specification,
+            unit: realMinUnit,
+            quantity: item.quantity,
+            batchId: item.batchId,
+            batch: item.batch,
+            location: this.form.location,
+            minUnit: realMinUnit,
+            packUnit: item.drug.packUnit || item.drug.unit,
+            conversionRate: item.drug.conversionRate || 1
+          };
+          
+          const res = await wx.cloud.callFunction({
+            name: 'clinicRecords',
+            data: {
+              action: 'add',
+              data: submitData
+            }
           });
 
-            setTimeout(() => {
-            this.resetForm();
-              // 滚动到顶部
-              uni.pageScrollTo({
-                scrollTop: 0,
-                duration: 300
+          if (res.result.success) {
+            // 提示保存为模板
+            this.promptSaveTemplate();
+            
+            if (this.continueAfterSubmit) {
+              uni.showToast({
+                title: '登记成功，可继续登记',
+                icon: 'success',
+                duration: 2000
               });
-            }, 800);
+              setTimeout(() => {
+                this.resetForm();
+                uni.pageScrollTo({
+                  scrollTop: 0,
+                  duration: 300
+                });
+              }, 800);
+            } else {
+              uni.showToast({
+                title: '登记成功',
+                icon: 'success'
+              });
+              setTimeout(() => {
+                this.resetForm();
+                uni.navigateBack();
+              }, 1500);
+            }
           } else {
-            // 返回列表
             uni.showToast({
-              title: '登记成功',
-              icon: 'success'
+              title: res.result.error || '登记失败',
+              icon: 'none'
             });
-            setTimeout(() => {
-              // 确保离开页面前也重置一次，避免热更新或返回后残留
-              this.resetForm();
-              uni.navigateBack();
-            }, 1500);
           }
         } else {
-          uni.showToast({
-            title: res.result.error || '登记失败',
-            icon: 'none'
+          // 无用药信息：只创建门诊登记记录
+          const res = await wx.cloud.callFunction({
+            name: 'clinicRecords',
+            data: {
+              action: 'add',
+              data: baseData
+            }
           });
+
+          if (res.result.success) {
+            // 提示保存为模板
+            this.promptSaveTemplate();
+            
+            if (this.continueAfterSubmit) {
+              uni.showToast({
+                title: '登记成功，可继续登记',
+                icon: 'success',
+                duration: 2000
+              });
+              setTimeout(() => {
+                this.resetForm();
+                uni.pageScrollTo({
+                  scrollTop: 0,
+                  duration: 300
+                });
+              }, 800);
+            } else {
+              uni.showToast({
+                title: '登记成功',
+                icon: 'success'
+              });
+              setTimeout(() => {
+                this.resetForm();
+                uni.navigateBack();
+              }, 1500);
+            }
+          } else {
+            uni.showToast({
+              title: res.result.error || '登记失败',
+              icon: 'none'
+            });
+          }
         }
       } catch (err) {
         console.error('登记失败:', err);
@@ -4165,6 +4684,9 @@ export default {
       this.form.remark = '';
       this.form.doctorSign = '';
       this.form.signTime = '';
+      
+      // 更新签名组件key，强制重新渲染签名组件
+      this.signatureKey = Date.now();
 
       // 用药与库存相关状态
       this.selectedDrug = null;
@@ -4174,6 +4696,19 @@ export default {
       this.drugSearchText = '';
       this.filteredDrugs = [];
       this.showDrugList = false;
+      
+      // 重置处方相关状态
+      this.prescriptionList = [];
+      this.enablePrescription = false;
+      this.prescriptionNo = '';
+      this.currentDrug = {
+        dosage: '',
+        frequency: '',
+        route: '',
+        usage: ''
+      };
+      this.frequencyIndex = 0;
+      this.routeIndex = 0;
 
       // 疾病/模板/下拉相关状态
       this.filteredDiseases = [];
@@ -6460,6 +6995,118 @@ export default {
           color: #888;
           line-height: 1.5;
           font-style: italic;
+        }
+      }
+      
+      // ✨ FIFO 批次分配信息样式
+      .batch-allocation-info {
+        margin-top: 12rpx;
+        padding: 12rpx;
+        background: #f0f9ff;
+        border-radius: 8rpx;
+        border: 1rpx solid #bfdbfe;
+        
+        .batch-allocation-header {
+          display: flex;
+          align-items: center;
+          gap: 8rpx;
+          margin-bottom: 8rpx;
+          
+          .batch-label {
+            font-size: 24rpx;
+            color: #1e40af;
+            font-weight: 600;
+          }
+          
+          .batch-count {
+            font-size: 22rpx;
+            color: #3b82f6;
+            background: #dbeafe;
+            padding: 2rpx 8rpx;
+            border-radius: 4rpx;
+          }
+          
+          .near-expiry-tag {
+            font-size: 22rpx;
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 2rpx 8rpx;
+            border-radius: 4rpx;
+            font-weight: 600;
+          }
+        }
+        
+        .batch-item {
+          padding: 8rpx;
+          margin-bottom: 6rpx;
+          background: #ffffff;
+          border-radius: 6rpx;
+          border: 1rpx solid #e0e7ff;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+          
+          &.near-expiry {
+            background: #fef2f2;
+            border-color: #fecaca;
+            
+            .batch-number {
+              color: #dc2626;
+            }
+          }
+          
+          .batch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4rpx;
+            
+            .batch-number {
+              font-size: 24rpx;
+              color: #1e293b;
+              font-weight: 500;
+            }
+            
+            .batch-quantity {
+              font-size: 24rpx;
+              color: #3b82f6;
+              font-weight: 600;
+            }
+          }
+          
+          .batch-detail {
+            display: flex;
+            align-items: center;
+            gap: 12rpx;
+            
+            .batch-expiry {
+              font-size: 22rpx;
+              color: #64748b;
+            }
+            
+            .batch-days {
+              font-size: 22rpx;
+              color: #dc2626;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+      
+      // 兼容旧的单批次显示
+      .batch-single-info {
+        margin-top: 8rpx;
+        padding-left: 52rpx;
+        
+        .batch-label {
+          font-size: 22rpx;
+          color: #666;
+        }
+        
+        .batch-value {
+          font-size: 22rpx;
+          color: #333;
         }
       }
     }

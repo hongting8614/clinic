@@ -513,6 +513,209 @@ const CARDIOVASCULAR_SYMPTOMS_HV = {
   ], 4]
 };
 
+// 2.19 五官科症状（ENT - Ear, Nose, Throat）
+const ENT_SYMPTOMS = {
+  // 眼部症状
+  ENT101: ['眼部异物感', [
+    '眼睛有异物',
+    '眼睛进东西',
+    '眼睛不舒服',
+    '眼睛磨',
+    '眼睛进沙子',
+    '眼睛有东西'
+  ], 2],
+  ENT102: ['眼痛', [
+    '眼睛痛',
+    '眼睛疼',
+    '眼部疼痛',
+    '眼睛刺痛'
+  ], 2],
+  ENT103: ['眼红', [
+    '眼睛红',
+    '眼睛充血',
+    '红眼',
+    '眼睛发红'
+  ], 2],
+  ENT104: ['流泪', [
+    '眼睛流泪',
+    '流眼泪',
+    '泪水多',
+    '眼泪止不住'
+  ], 1],
+  ENT105: ['视物模糊', [
+    '看不清',
+    '视力下降',
+    '眼前模糊',
+    '视力模糊'
+  ], 2],
+  ENT106: ['畏光', [
+    '怕光',
+    '见光难受',
+    '光敏感',
+    '眼睛怕光'
+  ], 2],
+  ENT107: ['眼部分泌物', [
+    '眼屎多',
+    '眼睛有分泌物',
+    '眼睛有脓',
+    '眼睛有眼屎'
+  ], 1],
+  ENT108: ['眼睑肿胀', [
+    '眼皮肿',
+    '眼睛肿',
+    '眼睑水肿',
+    '眼睛肿胀'
+  ], 2],
+  
+  // 耳部症状
+  ENT201: ['耳痛', [
+    '耳朵痛',
+    '耳朵疼',
+    '耳部疼痛',
+    '耳朵里面痛'
+  ], 2],
+  ENT202: ['耳鸣', [
+    '耳朵响',
+    '耳朵嗡嗡响',
+    '耳内有声音',
+    '耳朵里响'
+  ], 1],
+  ENT203: ['听力下降', [
+    '听不清',
+    '耳背',
+    '听力减退',
+    '听力下降'
+  ], 2],
+  ENT204: ['耳部流脓', [
+    '耳朵流脓',
+    '耳朵流水',
+    '耳漏',
+    '耳朵有脓'
+  ], 2],
+  ENT205: ['耳闷', [
+    '耳朵闷',
+    '耳朵堵',
+    '耳闷胀感',
+    '耳朵堵塞'
+  ], 1],
+  ENT206: ['耳部异物感', [
+    '耳朵有东西',
+    '耳朵进虫子',
+    '耳内异物',
+    '耳朵里有东西',
+    '虫子飞进耳朵'
+  ], 2],
+  
+  // 鼻部症状
+  ENT301: ['鼻出血', [
+    '流鼻血',
+    '鼻衄',
+    '鼻子出血',
+    '鼻血',
+    '鼻子流血'
+  ], 2],
+  ENT302: ['鼻塞', [
+    '鼻子堵',
+    '鼻子不通气',
+    '鼻堵',
+    '鼻子不通'
+  ], 1],
+  ENT303: ['流涕', [
+    '流鼻涕',
+    '鼻涕多',
+    '鼻子流水'
+  ], 1],
+  ENT304: ['鼻痛', [
+    '鼻子痛',
+    '鼻部疼痛',
+    '鼻子疼'
+  ], 2],
+  ENT305: ['嗅觉减退', [
+    '闻不到味',
+    '嗅觉下降',
+    '闻不到气味'
+  ], 1],
+  ENT306: ['鼻部异物', [
+    '鼻子进东西',
+    '鼻腔异物',
+    '鼻子里有东西',
+    '东西塞进鼻子'
+  ], 2],
+  
+  // 咽喉部症���
+  ENT401: ['咽痛', [
+    '喉咙痛',
+    '嗓子痛',
+    '咽部疼痛',
+    '吞咽痛',
+    '喉咙疼',
+    '嗓子疼'
+  ], 2],
+  ENT402: ['咽部异物感', [
+    '喉咙有东西',
+    '咽部梗阻感',
+    '鱼刺卡喉',
+    '喉咙卡东西',
+    '鱼刺卡住',
+    '骨头卡喉',
+    '喉咙有异物'
+  ], 2],
+  ENT403: ['声音嘶哑', [
+    '声音哑',
+    '说话哑',
+    '失声',
+    '声音沙哑'
+  ], 1],
+  ENT404: ['吞咽困难', [
+    '咽东西困难',
+    '吞咽痛',
+    '咽不下去',
+    '吞咽障碍'
+  ], 2],
+  ENT405: ['咽部充血', [
+    '喉咙红',
+    '咽部发红',
+    '喉咙充血'
+  ], 1],
+  
+  // 口腔症状
+  ENT501: ['牙痛', [
+    '牙齿痛',
+    '牙疼',
+    '牙齿疼痛',
+    '牙齿疼'
+  ], 2],
+  ENT502: ['牙龈出血', [
+    '牙龈流血',
+    '刷牙出血',
+    '牙龈出血',
+    '牙龈流血'
+  ], 1],
+  ENT503: ['牙龈肿痛', [
+    '牙龈肿',
+    '牙龈痛',
+    '牙龈肿胀',
+    '牙龈肿痛'
+  ], 2],
+  ENT504: ['口腔溃疡', [
+    '口腔溃烂',
+    '嘴里溃疡',
+    '口疮',
+    '口腔溃疡',
+    '嘴里烂了'
+  ], 1],
+  ENT505: ['舌痛', [
+    '舌头痛',
+    '舌头疼',
+    '舌头疼痛'
+  ], 1],
+  ENT506: ['口腔异物', [
+    '嘴里卡东西',
+    '口腔有异物',
+    '嘴里有东西卡住'
+  ], 2]
+};
+
 // 合并所有症状字典，构建别名索引
 const ALL_SYMPTOM_DICTS = [
   RESPIRATORY_SYMPTOMS,
@@ -532,7 +735,8 @@ const ALL_SYMPTOM_DICTS = [
   NEUROLOGICAL_SYMPTOMS_HV,
   PSYCHOLOGICAL_SYMPTOMS_HV,
   METABOLIC_SYMPTOMS_HV,
-  CARDIOVASCULAR_SYMPTOMS_HV
+  CARDIOVASCULAR_SYMPTOMS_HV,
+  ENT_SYMPTOMS  // 五官科症状
 ];
 
 const allSymptoms = {};
@@ -817,6 +1021,151 @@ const HAPPY_VALLEY_COMPLETE_DISEASE_RULES = {
     medications: ['50%葡萄糖静推', '胰高血糖素'],
     urgent: true,
     typical_scene: '严重低血糖紧急情况'
+  },
+
+  // 五官科疾病 - 眼科
+  'ENT-01': {
+    name: '眼部异物',
+    required: ['ENT101'],
+    common: ['ENT102', 'ENT104', 'ENT106', 'ENT103'],
+    treatment: '冲洗眼部、取出异物、抗生素眼药水',
+    medications: ['生理盐水', '左氧氟沙星滴眼液', '红霉素眼膏'],
+    urgent: true,
+    typical_scene: '风沙天气、游玩时异物入眼'
+  },
+  'ENT-02': {
+    name: '急性结膜炎（红眼病）',
+    required: ['ENT103'],
+    common: ['ENT107', 'ENT104', 'ENT102', 'ENT106'],
+    treatment: '抗生素或抗病毒眼药水、避免揉眼',
+    medications: ['左氧氟沙星滴眼液', '利巴韦林滴眼液', '红霉素眼膏'],
+    urgent: false,
+    typical_scene: '接触感染、游泳后'
+  },
+  'ENT-03': {
+    name: '眼部外伤',
+    required: ['ENT102', 'ENT103'],
+    common: ['ENT105', 'ENT108', 'ENT104'],
+    treatment: '冷敷、抗生素眼药水、必要时转诊眼科',
+    medications: ['左氧氟沙星滴眼液', '红霉素眼膏'],
+    urgent: true,
+    typical_scene: '碰撞、打击眼部'
+  },
+
+  // 五官科疾病 - 耳科
+  'ENT-04': {
+    name: '急性中耳炎',
+    required: ['ENT201'],
+    common: ['ENT203', 'ENT205', 'ENT204', 'GE001'],
+    treatment: '抗生素、止痛、局部滴耳',
+    medications: ['阿莫西林', '布洛芬', '氧氟沙星滴耳液'],
+    urgent: false,
+    typical_scene: '感冒后、游泳后'
+  },
+  'ENT-05': {
+    name: '耳道异物',
+    required: ['ENT206'],
+    common: ['ENT201', 'ENT202', 'ENT203'],
+    treatment: '取出异物、冲洗耳道、抗生素滴耳',
+    medications: ['氧氟沙星滴耳液'],
+    urgent: true,
+    typical_scene: '虫子飞入耳朵、小物件进耳'
+  },
+  'ENT-06': {
+    name: '外耳道炎',
+    required: ['ENT201', 'ENT205'],
+    common: ['ENT204', 'ENT203'],
+    treatment: '局部清洁、抗生素滴耳、止痛',
+    medications: ['氧氟沙星滴耳液', '布洛芬'],
+    urgent: false,
+    typical_scene: '游泳后、掏耳不当'
+  },
+
+  // 五官科疾病 - 鼻科
+  'ENT-07': {
+    name: '鼻出血',
+    required: ['ENT301'],
+    common: ['ENT302'],
+    treatment: '压迫止血、冷敷、填塞止血',
+    medications: ['云南白药', '肾上腺素棉片', '凝血酶'],
+    urgent: true,
+    typical_scene: '干燥天气、碰撞、挖鼻'
+  },
+  'ENT-08': {
+    name: '急性鼻炎',
+    required: ['ENT302', 'ENT303'],
+    common: ['RS009', 'RS010', 'GE001'],
+    treatment: '对症治疗、鼻腔冲洗、抗过敏',
+    medications: ['氯雷他定', '布地奈德鼻喷剂', '生理盐水鼻喷'],
+    urgent: false,
+    typical_scene: '感冒、过敏'
+  },
+  'ENT-09': {
+    name: '鼻腔异物',
+    required: ['ENT306'],
+    common: ['ENT302', 'ENT301', 'ENT304'],
+    treatment: '取出异物、冲洗鼻腔',
+    medications: ['生理盐水', '抗生素鼻喷剂'],
+    urgent: true,
+    typical_scene: '儿童塞入异物、虫子飞入'
+  },
+
+  // 五官科疾病 - 咽喉科
+  'ENT-10': {
+    name: '急性咽炎',
+    required: ['ENT401'],
+    common: ['ENT405', 'RS001', 'GE001', 'GE002'],
+    treatment: '抗生素、含片、多饮水',
+    medications: ['阿莫西林', '西瓜霜含片', '布洛芬'],
+    urgent: false,
+    typical_scene: '受凉、过度用嗓'
+  },
+  'ENT-11': {
+    name: '急性扁桃体炎',
+    required: ['ENT401', 'GE001'],
+    common: ['ENT405', 'ENT404', 'GE002', 'GE006'],
+    treatment: '抗生素、退热、止痛',
+    medications: ['阿莫西林', '对乙酰氨基酚', '西瓜霜含片'],
+    urgent: false,
+    typical_scene: '感冒、免疫力下降'
+  },
+  'ENT-12': {
+    name: '咽部异物（鱼刺卡喉）',
+    required: ['ENT402'],
+    common: ['ENT401', 'ENT404', 'ENT104'],
+    treatment: '取出异物、必要时转诊耳鼻喉科',
+    medications: ['利多卡因喷雾'],
+    urgent: true,
+    typical_scene: '进食鱼类、骨头'
+  },
+
+  // 五官科疾病 - 口腔科
+  'ENT-13': {
+    name: '急性牙痛',
+    required: ['ENT501'],
+    common: ['ENT503', 'GE001'],
+    treatment: '止痛、抗生素、建议转诊牙科',
+    medications: ['布洛芬', '甲硝唑', '人工牛黄甲硝唑'],
+    urgent: false,
+    typical_scene: '龋齿、牙周炎'
+  },
+  'ENT-14': {
+    name: '口腔溃疡',
+    required: ['ENT504'],
+    common: ['ENT505', 'ENT401'],
+    treatment: '局部用药、维生素补充',
+    medications: ['西瓜霜喷剂', '维生素B2', '口腔溃疡贴'],
+    urgent: false,
+    typical_scene: '上火、免疫力下降'
+  },
+  'ENT-15': {
+    name: '急性牙龈炎',
+    required: ['ENT503'],
+    common: ['ENT502', 'ENT501'],
+    treatment: '抗生素、漱口水、止痛',
+    medications: ['甲硝唑', '氯己定漱口水', '布洛芬'],
+    urgent: false,
+    typical_scene: '口腔卫生不良、上火'
   }
 };
 

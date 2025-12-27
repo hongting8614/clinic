@@ -1,5 +1,5 @@
 <template>
-	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
+	<view class="page">
 		<!-- 专业头部 -->
 		<view class="page-header">
 			<view class="header-actions">
@@ -77,10 +77,8 @@
 
 <script>
 import { callFunction } from '@/utils/api.js'
-import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 
 export default {
-	mixins: [createTabSwipeMixin(2)],
 	data() {
 		return {
 			recordStats: {

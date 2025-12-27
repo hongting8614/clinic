@@ -1,6 +1,6 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages-sub/clinic/add"],{
 
-/***/ 440:
+/***/ 431:
 /*!*************************************************************!*\
   !*** D:/AK-PMS/main.js?{"page":"pages-sub%2Fclinic%2Fadd"} ***!
   \*************************************************************/
@@ -13,7 +13,7 @@
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 __webpack_require__(/*! uni-pages */ 26);
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
-var _add = _interopRequireDefault(__webpack_require__(/*! ./pages-sub/clinic/add.vue */ 441));
+var _add = _interopRequireDefault(__webpack_require__(/*! ./pages-sub/clinic/add.vue */ 432));
 // @ts-ignore
 wx.__webpack_require_UNI_MP_PLUGIN__ = __webpack_require__;
 createPage(_add.default);
@@ -21,7 +21,7 @@ createPage(_add.default);
 
 /***/ }),
 
-/***/ 441:
+/***/ 432:
 /*!******************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue ***!
   \******************************************/
@@ -30,11 +30,11 @@ createPage(_add.default);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 442);
-/* harmony import */ var _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./add.vue?vue&type=script&lang=js& */ 444);
+/* harmony import */ var _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 433);
+/* harmony import */ var _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./add.vue?vue&type=script&lang=js& */ 435);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 446);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 32);
+/* harmony import */ var _add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 437);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 32);
 
 var renderjs
 
@@ -44,7 +44,7 @@ var renderjs
 
 /* normalize component */
 
-var component = Object(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+var component = Object(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
   _add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -62,7 +62,7 @@ component.options.__file = "pages-sub/clinic/add.vue"
 
 /***/ }),
 
-/***/ 442:
+/***/ 433:
 /*!*************************************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=template&id=0904e2e0&scoped=true& ***!
   \*************************************************************************************/
@@ -71,20 +71,20 @@ component.options.__file = "pages-sub/clinic/add.vue"
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 443);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=template&id=0904e2e0&scoped=true& */ 434);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["recyclableRender"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["recyclableRender"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["components"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_17_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_template_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_uni_app_loader_page_meta_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_template_id_0904e2e0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["components"]; });
 
 
 
 /***/ }),
 
-/***/ 443:
+/***/ 434:
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=template&id=0904e2e0&scoped=true& ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -114,25 +114,45 @@ var render = function () {
   var g9 =
     _vm.showDrugList && _vm.drugSearchText && _vm.filteredDrugs.length === 0
   var m0 = _vm.selectedDrug ? _vm.getRealMinUnit(_vm.selectedDrug) : null
-  var m1 = _vm.selectedDrug ? _vm.getDosagePlaceholder(_vm.selectedDrug) : null
+  var m1 = _vm.selectedDrug ? _vm.getRealMinUnit(_vm.selectedDrug) : null
+  var m2 =
+    _vm.selectedDrug && _vm.form.quantity > _vm.availableStock
+      ? _vm.getRealMinUnit(_vm.selectedDrug)
+      : null
+  var m3 = _vm.selectedDrug ? _vm.getDosagePlaceholder(_vm.selectedDrug) : null
   var g10 = _vm.enablePrescription ? _vm.prescriptionList.length : null
-  var l0 = _vm.enablePrescription
+  var l1 = _vm.enablePrescription
     ? _vm.__map(_vm.prescriptionList, function (item, index) {
         var $orig = _vm.__get_orig(item)
-        var m2 =
+        var m4 = _vm.formatSpecQuantity(item)
+        var m5 =
           item.dosage || item.route || item.frequency
             ? _vm.formatUsage(item)
             : null
+        var g11 = item.batchAllocation && item.batchAllocation.length > 0
+        var l0 = g11
+          ? _vm.__map(item.batchAllocation, function (batch, bIndex) {
+              var $orig = _vm.__get_orig(batch)
+              var m6 = _vm.formatDate(batch.expireDate)
+              return {
+                $orig: $orig,
+                m6: m6,
+              }
+            })
+          : null
         return {
           $orig: $orig,
-          m2: m2,
+          m4: m4,
+          m5: m5,
+          g11: g11,
+          l0: l0,
         }
       })
     : null
-  var g11 = _vm.enablePrescription ? _vm.prescriptionList.length : null
-  var g12 =
-    _vm.enablePrescription && g11 > 0 ? _vm.prescriptionList.length : null
-  var m3 = _vm.selectedBatch
+  var g12 = _vm.enablePrescription ? _vm.prescriptionList.length : null
+  var g13 =
+    _vm.enablePrescription && g12 > 0 ? _vm.prescriptionList.length : null
+  var m7 = _vm.selectedBatch
     ? _vm.formatDate(_vm.selectedBatch.expiryDate)
     : null
   if (!_vm._isMounted) {
@@ -174,11 +194,13 @@ var render = function () {
         g9: g9,
         m0: m0,
         m1: m1,
-        g10: g10,
-        l0: l0,
-        g11: g11,
-        g12: g12,
+        m2: m2,
         m3: m3,
+        g10: g10,
+        l1: l1,
+        g12: g12,
+        g13: g13,
+        m7: m7,
       },
     }
   )
@@ -191,7 +213,7 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ 444:
+/***/ 435:
 /*!*******************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=script&lang=js& ***!
   \*******************************************************************/
@@ -200,14 +222,14 @@ render._withStripped = true
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=script&lang=js& */ 445);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/babel-loader/lib!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=script&lang=js& */ 436);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_babel_loader_lib_index_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_13_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_script_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ 445:
+/***/ 436:
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=script&lang=js& ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -224,9 +246,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
+var _methods;
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
@@ -234,7 +257,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 462));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 453));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 // 欢乐谷主诉-关键词映射库（前端专用，用于主诉下拉联想）
@@ -977,6 +1000,8 @@ var _default = {
       currentDate: '',
       // 当前日期
 
+      // 签名组件key，用于强制重新渲染
+      signatureKey: 0,
       // 当前正在编辑的药品信息
       currentDrug: {
         dosage: '',
@@ -1206,7 +1231,7 @@ var _default = {
       }
     }
   },
-  methods: {
+  methods: (_methods = {
     // ✨ 清空所有相关字段（主诉清空时调用）
     clearAllRelatedFields: function clearAllRelatedFields() {
       // 1. 清空就诊信息相关字段
@@ -1332,72 +1357,244 @@ var _default = {
         return "\u5982\uFF1A1".concat(minUnit);
       }
     },
-    // 添加到处方
+    // 添加到处方（使用 FIFO 自动分配批次）
     addToPrescription: function addToPrescription() {
-      var _this$selectedBatch, _this$selectedBatch2;
-      if (!this.selectedDrug) {
-        uni.showToast({
-          title: '请先选择药材',
-          icon: 'none'
-        });
-        return;
-      }
-      if (!this.form.quantity || this.form.quantity <= 0) {
-        uni.showToast({
-          title: '请输入有效数量',
-          icon: 'none'
-        });
-        return;
-      }
-      if (this.form.quantity > this.availableStock) {
-        uni.showToast({
-          title: '库存不足',
-          icon: 'none'
-        });
-        return;
-      }
-
+      var _this3 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var res, allocation, nearExpiryBatches, nearExpiryInfo, errorMsg;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (_this3.selectedDrug) {
+                  _context.next = 3;
+                  break;
+                }
+                uni.showToast({
+                  title: '请先选择药材',
+                  icon: 'none',
+                  duration: 2000
+                });
+                return _context.abrupt("return");
+              case 3:
+                if (!(!_this3.form.quantity || _this3.form.quantity <= 0)) {
+                  _context.next = 6;
+                  break;
+                }
+                uni.showToast({
+                  title: '请输入有效数量',
+                  icon: 'none',
+                  duration: 2000
+                });
+                return _context.abrupt("return");
+              case 6:
+                // 3. 调用 FIFO 云函数自动分配批次
+                uni.showLoading({
+                  title: '分配批次中...'
+                });
+                _context.prev = 7;
+                _context.next = 10;
+                return wx.cloud.callFunction({
+                  name: 'stockManage',
+                  data: {
+                    action: 'allocateBatchesFIFO',
+                    data: {
+                      drugId: _this3.selectedDrug._id,
+                      requiredQuantity: _this3.form.quantity,
+                      location: _this3.form.location
+                    }
+                  }
+                });
+              case 10:
+                res = _context.sent;
+                uni.hideLoading();
+                console.log('[FIFO分配结果]:', res.result);
+                if (res.result.success) {
+                  allocation = res.result.data; // 4. 检查是否有近效期药品
+                  if (allocation.hasNearExpiry) {
+                    // 找出近效期的批次
+                    nearExpiryBatches = allocation.allocation.filter(function (b) {
+                      return b.isNearExpiry;
+                    });
+                    nearExpiryInfo = nearExpiryBatches.map(function (b) {
+                      return "\u6279\u6B21".concat(b.batch, "\uFF1A").concat(b.daysToExpire, "\u5929\u540E\u8FC7\u671F");
+                    }).join('\n'); // 显示近效期提示，让用户确认
+                    uni.showModal({
+                      title: '⚠️ 近效期提示',
+                      content: "\u68C0\u6D4B\u5230\u8FD1\u6548\u671F\u836F\u54C1\uFF0890\u5929\u5185\u8FC7\u671F\uFF09\uFF1A\n\n".concat(nearExpiryInfo, "\n\n\u662F\u5426\u7EE7\u7EED\u6DFB\u52A0\u5230\u5904\u65B9\uFF1F"),
+                      confirmText: '继续添加',
+                      cancelText: '取消',
+                      success: function success(modalRes) {
+                        if (modalRes.confirm) {
+                          // 用户确认后添加
+                          _this3.doAddToPrescription(allocation);
+                        }
+                      }
+                    });
+                  } else {
+                    // 5. 没有近效期，直接添加
+                    _this3.doAddToPrescription(allocation);
+                  }
+                } else {
+                  // FIFO 分配失败（库存不足等）
+                  errorMsg = res.result.message || '批次分配失败'; // 如果是库存不足，给用户选择是否继续
+                  if (errorMsg.includes('库存不足')) {
+                    uni.showModal({
+                      title: '库存不足提醒',
+                      content: "".concat(errorMsg, "\n\n\u662F\u5426\u4ECD\u8981\u6DFB\u52A0\u5230\u5904\u65B9\uFF1F"),
+                      confirmText: '仍要添加',
+                      cancelText: '取消',
+                      success: function success(modalRes) {
+                        if (modalRes.confirm) {
+                          // 用户确认后，使用空的分配信息添加
+                          _this3.doAddToPrescription(null);
+                        }
+                      }
+                    });
+                  } else {
+                    // 其他错误，直接提示
+                    uni.showToast({
+                      title: errorMsg,
+                      icon: 'none',
+                      duration: 2000
+                    });
+                  }
+                }
+                _context.next = 21;
+                break;
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
+                uni.hideLoading();
+                console.error('[FIFO分配异常]:', _context.t0);
+                uni.showToast({
+                  title: '批次分配失败',
+                  icon: 'none',
+                  duration: 2000
+                });
+              case 21:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[7, 16]]);
+      }))();
+    },
+    // 执行添加到处方的核心逻辑
+    // @param {Object} allocation - FIFO分配结果（可选）
+    doAddToPrescription: function doAddToPrescription() {
+      var allocation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
       // 使用表单中的用法用量数据
       var dosage = (this.currentDrug.dosage || '').trim();
       var route = (this.currentDrug.route || '').trim();
       var frequency = (this.currentDrug.frequency || '').trim();
 
-      // 添加到处方列表
-      this.prescriptionList.push({
+      // 构建处方项基本信息
+      var prescriptionItem = {
+        // 药品基本信息
         drugId: this.selectedDrug._id,
         drugName: this.selectedDrug.name,
         specification: this.selectedDrug.specification,
+        manufacturer: this.selectedDrug.manufacturer,
+        // 数量和单位
         quantity: this.form.quantity,
         unit: this.getRealMinUnit(this.selectedDrug),
-        batchId: (_this$selectedBatch = this.selectedBatch) === null || _this$selectedBatch === void 0 ? void 0 : _this$selectedBatch._id,
-        batchNumber: (_this$selectedBatch2 = this.selectedBatch) === null || _this$selectedBatch2 === void 0 ? void 0 : _this$selectedBatch2.batch,
+        packUnit: this.selectedDrug.packUnit,
+        minUnit: this.selectedDrug.minUnit,
+        conversionRate: this.selectedDrug.conversionRate,
+        // 用法用量
         dosage: dosage,
         route: route,
         frequency: frequency,
-        usage: (this.currentDrug.usage || '').trim()
-      });
-
-      // 清空当前选择
-      this.drugSearchText = '';
-      this.selectedDrug = null;
-      this.selectedBatch = null;
-      this.availableStock = 0;
-      this.form.quantity = null;
-      this.showDrugList = false;
-
-      // 重置当前药品信息
-      this.currentDrug = {
-        dosage: '',
-        frequency: '',
-        route: '',
-        usage: ''
+        usage: (this.currentDrug.usage || '').trim(),
+        // 完整的 drug 对象引用（用于后续处理）
+        drug: this.selectedDrug
       };
-      this.frequencyIndex = 0;
-      this.routeIndex = 0;
+
+      // 如果有 FIFO 分配结果，使用分配的批次信息
+      if (allocation && allocation.allocation && allocation.allocation.length > 0) {
+        // ✅ 使用 FIFO 分配的批次信息
+        prescriptionItem.batchAllocation = allocation.allocation; // 完整的批次分配信息
+        prescriptionItem.batchCount = allocation.batchCount; // 批次数量
+        prescriptionItem.hasNearExpiry = allocation.hasNearExpiry; // 是否有近效期
+
+        // 为了兼容性，设置第一个批次为主批次
+        var firstBatch = allocation.allocation[0];
+        prescriptionItem.batchId = firstBatch.batchId;
+        prescriptionItem.batchNumber = firstBatch.batch;
+        prescriptionItem.expiryDate = firstBatch.expireDate;
+        prescriptionItem.batch = {
+          _id: firstBatch.batchId,
+          batch: firstBatch.batch,
+          expireDate: firstBatch.expireDate,
+          quantity: firstBatch.quantity
+        };
+      } else {
+        var _this$selectedBatch, _this$selectedBatch2, _this$selectedBatch3;
+        // ✅ 没有 FIFO 分配结果，使用旧的批次选择方式（兼容）
+        prescriptionItem.batchId = (_this$selectedBatch = this.selectedBatch) === null || _this$selectedBatch === void 0 ? void 0 : _this$selectedBatch._id;
+        prescriptionItem.batchNumber = (_this$selectedBatch2 = this.selectedBatch) === null || _this$selectedBatch2 === void 0 ? void 0 : _this$selectedBatch2.batch;
+        prescriptionItem.expiryDate = (_this$selectedBatch3 = this.selectedBatch) === null || _this$selectedBatch3 === void 0 ? void 0 : _this$selectedBatch3.expireDate;
+        prescriptionItem.batch = this.selectedBatch;
+        prescriptionItem.batchAllocation = null;
+        prescriptionItem.batchCount = this.selectedBatch ? 1 : 0;
+        prescriptionItem.hasNearExpiry = false;
+      }
+
+      // 添加到处方列表
+      this.prescriptionList.push(prescriptionItem);
+
+      // ✅ 自动开启处方开关
+      if (!this.enablePrescription) {
+        this.enablePrescription = true;
+      }
+
+      // ✅ 清空数量输入框
+      this.form.quantity = null;
+
+      // ✅ 重新加载批次和库存
+      if (this.selectedDrug && this.selectedDrug._id) {
+        this.loadBatches();
+      }
+
+      // 成功提示
       uni.showToast({
-        title: '已加入处方',
-        icon: 'success'
+        title: "\u5DF2\u52A0\u5165\u5904\u65B9\uFF1A".concat(this.selectedDrug.name),
+        icon: 'success',
+        duration: 2000
       });
+
+      // ✅ 滚动到处方区域，让用户看到添加结果
+      this.$nextTick(function () {
+        uni.pageScrollTo({
+          selector: '.prescription-section',
+          duration: 300
+        });
+      });
+    },
+    // 格式化规格和数量显示（例如：0.3gX1粒）
+    formatSpecQuantity: function formatSpecQuantity(item) {
+      var parts = [];
+
+      // 提取基本规格（去除包装信息）
+      if (item.specification) {
+        // 匹配规格中的基本单位部分，如 "0.3g" 从 "0.3g*20粒" 中提取
+        var baseSpecMatch = item.specification.match(/^(\d+\.?\d*\s*(?:mg|g|ml|μg|mcg|ug|毫升|ML))/i);
+        if (baseSpecMatch) {
+          // 如果有基本规格（如 0.3g），只使用基本规格
+          parts.push(baseSpecMatch[1]);
+        } else {
+          // 如果没有匹配到基本规格，使用完整规格
+          parts.push(item.specification);
+        }
+      }
+
+      // 添加实际数量
+      if (item.quantity && item.unit) {
+        var quantityStr = "X".concat(item.quantity).concat(item.unit);
+        parts.push(quantityStr);
+      }
+      return parts.length > 0 ? parts.join('') : '';
     },
     // 格式化用法用量显示
     formatUsage: function formatUsage(item) {
@@ -1405,17 +1602,17 @@ var _default = {
       if (item.dosage) parts.push(item.dosage);
       if (item.route) parts.push(item.route);
       if (item.frequency) parts.push(item.frequency);
-      return parts.join(' ');
+      return parts.join('  ');
     },
     // 从处方中移除
     removeFromPrescription: function removeFromPrescription(index) {
-      var _this3 = this;
+      var _this4 = this;
       uni.showModal({
         title: '确认删除',
         content: '确定要从处方中移除这味药吗？',
         success: function success(res) {
           if (res.confirm) {
-            _this3.prescriptionList.splice(index, 1);
+            _this4.prescriptionList.splice(index, 1);
             uni.showToast({
               title: '已移除',
               icon: 'success'
@@ -1426,7 +1623,7 @@ var _default = {
     },
     // 快速添加到处方（从药材选择区域）
     quickAddToPrescription: function quickAddToPrescription() {
-      var _this4 = this;
+      var _this5 = this;
       // 如果没有选择药材，提示用户先选择
       if (!this.selectedDrug) {
         uni.showToast({
@@ -1461,7 +1658,7 @@ var _default = {
           content: "\u5F53\u524D\u5E93\u5B58\uFF1A".concat(this.availableStock, " ").concat(this.getRealMinUnit(this.selectedDrug), "\uFF0C\u662F\u5426\u4ECD\u8981\u6DFB\u52A0\uFF1F"),
           success: function success(res) {
             if (res.confirm) {
-              _this4.addToPrescription();
+              _this5.addToPrescription();
             }
           }
         });
@@ -1821,7 +2018,7 @@ var _default = {
       this.form.visitType = val;
     },
     openLocationSelector: function openLocationSelector() {
-      var _this5 = this;
+      var _this6 = this;
       var itemList = this.locations.map(function (l) {
         return l.label;
       });
@@ -1829,9 +2026,9 @@ var _default = {
         itemList: itemList,
         success: function success(res) {
           var idx = res.tapIndex;
-          var target = _this5.locations[idx];
+          var target = _this6.locations[idx];
           if (target) {
-            _this5.selectLocation(target.value);
+            _this6.selectLocation(target.value);
           }
         }
       });
@@ -1867,15 +2064,15 @@ var _default = {
     },
     // 加载所有药材
     loadAllDrugs: function loadAllDrugs() {
-      var _this6 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+      var _this7 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
         var res;
-        return _regenerator.default.wrap(function _callee$(_context) {
+        return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
+                _context2.prev = 0;
+                _context2.next = 3;
                 return wx.cloud.callFunction({
                   name: 'drugManage',
                   data: {
@@ -1886,79 +2083,79 @@ var _default = {
                   }
                 });
               case 3:
-                res = _context.sent;
+                res = _context2.sent;
                 if (res.result.success) {
-                  _this6.allDrugs = res.result.data.list || [];
+                  _this7.allDrugs = res.result.data.list || [];
                 }
-                _context.next = 10;
+                _context2.next = 10;
                 break;
               case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
-                console.error('加载药材列表失败:', _context.t0);
+                _context2.prev = 7;
+                _context2.t0 = _context2["catch"](0);
+                console.error('加载药材列表失败:', _context2.t0);
               case 10:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[0, 7]]);
-      }))();
-    },
-    // 药材输入框获得焦点
-    onDrugInputFocus: function onDrugInputFocus() {
-      var _this7 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
-        return _regenerator.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _this7.showDrugList = true;
-
-                // 如果没有输入内容，显示当前园区的所有药材
-                if (!_this7.drugSearchText || _this7.drugSearchText.trim() === '') {
-                  // 没有输入内容，显示所有药材
-                  _this7.filteredDrugs = _this7.allDrugs;
-                } else {
-                  _this7.onDrugSearch();
-                }
-              case 2:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2);
+        }, _callee2, null, [[0, 7]]);
       }))();
     },
-    // 加载当前园区的药材
-    loadLocationDrugs: function loadLocationDrugs() {
+    // 药材输入框获得焦点
+    onDrugInputFocus: function onDrugInputFocus() {
       var _this8 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
-        var res, stockList;
         return _regenerator.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _context3.prev = 0;
+                _this8.showDrugList = true;
+
+                // 如果没有输入内容，显示当前园区的所有药材
+                if (!_this8.drugSearchText || _this8.drugSearchText.trim() === '') {
+                  // 没有输入内容，显示所有药材
+                  _this8.filteredDrugs = _this8.allDrugs;
+                } else {
+                  _this8.onDrugSearch();
+                }
+              case 2:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    // 加载当前园区的药材
+    loadLocationDrugs: function loadLocationDrugs() {
+      var _this9 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
+        var res, stockList;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
                 uni.showLoading({
                   title: '加载药材...'
                 });
-                _context3.next = 4;
+                _context4.next = 4;
                 return wx.cloud.callFunction({
                   name: 'stockManage',
                   data: {
                     action: 'getStockList',
                     data: {
-                      location: _this8.form.location,
+                      location: _this9.form.location,
                       pageSize: 1000
                     }
                   }
                 });
               case 4:
-                res = _context3.sent;
+                res = _context4.sent;
                 uni.hideLoading();
                 if (res.result.success) {
                   stockList = res.result.data.list || []; // 过滤出有库存的药材
-                  _this8.filteredDrugs = stockList.filter(function (item) {
+                  _this9.filteredDrugs = stockList.filter(function (item) {
                     return item.quantity > 0;
                   }).map(function (item) {
                     return {
@@ -1971,2046 +2168,2477 @@ var _default = {
                       stock: item.quantity
                     };
                   });
-                  console.log("\u52A0\u8F7D\u4E86".concat(_this8.filteredDrugs.length, "\u79CD\u836F\u6750"));
+                  console.log("\u52A0\u8F7D\u4E86".concat(_this9.filteredDrugs.length, "\u79CD\u836F\u6750"));
                 } else {
                   // 如果获取失败，显示所有药材
-                  _this8.filteredDrugs = _this8.allDrugs.slice(0, 50);
+                  _this9.filteredDrugs = _this9.allDrugs.slice(0, 50);
                 }
-                _context3.next = 14;
+                _context4.next = 14;
                 break;
               case 9:
-                _context3.prev = 9;
-                _context3.t0 = _context3["catch"](0);
-                console.error('加载园区药材失败:', _context3.t0);
+                _context4.prev = 9;
+                _context4.t0 = _context4["catch"](0);
+                console.error('加载园区药材失败:', _context4.t0);
                 uni.hideLoading();
                 // 失败时显示所有药材
-                _this8.filteredDrugs = _this8.allDrugs.slice(0, 50);
+                _this9.filteredDrugs = _this9.allDrugs.slice(0, 50);
               case 14:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, null, [[0, 9]]);
-      }))();
-    },
-    // 药材搜索
-    onDrugSearch: function onDrugSearch() {
-      if (!this.drugSearchText || this.drugSearchText.trim() === '') {
-        // 没有搜索内容时，加载当前园区药材
-        this.loadLocationDrugs();
-        return;
-      }
-      var keyword = this.drugSearchText.toLowerCase();
-      // 从当前园区的药材中搜索
-      if (this.filteredDrugs.length > 0 && !this.drugSearchText) {
-        // 已经加载了园区药材，在其中搜索
-        var currentList = (0, _toConsumableArray2.default)(this.filteredDrugs);
-        this.filteredDrugs = currentList.filter(function (drug) {
-          var name = (drug.name || '').toLowerCase();
-          var genericName = (drug.genericName || '').toLowerCase();
-          var spec = (drug.specification || '').toLowerCase();
-          var tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
-          var hitTrade = tradeNames.some(function (t) {
-            return (t || '').toLowerCase().includes(keyword);
-          });
-          return name.includes(keyword) || genericName.includes(keyword) || spec.includes(keyword) || hitTrade;
-        });
-      } else {
-        // 从所有药材中搜索
-        this.filteredDrugs = this.allDrugs.filter(function (drug) {
-          var name = (drug.name || '').toLowerCase();
-          var genericName = (drug.genericName || '').toLowerCase();
-          var pinyin = (drug.pinyin || '').toLowerCase();
-          var spec = (drug.specification || drug.spec || '').toLowerCase();
-          var tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
-          var hitTrade = tradeNames.some(function (t) {
-            return (t || '').toLowerCase().includes(keyword);
-          });
-          return name.includes(keyword) || genericName.includes(keyword) || pinyin.includes(keyword) || spec.includes(keyword) || hitTrade;
-        }).slice(0, 30); // 最多显示30个结果
-      }
-    },
-    // 从列表选择药材
-    selectDrugFromList: function selectDrugFromList(drug) {
-      this.drugSearchText = drug.name;
-      this.onDrugSelect(drug);
-      this.showDrugList = false;
-    },
-    // 疾病名称获得焦点：显示下拉列表
-    onDiseaseFocus: function onDiseaseFocus() {
-      // 清除失焦隐藏计时器
-      if (this.diseaseBlurTimer) {
-        clearTimeout(this.diseaseBlurTimer);
-        this.diseaseBlurTimer = null;
-      }
-
-      // 触发全局搜索，基于所有三个框的关键词
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
-
-      // 显示下拉（即使为空也显示，会显示所有疾病）
-      this.showDiseaseList = this.filteredDiseases.length > 0;
-    },
-    onDiseaseBlur: function onDiseaseBlur() {
-      var _this9 = this;
-      var text = (this.form.diseaseName || '').trim();
-      if (text) {
-        // 1）先按疾病大类精确匹配
-        var hasDisease = this.templateIndex.some(function (r) {
-          return r.disease === text;
-        });
-        if (hasDisease) {
-          this.selectDisease(text);
-        } else {
-          // 2）再按标准诊断名匹配
-          var diagRecord = this.templateIndex.find(function (r) {
-            return (r.diagnoses || []).some(function (d) {
-              return d === text;
-            });
-          });
-          if (diagRecord) {
-            this.selectDiagnosis(text);
-          }
-        }
-      }
-
-      // 延迟隐藏下拉，给点击事件留时间
-      this.diseaseBlurTimer = setTimeout(function () {
-        _this9.showDiseaseList = false;
-      }, 200);
-    },
-    // 疾病名称输入：触发全局搜索并联动主诉/诊断下拉（添加防抖）
-    onDiseaseInput: function onDiseaseInput() {
-      var _this10 = this;
-      // 清除之前的计时器
-      if (this.diseaseInputTimer) {
-        clearTimeout(this.diseaseInputTimer);
-      }
-
-      // 防抖处理，延迟200ms执行
-      this.diseaseInputTimer = setTimeout(function () {
-        var result = _this10.performGlobalSearch(_this10.form.diseaseName, _this10.form.chiefComplaint, _this10.form.diagnosis);
-        _this10.filteredDiseases = result.diseases;
-        _this10.filteredComplaints = result.complaints;
-        _this10.filteredDiagnosis = result.diagnoses;
-        _this10.showDiseaseList = _this10.filteredDiseases.length > 0;
-        // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
-      }, 200);
-      // 如果当前输入的疾病名称与某个疾病完全匹配，则自动按该疾病刷新联动字段
-      var kw = (this.form.diseaseName || '').trim();
-      if (kw && this.filteredDiseases.includes(kw)) {
-        this.selectDisease(kw);
-      }
-    },
-    // 选择疾病：自动填充主诉/诊断/处置（默认强制填充，保证反向联动）
-    // options.forceFill=true 时，无论当前字段是否已有内容，都用模板覆盖
-    selectDisease: function selectDisease(disease) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
-        forceFill: true
-      };
-      // 清除失焦隐藏计时器
-      if (this.diseaseBlurTimer) {
-        clearTimeout(this.diseaseBlurTimer);
-        this.diseaseBlurTimer = null;
-      }
-
-      // 选择后关闭下拉
-      this.showDiseaseList = false;
-
-      // 查找该疾病的第一条模板记录（使用最佳匹配）
-      var record = this.templateIndex.find(function (r) {
-        return r.disease === disease;
-      });
-      if (record) {
-        var force = (options === null || options === void 0 ? void 0 : options.forceFill) === true;
-        // 智能填充：默认强制覆盖，满足“先选疾病反向自动填充”需求
-        this.smartFillFields(record, {
-          preserveComplaint: !force && !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
-          preserveSymptom: !force && !!(this.form.symptom && this.form.symptom.trim()),
-          preserveDiagnosis: !force && !!(this.form.diagnosis && this.form.diagnosis.trim()),
-          preserveTreatment: !force && !!(this.form.treatment && this.form.treatment.trim())
-        });
-
-        // 如果模板记录里缺少部分字段，兜底再用疾病模板填充缺失项
-        var needComplaint = !this.form.chiefComplaint;
-        var needDiagnosis = !this.form.diagnosis;
-        var needTreatment = !this.form.treatment;
-        if (needComplaint || needDiagnosis || needTreatment) {
-          this.autoFillByDisease(disease);
-        }
-
-        // 确保疾病名称使用标准名称
-        if (this.diseaseOptions.includes(disease)) {
-          this.form.diseaseName = disease;
-        }
-
-        // 自动选择推荐用药
-        if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
-          this.applySuggestDrugs(record.suggestDrugs);
-        }
-      } else {
-        // 回退到旧逻辑（如果找不到结构化模板）
-        this.loadTemplatesForDisease(disease);
-        this.autoFillByDisease(disease);
-        // 确保疾病名称使用标准名称
-        if (!this.diseaseOptions.includes(this.form.diseaseName)) {
-          var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis || this.form.diseaseName);
-          if (analyzedDisease) {
-            this.form.diseaseName = analyzedDisease;
-          } else {
-            this.form.diseaseName = '其他';
-          }
-        }
-      }
-    },
-    // 依据疾病载入诊断与处置模板
-    loadTemplatesForDisease: function loadTemplatesForDisease(disease) {
-      var _this$diseaseTemplate2, _this$diseaseTemplate3, _this$treatmentTempla2;
-      var baseDiag = ((_this$diseaseTemplate2 = this.diseaseTemplates) === null || _this$diseaseTemplate2 === void 0 ? void 0 : _this$diseaseTemplate2[disease]) || [];
-      // 合并结构化模板中的诊断
-      var structDiag = (((_this$diseaseTemplate3 = this.diseaseTemplateLib) === null || _this$diseaseTemplate3 === void 0 ? void 0 : _this$diseaseTemplate3[disease]) || []).flatMap(function (t) {
-        return t.diagnoses || [];
-      });
-      var diag = Array.from(new Set([].concat((0, _toConsumableArray2.default)(baseDiag || []), (0, _toConsumableArray2.default)(structDiag))));
-      var treat = ((_this$treatmentTempla2 = this.treatmentTemplates) === null || _this$treatmentTempla2 === void 0 ? void 0 : _this$treatmentTempla2[disease]) || [];
-      this.filteredDiagnosis = diag;
-      this.filteredTreatments = treat;
-    },
-    // 自动按疾病填入主诉/诊断/处置（可编辑）
-    autoFillByDisease: function autoFillByDisease(disease) {
-      var _this$complaintTempla, _this$diseaseTemplate4, _this$treatmentTempla3, _this$treatmentCautio;
-      var complaint = (_this$complaintTempla = this.complaintTemplates) === null || _this$complaintTempla === void 0 ? void 0 : _this$complaintTempla[disease];
-      var diagList = ((_this$diseaseTemplate4 = this.diseaseTemplates) === null || _this$diseaseTemplate4 === void 0 ? void 0 : _this$diseaseTemplate4[disease]) || [];
-      var diag = diagList[0];
-      var treats = (((_this$treatmentTempla3 = this.treatmentTemplates) === null || _this$treatmentTempla3 === void 0 ? void 0 : _this$treatmentTempla3[disease]) || []).slice(0, 2);
-      // 附加注意事项/复诊提示
-      var cautions = ((_this$treatmentCautio = this.treatmentCautions) === null || _this$treatmentCautio === void 0 ? void 0 : _this$treatmentCautio[disease]) || [];
-      var merged = [];
-      var pushUnique = function pushUnique(arr) {
-        arr.forEach(function (t) {
-          if (t && !merged.includes(t)) merged.push(t);
-        });
-      };
-      pushUnique(treats);
-      pushUnique(cautions);
-      // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
-      if (complaint) this.form.chiefComplaint = complaint;
-      if (diag) {
-        // 初步诊断使用模板中的完整诊断组合
-        this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
-        // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
-        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
-        if (analyzedDisease) {
-          this.form.diseaseName = analyzedDisease;
-        } else if (this.diseaseOptions.includes(disease)) {
-          // 如果疾病名称本身是标准名称，直接使用
-          this.form.diseaseName = disease;
-        } else {
-          this.form.diseaseName = '其他';
-        }
-      }
-      if (merged.length) this.form.treatment = merged.join('；');
-    },
-    // 诊断输入与选择
-    // 诊断获得焦点：显示下拉列表
-    onDiagnosisFocus: function onDiagnosisFocus() {
-      // 触发全局搜索，基于所有三个框的关键词
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-      this.filteredDiseases = result.diseases;
-      this.filteredComplaints = result.complaints;
-      this.filteredDiagnosis = result.diagnoses;
-
-      // 显示下拉（即使为空也显示，基于其他框的关键词）
-      this.showDiagnosisList = this.filteredDiagnosis.length > 0;
-    },
-    // 诊断输入（添加防抖）
-    onDiagnosisInput: function onDiagnosisInput() {
-      var _this11 = this;
-      // 清除之前的计时器
-      if (this.diagnosisInputTimer) {
-        clearTimeout(this.diagnosisInputTimer);
-      }
-
-      // 防抖处理，延迟200ms执行
-      this.diagnosisInputTimer = setTimeout(function () {
-        var result = _this11.performGlobalSearch(_this11.form.diseaseName, _this11.form.chiefComplaint, _this11.form.diagnosis);
-        _this11.filteredDiseases = result.diseases;
-        _this11.filteredComplaints = result.complaints;
-        _this11.filteredDiagnosis = result.diagnoses;
-        _this11.showDiagnosisList = _this11.filteredDiagnosis.length > 0;
-      }, 200);
-    },
-    selectDiagnosis: function selectDiagnosis(text) {
-      var _this12 = this;
-      // 查找最匹配的模板记录（考虑当前已输入的字段）
-      var bestRecord = this.findBestMatchingRecord(text,
-      // 选择的诊断
-      this.form.chiefComplaint,
-      // 当前主诉
-      this.form.diseaseName // 当前疾病名称
-      );
-
-      if (bestRecord) {
-        // 智能填充：只填充空白字段，保留用户已输入的内容
-        this.smartFillFields(bestRecord, {
-          preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
-          // 如果主诉已输入，保留
-          preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
-          // 如果症状已输入，保留
-          preserveDiagnosis: false,
-          // 诊断字段用新选择的替换
-          preserveTreatment: !!(this.form.treatment && this.form.treatment.trim()) // 如果处置已输入，保留
-        });
-
-        // 确保诊断字段使用选择的诊断（如果模板中有完整诊断组合，使用组合；否则使用选择的诊断）
-        if (bestRecord.diagnoses && bestRecord.diagnoses.length) {
-          // 检查选择的诊断是否在模板的诊断列表中
-          var hasExactMatch = bestRecord.diagnoses.some(function (d) {
-            return d === text;
-          });
-          if (hasExactMatch) {
-            // 如果完全匹配，使用模板的完整诊断组合
-            this.form.diagnosis = bestRecord.diagnoses.join('；');
-          } else {
-            // 否则使用选择的诊断
-            this.form.diagnosis = text;
-          }
-        } else {
-          this.form.diagnosis = text;
-        }
-
-        // 自动选择推荐用药
-        if (Array.isArray(bestRecord.suggestDrugs) && bestRecord.suggestDrugs.length) {
-          bestRecord.suggestDrugs.forEach(function (name) {
-            if (name) {
-              _this12.onDrugChip(name);
-            }
-          });
-        }
-      } else {
-        // 如果没有找到匹配记录，只更新诊断和疾病名称
-        this.form.diagnosis = text;
-        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
-        this.form.diseaseName = analyzedDisease || '其他';
-      }
-      this.showDiagnosisList = false;
-    },
-    // 主诉获得焦点：根据编辑模式决定是否触发搜索
-    onComplaintFocus: function onComplaintFocus() {
-      var _this13 = this;
-      // 清除失焦隐藏计时器
-      if (this.complaintBlurTimer) {
-        clearTimeout(this.complaintBlurTimer);
-        this.complaintBlurTimer = null;
-      }
-      var currentComplaint = (this.form.chiefComplaint || '').trim();
-
-      // 情况1：自由编辑模式（已选择过） → 不触发搜索，不显示下拉
-      if (this.complaintSelectedMode && currentComplaint) {
-        this.showComplaintList = false;
-        return;
-      }
-
-      // 情况2：输入框为空 → 重置为搜索模式，基于其他框的关键词显示联动结果
-      if (!currentComplaint) {
-        this.complaintSelectedMode = false;
-      }
-
-      // 情况3：搜索模式 → 触发全局搜索（基于AND逻辑）并显示下拉
-      // 使用防抖避免频繁调用
-      if (this.complaintFocusTimer) {
-        clearTimeout(this.complaintFocusTimer);
-      }
-      this.complaintFocusTimer = setTimeout(function () {
-        var result = _this13.performGlobalSearch(_this13.form.diseaseName, _this13.form.chiefComplaint, _this13.form.diagnosis);
-        _this13.filteredDiseases = result.diseases;
-        _this13.filteredComplaints = result.complaints;
-        _this13.filteredDiagnosis = result.diagnoses;
-
-        // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
-        _this13.showComplaintList = _this13.filteredComplaints.length > 0;
-      }, 150);
-    },
-    onComplaintInput: function onComplaintInput() {
-      var _this14 = this;
-      var currentComplaint = (this.form.chiefComplaint || '').trim();
-
-      // 如果内容被清空，重置为搜索模式
-      if (!currentComplaint) {
-        this.complaintSelectedMode = false;
-      }
-
-      // 如果已选择主诉（自由编辑模式），不显示下拉
-      if (this.complaintSelectedMode && currentComplaint) {
-        this.showComplaintList = false;
-        return;
-      }
-
-      // 搜索模式：执行全局搜索并显示下拉（添加防抖）
-      if (this.complaintInputTimer) {
-        clearTimeout(this.complaintInputTimer);
-      }
-      this.complaintInputTimer = setTimeout(function () {
-        var result = _this14.performGlobalSearch(_this14.form.diseaseName, _this14.form.chiefComplaint, _this14.form.diagnosis);
-        _this14.filteredDiseases = result.diseases;
-        _this14.filteredComplaints = result.complaints;
-        _this14.filteredDiagnosis = result.diagnoses;
-        _this14.showComplaintList = _this14.filteredComplaints.length > 0;
-      }, 200);
-    },
-    onComplaintBlur: function onComplaintBlur() {
-      var _this15 = this;
-      // 失焦时重置聚焦状态
-      this.complaintFocus = false;
-      // 延迟隐藏下拉，给点击事件留时间
-      this.complaintBlurTimer = setTimeout(function () {
-        _this15.showComplaintList = false;
-      }, 200);
-      // 主诉编辑完成后，根据最新主诉获取系统诊断建议（防抖处理）
-      if (this.fetchHvSuggestionTimer) {
-        clearTimeout(this.fetchHvSuggestionTimer);
-      }
-      this.fetchHvSuggestionTimer = setTimeout(function () {
-        _this15.fetchHvSuggestion();
-      }, 300);
-    },
-    fetchHvSuggestion: function fetchHvSuggestion() {
-      var _this16 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        var text, res, payload, symptomText;
-        return _regenerator.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                text = (_this16.form.chiefComplaint || '').trim();
-                if (text) {
-                  _context4.next = 6;
-                  break;
-                }
-                _this16.hvTriage = null;
-                _this16.standardizedSymptoms = [];
-                // 主诉为空时，清空症状以保持一致
-                _this16.form.symptom = '';
-                return _context4.abrupt("return");
-              case 6:
-                _context4.prev = 6;
-                _context4.next = 9;
-                return wx.cloud.callFunction({
-                  name: 'clinicRecords',
-                  data: {
-                    action: 'suggestHvDiagnosis',
-                    data: {
-                      chiefComplaint: text
-                    }
-                  }
-                });
-              case 9:
-                res = _context4.sent;
-                console.log('[clinic/add] fetchHvSuggestion result:', res);
-                payload = res.result && res.result.success ? res.result.data : null; // 提取标准化症状
-                if (payload && payload.standardized && payload.standardized.details) {
-                  _this16.standardizedSymptoms = payload.standardized.details.map(function (detail) {
-                    return {
-                      code: detail.code,
-                      name: detail.standardName || detail.name,
-                      category: detail.category,
-                      severity: detail.severity || 1,
-                      selected: false
-                    };
-                  });
-
-                  // 根据主诉自动更新症状，保持与主诉一致（用分号连接标准化症状）
-                  symptomText = _this16.standardizedSymptoms.map(function (s) {
-                    return s.name;
-                  }).join('；');
-                  if (symptomText) {
-                    _this16.form.symptom = symptomText;
-                  }
-                } else {
-                  _this16.standardizedSymptoms = [];
-                  // 如果没有标准化症状，使用主诉内容作为症状
-                  if (text) {
-                    _this16.form.symptom = text;
-                  }
-                }
-                _this16.hvTriage = payload.triage || null;
-                _context4.next = 21;
-                break;
-              case 16:
-                _context4.prev = 16;
-                _context4.t0 = _context4["catch"](6);
-                console.error('获取标准化症状失败:', _context4.t0);
-                _this16.hvTriage = null;
-                _this16.standardizedSymptoms = [];
-              case 21:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, null, [[6, 16]]);
+        }, _callee4, null, [[0, 9]]);
       }))();
-    },
-    // 症状输入框获得焦点
-    onSymptomFocus: function onSymptomFocus() {
-      // 清除失焦隐藏计时器
-      if (this.symptomBlurTimer) {
-        clearTimeout(this.symptomBlurTimer);
-        this.symptomBlurTimer = null;
-      }
+    }
+  }, (0, _defineProperty2.default)(_methods, "onDrugInputFocus", function onDrugInputFocus() {
+    // 检查是否已选择园区
+    if (!this.form.location) {
+      uni.showToast({
+        title: '请先选择就诊园区',
+        icon: 'none',
+        duration: 2000
+      });
+      this.showLocationTip = true;
+      return;
+    }
 
-      // 如果症状框为空，显示标准化症状建议
-      var currentSymptom = (this.form.symptom || '').trim();
-      if (!currentSymptom && this.standardizedSymptoms.length > 0) {
-        this.filteredSymptoms = this.standardizedSymptoms.map(function (s) {
-          return {
-            name: s.name,
-            category: s.category,
-            code: s.code
-          };
+    // 如果没有搜索内容，加载当前园区的所有药材
+    if (!this.drugSearchText || this.drugSearchText.trim() === '') {
+      this.loadLocationDrugs();
+    }
+
+    // 显示药品下拉列表
+    this.showDrugList = true;
+  }), (0, _defineProperty2.default)(_methods, "onDrugSearch", function onDrugSearch() {
+    if (!this.drugSearchText || this.drugSearchText.trim() === '') {
+      // 没有搜索内容时，加载当前园区药材
+      this.loadLocationDrugs();
+      return;
+    }
+    var keyword = this.drugSearchText.toLowerCase();
+    // 从当前园区的药材中搜索
+    if (this.filteredDrugs.length > 0 && !this.drugSearchText) {
+      // 已经加载了园区药材，在其中搜索
+      var currentList = (0, _toConsumableArray2.default)(this.filteredDrugs);
+      this.filteredDrugs = currentList.filter(function (drug) {
+        var name = (drug.name || '').toLowerCase();
+        var genericName = (drug.genericName || '').toLowerCase();
+        var spec = (drug.specification || '').toLowerCase();
+        var tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
+        var hitTrade = tradeNames.some(function (t) {
+          return (t || '').toLowerCase().includes(keyword);
         });
-        this.showSymptomList = true;
-      } else if (currentSymptom) {
-        // 基于输入内容过滤症状建议
-        this.filterSymptomsByInput(currentSymptom);
-      }
-    },
-    // 症状输入（添加防抖）
-    onSymptomInput: function onSymptomInput() {
-      var _this17 = this;
-      // 清除之前的计时器
-      if (this.symptomInputTimer) {
-        clearTimeout(this.symptomInputTimer);
-      }
+        return name.includes(keyword) || genericName.includes(keyword) || spec.includes(keyword) || hitTrade;
+      });
+    } else {
+      // 从所有药材中搜索
+      this.filteredDrugs = this.allDrugs.filter(function (drug) {
+        var name = (drug.name || '').toLowerCase();
+        var genericName = (drug.genericName || '').toLowerCase();
+        var pinyin = (drug.pinyin || '').toLowerCase();
+        var spec = (drug.specification || drug.spec || '').toLowerCase();
+        var tradeNames = Array.isArray(drug.tradeNames) ? drug.tradeNames : [];
+        var hitTrade = tradeNames.some(function (t) {
+          return (t || '').toLowerCase().includes(keyword);
+        });
+        return name.includes(keyword) || genericName.includes(keyword) || pinyin.includes(keyword) || spec.includes(keyword) || hitTrade;
+      }).slice(0, 30); // 最多显示30个结果
+    }
+  }), (0, _defineProperty2.default)(_methods, "selectDrugFromList", function selectDrugFromList(drug) {
+    this.drugSearchText = drug.name;
+    this.onDrugSelect(drug);
+    this.showDrugList = false;
 
-      // 防抖处理，延迟300ms执行
-      this.symptomInputTimer = setTimeout(function () {
-        var text = (_this17.form.symptom || '').trim();
-        if (!text) {
-          // 如果清空，显示标准化症状
-          if (_this17.standardizedSymptoms.length > 0) {
-            _this17.filteredSymptoms = _this17.standardizedSymptoms.map(function (s) {
-              return {
-                name: s.name,
-                category: s.category,
-                code: s.code
-              };
-            });
-            _this17.showSymptomList = true;
-          } else {
-            _this17.showSymptomList = false;
-          }
-          return;
+    // 选择药材后自动联动填充默认值
+    this.autoFillDrugDefaults(drug);
+  }), (0, _defineProperty2.default)(_methods, "autoFillDrugDefaults", function autoFillDrugDefaults(drug) {
+    // 1. 根据药材类型自动设置默认用药数量
+    if (!this.form.quantity || this.form.quantity === 0) {
+      // 根据药材名称智能推荐数量
+      if (drug.name.includes('创可贴') || drug.name.includes('纱布') || drug.name.includes('棉签')) {
+        this.form.quantity = 1; // 外用材料默认1个
+      } else if (drug.name.includes('片') || drug.name.includes('粒') || drug.name.includes('胶囊')) {
+        this.form.quantity = 2; // 口服药默认2片/粒
+      } else if (drug.name.includes('水') || drug.name.includes('液')) {
+        this.form.quantity = 10; // 液体默认10ml
+      } else {
+        this.form.quantity = 1; // 其他默认1
+      }
+    }
+
+    // 2. 根据药材类型自动设置单次剂量
+    if (!this.currentDrug.dosage) {
+      if (drug.name.includes('布洛芬')) {
+        this.currentDrug.dosage = '0.3g';
+      } else if (drug.name.includes('片') || drug.name.includes('粒')) {
+        this.currentDrug.dosage = '1片';
+      } else if (drug.name.includes('胶囊')) {
+        this.currentDrug.dosage = '1粒';
+      } else if (drug.specification) {
+        this.currentDrug.dosage = drug.specification;
+      }
+    }
+
+    // 3. 根据药材类型自动设置给药途径
+    if (!this.currentDrug.route) {
+      if (drug.name.includes('创可贴') || drug.name.includes('碘伏') || drug.name.includes('纱布') || drug.name.includes('湿润烧伤膏') || drug.name.includes('红霉素眼膏')) {
+        this.currentDrug.route = '外用';
+        this.routeIndex = 1; // 外用
+      } else if (drug.name.includes('含片') || drug.name.includes('草珊瑚')) {
+        this.currentDrug.route = '含服';
+        this.routeIndex = 2; // 含服
+      } else if (drug.name.includes('速效救心丸')) {
+        this.currentDrug.route = '舌下含服';
+        this.routeIndex = 3; // 舌下含服
+      } else {
+        this.currentDrug.route = '口服';
+        this.routeIndex = 0; // 口服
+      }
+    }
+
+    // 4. 根据药材类型自动设置用药频次
+    if (!this.currentDrug.frequency) {
+      if (drug.name.includes('创可贴') || drug.name.includes('纱布') || drug.name.includes('碘伏')) {
+        this.currentDrug.frequency = '即刻';
+        this.frequencyIndex = 0; // 即刻
+      } else if (drug.name.includes('速效救心丸')) {
+        this.currentDrug.frequency = '必要时';
+        this.frequencyIndex = 6; // 必要时
+      } else if (drug.name.includes('布洛芬') || drug.name.includes('止痛')) {
+        this.currentDrug.frequency = '每日3次';
+        this.frequencyIndex = 1; // 每日3次
+      } else {
+        this.currentDrug.frequency = '即刻';
+        this.frequencyIndex = 0; // 即刻
+      }
+    }
+
+    // 5. 自动开启处方功能
+    if (!this.enablePrescription) {
+      this.enablePrescription = true;
+    }
+
+    // 提示用户已自动填充
+    console.log('✅ 已自动填充药材默认值:', {
+      quantity: this.form.quantity,
+      dosage: this.currentDrug.dosage,
+      route: this.currentDrug.route,
+      frequency: this.currentDrug.frequency
+    });
+  }), (0, _defineProperty2.default)(_methods, "onDiseaseFocus", function onDiseaseFocus() {
+    // 清除失焦隐藏计时器
+    if (this.diseaseBlurTimer) {
+      clearTimeout(this.diseaseBlurTimer);
+      this.diseaseBlurTimer = null;
+    }
+
+    // 触发全局搜索，基于所有三个框的关键词
+    var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
+    this.filteredDiseases = result.diseases;
+    this.filteredComplaints = result.complaints;
+    this.filteredDiagnosis = result.diagnoses;
+
+    // 显示下拉（即使为空也显示，会显示所有疾病）
+    this.showDiseaseList = this.filteredDiseases.length > 0;
+  }), (0, _defineProperty2.default)(_methods, "onDiseaseBlur", function onDiseaseBlur() {
+    var _this10 = this;
+    var text = (this.form.diseaseName || '').trim();
+    if (text) {
+      // 1）先按疾病大类精确匹配
+      var hasDisease = this.templateIndex.some(function (r) {
+        return r.disease === text;
+      });
+      if (hasDisease) {
+        this.selectDisease(text);
+      } else {
+        // 2）再按标准诊断名匹配
+        var diagRecord = this.templateIndex.find(function (r) {
+          return (r.diagnoses || []).some(function (d) {
+            return d === text;
+          });
+        });
+        if (diagRecord) {
+          this.selectDiagnosis(text);
         }
+      }
+    }
 
-        // 基于输入内容过滤
-        _this17.filterSymptomsByInput(text);
-      }, 300);
-    },
-    // 根据输入内容过滤症状（优化性能）
-    filterSymptomsByInput: function filterSymptomsByInput(text) {
-      var lowerText = text.toLowerCase();
-      var matched = [];
-      var matchedNames = new Set(); // 用于去重
+    // 延迟隐藏下拉，给点击事件留时间
+    this.diseaseBlurTimer = setTimeout(function () {
+      _this10.showDiseaseList = false;
+    }, 200);
+  }), (0, _defineProperty2.default)(_methods, "onDiseaseInput", function onDiseaseInput() {
+    var _this11 = this;
+    // 清除之前的计时器
+    if (this.diseaseInputTimer) {
+      clearTimeout(this.diseaseInputTimer);
+    }
 
-      // 1. 从标准化症状中匹配（限制数量）
-      if (this.standardizedSymptoms && this.standardizedSymptoms.length > 0) {
-        for (var i = 0; i < Math.min(this.standardizedSymptoms.length, 50); i++) {
-          var s = this.standardizedSymptoms[i];
-          if (s.name && s.name.toLowerCase().includes(lowerText)) {
-            if (!matchedNames.has(s.name)) {
-              matched.push({
-                name: s.name,
-                category: s.category,
-                code: s.code
-              });
-              matchedNames.add(s.name);
-            }
-          }
-          // 如果已经找到足够的匹配项，提前退出
-          if (matched.length >= 20) break;
-        }
+    // 防抖处理，延迟200ms执行
+    this.diseaseInputTimer = setTimeout(function () {
+      var result = _this11.performGlobalSearch(_this11.form.diseaseName, _this11.form.chiefComplaint, _this11.form.diagnosis);
+      _this11.filteredDiseases = result.diseases;
+      _this11.filteredComplaints = result.complaints;
+      _this11.filteredDiagnosis = result.diagnoses;
+      _this11.showDiseaseList = _this11.filteredDiseases.length > 0;
+      // 主诉和诊断下拉在用户聚焦时才显示，这里只更新数据
+    }, 200);
+    // 如果当前输入的疾病名称与某个疾病完全匹配，则自动按该疾病刷新联动字段
+    var kw = (this.form.diseaseName || '').trim();
+    if (kw && this.filteredDiseases.includes(kw)) {
+      this.selectDisease(kw);
+    }
+  }), (0, _defineProperty2.default)(_methods, "selectDisease", function selectDisease(disease) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+      forceFill: true
+    };
+    // 清除失焦隐藏计时器
+    if (this.diseaseBlurTimer) {
+      clearTimeout(this.diseaseBlurTimer);
+      this.diseaseBlurTimer = null;
+    }
+
+    // 选择后关闭下拉
+    this.showDiseaseList = false;
+
+    // 查找该疾病的第一条模板记录（使用最佳匹配）
+    var record = this.templateIndex.find(function (r) {
+      return r.disease === disease;
+    });
+    if (record) {
+      var force = (options === null || options === void 0 ? void 0 : options.forceFill) === true;
+      // 智能填充：默认强制覆盖，满足“先选疾病反向自动填充”需求
+      this.smartFillFields(record, {
+        preserveComplaint: !force && !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+        preserveSymptom: !force && !!(this.form.symptom && this.form.symptom.trim()),
+        preserveDiagnosis: !force && !!(this.form.diagnosis && this.form.diagnosis.trim()),
+        preserveTreatment: !force && !!(this.form.treatment && this.form.treatment.trim())
+      });
+
+      // 如果模板记录里缺少部分字段，兜底再用疾病模板填充缺失项
+      var needComplaint = !this.form.chiefComplaint;
+      var needDiagnosis = !this.form.diagnosis;
+      var needTreatment = !this.form.treatment;
+      if (needComplaint || needDiagnosis || needTreatment) {
+        this.autoFillByDisease(disease);
       }
 
-      // 2. 从模板索引中提取症状建议（限制遍历数量）
-      if (this.templateIndex && this.templateIndex.length > 0 && matched.length < 20) {
-        var maxIndex = Math.min(this.templateIndex.length, 100); // 最多遍历100条模板
-        for (var _i5 = 0; _i5 < maxIndex; _i5++) {
-          var rec = this.templateIndex[_i5];
-          if (rec.symptoms && Array.isArray(rec.symptoms)) {
-            for (var j = 0; j < rec.symptoms.length && matched.length < 20; j++) {
-              var symptom = rec.symptoms[j];
-              if (symptom && typeof symptom === 'string' && symptom.toLowerCase().includes(lowerText)) {
-                if (!matchedNames.has(symptom)) {
-                  matched.push({
-                    name: symptom,
-                    category: '',
-                    code: ''
-                  });
-                  matchedNames.add(symptom);
+      // 确保疾病名称使用标准名称
+      if (this.diseaseOptions.includes(disease)) {
+        this.form.diseaseName = disease;
+      }
+
+      // 自动选择推荐用药
+      if (Array.isArray(record.suggestDrugs) && record.suggestDrugs.length) {
+        this.applySuggestDrugs(record.suggestDrugs);
+      }
+    } else {
+      // 回退到旧逻辑（如果找不到结构化模板）
+      this.loadTemplatesForDisease(disease);
+      this.autoFillByDisease(disease);
+      // 确保疾病名称使用标准名称
+      if (!this.diseaseOptions.includes(this.form.diseaseName)) {
+        var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis || this.form.diseaseName);
+        if (analyzedDisease) {
+          this.form.diseaseName = analyzedDisease;
+        } else {
+          this.form.diseaseName = '其他';
+        }
+      }
+    }
+  }), (0, _defineProperty2.default)(_methods, "loadTemplatesForDisease", function loadTemplatesForDisease(disease) {
+    var _this$diseaseTemplate2, _this$diseaseTemplate3, _this$treatmentTempla2;
+    var baseDiag = ((_this$diseaseTemplate2 = this.diseaseTemplates) === null || _this$diseaseTemplate2 === void 0 ? void 0 : _this$diseaseTemplate2[disease]) || [];
+    // 合并结构化模板中的诊断
+    var structDiag = (((_this$diseaseTemplate3 = this.diseaseTemplateLib) === null || _this$diseaseTemplate3 === void 0 ? void 0 : _this$diseaseTemplate3[disease]) || []).flatMap(function (t) {
+      return t.diagnoses || [];
+    });
+    var diag = Array.from(new Set([].concat((0, _toConsumableArray2.default)(baseDiag || []), (0, _toConsumableArray2.default)(structDiag))));
+    var treat = ((_this$treatmentTempla2 = this.treatmentTemplates) === null || _this$treatmentTempla2 === void 0 ? void 0 : _this$treatmentTempla2[disease]) || [];
+    this.filteredDiagnosis = diag;
+    this.filteredTreatments = treat;
+  }), (0, _defineProperty2.default)(_methods, "autoFillByDisease", function autoFillByDisease(disease) {
+    var _this$complaintTempla, _this$diseaseTemplate4, _this$treatmentTempla3, _this$treatmentCautio;
+    var complaint = (_this$complaintTempla = this.complaintTemplates) === null || _this$complaintTempla === void 0 ? void 0 : _this$complaintTempla[disease];
+    var diagList = ((_this$diseaseTemplate4 = this.diseaseTemplates) === null || _this$diseaseTemplate4 === void 0 ? void 0 : _this$diseaseTemplate4[disease]) || [];
+    var diag = diagList[0];
+    var treats = (((_this$treatmentTempla3 = this.treatmentTemplates) === null || _this$treatmentTempla3 === void 0 ? void 0 : _this$treatmentTempla3[disease]) || []).slice(0, 2);
+    // 附加注意事项/复诊提示
+    var cautions = ((_this$treatmentCautio = this.treatmentCautions) === null || _this$treatmentCautio === void 0 ? void 0 : _this$treatmentCautio[disease]) || [];
+    var merged = [];
+    var pushUnique = function pushUnique(arr) {
+      arr.forEach(function (t) {
+        if (t && !merged.includes(t)) merged.push(t);
+      });
+    };
+    pushUnique(treats);
+    pushUnique(cautions);
+    // 每次选择疾病时，都用模板覆盖联动字段，保证重新选择疾病也会刷新
+    if (complaint) this.form.chiefComplaint = complaint;
+    if (diag) {
+      // 初步诊断使用模板中的完整诊断组合
+      this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+      // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
+      var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
+      if (analyzedDisease) {
+        this.form.diseaseName = analyzedDisease;
+      } else if (this.diseaseOptions.includes(disease)) {
+        // 如果疾病名称本身是标准名称，直接使用
+        this.form.diseaseName = disease;
+      } else {
+        this.form.diseaseName = '其他';
+      }
+    }
+    if (merged.length) this.form.treatment = merged.join('；');
+  }), (0, _defineProperty2.default)(_methods, "onDiagnosisFocus", function onDiagnosisFocus() {
+    // 触发全局搜索，基于所有三个框的关键词
+    var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
+    this.filteredDiseases = result.diseases;
+    this.filteredComplaints = result.complaints;
+    this.filteredDiagnosis = result.diagnoses;
+
+    // 显示下拉（即使为空也显示，基于其他框的关键词）
+    this.showDiagnosisList = this.filteredDiagnosis.length > 0;
+  }), (0, _defineProperty2.default)(_methods, "onDiagnosisInput", function onDiagnosisInput() {
+    var _this12 = this;
+    // 清除之前的计时器
+    if (this.diagnosisInputTimer) {
+      clearTimeout(this.diagnosisInputTimer);
+    }
+
+    // 防抖处理，延迟200ms执行
+    this.diagnosisInputTimer = setTimeout(function () {
+      var result = _this12.performGlobalSearch(_this12.form.diseaseName, _this12.form.chiefComplaint, _this12.form.diagnosis);
+      _this12.filteredDiseases = result.diseases;
+      _this12.filteredComplaints = result.complaints;
+      _this12.filteredDiagnosis = result.diagnoses;
+      _this12.showDiagnosisList = _this12.filteredDiagnosis.length > 0;
+    }, 200);
+  }), (0, _defineProperty2.default)(_methods, "selectDiagnosis", function selectDiagnosis(text) {
+    var _this13 = this;
+    // 查找最匹配的模板记录（考虑当前已输入的字段）
+    var bestRecord = this.findBestMatchingRecord(text,
+    // 选择的诊断
+    this.form.chiefComplaint,
+    // 当前主诉
+    this.form.diseaseName // 当前疾病名称
+    );
+
+    if (bestRecord) {
+      // 智能填充：强制更新症状和处置，确保与诊断一致
+      this.smartFillFields(bestRecord, {
+        preserveComplaint: !!(this.form.chiefComplaint && this.form.chiefComplaint.trim()),
+        // 如果主诉已输入，保留
+        preserveSymptom: false,
+        // ⚠️ 强制更新症状，确保与诊断一致
+        preserveDiagnosis: false,
+        // 诊断字段用新选择的替换
+        preserveTreatment: false // ⚠️ 强制更新处置，确保与诊断一致
+      });
+
+      // 确保诊断字段使用选择的诊断（如果模板中有完整诊断组合，使用组合；否则使用选择的诊断）
+      if (bestRecord.diagnoses && bestRecord.diagnoses.length) {
+        // 检查选择的诊断是否在模板的诊断列表中
+        var hasExactMatch = bestRecord.diagnoses.some(function (d) {
+          return d === text;
+        });
+        if (hasExactMatch) {
+          // 如果完全匹配，使用模板的完整诊断组合
+          this.form.diagnosis = bestRecord.diagnoses.join('；');
+        } else {
+          // 否则使用选择的诊断
+          this.form.diagnosis = text;
+        }
+      } else {
+        this.form.diagnosis = text;
+      }
+
+      // 自动选择推荐用药
+      if (Array.isArray(bestRecord.suggestDrugs) && bestRecord.suggestDrugs.length) {
+        bestRecord.suggestDrugs.forEach(function (name) {
+          if (name) {
+            _this13.onDrugChip(name);
+          }
+        });
+      }
+    } else {
+      // 如果没有找到匹配记录，只更新诊断和疾病名称
+      this.form.diagnosis = text;
+      var analyzedDisease = this.analyzeDiseaseFromDiagnosis(text);
+      this.form.diseaseName = analyzedDisease || '其他';
+    }
+    this.showDiagnosisList = false;
+  }), (0, _defineProperty2.default)(_methods, "onComplaintFocus", function onComplaintFocus() {
+    var _this14 = this;
+    // 清除失焦隐藏计时器
+    if (this.complaintBlurTimer) {
+      clearTimeout(this.complaintBlurTimer);
+      this.complaintBlurTimer = null;
+    }
+    var currentComplaint = (this.form.chiefComplaint || '').trim();
+
+    // 情况1：自由编辑模式（已选择过） → 不触发搜索，不显示下拉
+    if (this.complaintSelectedMode && currentComplaint) {
+      this.showComplaintList = false;
+      return;
+    }
+
+    // 情况2：输入框为空 → 重置为搜索模式，基于其他框的关键词显示联动结果
+    if (!currentComplaint) {
+      this.complaintSelectedMode = false;
+    }
+
+    // 情况3：搜索模式 → 触发全局搜索（基于AND逻辑）并显示下拉
+    // 使用防抖避免频繁调用
+    if (this.complaintFocusTimer) {
+      clearTimeout(this.complaintFocusTimer);
+    }
+    this.complaintFocusTimer = setTimeout(function () {
+      var result = _this14.performGlobalSearch(_this14.form.diseaseName, _this14.form.chiefComplaint, _this14.form.diagnosis);
+      _this14.filteredDiseases = result.diseases;
+      _this14.filteredComplaints = result.complaints;
+      _this14.filteredDiagnosis = result.diagnoses;
+
+      // 即使主诉框为空，只要有其他框的关键词，也显示联动结果
+      _this14.showComplaintList = _this14.filteredComplaints.length > 0;
+    }, 150);
+  }), (0, _defineProperty2.default)(_methods, "onComplaintInput", function onComplaintInput() {
+    var _this15 = this;
+    var currentComplaint = (this.form.chiefComplaint || '').trim();
+
+    // 如果内容被清空，重置为搜索模式
+    if (!currentComplaint) {
+      this.complaintSelectedMode = false;
+    }
+
+    // 如果已选择主诉（自由编辑模式），不显示下拉
+    if (this.complaintSelectedMode && currentComplaint) {
+      this.showComplaintList = false;
+      return;
+    }
+
+    // 搜索模式：执行全局搜索并显示下拉（添加防抖）
+    if (this.complaintInputTimer) {
+      clearTimeout(this.complaintInputTimer);
+    }
+    this.complaintInputTimer = setTimeout(function () {
+      var result = _this15.performGlobalSearch(_this15.form.diseaseName, _this15.form.chiefComplaint, _this15.form.diagnosis);
+      _this15.filteredDiseases = result.diseases;
+      _this15.filteredComplaints = result.complaints;
+      _this15.filteredDiagnosis = result.diagnoses;
+      _this15.showComplaintList = _this15.filteredComplaints.length > 0;
+    }, 200);
+  }), (0, _defineProperty2.default)(_methods, "onComplaintBlur", function onComplaintBlur() {
+    var _this16 = this;
+    // 失焦时重置聚焦状态
+    this.complaintFocus = false;
+    // 延迟隐藏下拉，给点击事件留时间
+    this.complaintBlurTimer = setTimeout(function () {
+      _this16.showComplaintList = false;
+    }, 200);
+    // 主诉编辑完成后，根据最新主诉获取系统诊断建议（防抖处理）
+    if (this.fetchHvSuggestionTimer) {
+      clearTimeout(this.fetchHvSuggestionTimer);
+    }
+    this.fetchHvSuggestionTimer = setTimeout(function () {
+      _this16.fetchHvSuggestion();
+    }, 300);
+  }), (0, _defineProperty2.default)(_methods, "fetchHvSuggestion", function fetchHvSuggestion() {
+    var _this17 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+      var text, res, payload, symptomText;
+      return _regenerator.default.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              text = (_this17.form.chiefComplaint || '').trim();
+              if (text) {
+                _context5.next = 6;
+                break;
+              }
+              _this17.hvTriage = null;
+              _this17.standardizedSymptoms = [];
+              // 主诉为空时，清空症状以保持一致
+              _this17.form.symptom = '';
+              return _context5.abrupt("return");
+            case 6:
+              _context5.prev = 6;
+              _context5.next = 9;
+              return wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'suggestHvDiagnosis',
+                  data: {
+                    chiefComplaint: text
+                  }
                 }
+              });
+            case 9:
+              res = _context5.sent;
+              console.log('[clinic/add] fetchHvSuggestion result:', res);
+              payload = res.result && res.result.success ? res.result.data : null; // 提取标准化症状
+              if (payload && payload.standardized && payload.standardized.details) {
+                _this17.standardizedSymptoms = payload.standardized.details.map(function (detail) {
+                  return {
+                    code: detail.code,
+                    name: detail.standardName || detail.name,
+                    category: detail.category,
+                    severity: detail.severity || 1,
+                    selected: false
+                  };
+                });
+
+                // 根据主诉自动更新症状，保持与主诉一致（用分号连接标准化症状）
+                symptomText = _this17.standardizedSymptoms.map(function (s) {
+                  return s.name;
+                }).join('；');
+                if (symptomText) {
+                  _this17.form.symptom = symptomText;
+                }
+              } else {
+                _this17.standardizedSymptoms = [];
+                // 如果没有标准化症状，使用主诉内容作为症状
+                if (text) {
+                  _this17.form.symptom = text;
+                }
+              }
+              _this17.hvTriage = payload.triage || null;
+              _context5.next = 21;
+              break;
+            case 16:
+              _context5.prev = 16;
+              _context5.t0 = _context5["catch"](6);
+              console.error('获取标准化症状失败:', _context5.t0);
+              _this17.hvTriage = null;
+              _this17.standardizedSymptoms = [];
+            case 21:
+            case "end":
+              return _context5.stop();
+          }
+        }
+      }, _callee5, null, [[6, 16]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "onSymptomFocus", function onSymptomFocus() {
+    // 清除失焦隐藏计时器
+    if (this.symptomBlurTimer) {
+      clearTimeout(this.symptomBlurTimer);
+      this.symptomBlurTimer = null;
+    }
+
+    // 如果症状框为空，显示标准化症状建议
+    var currentSymptom = (this.form.symptom || '').trim();
+    if (!currentSymptom && this.standardizedSymptoms.length > 0) {
+      this.filteredSymptoms = this.standardizedSymptoms.map(function (s) {
+        return {
+          name: s.name,
+          category: s.category,
+          code: s.code
+        };
+      });
+      this.showSymptomList = true;
+    } else if (currentSymptom) {
+      // 基于输入内容过滤症状建议
+      this.filterSymptomsByInput(currentSymptom);
+    }
+  }), (0, _defineProperty2.default)(_methods, "onSymptomInput", function onSymptomInput() {
+    var _this18 = this;
+    // 清除之前的计时器
+    if (this.symptomInputTimer) {
+      clearTimeout(this.symptomInputTimer);
+    }
+
+    // 防抖处理，延迟300ms执行
+    this.symptomInputTimer = setTimeout(function () {
+      var text = (_this18.form.symptom || '').trim();
+      if (!text) {
+        // 如果清空，显示标准化症状
+        if (_this18.standardizedSymptoms.length > 0) {
+          _this18.filteredSymptoms = _this18.standardizedSymptoms.map(function (s) {
+            return {
+              name: s.name,
+              category: s.category,
+              code: s.code
+            };
+          });
+          _this18.showSymptomList = true;
+        } else {
+          _this18.showSymptomList = false;
+        }
+        return;
+      }
+
+      // 基于输入内容过滤
+      _this18.filterSymptomsByInput(text);
+    }, 300);
+  }), (0, _defineProperty2.default)(_methods, "filterSymptomsByInput", function filterSymptomsByInput(text) {
+    var lowerText = text.toLowerCase();
+    var matched = [];
+    var matchedNames = new Set(); // 用于去重
+
+    // 1. 从标准化症状中匹配（限制数量）
+    if (this.standardizedSymptoms && this.standardizedSymptoms.length > 0) {
+      for (var i = 0; i < Math.min(this.standardizedSymptoms.length, 50); i++) {
+        var s = this.standardizedSymptoms[i];
+        if (s.name && s.name.toLowerCase().includes(lowerText)) {
+          if (!matchedNames.has(s.name)) {
+            matched.push({
+              name: s.name,
+              category: s.category,
+              code: s.code
+            });
+            matchedNames.add(s.name);
+          }
+        }
+        // 如果已经找到足够的匹配项，提前退出
+        if (matched.length >= 20) break;
+      }
+    }
+
+    // 2. 从模板索引中提取症状建议（限制遍历数量）
+    if (this.templateIndex && this.templateIndex.length > 0 && matched.length < 20) {
+      var maxIndex = Math.min(this.templateIndex.length, 100); // 最多遍历100条模板
+      for (var _i5 = 0; _i5 < maxIndex; _i5++) {
+        var rec = this.templateIndex[_i5];
+        if (rec.symptoms && Array.isArray(rec.symptoms)) {
+          for (var j = 0; j < rec.symptoms.length && matched.length < 20; j++) {
+            var symptom = rec.symptoms[j];
+            if (symptom && typeof symptom === 'string' && symptom.toLowerCase().includes(lowerText)) {
+              if (!matchedNames.has(symptom)) {
+                matched.push({
+                  name: symptom,
+                  category: '',
+                  code: ''
+                });
+                matchedNames.add(symptom);
               }
             }
           }
-          // 如果已经找到足够的匹配项，提前退出
-          if (matched.length >= 20) break;
         }
+        // 如果已经找到足够的匹配项，提前退出
+        if (matched.length >= 20) break;
       }
-      this.filteredSymptoms = matched.slice(0, 20); // 限制最多20条
-      this.showSymptomList = matched.length > 0;
-    },
-    // 症状失焦
-    onSymptomBlur: function onSymptomBlur() {
-      var _this18 = this;
-      // 延迟隐藏下拉，给点击事件留时间
-      this.symptomBlurTimer = setTimeout(function () {
-        _this18.showSymptomList = false;
-      }, 200);
-    },
-    // 选择症状
-    selectSymptom: function selectSymptom(symptom) {
-      // 清除失焦隐藏计时器
-      if (this.symptomBlurTimer) {
-        clearTimeout(this.symptomBlurTimer);
-        this.symptomBlurTimer = null;
+    }
+    this.filteredSymptoms = matched.slice(0, 20); // 限制最多20条
+    this.showSymptomList = matched.length > 0;
+  }), (0, _defineProperty2.default)(_methods, "onSymptomBlur", function onSymptomBlur() {
+    var _this19 = this;
+    // 延迟隐藏下拉，给点击事件留时间
+    this.symptomBlurTimer = setTimeout(function () {
+      _this19.showSymptomList = false;
+    }, 200);
+  }), (0, _defineProperty2.default)(_methods, "selectSymptom", function selectSymptom(symptom) {
+    // 清除失焦隐藏计时器
+    if (this.symptomBlurTimer) {
+      clearTimeout(this.symptomBlurTimer);
+      this.symptomBlurTimer = null;
+    }
+    var currentSymptom = (this.form.symptom || '').trim();
+    var symptomName = typeof symptom === 'string' ? symptom : symptom.name || '';
+    if (currentSymptom) {
+      // 如果已有内容，追加（用分号分隔）
+      if (!currentSymptom.includes(symptomName)) {
+        this.form.symptom = "".concat(currentSymptom, "\uFF1B").concat(symptomName);
       }
-      var currentSymptom = (this.form.symptom || '').trim();
-      var symptomName = typeof symptom === 'string' ? symptom : symptom.name || '';
+    } else {
+      // 如果为空，直接填入
+      this.form.symptom = symptomName;
+    }
+    this.showSymptomList = false;
+  }), (0, _defineProperty2.default)(_methods, "toggleSymptomTag", function toggleSymptomTag(symptom) {
+    symptom.selected = !symptom.selected;
+    var currentSymptom = (this.form.symptom || '').trim();
+    var symptomName = symptom.name;
+    if (symptom.selected) {
+      // 添加到症状框
       if (currentSymptom) {
-        // 如果已有内容，追加（用分号分隔）
         if (!currentSymptom.includes(symptomName)) {
           this.form.symptom = "".concat(currentSymptom, "\uFF1B").concat(symptomName);
         }
       } else {
-        // 如果为空，直接填入
         this.form.symptom = symptomName;
       }
-      this.showSymptomList = false;
-    },
-    // 切换症状标签（添加到/从症状框移除）
-    toggleSymptomTag: function toggleSymptomTag(symptom) {
-      symptom.selected = !symptom.selected;
-      var currentSymptom = (this.form.symptom || '').trim();
-      var symptomName = symptom.name;
-      if (symptom.selected) {
-        // 添加到症状框
-        if (currentSymptom) {
-          if (!currentSymptom.includes(symptomName)) {
-            this.form.symptom = "".concat(currentSymptom, "\uFF1B").concat(symptomName);
-          }
-        } else {
-          this.form.symptom = symptomName;
-        }
-      } else {
-        // 从症状框移除
-        if (currentSymptom.includes(symptomName)) {
-          var parts = currentSymptom.split('；').filter(function (s) {
-            return s.trim() !== symptomName;
-          });
-          this.form.symptom = parts.join('；');
-        }
-      }
-    },
-    // 从诊断文本中分析提取标准疾病名称
-    analyzeDiseaseFromDiagnosis: function analyzeDiseaseFromDiagnosis(diagnosisText) {
-      if (!diagnosisText) return null;
-      var text = diagnosisText.toLowerCase();
-
-      // 疾病名称匹配规则（按优先级排序，包含常见医学诊断术语）
-      var diseaseRules = [
-      // 扭伤类
-      {
-        keywords: ['扭伤', '崴', '扭到', '关节扭伤', '脚踝扭伤', '手腕扭伤', '踝关节扭伤', '腕关节扭伤', '软组织扭伤'],
-        disease: '扭伤'
-      },
-      // 擦伤类
-      {
-        keywords: ['擦伤', '蹭破', '擦破', '皮肤擦伤', '挫伤', '表皮擦伤', '浅表擦伤'],
-        disease: '擦伤'
-      },
-      // 烫伤类
-      {
-        keywords: ['烫伤', '烧伤', '灼伤', '烫到', '热烧伤', '化学烧伤'],
-        disease: '烫伤'
-      },
-      // 磕伤类
-      {
-        keywords: ['磕伤', '磕到', '撞伤', '碰伤', '磕碰', '撞击伤', '碰撞伤'],
-        disease: '磕伤'
-      },
-      // 冻伤类
-      {
-        keywords: ['冻伤', '冻到', '冻疮', '冻僵'],
-        disease: '冻伤'
-      },
-      // 腹泻类（包含胃肠炎等）
-      {
-        keywords: ['腹泻', '拉肚子', '拉稀', '泻', '急性胃肠炎', '胃肠炎', '肠胃炎', '肠炎', '急性肠炎', '细菌性肠炎', '病毒性肠炎', '消化不良', '胃肠功能紊乱'],
-        disease: '腹泻'
-      },
-      // 头晕类
-      {
-        keywords: ['头晕', '头昏', '眩晕', '晕', '眼前发黑', '体位性低血压', '低血糖', '贫血性头晕'],
-        disease: '头晕'
-      },
-      // 头痛类
-      {
-        keywords: ['头痛', '头疼', '头部不适', '头胀', '偏头痛', '紧张性头痛', '血管性头痛'],
-        disease: '头痛'
-      },
-      // 感冒类
-      {
-        keywords: ['感冒', '着凉', '受凉', '风寒', '上呼吸道感染', '上感', '普通感冒', '病毒性感冒'],
-        disease: '感冒'
-      },
-      // 脱臼类
-      {
-        keywords: ['脱臼', '脱位', '关节脱位', '肩关节脱位', '肘关节脱位'],
-        disease: '脱臼'
-      },
-      // 骨折类
-      {
-        keywords: ['骨折', '骨裂', '断骨', '闭合性骨折', '开放性骨折', '不完全骨折'],
-        disease: '骨折'
-      },
-      // 过敏类
-      {
-        keywords: ['过敏', '过敏性', '过敏反应', '过敏性皮炎', '过敏性鼻炎', '荨麻疹', '湿疹'],
-        disease: '过敏'
-      },
-      // 痛经类
-      {
-        keywords: ['痛经', '经期疼痛', '月经痛', '原发性痛经', '继发性痛经'],
-        disease: '痛经'
-      },
-      // 测血压类
-      {
-        keywords: ['测血压', '血压', '量血压', '血压监测', '血压检查', '血压测量'],
-        disease: '测血压'
-      }];
-
-      // 按优先级匹配
-      for (var _i6 = 0, _diseaseRules = diseaseRules; _i6 < _diseaseRules.length; _i6++) {
-        var rule = _diseaseRules[_i6];
-        var _iterator2 = _createForOfIteratorHelper(rule.keywords),
-          _step2;
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var keyword = _step2.value;
-            if (text.includes(keyword.toLowerCase())) {
-              return rule.disease;
-            }
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-      }
-
-      // 如果没有匹配到，返回 null，保持原值或使用"其他"
-      return null;
-    },
-    onDiagnosisBlur: function onDiagnosisBlur() {
-      // 诊断输入框失焦时，关闭下拉列表
-      this.showDiagnosisList = false;
-
-      // 根据诊断自动更新处置，保持与诊断一致
-      var diagnosisText = (this.form.diagnosis || '').trim();
-      if (!diagnosisText) {
-        // 诊断为空时，清空处置以保持一致
-        this.form.treatment = '';
-        return;
-      }
-
-      // 从诊断中分析提取标准疾病名称（强制更新，确保使用标准名称）
-      var analyzedDisease = this.analyzeDiseaseFromDiagnosis(diagnosisText);
-      if (analyzedDisease) {
-        // 如果分析出标准疾病名称，直接更新（确保使用标准名称归类）
-        this.form.diseaseName = analyzedDisease;
-      } else {
-        // 如果无法分析出标准疾病名称，设置为"其他"
-        this.form.diseaseName = '其他';
-      }
-
-      // 使用最佳匹配逻辑查找最准确的模板记录
-      var bestRecord = this.findBestMatchingRecord(diagnosisText,
-      // 当前诊断
-      this.form.chiefComplaint,
-      // 当前主诉
-      this.form.diseaseName // 当前疾病名称
-      );
-
-      if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
-        // 找到匹配的模板记录，智能填充处置（如果处置为空）
-        if (!this.form.treatment || !this.form.treatment.trim()) {
-          this.form.treatment = bestRecord.treatments.join('；');
-        }
-        // 如果主诉为空，也可以填充主诉（确保字段关联）
-        if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
-          if (bestRecord.complaint) {
-            this.form.chiefComplaint = bestRecord.complaint;
-          }
-        }
-        // 如果症状为空，也可以填充症状
-        if (!this.form.symptom || !this.form.symptom.trim()) {
-          if (bestRecord.symptoms && bestRecord.symptoms.length) {
-            this.form.symptom = bestRecord.symptoms.join('；');
-          }
-        }
-      } else {
-        // 如果没有找到完整匹配，尝试根据疾病名称查找处置模板
-        var diseaseName = (this.form.diseaseName || '').trim();
-        if (diseaseName && (!this.form.treatment || !this.form.treatment.trim())) {
-          var _this$treatmentTempla4;
-          var treatments = ((_this$treatmentTempla4 = this.treatmentTemplates) === null || _this$treatmentTempla4 === void 0 ? void 0 : _this$treatmentTempla4[diseaseName]) || [];
-          if (treatments.length > 0) {
-            // 使用前两个处置模板
-            this.form.treatment = treatments.slice(0, 2).join('；');
-          }
-        }
-      }
-    },
-    // 打开诊断参考指南
-    openDiagnosisGuide: function openDiagnosisGuide() {
-      var _this19 = this;
-      // 添加模板库匹配的诊断
-      var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
-
-      // 更新过滤列表
-      this.filteredDiagnosis = result.diagnoses;
-
-      // 4. 显示诊断下拉列表
-      if (this.filteredDiagnosis.length > 0) {
-        this.showDiagnosisList = true;
-        // 聚焦到诊断输入框，触发下拉显示
-        this.$nextTick(function () {
-          // 触发诊断输入框的焦点事件，显示下拉列表
-          _this19.onDiagnosisFocus();
+    } else {
+      // 从症状框移除
+      if (currentSymptom.includes(symptomName)) {
+        var parts = currentSymptom.split('；').filter(function (s) {
+          return s.trim() !== symptomName;
         });
-      } else {
-        // 如果没有可用的诊断选项，提示用户
-        uni.showToast({
-          title: '请输入疾病名称或主诉以查看诊断参考',
-          icon: 'none',
-          duration: 2000
-        });
+        this.form.symptom = parts.join('；');
       }
+    }
+  }), (0, _defineProperty2.default)(_methods, "analyzeDiseaseFromDiagnosis", function analyzeDiseaseFromDiagnosis(diagnosisText) {
+    if (!diagnosisText) return null;
+    var text = diagnosisText.toLowerCase();
+
+    // 疾病名称匹配规则（按优先级排序，包含常见医学诊断术语）
+    var diseaseRules = [
+    // 扭伤类
+    {
+      keywords: ['扭伤', '崴', '扭到', '关节扭伤', '脚踝扭伤', '手腕扭伤', '踝关节扭伤', '腕关节扭伤', '软组织扭伤'],
+      disease: '扭伤'
     },
-    selectComplaint: function selectComplaint(opt) {
-      var _this20 = this;
-      // 清除失焦隐藏计时器
-      if (this.complaintBlurTimer) {
-        clearTimeout(this.complaintBlurTimer);
-        this.complaintBlurTimer = null;
+    // 擦伤类
+    {
+      keywords: ['擦伤', '蹭破', '擦破', '皮肤擦伤', '挫伤', '表皮擦伤', '浅表擦伤'],
+      disease: '擦伤'
+    },
+    // 烫伤类
+    {
+      keywords: ['烫伤', '烧伤', '灼伤', '烫到', '热烧伤', '化学烧伤'],
+      disease: '烫伤'
+    },
+    // 磕伤类
+    {
+      keywords: ['磕伤', '磕到', '撞伤', '碰伤', '磕碰', '撞击伤', '碰撞伤'],
+      disease: '磕伤'
+    },
+    // 冻伤类
+    {
+      keywords: ['冻伤', '冻到', '冻疮', '冻僵'],
+      disease: '冻伤'
+    },
+    // 腹泻类（包含胃肠炎等）
+    {
+      keywords: ['腹泻', '拉肚子', '拉稀', '泻', '急性胃肠炎', '胃肠炎', '肠胃炎', '肠炎', '急性肠炎', '细菌性肠炎', '病毒性肠炎', '消化不良', '胃肠功能紊乱'],
+      disease: '腹泻'
+    },
+    // 头晕类
+    {
+      keywords: ['头晕', '头昏', '眩晕', '晕', '眼前发黑', '体位性低血压', '低血糖', '贫血性头晕'],
+      disease: '头晕'
+    },
+    // 头痛类
+    {
+      keywords: ['头痛', '头疼', '头部不适', '头胀', '偏头痛', '紧张性头痛', '血管性头痛'],
+      disease: '头痛'
+    },
+    // 感冒类
+    {
+      keywords: ['感冒', '着凉', '受凉', '风寒', '上呼吸道感染', '上感', '普通感冒', '病毒性感冒'],
+      disease: '感冒'
+    },
+    // 脱臼类
+    {
+      keywords: ['脱臼', '脱位', '关节脱位', '肩关节脱位', '肘关节脱位'],
+      disease: '脱臼'
+    },
+    // 骨折类
+    {
+      keywords: ['骨折', '骨裂', '断骨', '闭合性骨折', '开放性骨折', '不完全骨折'],
+      disease: '骨折'
+    },
+    // 过敏类
+    {
+      keywords: ['过敏', '过敏性', '过敏反应', '过敏性皮炎', '过敏性鼻炎', '荨麻疹', '湿疹'],
+      disease: '过敏'
+    },
+    // 痛经类
+    {
+      keywords: ['痛经', '经期疼痛', '月经痛', '原发性痛经', '继发性痛经'],
+      disease: '痛经'
+    },
+    // 测血压类
+    {
+      keywords: ['测血压', '血压', '量血压', '血压监测', '血压检查', '血压测量'],
+      disease: '测血压'
+    }];
+
+    // 按优先级匹配
+    for (var _i6 = 0, _diseaseRules = diseaseRules; _i6 < _diseaseRules.length; _i6++) {
+      var rule = _diseaseRules[_i6];
+      var _iterator2 = _createForOfIteratorHelper(rule.keywords),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var keyword = _step2.value;
+          if (text.includes(keyword.toLowerCase())) {
+            return rule.disease;
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
       }
-      if (!opt || !opt.record) return;
-      var rec = opt.record;
+    }
 
-      // 智能填充：只填充空白字段，保留用户已输入的内容
-      this.smartFillFields(rec, {
-        preserveComplaint: false,
-        // 主诉用新选择的替换
-        preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
-        preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
-        preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
-      });
+    // 如果没有匹配到，返回 null，保持原值或使用"其他"
+    return null;
+  }), (0, _defineProperty2.default)(_methods, "onDiagnosisBlur", function onDiagnosisBlur() {
+    // 诊断输入框失焦时，关闭下拉列表
+    this.showDiagnosisList = false;
 
-      // 确保主诉字段使用选择的主诉
-      this.form.chiefComplaint = rec.complaint;
+    // 根据诊断自动更新处置，保持与诊断一致
+    var diagnosisText = (this.form.diagnosis || '').trim();
+    if (!diagnosisText) {
+      // 诊断为空时，清空处置以保持一致
+      this.form.treatment = '';
+      return;
+    }
 
-      // 自动选择推荐用药
-      if (Array.isArray(rec.suggestDrugs) && rec.suggestDrugs.length) {
-        this.applySuggestDrugs(rec.suggestDrugs);
+    // 从诊断中分析提取标准疾病名称（强制更新，确保使用标准名称）
+    var analyzedDisease = this.analyzeDiseaseFromDiagnosis(diagnosisText);
+    if (analyzedDisease) {
+      // 如果分析出标准疾病名称，直接更新（确保使用标准名称归类）
+      this.form.diseaseName = analyzedDisease;
+    } else {
+      // 如果无法分析出标准疾病名称，设置为"其他"
+      this.form.diseaseName = '其他';
+    }
+
+    // 使用最佳匹配逻辑查找最准确的模板记录
+    var bestRecord = this.findBestMatchingRecord(diagnosisText,
+    // 当前诊断
+    this.form.chiefComplaint,
+    // 当前主诉
+    this.form.diseaseName // 当前疾病名称
+    );
+
+    if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
+      // 找到匹配的模板记录，智能填充处置（如果处置为空）
+      if (!this.form.treatment || !this.form.treatment.trim()) {
+        this.form.treatment = bestRecord.treatments.join('；');
       }
+      // 如果主诉为空，也可以填充主诉（确保字段关联）
+      if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
+        if (bestRecord.complaint) {
+          this.form.chiefComplaint = bestRecord.complaint;
+        }
+      }
+      // 如果症状为空，也可以填充症状
+      if (!this.form.symptom || !this.form.symptom.trim()) {
+        if (bestRecord.symptoms && bestRecord.symptoms.length) {
+          this.form.symptom = bestRecord.symptoms.join('；');
+        }
+      }
+    } else {
+      // 如果没有找到完整匹配，尝试根据疾病名称查找处置模板
+      var diseaseName = (this.form.diseaseName || '').trim();
+      if (diseaseName && (!this.form.treatment || !this.form.treatment.trim())) {
+        var _this$treatmentTempla4;
+        var treatments = ((_this$treatmentTempla4 = this.treatmentTemplates) === null || _this$treatmentTempla4 === void 0 ? void 0 : _this$treatmentTempla4[diseaseName]) || [];
+        if (treatments.length > 0) {
+          // 使用前两个处置模板
+          this.form.treatment = treatments.slice(0, 2).join('；');
+        }
+      }
+    }
+  }), (0, _defineProperty2.default)(_methods, "openDiagnosisGuide", function openDiagnosisGuide() {
+    var _this20 = this;
+    // 添加模板库匹配的诊断
+    var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
 
-      // 进入自由编辑模式
-      this.complaintSelectedMode = true;
-      this.showComplaintList = false;
+    // 更新过滤列表
+    this.filteredDiagnosis = result.diagnoses;
 
-      // 自动聚焦到主诉输入框，方便立即编辑
+    // 4. 显示诊断下拉列表
+    if (this.filteredDiagnosis.length > 0) {
+      this.showDiagnosisList = true;
+      // 聚焦到诊断输入框，触发下拉显示
       this.$nextTick(function () {
-        _this20.complaintFocus = false;
-        _this20.$nextTick(function () {
-          _this20.complaintFocus = true;
-        });
+        // 触发诊断输入框的焦点事件，显示下拉列表
+        _this20.onDiagnosisFocus();
       });
-    },
-    // 处置输入与选择
-    onTreatmentFocus: function onTreatmentFocus() {
-      if (!this.form.treatment || this.form.treatment.trim() === '') {
-        var _this$treatmentTempla5;
-        var src = ((_this$treatmentTempla5 = this.treatmentTemplates) === null || _this$treatmentTempla5 === void 0 ? void 0 : _this$treatmentTempla5[this.form.diseaseName]) || [];
-        this.filteredTreatments = src;
-        this.showTreatmentList = src.length > 0;
-      }
-    },
-    onTreatmentInput: function onTreatmentInput() {
-      var _this$treatmentTempla6;
-      var src = ((_this$treatmentTempla6 = this.treatmentTemplates) === null || _this$treatmentTempla6 === void 0 ? void 0 : _this$treatmentTempla6[this.form.diseaseName]) || [];
-      var text = (this.form.treatment || '').trim().toLowerCase();
-      if (!text) {
-        this.filteredTreatments = src;
-        this.showTreatmentList = src.length > 0;
-        return;
-      }
-      this.filteredTreatments = src.filter(function (s) {
-        return s.toLowerCase().includes(text);
+    } else {
+      // 如果没有可用的诊断选项，提示用户
+      uni.showToast({
+        title: '请输入疾病名称或主诉以查看诊断参考',
+        icon: 'none',
+        duration: 2000
       });
-      this.showTreatmentList = this.filteredTreatments.length > 0;
-    },
-    selectTreatment: function selectTreatment(text) {
-      this.form.treatment = text;
-      this.showTreatmentList = false;
-    },
-    appendTreatment: function appendTreatment(token) {
-      var base = (this.form.treatment || '').trim();
-      this.form.treatment = base ? "".concat(base, "\uFF1B").concat(token) : token;
-    },
-    // 将当前输入内容保存为自定义模板（全局搜索使用）
-    saveCurrentAsTemplate: function saveCurrentAsTemplate() {
-      var disease = (this.form.diseaseName || '').trim();
-      if (!disease) {
-        uni.showToast({
-          title: '请先选择疾病名称',
-          icon: 'none'
-        });
-        return;
-      }
-      var complaint = (this.form.chiefComplaint || '').trim();
-      var diagnosis = (this.form.diagnosis || '').trim();
-      var treatment = (this.form.treatment || '').trim();
-      if (!complaint && !diagnosis && !treatment) {
-        uni.showToast({
-          title: '请输入主诉/诊断/处置后再保存',
-          icon: 'none'
-        });
-        return;
-      }
+    }
+  }), (0, _defineProperty2.default)(_methods, "selectComplaint", function selectComplaint(opt) {
+    var _this21 = this;
+    // 清除失焦隐藏计时器
+    if (this.complaintBlurTimer) {
+      clearTimeout(this.complaintBlurTimer);
+      this.complaintBlurTimer = null;
+    }
+    if (!opt || !opt.record) return;
+    var rec = opt.record;
 
-      // 直接更新 userDiseaseTemplates
-      if (!this.userDiseaseTemplates[disease]) {
-        this.userDiseaseTemplates[disease] = {
-          complaints: [],
-          diagnosis: [],
-          treatments: []
-        };
-      }
-      var target = this.userDiseaseTemplates[disease];
-      if (complaint && !target.complaints.includes(complaint)) {
-        target.complaints.unshift(complaint);
-        target.complaints = target.complaints.slice(0, 20);
-      }
-      if (diagnosis && !target.diagnosis.includes(diagnosis)) {
-        target.diagnosis.unshift(diagnosis);
-        target.diagnosis = target.diagnosis.slice(0, 20);
-      }
-      if (treatment && !target.treatments.includes(treatment)) {
-        target.treatments.unshift(treatment);
-        target.treatments = target.treatments.slice(0, 20);
-      }
+    // 智能填充：只填充空白字段，保留用户已输入的内容
+    this.smartFillFields(rec, {
+      preserveComplaint: false,
+      // 主诉用新选择的替换
+      preserveSymptom: !!(this.form.symptom && this.form.symptom.trim()),
+      preserveDiagnosis: !!(this.form.diagnosis && this.form.diagnosis.trim()),
+      preserveTreatment: !!(this.form.treatment && this.form.treatment.trim())
+    });
 
-      // 持久化到本地
-      try {
-        uni.setStorageSync('userDiseaseTemplates', this.userDiseaseTemplates);
-        // 重新构建模板索引，包含新保存的模板
-        this.buildTemplateIndex();
-        uni.showToast({
-          title: '模板已保存',
-          icon: 'success'
-        });
-      } catch (e) {
-        console.error('保存模板失败:', e);
-        uni.showToast({
-          title: '保存失败',
-          icon: 'none'
-        });
-      }
-    },
-    // 提交后提示保存模板
-    promptSaveTemplate: function promptSaveTemplate() {
-      var _this21 = this;
-      var disease = (this.form.diseaseName || '').trim();
-      var complaint = (this.form.chiefComplaint || '').trim();
-      var diagnosis = (this.form.diagnosis || '').trim();
-      var treatment = (this.form.treatment || '').trim();
+    // 确保主诉字段使用选择的主诉
+    this.form.chiefComplaint = rec.complaint;
 
-      // 必须有疾病名和至少一项内容
-      if (!disease || !complaint && !diagnosis && !treatment) {
-        return;
-      }
-      uni.showModal({
-        title: '保存为模板',
-        content: '是否将当前主诉、诊断、处置保存为自定义模板？下次可快速调用',
-        confirmText: '保存',
-        cancelText: '跳过',
-        success: function success(res) {
-          if (res.confirm) {
-            _this21.saveCurrentAsTemplate();
-          }
-        }
+    // 自动选择推荐用药
+    if (Array.isArray(rec.suggestDrugs) && rec.suggestDrugs.length) {
+      this.applySuggestDrugs(rec.suggestDrugs);
+    }
+
+    // 进入自由编辑模式
+    this.complaintSelectedMode = true;
+    this.showComplaintList = false;
+
+    // 自动聚焦到主诉输入框，方便立即编辑
+    this.$nextTick(function () {
+      _this21.complaintFocus = false;
+      _this21.$nextTick(function () {
+        _this21.complaintFocus = true;
       });
-    },
-    // —— 药材标签：与园区库存联动 —— //
-    normalizeText: function normalizeText(text) {
-      try {
-        return String(text || '').toLowerCase().replace(/\\s+/g, '');
-      } catch (e) {
-        return '';
-      }
-    },
-    ensureStockLoaded: function ensureStockLoaded() {
-      var _this22 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
-        return _regenerator.default.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                if (!(!_this22.filteredDrugs || _this22.filteredDrugs.length === 0)) {
-                  _context5.next = 8;
-                  break;
-                }
-                _context5.prev = 1;
-                _context5.next = 4;
-                return _this22.loadLocationDrugs();
-              case 4:
-                _context5.next = 8;
-                break;
-              case 6:
-                _context5.prev = 6;
-                _context5.t0 = _context5["catch"](1);
-              case 8:
-              case "end":
-                return _context5.stop();
-            }
-          }
-        }, _callee5, null, [[1, 6]]);
-      }))();
-    },
-    isPrescriptionDrug: function isPrescriptionDrug(name) {
-      var n = (name || '').trim();
-      if (!n) return false;
-      return (this.rxDrugNames || []).includes(n);
-    },
-    applySuggestDrugs: function applySuggestDrugs(list) {
-      var _this23 = this;
-      if (!Array.isArray(list) || !list.length) return;
-      list.forEach(function (name) {
-        var n = (name || '').trim();
-        if (!n) return;
-        if (_this23.isPrescriptionDrug(n)) {
-          _this23.appendTreatment("".concat(n, "\uFF08\u5904\u65B9\u836F\uFF0C\u9700\u5F00\u5177\u5904\u65B9\u5355\uFF0C\u5728\u9646\u56ED/\u6C34\u56ED\u836F\u623F\u53D1\u836F\uFF09"));
-        } else {
-          _this23.onDrugChip(n);
-        }
+    });
+  }), (0, _defineProperty2.default)(_methods, "onTreatmentFocus", function onTreatmentFocus() {
+    if (!this.form.treatment || this.form.treatment.trim() === '') {
+      var _this$treatmentTempla5;
+      var src = ((_this$treatmentTempla5 = this.treatmentTemplates) === null || _this$treatmentTempla5 === void 0 ? void 0 : _this$treatmentTempla5[this.form.diseaseName]) || [];
+      this.filteredTreatments = src;
+      this.showTreatmentList = src.length > 0;
+    }
+  }), (0, _defineProperty2.default)(_methods, "onTreatmentInput", function onTreatmentInput() {
+    var _this$treatmentTempla6;
+    var src = ((_this$treatmentTempla6 = this.treatmentTemplates) === null || _this$treatmentTempla6 === void 0 ? void 0 : _this$treatmentTempla6[this.form.diseaseName]) || [];
+    var text = (this.form.treatment || '').trim().toLowerCase();
+    if (!text) {
+      this.filteredTreatments = src;
+      this.showTreatmentList = src.length > 0;
+      return;
+    }
+    this.filteredTreatments = src.filter(function (s) {
+      return s.toLowerCase().includes(text);
+    });
+    this.showTreatmentList = this.filteredTreatments.length > 0;
+  }), (0, _defineProperty2.default)(_methods, "selectTreatment", function selectTreatment(text) {
+    this.form.treatment = text;
+    this.showTreatmentList = false;
+  }), (0, _defineProperty2.default)(_methods, "appendTreatment", function appendTreatment(token) {
+    var base = (this.form.treatment || '').trim();
+    this.form.treatment = base ? "".concat(base, "\uFF1B").concat(token) : token;
+  }), (0, _defineProperty2.default)(_methods, "saveCurrentAsTemplate", function saveCurrentAsTemplate() {
+    var disease = (this.form.diseaseName || '').trim();
+    if (!disease) {
+      uni.showToast({
+        title: '请先选择疾病名称',
+        icon: 'none'
       });
-    },
-    findDrugByName: function findDrugByName(name) {
-      var _this24 = this;
-      var target = this.normalizeText(name);
-      var inList = function inList(list) {
-        return (list || []).find(function (d) {
-          var n1 = _this24.normalizeText(d.name || d.drugName);
-          var n2 = _this24.normalizeText(d.specification || d.spec);
-          return n1.includes(target) || target.includes(n1) || n2.includes(target);
-        });
+      return;
+    }
+    var complaint = (this.form.chiefComplaint || '').trim();
+    var diagnosis = (this.form.diagnosis || '').trim();
+    var treatment = (this.form.treatment || '').trim();
+    if (!complaint && !diagnosis && !treatment) {
+      uni.showToast({
+        title: '请输入主诉/诊断/处置后再保存',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 直接更新 userDiseaseTemplates
+    if (!this.userDiseaseTemplates[disease]) {
+      this.userDiseaseTemplates[disease] = {
+        complaints: [],
+        diagnosis: [],
+        treatments: []
       };
-      var found = inList(this.filteredDrugs);
-      if (!found) found = inList(this.allDrugs);
-      return found;
-    },
-    onDrugChip: function onDrugChip(name) {
-      var _this25 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
-        var drug;
-        return _regenerator.default.wrap(function _callee6$(_context6) {
-          while (1) {
-            switch (_context6.prev = _context6.next) {
-              case 0:
-                // 1) 先附加“（一次）”到处置文本
-                _this25.appendTreatment("".concat(name, "\uFF08\u4E00\u6B21\uFF09"));
-                // 2) 加载当前园区库存，并尝试选中对应药材
-                _context6.next = 3;
-                return _this25.ensureStockLoaded();
-              case 3:
-                drug = _this25.findDrugByName(name);
-                if (!(drug && drug._id)) {
-                  _context6.next = 15;
-                  break;
-                }
-                _context6.prev = 5;
+    }
+    var target = this.userDiseaseTemplates[disease];
+    if (complaint && !target.complaints.includes(complaint)) {
+      target.complaints.unshift(complaint);
+      target.complaints = target.complaints.slice(0, 20);
+    }
+    if (diagnosis && !target.diagnosis.includes(diagnosis)) {
+      target.diagnosis.unshift(diagnosis);
+      target.diagnosis = target.diagnosis.slice(0, 20);
+    }
+    if (treatment && !target.treatments.includes(treatment)) {
+      target.treatments.unshift(treatment);
+      target.treatments = target.treatments.slice(0, 20);
+    }
+
+    // 持久化到本地
+    try {
+      uni.setStorageSync('userDiseaseTemplates', this.userDiseaseTemplates);
+      // 重新构建模板索引，包含新保存的模板
+      this.buildTemplateIndex();
+      uni.showToast({
+        title: '模板已保存',
+        icon: 'success'
+      });
+    } catch (e) {
+      console.error('保存模板失败:', e);
+      uni.showToast({
+        title: '保存失败',
+        icon: 'none'
+      });
+    }
+  }), (0, _defineProperty2.default)(_methods, "promptSaveTemplate", function promptSaveTemplate() {
+    var _this22 = this;
+    var disease = (this.form.diseaseName || '').trim();
+    var complaint = (this.form.chiefComplaint || '').trim();
+    var diagnosis = (this.form.diagnosis || '').trim();
+    var treatment = (this.form.treatment || '').trim();
+
+    // 必须有疾病名和至少一项内容
+    if (!disease || !complaint && !diagnosis && !treatment) {
+      return;
+    }
+    uni.showModal({
+      title: '保存为模板',
+      content: '是否将当前主诉、诊断、处置保存为自定义模板？下次可快速调用',
+      confirmText: '保存',
+      cancelText: '跳过',
+      success: function success(res) {
+        if (res.confirm) {
+          _this22.saveCurrentAsTemplate();
+        }
+      }
+    });
+  }), (0, _defineProperty2.default)(_methods, "normalizeText", function normalizeText(text) {
+    try {
+      return String(text || '').toLowerCase().replace(/\\s+/g, '');
+    } catch (e) {
+      return '';
+    }
+  }), (0, _defineProperty2.default)(_methods, "ensureStockLoaded", function ensureStockLoaded() {
+    var _this23 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
+      return _regenerator.default.wrap(function _callee6$(_context6) {
+        while (1) {
+          switch (_context6.prev = _context6.next) {
+            case 0:
+              if (!(!_this23.filteredDrugs || _this23.filteredDrugs.length === 0)) {
                 _context6.next = 8;
-                return _this25.onDrugSelect(drug);
-              case 8:
-                uni.showToast({
-                  title: "\u5DF2\u9009\u4E2D\u836F\u6750\uFF1A".concat(drug.name),
-                  icon: 'none'
-                });
-                _context6.next = 13;
                 break;
-              case 11:
-                _context6.prev = 11;
-                _context6.t0 = _context6["catch"](5);
-              case 13:
-                _context6.next = 16;
-                break;
-              case 15:
-                uni.showToast({
-                  title: '当前园区暂无该药库存',
-                  icon: 'none'
-                });
-              case 16:
-              case "end":
-                return _context6.stop();
-            }
+              }
+              _context6.prev = 1;
+              _context6.next = 4;
+              return _this23.loadLocationDrugs();
+            case 4:
+              _context6.next = 8;
+              break;
+            case 6:
+              _context6.prev = 6;
+              _context6.t0 = _context6["catch"](1);
+            case 8:
+            case "end":
+              return _context6.stop();
           }
-        }, _callee6, null, [[5, 11]]);
-      }))();
-    },
-    // 恢复上次选择的园区
-    restoreLastLocation: function restoreLastLocation() {
-      try {
-        var lastLocation = uni.getStorageSync('clinic_last_location');
-        var tipClosed = uni.getStorageSync('clinic_location_tip_closed');
-        var isValidLocation = lastLocation === 'land_park' || lastLocation === 'water_park';
-
-        // 规则：
-        // 1）默认不选园区，每次进入都弹窗；
-        // 2）只有当用户勾选了“下次不再提醒”并关闭弹窗时，才记住园区且下次不再弹窗；
-        // 3）此时才在进入页面时自动带出上次园区。
-        if (tipClosed && isValidLocation) {
-          // 用户明确选择了不再提醒，并有合法园区记录
-          this.form.location = lastLocation;
-          this.showLocationTip = false;
-          var locationName = lastLocation === 'land_park' ? '陆园' : '水园';
-          console.log("\u5DF2\u6309\u4E0A\u6B21\u8BB0\u5F55\u81EA\u52A8\u9009\u62E9\u56ED\u533A: ".concat(locationName));
-        } else {
-          // 其余情况：不自动选园区，始终弹出提示
-          this.form.location = '';
-          this.showLocationTip = true;
         }
-
-        // 恢复连续登记模式设置
-        var continueMode = uni.getStorageSync('clinic_continue_mode');
-        if (continueMode !== undefined && continueMode !== null) {
-          this.continueAfterSubmit = continueMode;
-        }
-      } catch (err) {
-        console.error('恢复园区选择失败:', err);
-        this.form.location = '';
-      }
-    },
-    selectLocation: function selectLocation(location) {
-      this.form.location = location;
-
-      // 保存到本地存储，记忆用户选择
-      try {
-        uni.setStorageSync('clinic_last_location', location);
-      } catch (err) {
-        console.error('保存园区选择失败:', err);
-      }
-
-      // 切换园区后重新加载批次
-      if (this.selectedDrug) {
-        uni.showToast({
-          title: "\u5DF2\u5207\u6362\u5230".concat(location === 'land_park' ? '陆园' : '水园'),
-          icon: 'none',
-          duration: 1500
-        });
-        this.loadBatches();
-      }
-    },
-    // 地点输入框：获得焦点
-    onLocationFocus: function onLocationFocus() {
-      var text = (this.form.injuryLocation || '').trim().toLowerCase();
-      if (!text) {
-        // 展示全部常用地点
-        this.filteredLocations = Array.from(new Set(this.allLocations));
+      }, _callee6, null, [[1, 6]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "isPrescriptionDrug", function isPrescriptionDrug(name) {
+    var n = (name || '').trim();
+    if (!n) return false;
+    return (this.rxDrugNames || []).includes(n);
+  }), (0, _defineProperty2.default)(_methods, "applySuggestDrugs", function applySuggestDrugs(list) {
+    var _this24 = this;
+    if (!Array.isArray(list) || !list.length) return;
+    list.forEach(function (name) {
+      var n = (name || '').trim();
+      if (!n) return;
+      if (_this24.isPrescriptionDrug(n)) {
+        _this24.appendTreatment("".concat(n, "\uFF08\u5904\u65B9\u836F\uFF0C\u9700\u5F00\u5177\u5904\u65B9\u5355\uFF0C\u5728\u9646\u56ED/\u6C34\u56ED\u836F\u623F\u53D1\u836F\uFF09"));
       } else {
-        this.onLocationInput();
+        _this24.onDrugChip(n);
       }
-      this.showLocationList = true;
-    },
-    // 地点输入：过滤
-    onLocationInput: function onLocationInput() {
-      var text = (this.form.injuryLocation || '').trim().toLowerCase();
-      var src = Array.from(new Set(this.allLocations));
-      if (!text) {
-        this.filteredLocations = src;
-      } else {
-        this.filteredLocations = src.filter(function (name) {
-          return name.toLowerCase().includes(text);
-        });
-      }
-      this.showLocationList = true;
-    },
-    // 选择地点
-    selectLocationFromList: function selectLocationFromList(name) {
-      this.form.injuryLocation = name;
-      this.showLocationList = false;
-    },
-    onDrugSelect: function onDrugSelect(drug) {
-      var _this26 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
-        var res;
-        return _regenerator.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                // 先设置基本信息
-                _this26.form.drugId = drug._id;
-                _this26.showDrugSelector = false;
-
-                // 从药材档案获取完整信息
-                _context7.prev = 2;
-                uni.showLoading({
-                  title: '加载药材信息...'
-                });
-                _context7.next = 6;
-                return wx.cloud.callFunction({
-                  name: 'drugManage',
-                  data: {
-                    action: 'getDetail',
-                    data: {
-                      id: drug._id
-                    }
-                  }
-                });
-              case 6:
-                res = _context7.sent;
-                if (res.result.success && res.result.data) {
-                  // 使用完整的药材信息
-                  _this26.selectedDrug = _objectSpread(_objectSpread({}, res.result.data), {}, {
-                    _id: res.result.data._id,
-                    drugCode: res.result.data.drugCode || res.result.data.code || '',
-                    name: res.result.data.name,
-                    specification: res.result.data.specification || res.result.data.spec || '',
-                    minUnit: res.result.data.minUnit || res.result.data.unit || '个',
-                    packUnit: res.result.data.packUnit || res.result.data.unit || '盒',
-                    conversionRate: res.result.data.conversionRate || 1,
-                    manufacturer: res.result.data.manufacturer || ''
-                  });
-                } else {
-                  // 如果获取失败，使用传入的drug数据
-                  _this26.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
-                    minUnit: drug.minUnit || drug.unit || '个',
-                    packUnit: drug.packUnit || drug.unit || '盒',
-                    conversionRate: drug.conversionRate || 1
-                  });
-                }
-                _context7.next = 14;
+    });
+  }), (0, _defineProperty2.default)(_methods, "findDrugByName", function findDrugByName(name) {
+    var _this25 = this;
+    var target = this.normalizeText(name);
+    var inList = function inList(list) {
+      return (list || []).find(function (d) {
+        var n1 = _this25.normalizeText(d.name || d.drugName);
+        var n2 = _this25.normalizeText(d.specification || d.spec);
+        return n1.includes(target) || target.includes(n1) || n2.includes(target);
+      });
+    };
+    var found = inList(this.filteredDrugs);
+    if (!found) found = inList(this.allDrugs);
+    return found;
+  }), (0, _defineProperty2.default)(_methods, "onDrugChip", function onDrugChip(name) {
+    var _this26 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
+      var drug;
+      return _regenerator.default.wrap(function _callee7$(_context7) {
+        while (1) {
+          switch (_context7.prev = _context7.next) {
+            case 0:
+              // 1) 先附加“（一次）”到处置文本
+              _this26.appendTreatment("".concat(name, "\uFF08\u4E00\u6B21\uFF09"));
+              // 2) 加载当前园区库存，并尝试选中对应药材
+              _context7.next = 3;
+              return _this26.ensureStockLoaded();
+            case 3:
+              drug = _this26.findDrugByName(name);
+              if (!(drug && drug._id)) {
+                _context7.next = 15;
                 break;
-              case 10:
-                _context7.prev = 10;
-                _context7.t0 = _context7["catch"](2);
-                console.error('获取药材详情失败:', _context7.t0);
-                // 使用传入的drug数据
-                _this26.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
+              }
+              _context7.prev = 5;
+              _context7.next = 8;
+              return _this26.onDrugSelect(drug);
+            case 8:
+              uni.showToast({
+                title: "\u5DF2\u9009\u4E2D\u836F\u6750\uFF1A".concat(drug.name),
+                icon: 'none'
+              });
+              _context7.next = 13;
+              break;
+            case 11:
+              _context7.prev = 11;
+              _context7.t0 = _context7["catch"](5);
+            case 13:
+              _context7.next = 16;
+              break;
+            case 15:
+              uni.showToast({
+                title: '当前园区暂无该药库存',
+                icon: 'none'
+              });
+            case 16:
+            case "end":
+              return _context7.stop();
+          }
+        }
+      }, _callee7, null, [[5, 11]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "restoreLastLocation", function restoreLastLocation() {
+    try {
+      var lastLocation = uni.getStorageSync('clinic_last_location');
+      var tipClosed = uni.getStorageSync('clinic_location_tip_closed');
+      var isValidLocation = lastLocation === 'land_park' || lastLocation === 'water_park';
+
+      // 规则：
+      // 1）默认不选园区，每次进入都弹窗；
+      // 2）只有当用户勾选了“下次不再提醒”并关闭弹窗时，才记住园区且下次不再弹窗；
+      // 3）此时才在进入页面时自动带出上次园区。
+      if (tipClosed && isValidLocation) {
+        // 用户明确选择了不再提醒，并有合法园区记录
+        this.form.location = lastLocation;
+        this.showLocationTip = false;
+        var locationName = lastLocation === 'land_park' ? '陆园' : '水园';
+        console.log("\u5DF2\u6309\u4E0A\u6B21\u8BB0\u5F55\u81EA\u52A8\u9009\u62E9\u56ED\u533A: ".concat(locationName));
+      } else {
+        // 其余情况：不自动选园区，始终弹出提示
+        this.form.location = '';
+        this.showLocationTip = true;
+      }
+
+      // 恢复连续登记模式设置
+      var continueMode = uni.getStorageSync('clinic_continue_mode');
+      if (continueMode !== undefined && continueMode !== null) {
+        this.continueAfterSubmit = continueMode;
+      }
+    } catch (err) {
+      console.error('恢复园区选择失败:', err);
+      this.form.location = '';
+    }
+  }), (0, _defineProperty2.default)(_methods, "selectLocation", function selectLocation(location) {
+    this.form.location = location;
+
+    // 保存到本地存储，记忆用户选择
+    try {
+      uni.setStorageSync('clinic_last_location', location);
+    } catch (err) {
+      console.error('保存园区选择失败:', err);
+    }
+
+    // 切换园区后重新加载批次
+    if (this.selectedDrug) {
+      uni.showToast({
+        title: "\u5DF2\u5207\u6362\u5230".concat(location === 'land_park' ? '陆园' : '水园'),
+        icon: 'none',
+        duration: 1500
+      });
+      this.loadBatches();
+    }
+  }), (0, _defineProperty2.default)(_methods, "onLocationFocus", function onLocationFocus() {
+    var text = (this.form.injuryLocation || '').trim().toLowerCase();
+    if (!text) {
+      // 展示全部常用地点
+      this.filteredLocations = Array.from(new Set(this.allLocations));
+    } else {
+      this.onLocationInput();
+    }
+    this.showLocationList = true;
+  }), (0, _defineProperty2.default)(_methods, "onLocationInput", function onLocationInput() {
+    var text = (this.form.injuryLocation || '').trim().toLowerCase();
+    var src = Array.from(new Set(this.allLocations));
+    if (!text) {
+      this.filteredLocations = src;
+    } else {
+      this.filteredLocations = src.filter(function (name) {
+        return name.toLowerCase().includes(text);
+      });
+    }
+    this.showLocationList = true;
+  }), (0, _defineProperty2.default)(_methods, "selectLocationFromList", function selectLocationFromList(name) {
+    this.form.injuryLocation = name;
+    this.showLocationList = false;
+  }), (0, _defineProperty2.default)(_methods, "onDrugSelect", function onDrugSelect(drug) {
+    var _this27 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
+      var res;
+      return _regenerator.default.wrap(function _callee8$(_context8) {
+        while (1) {
+          switch (_context8.prev = _context8.next) {
+            case 0:
+              // 先设置基本信息
+              _this27.form.drugId = drug._id;
+              _this27.showDrugSelector = false;
+
+              // 从药材档案获取完整信息
+              uni.showLoading({
+                title: '加载药材信息...'
+              });
+              _context8.prev = 3;
+              _context8.next = 6;
+              return wx.cloud.callFunction({
+                name: 'drugManage',
+                data: {
+                  action: 'getDetail',
+                  data: {
+                    id: drug._id
+                  }
+                }
+              });
+            case 6:
+              res = _context8.sent;
+              if (res.result.success && res.result.data) {
+                // 使用完整的药材信息
+                _this27.selectedDrug = _objectSpread(_objectSpread({}, res.result.data), {}, {
+                  _id: res.result.data._id,
+                  drugCode: res.result.data.drugCode || res.result.data.code || '',
+                  name: res.result.data.name,
+                  specification: res.result.data.specification || res.result.data.spec || '',
+                  minUnit: res.result.data.minUnit || res.result.data.unit || '个',
+                  packUnit: res.result.data.packUnit || res.result.data.unit || '盒',
+                  conversionRate: res.result.data.conversionRate || 1,
+                  manufacturer: res.result.data.manufacturer || ''
+                });
+              } else {
+                // 如果获取失败，使用传入的drug数据
+                _this27.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
                   minUnit: drug.minUnit || drug.unit || '个',
                   packUnit: drug.packUnit || drug.unit || '盒',
                   conversionRate: drug.conversionRate || 1
                 });
-              case 14:
-                _context7.prev = 14;
-                uni.hideLoading();
-                return _context7.finish(14);
-              case 17:
-                // 初始化单次剂量（从规格中提取）
-                if (_this26.selectedDrug) {
-                  _this26.currentDrug.dosage = _this26.getDefaultDosage(_this26.selectedDrug);
-                }
+              }
+              _context8.next = 14;
+              break;
+            case 10:
+              _context8.prev = 10;
+              _context8.t0 = _context8["catch"](3);
+              console.error('获取药材详情失败:', _context8.t0);
+              // 使用传入的drug数据
+              _this27.selectedDrug = _objectSpread(_objectSpread({}, drug), {}, {
+                minUnit: drug.minUnit || drug.unit || '个',
+                packUnit: drug.packUnit || drug.unit || '盒',
+                conversionRate: drug.conversionRate || 1
+              });
+            case 14:
+              _context8.prev = 14;
+              // 关闭第一个loading
+              uni.hideLoading();
+              return _context8.finish(14);
+            case 17:
+              // 初始化单次剂量（从规格中提取）
+              if (_this27.selectedDrug) {
+                _this27.currentDrug.dosage = _this27.getDefaultDosage(_this27.selectedDrug);
+              }
 
-                // 加载该园区的批次和库存
-                _context7.next = 20;
-                return _this26.loadBatches();
-              case 20:
-              case "end":
-                return _context7.stop();
-            }
+              // 加载该园区的批次和库存（loadBatches内部会管理loading状态）
+              _context8.next = 20;
+              return _this27.loadBatches();
+            case 20:
+            case "end":
+              return _context8.stop();
           }
-        }, _callee7, null, [[2, 10, 14, 17]]);
-      }))();
-    },
-    loadBatches: function loadBatches() {
-      var _this27 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
-        var res, batches, parkName;
-        return _regenerator.default.wrap(function _callee8$(_context8) {
-          while (1) {
-            switch (_context8.prev = _context8.next) {
-              case 0:
-                uni.showLoading({
-                  title: '加载库存...'
-                });
-                _context8.prev = 1;
-                _context8.next = 4;
-                return wx.cloud.callFunction({
-                  name: 'stockManage',
+        }
+      }, _callee8, null, [[3, 10, 14, 17]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "loadBatches", function loadBatches() {
+    var _this28 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
+      var res, batches, parkName;
+      return _regenerator.default.wrap(function _callee9$(_context9) {
+        while (1) {
+          switch (_context9.prev = _context9.next) {
+            case 0:
+              if (!(!_this28.form.drugId || !_this28.form.location)) {
+                _context9.next = 5;
+                break;
+              }
+              console.warn('[loadBatches] 缺少必要参数:', {
+                drugId: _this28.form.drugId,
+                location: _this28.form.location
+              });
+              _this28.selectedBatch = null;
+              _this28.availableStock = 0;
+              return _context9.abrupt("return");
+            case 5:
+              uni.showLoading({
+                title: '加载库存...'
+              });
+              _context9.prev = 6;
+              console.log('[loadBatches] 查询参数:', {
+                drugId: _this28.form.drugId,
+                location: _this28.form.location,
+                enableFIFO: true
+              });
+              _context9.next = 10;
+              return wx.cloud.callFunction({
+                name: 'stockManage',
+                data: {
+                  action: 'getBatchesByDrugId',
                   data: {
-                    action: 'getBatchesByDrugId',
-                    data: {
-                      drugId: _this27.form.drugId,
-                      location: _this27.form.location,
-                      enableFIFO: true
-                    }
+                    drugId: _this28.form.drugId,
+                    location: _this28.form.location,
+                    enableFIFO: true
                   }
-                });
-              case 4:
-                res = _context8.sent;
-                if (res.result.success && res.result.data.length > 0) {
-                  batches = res.result.data;
-                  _this27.selectedBatch = batches[0];
-                  _this27.availableStock = batches.reduce(function (sum, b) {
-                    return sum + b.quantity;
-                  }, 0);
-                } else {
-                  _this27.selectedBatch = null;
-                  _this27.availableStock = 0;
-                  parkName = _this27.form.location === 'land_park' ? '陆园' : '水园';
-                  uni.showToast({
-                    title: "".concat(parkName, "\u8BE5\u836F\u6750\u5E93\u5B58\u4E0D\u8DB3"),
-                    icon: 'none',
-                    duration: 2000
-                  });
                 }
-                _context8.next = 11;
-                break;
-              case 8:
-                _context8.prev = 8;
-                _context8.t0 = _context8["catch"](1);
-                uni.showToast({
-                  title: '加载库存失败',
-                  icon: 'none'
-                });
-              case 11:
-                _context8.prev = 11;
-                uni.hideLoading();
-                return _context8.finish(11);
-              case 14:
-              case "end":
-                return _context8.stop();
-            }
-          }
-        }, _callee8, null, [[1, 8, 11, 14]]);
-      }))();
-    },
-    openSignature: function openSignature() {
-      this.showSignature = true;
-    },
-    onSignatureConfirm: function onSignatureConfirm(signatureData) {
-      this.form.doctorSign = signatureData;
-
-      // 记录签名时间
-      var now = new Date();
-      var year = now.getFullYear();
-      var month = String(now.getMonth() + 1).padStart(2, '0');
-      var day = String(now.getDate()).padStart(2, '0');
-      var hours = String(now.getHours()).padStart(2, '0');
-      var minutes = String(now.getMinutes()).padStart(2, '0');
-      this.form.signTime = "".concat(year, "-").concat(month, "-").concat(day, " ").concat(hours, ":").concat(minutes);
-      this.showSignature = false;
-      uni.showToast({
-        title: '签名成功',
-        icon: 'success',
-        duration: 1500
-      });
-    },
-    handleSubmit: function handleSubmit() {
-      var _this28 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
-        var hasValidDrugUsage, submitData, intQuantity, res;
-        return _regenerator.default.wrap(function _callee9$(_context9) {
-          while (1) {
-            switch (_context9.prev = _context9.next) {
-              case 0:
-                if (!(!_this28.form.location || _this28.form.location !== 'land_park' && _this28.form.location !== 'water_park')) {
-                  _context9.next = 3;
-                  break;
-                }
-                uni.showToast({
-                  title: '请选择就诊园区',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 3:
-                if (!(!_this28.form.name || _this28.form.name.trim() === '')) {
-                  _context9.next = 6;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入患者姓名',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 6:
-                if (_this28.form.gender) {
-                  _context9.next = 9;
-                  break;
-                }
-                uni.showToast({
-                  title: '请选择性别',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 9:
-                if (!(!_this28.form.age || _this28.form.age <= 0)) {
-                  _context9.next = 12;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入有效的年龄',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 12:
-                if (_this28.form.identity) {
-                  _context9.next = 15;
-                  break;
-                }
-                uni.showToast({
-                  title: '请选择身份',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 15:
-                if (_this28.form.visitType) {
-                  _context9.next = 18;
-                  break;
-                }
-                uni.showToast({
-                  title: '请选择接诊类型',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 18:
-                if (!(_this28.form.visitType === 'outcall' && (!_this28.form.injuryLocation || _this28.form.injuryLocation.trim() === ''))) {
-                  _context9.next = 21;
-                  break;
-                }
-                uni.showToast({
-                  title: '出诊时需填写受伤地点',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 21:
-                if (!(!_this28.form.chiefComplaint || _this28.form.chiefComplaint.trim() === '')) {
-                  _context9.next = 24;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入主诉',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 24:
-                if (!(!_this28.form.diseaseName || _this28.form.diseaseName.trim() === '')) {
-                  _context9.next = 27;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入疾病名称',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 27:
-                if (!(!_this28.form.diagnosis || _this28.form.diagnosis.trim() === '')) {
-                  _context9.next = 30;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入诊断',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 30:
-                if (!(!_this28.form.treatment || _this28.form.treatment.trim() === '')) {
-                  _context9.next = 33;
-                  break;
-                }
-                uni.showToast({
-                  title: '请输入处置措施',
-                  icon: 'none'
-                });
-                return _context9.abrupt("return");
-              case 33:
-                // 用药信息为选填：仅当选择了药材且数量>0时，才视为用药登记
-                hasValidDrugUsage = false;
-                if (!_this28.selectedDrug) {
-                  _context9.next = 47;
-                  break;
-                }
-                if (!(_this28.form.quantity && _this28.form.quantity > 0)) {
-                  _context9.next = 42;
-                  break;
-                }
-                if (!(_this28.form.quantity > _this28.availableStock)) {
-                  _context9.next = 39;
-                  break;
-                }
-                uni.showToast({
-                  title: "\u5E93\u5B58\u4E0D\u8DB3\uFF0C\u6700\u591A".concat(_this28.availableStock).concat(_this28.selectedDrug.minUnit),
-                  icon: 'none',
-                  duration: 3000
-                });
-                return _context9.abrupt("return");
-              case 39:
-                hasValidDrugUsage = true;
-                _context9.next = 47;
-                break;
-              case 42:
-                // 选择了药材但未填写有效数量，视为本次不登记用药，清空用药相关状态
-                _this28.form.drugId = '';
-                _this28.form.quantity = null;
-                _this28.selectedDrug = null;
+              });
+            case 10:
+              res = _context9.sent;
+              console.log('[loadBatches] 查询结果:', res.result);
+              if (res.result.success && res.result.data && res.result.data.length > 0) {
+                batches = res.result.data;
+                console.log('[loadBatches] 找到批次:', batches.length, '个');
+                console.log('[loadBatches] 批次详情:', batches);
+                _this28.selectedBatch = batches[0];
+                // 确保数量是数字类型
+                _this28.availableStock = batches.reduce(function (sum, b) {
+                  var qty = Number(b.quantity) || 0;
+                  console.log('[loadBatches] 批次数量:', b.batch, '=', qty);
+                  return sum + qty;
+                }, 0);
+                console.log('[loadBatches] 总库存:', _this28.availableStock);
+              } else {
+                console.warn('[loadBatches] 未找到批次或查询失败:', res.result);
                 _this28.selectedBatch = null;
                 _this28.availableStock = 0;
-              case 47:
-                _this28.submitting = true;
-                uni.showLoading({
-                  title: '保存中...'
-                });
-                _context9.prev = 49;
-                // 准备数据
-                submitData = {
-                  visitDateTime: _this28.form.visitDateTime,
-                  name: _this28.form.name.trim(),
-                  gender: _this28.form.gender,
-                  age: _this28.form.age,
-                  identity: _this28.form.identity,
-                  location: _this28.form.location,
-                  // 园区（陆园/水园）
-                  visitType: _this28.form.visitType,
-                  isOutcall: _this28.form.visitType === 'outcall',
-                  injuryLocation: _this28.form.injuryLocation.trim(),
-                  chiefComplaint: _this28.form.chiefComplaint.trim(),
-                  diseaseName: _this28.form.diseaseName.trim(),
-                  diagnosis: _this28.form.diagnosis.trim(),
-                  treatment: _this28.form.treatment.trim(),
-                  remark: _this28.form.remark.trim()
-                }; // 如果有有效用药信息，云函数会从对应园区扣减库存
-                if (hasValidDrugUsage && _this28.selectedDrug && _this28.form.quantity) {
-                  // 确保数量是整数，避免小数
-                  intQuantity = Math.floor(_this28.form.quantity);
-                  submitData.drugInfo = {
-                    drugId: _this28.form.drugId,
-                    // 系统内部ID（主键）
-                    drugCode: _this28.selectedDrug.drugCode || _this28.selectedDrug.code || '',
-                    // 药材代码（业务编码）
-                    drugName: _this28.selectedDrug.name,
-                    specification: _this28.selectedDrug.specification,
-                    unit: _this28.selectedDrug.minUnit,
-                    quantity: intQuantity,
-                    batchId: _this28.selectedBatch._id,
-                    batch: _this28.selectedBatch.batch,
-                    location: _this28.form.location,
-                    // 关联园区
-                    minUnit: _this28.selectedDrug.minUnit,
-                    packUnit: _this28.selectedDrug.packUnit,
-                    conversionRate: _this28.selectedDrug.conversionRate
-                  };
-
-                  // 兼容旧字段
-                  submitData.drugId = _this28.form.drugId; // 系统内部ID（主键）
-                  submitData.drugCode = _this28.selectedDrug.drugCode || _this28.selectedDrug.code || ''; // 药材代码（业务编码）
-                  submitData.drugName = _this28.selectedDrug.name;
-                  submitData.specification = _this28.selectedDrug.specification;
-                  submitData.batchId = _this28.selectedBatch._id;
-                  submitData.quantityMin = intQuantity;
-                  submitData.minUnit = _this28.selectedDrug.minUnit;
-                  submitData.packUnit = _this28.selectedDrug.packUnit;
-                  submitData.conversionRate = _this28.selectedDrug.conversionRate;
-                  submitData.patient = _this28.form.name.trim();
-                  submitData.symptom = (_this28.form.symptom || _this28.form.chiefComplaint || '').trim();
-                }
-                _context9.next = 54;
-                return wx.cloud.callFunction({
-                  name: 'clinicRecords',
-                  data: {
-                    action: 'add',
-                    data: submitData
-                  }
-                });
-              case 54:
-                res = _context9.sent;
-                if (res.result.success) {
-                  // 提示保存为模板
-                  _this28.promptSaveTemplate();
-                  if (_this28.continueAfterSubmit) {
-                    // 连续登记模式：立即清空表单
-                    uni.showToast({
-                      title: '登记成功，可继续登记',
-                      icon: 'success',
-                      duration: 2000
-                    });
-                    setTimeout(function () {
-                      _this28.resetForm();
-                      // 滚动到顶部
-                      uni.pageScrollTo({
-                        scrollTop: 0,
-                        duration: 300
-                      });
-                    }, 800);
-                  } else {
-                    // 返回列表
-                    uni.showToast({
-                      title: '登记成功',
-                      icon: 'success'
-                    });
-                    setTimeout(function () {
-                      // 确保离开页面前也重置一次，避免热更新或返回后残留
-                      _this28.resetForm();
-                      uni.navigateBack();
-                    }, 1500);
-                  }
-                } else {
-                  uni.showToast({
-                    title: res.result.error || '登记失败',
-                    icon: 'none'
-                  });
-                }
-                _context9.next = 62;
-                break;
-              case 58:
-                _context9.prev = 58;
-                _context9.t0 = _context9["catch"](49);
-                console.error('登记失败:', _context9.t0);
+                parkName = _this28.form.location === 'land_park' ? '陆园' : '水园';
                 uni.showToast({
-                  title: '登记失败',
-                  icon: 'none'
-                });
-              case 62:
-                _context9.prev = 62;
-                _this28.submitting = false;
-                uni.hideLoading();
-                return _context9.finish(62);
-              case 66:
-              case "end":
-                return _context9.stop();
-            }
-          }
-        }, _callee9, null, [[49, 58, 62, 66]]);
-      }))();
-    },
-    resetForm: function resetForm() {
-      // 保留当前园区选择，其他信息全部重置
-      var currentLocation = this.form.location || '';
-
-      // 更新时间（就诊时间始终为当前时间）
-      this.updateDateTime();
-
-      // 逐字段重置，避免整体替换对象可能带来的响应式问题
-      this.form.name = '';
-      this.form.gender = '男';
-      this.form.age = null;
-      this.form.identity = '游客';
-      this.form.location = currentLocation; // 保留园区选择
-      this.form.visitType = 'clinic';
-      this.form.injuryLocation = '';
-      this.form.chiefComplaint = '';
-      this.form.symptom = '';
-      this.standardizedSymptoms = [];
-      this.form.diseaseName = '';
-      this.form.diagnosis = '';
-      this.form.treatment = '';
-      this.form.drugId = '';
-      this.form.quantity = null;
-      this.form.remark = '';
-      this.form.doctorSign = '';
-      this.form.signTime = '';
-
-      // 用药与库存相关状态
-      this.selectedDrug = null;
-      this.selectedBatch = null;
-      this.availableStock = 0;
-      this.convertedQuantity = null;
-      this.drugSearchText = '';
-      this.filteredDrugs = [];
-      this.showDrugList = false;
-
-      // 疾病/模板/下拉相关状态
-      this.filteredDiseases = [];
-      this.showDiseaseList = false;
-      this.filteredDiagnosis = [];
-      this.showDiagnosisList = false;
-      this.filteredTreatments = [];
-      this.showTreatmentList = false;
-      this.filteredComplaints = [];
-      this.showComplaintList = false;
-      this.complaintSelectedMode = false; // 重置主诉编辑模式
-      // 症状相关状态
-      this.filteredSymptoms = [];
-      this.showSymptomList = false;
-      this.standardizedSymptoms = [];
-      // 清理计时器
-      if (this.symptomInputTimer) {
-        clearTimeout(this.symptomInputTimer);
-        this.symptomInputTimer = null;
-      }
-      if (this.fetchHvSuggestionTimer) {
-        clearTimeout(this.fetchHvSuggestionTimer);
-        this.fetchHvSuggestionTimer = null;
-      }
-      if (this.diseaseInputTimer) {
-        clearTimeout(this.diseaseInputTimer);
-        this.diseaseInputTimer = null;
-      }
-      if (this.diagnosisInputTimer) {
-        clearTimeout(this.diagnosisInputTimer);
-        this.diagnosisInputTimer = null;
-      }
-      if (this.complaintInputTimer) {
-        clearTimeout(this.complaintInputTimer);
-        this.complaintInputTimer = null;
-      }
-      if (this.complaintFocusTimer) {
-        clearTimeout(this.complaintFocusTimer);
-        this.complaintFocusTimer = null;
-      }
-    },
-    formatDate: function formatDate(dateStr) {
-      if (!dateStr) return '';
-      var date = new Date(dateStr);
-      var year = date.getFullYear();
-      var month = String(date.getMonth() + 1).padStart(2, '0');
-      var day = String(date.getDate()).padStart(2, '0');
-      return "".concat(year, "-").concat(month, "-").concat(day);
-    },
-    // 切换连续登记模式
-    toggleContinue: function toggleContinue() {
-      this.continueAfterSubmit = !this.continueAfterSubmit;
-
-      // 保存用户偏好
-      try {
-        uni.setStorageSync('clinic_continue_mode', this.continueAfterSubmit);
-      } catch (err) {
-        console.error('保存连续登记设置失败:', err);
-      }
-      uni.showToast({
-        title: this.continueAfterSubmit ? '已开启连续登记' : '已关闭连续登记',
-        icon: 'none',
-        duration: 1500
-      });
-    },
-    goBack: function goBack() {
-      uni.navigateBack();
-    },
-    // 生成日报
-    generateDailyReport: function generateDailyReport() {
-      var _this29 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10() {
-        var today, year, month, day, dateStr, location, locationName, records, res, report, stats, tableData, reportDate;
-        return _regenerator.default.wrap(function _callee10$(_context10) {
-          while (1) {
-            switch (_context10.prev = _context10.next) {
-              case 0:
-                _context10.prev = 0;
-                uni.showLoading({
-                  title: '生成中...'
-                });
-
-                // 获取当前日期和园区
-                today = new Date();
-                year = today.getFullYear();
-                month = String(today.getMonth() + 1).padStart(2, '0');
-                day = String(today.getDate()).padStart(2, '0');
-                dateStr = "".concat(year, "-").concat(month, "-").concat(day); // 必须先选择就诊园区
-                location = _this29.form.location;
-                if (!(!location || location !== 'land_park' && location !== 'water_park')) {
-                  _context10.next = 13;
-                  break;
-                }
-                uni.hideLoading();
-                uni.showToast({
-                  title: '请选择就诊园区',
-                  icon: 'none'
-                });
-                // 如有需要，可同时弹出园区选择提示
-                _this29.showLocationTip = true;
-                return _context10.abrupt("return");
-              case 13:
-                locationName = location === 'land_park' ? '陆园' : '水园'; // 查询当日的所有门诊记录
-                // 查询 clinic_records 集合（完整门诊登记信息）
-                records = [];
-                _context10.prev = 15;
-                _context10.next = 18;
-                return wx.cloud.callFunction({
-                  name: 'clinicRecords',
-                  data: {
-                    action: 'list',
-                    data: {
-                      location: location,
-                      startDate: dateStr,
-                      endDate: dateStr,
-                      pageSize: 1000,
-                      useClinicRecords: true // 查询完整的门诊登记记录
-                    }
-                  }
-                });
-              case 18:
-                res = _context10.sent;
-                if (res.result && res.result.success && res.result.data && res.result.data.list) {
-                  records = res.result.data.list;
-                }
-                _context10.next = 25;
-                break;
-              case 22:
-                _context10.prev = 22;
-                _context10.t0 = _context10["catch"](15);
-                console.error('查询门诊记录失败:', _context10.t0);
-              case 25:
-                if (!(records.length === 0)) {
-                  _context10.next = 29;
-                  break;
-                }
-                uni.hideLoading();
-                uni.showToast({
-                  title: '当日无门诊记录',
+                  title: "".concat(parkName, "\u8BE5\u836F\u6750\u5E93\u5B58\u4E0D\u8DB3"),
                   icon: 'none',
                   duration: 2000
                 });
-                return _context10.abrupt("return");
-              case 29:
-                // 生成文档和统计信息
-                report = _this29.formatDailyReport(records, dateStr, locationName);
-                stats = _this29.calculateStats(records); // 准备详细的表格数据
-                tableData = _this29.prepareTableData(records);
-                uni.hideLoading();
+              }
+              _context9.next = 21;
+              break;
+            case 15:
+              _context9.prev = 15;
+              _context9.t0 = _context9["catch"](6);
+              console.error('[loadBatches] 查询异常:', _context9.t0);
+              uni.showToast({
+                title: '加载库存失败',
+                icon: 'none'
+              });
+              _this28.selectedBatch = null;
+              _this28.availableStock = 0;
+            case 21:
+              _context9.prev = 21;
+              uni.hideLoading();
+              return _context9.finish(21);
+            case 24:
+            case "end":
+              return _context9.stop();
+          }
+        }
+      }, _callee9, null, [[6, 15, 21, 24]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "openSignature", function openSignature() {
+    this.showSignature = true;
+  }), (0, _defineProperty2.default)(_methods, "onSignatureConfirm", function onSignatureConfirm(signatureData) {
+    this.form.doctorSign = signatureData;
 
-                // 跳转到日报显示页面
-                reportDate = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
-                uni.navigateTo({
-                  url: "/pages-sub/report/daily?content=".concat(encodeURIComponent(report), "&date=").concat(encodeURIComponent(reportDate), "&location=").concat(encodeURIComponent(locationName), "&stats=").concat(encodeURIComponent(JSON.stringify(stats)), "&tableData=").concat(encodeURIComponent(JSON.stringify(tableData))),
-                  fail: function fail(err) {
-                    console.error('跳转失败:', err);
-                    // 如果跳转失败，复制到剪贴板
-                    uni.setClipboardData({
-                      data: report,
-                      success: function success() {
-                        uni.showToast({
-                          title: '已复制到剪贴板',
-                          icon: 'success'
-                        });
-                      }
-                    });
-                  }
-                });
-                _context10.next = 42;
+    // 记录签名时间
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0');
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    this.form.signTime = "".concat(year, "-").concat(month, "-").concat(day, " ").concat(hours, ":").concat(minutes);
+    this.showSignature = false;
+    uni.showToast({
+      title: '签名成功',
+      icon: 'success',
+      duration: 1500
+    });
+  }), (0, _defineProperty2.default)(_methods, "handleSubmit", function handleSubmit() {
+    var _this29 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10() {
+      var hasValidDrugUsage, drugItems, _loop, i, _ret, baseData, successCount, failCount, _i7, item, submitData, realMinUnit, quantityMin, res, _item, _submitData, _realMinUnit, _quantityMin, _res, _res2;
+      return _regenerator.default.wrap(function _callee10$(_context11) {
+        while (1) {
+          switch (_context11.prev = _context11.next) {
+            case 0:
+              if (!(!_this29.form.location || _this29.form.location !== 'land_park' && _this29.form.location !== 'water_park')) {
+                _context11.next = 3;
                 break;
-              case 37:
-                _context10.prev = 37;
-                _context10.t1 = _context10["catch"](0);
-                console.error('生成日报失败:', _context10.t1);
-                uni.hideLoading();
+              }
+              uni.showToast({
+                title: '请选择就诊园区',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 3:
+              if (!(!_this29.form.name || _this29.form.name.trim() === '')) {
+                _context11.next = 6;
+                break;
+              }
+              uni.showToast({
+                title: '请输入患者姓名',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 6:
+              if (_this29.form.gender) {
+                _context11.next = 9;
+                break;
+              }
+              uni.showToast({
+                title: '请选择性别',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 9:
+              if (!(!_this29.form.age || _this29.form.age <= 0)) {
+                _context11.next = 12;
+                break;
+              }
+              uni.showToast({
+                title: '请输入有效的年龄',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 12:
+              if (_this29.form.identity) {
+                _context11.next = 15;
+                break;
+              }
+              uni.showToast({
+                title: '请选择身份',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 15:
+              if (_this29.form.visitType) {
+                _context11.next = 18;
+                break;
+              }
+              uni.showToast({
+                title: '请选择接诊类型',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 18:
+              if (!(_this29.form.visitType === 'outcall' && (!_this29.form.injuryLocation || _this29.form.injuryLocation.trim() === ''))) {
+                _context11.next = 21;
+                break;
+              }
+              uni.showToast({
+                title: '出诊时需填写受伤地点',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 21:
+              if (!(!_this29.form.chiefComplaint || _this29.form.chiefComplaint.trim() === '')) {
+                _context11.next = 24;
+                break;
+              }
+              uni.showToast({
+                title: '请输入主诉',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 24:
+              if (!(!_this29.form.diseaseName || _this29.form.diseaseName.trim() === '')) {
+                _context11.next = 27;
+                break;
+              }
+              uni.showToast({
+                title: '请输入疾病名称',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 27:
+              if (!(!_this29.form.diagnosis || _this29.form.diagnosis.trim() === '')) {
+                _context11.next = 30;
+                break;
+              }
+              uni.showToast({
+                title: '请输入诊断',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 30:
+              if (!(!_this29.form.treatment || _this29.form.treatment.trim() === '')) {
+                _context11.next = 33;
+                break;
+              }
+              uni.showToast({
+                title: '请输入处置措施',
+                icon: 'none'
+              });
+              return _context11.abrupt("return");
+            case 33:
+              // 用药信息为选填：仅当选择了药材且数量>0时，才视为用药登记
+              // 优先检查处方列表，如果有处方列表，使用处方列表；否则使用单个药品
+              hasValidDrugUsage = false;
+              drugItems = []; // 需要提交的药品列表
+              // 优先使用处方列表
+              if (!(_this29.prescriptionList && _this29.prescriptionList.length > 0)) {
+                _context11.next = 51;
+                break;
+              }
+              _loop = /*#__PURE__*/_regenerator.default.mark(function _loop(i) {
+                var item, _drugRes$result, _drugRes$result2, _drugRes$result3, drugRes, _drugRes$result4, _drugRes$result5, errorMsg, drug, batchRes, locationName, _errorMsg, batches, totalStock, batch;
+                return _regenerator.default.wrap(function _loop$(_context10) {
+                  while (1) {
+                    switch (_context10.prev = _context10.next) {
+                      case 0:
+                        item = _this29.prescriptionList[i];
+                        if (!(!item.drugId || !item.quantity || item.quantity <= 0)) {
+                          _context10.next = 3;
+                          break;
+                        }
+                        return _context10.abrupt("return", "continue");
+                      case 3:
+                        _context10.prev = 3;
+                        console.log('🔍 [提交处方] 获取药品详细信息:', {
+                          drugId: item.drugId,
+                          drugName: item.drugName,
+                          index: i
+                        });
+                        _context10.next = 7;
+                        return wx.cloud.callFunction({
+                          name: 'drugManage',
+                          data: {
+                            action: 'getDetail',
+                            data: {
+                              id: item.drugId
+                            }
+                          }
+                        });
+                      case 7:
+                        drugRes = _context10.sent;
+                        console.log('📦 [提交处方] 药品信息查询结果:', {
+                          success: (_drugRes$result = drugRes.result) === null || _drugRes$result === void 0 ? void 0 : _drugRes$result.success,
+                          hasData: !!((_drugRes$result2 = drugRes.result) !== null && _drugRes$result2 !== void 0 && _drugRes$result2.data),
+                          error: (_drugRes$result3 = drugRes.result) === null || _drugRes$result3 === void 0 ? void 0 : _drugRes$result3.error
+                        });
+                        if (!(!drugRes.result.success || !drugRes.result.data)) {
+                          _context10.next = 19;
+                          break;
+                        }
+                        uni.hideLoading();
+                        _this29.submitting = false;
+
+                        // 提供更详细的错误信息
+                        errorMsg = "\u836F\u54C1".concat(item.drugName || '', "\u4FE1\u606F\u83B7\u53D6\u5931\u8D25");
+                        if ((_drugRes$result4 = drugRes.result) !== null && _drugRes$result4 !== void 0 && _drugRes$result4.error) {
+                          errorMsg += "\n\n\u9519\u8BEF\u8BE6\u60C5: ".concat(drugRes.result.error);
+                        }
+                        if (!item.drugId) {
+                          errorMsg += "\n\n\u53EF\u80FD\u539F\u56E0: \u836F\u54C1ID\u4E3A\u7A7A";
+                        } else {
+                          errorMsg += "\n\n\u836F\u54C1ID: ".concat(item.drugId);
+                        }
+                        errorMsg += "\n\n\u5EFA\u8BAE: \u8BF7\u91CD\u65B0\u9009\u62E9\u8BE5\u836F\u54C1\u540E\u518D\u6DFB\u52A0\u5230\u5904\u65B9";
+                        console.error('❌ [提交处方] 药品信息获取失败:', {
+                          drugId: item.drugId,
+                          drugName: item.drugName,
+                          error: (_drugRes$result5 = drugRes.result) === null || _drugRes$result5 === void 0 ? void 0 : _drugRes$result5.error
+                        });
+                        uni.showModal({
+                          title: '药品信息获取失败',
+                          content: errorMsg,
+                          showCancel: false,
+                          confirmText: '知道了'
+                        });
+                        return _context10.abrupt("return", {
+                          v: void 0
+                        });
+                      case 19:
+                        drug = drugRes.result.data; // 获取批次信息
+                        console.log('🔍 [提交处方] 获取批次信息:', {
+                          drugId: item.drugId,
+                          drugName: item.drugName,
+                          location: _this29.form.location,
+                          locationName: _this29.form.location === 'land_park' ? '陆园' : '水园'
+                        });
+                        _context10.next = 23;
+                        return wx.cloud.callFunction({
+                          name: 'stockManage',
+                          data: {
+                            action: 'getBatchesByDrugId',
+                            data: {
+                              drugId: item.drugId,
+                              location: _this29.form.location,
+                              enableFIFO: true
+                            }
+                          }
+                        });
+                      case 23:
+                        batchRes = _context10.sent;
+                        console.log('📦 [提交处方] 批次查询结果:', {
+                          success: batchRes.result.success,
+                          dataLength: batchRes.result.data ? batchRes.result.data.length : 0,
+                          message: batchRes.result.message
+                        });
+                        if (!(!batchRes.result.success || !batchRes.result.data || batchRes.result.data.length === 0)) {
+                          _context10.next = 34;
+                          break;
+                        }
+                        // 提供更详细的错误信息
+                        locationName = _this29.form.location === 'land_park' ? '陆园' : '水园';
+                        _errorMsg = "\u836F\u54C1".concat(item.drugName || '', "\u5F53\u524D\u5E93\u5B58\u53D6\u8D27\u5931\u8D25");
+                        if (!batchRes.result.success) {
+                          _errorMsg += "\n\n\u5931\u8D25\u539F\u56E0: ".concat(batchRes.result.message || '查询失败');
+                        } else if (!batchRes.result.data || batchRes.result.data.length === 0) {
+                          _errorMsg += "\n\n\u5931\u8D25\u539F\u56E0: ".concat(locationName, "\u6682\u65E0\u5E93\u5B58");
+                          _errorMsg += "\n\n\u5EFA\u8BAE: \u8BF7\u68C0\u67E5\u8BE5\u836F\u54C1\u662F\u5426\u5DF2\u5165\u5E93\u5230".concat(locationName);
+                        }
+                        console.error('❌ [提交处方] 批次获取失败:', _errorMsg);
+                        uni.hideLoading();
+                        _this29.submitting = false;
+                        uni.showModal({
+                          title: '库存获取失败',
+                          content: _errorMsg,
+                          showCancel: false,
+                          confirmText: '知道了'
+                        });
+                        return _context10.abrupt("return", {
+                          v: void 0
+                        });
+                      case 34:
+                        batches = batchRes.result.data;
+                        totalStock = batches.reduce(function (sum, b) {
+                          return sum + b.quantity;
+                        }, 0);
+                        batch = item.batchId ? batches.find(function (b) {
+                          return b._id === item.batchId;
+                        }) || batches[0] : batches[0]; // 验证库存
+                        if (!(item.quantity > totalStock)) {
+                          _context10.next = 42;
+                          break;
+                        }
+                        uni.hideLoading();
+                        _this29.submitting = false;
+                        uni.showToast({
+                          title: "".concat(item.drugName || '', "\u5E93\u5B58\u4E0D\u8DB3\uFF0C\u6700\u591A").concat(totalStock).concat(drug.minUnit || item.unit),
+                          icon: 'none',
+                          duration: 3000
+                        });
+                        return _context10.abrupt("return", {
+                          v: void 0
+                        });
+                      case 42:
+                        // 添加到药品列表
+                        drugItems.push({
+                          drugId: item.drugId,
+                          drugName: item.drugName || drug.name,
+                          specification: item.specification || drug.specification,
+                          quantity: Math.floor(item.quantity),
+                          unit: item.unit || drug.minUnit,
+                          batchId: batch._id,
+                          batch: batch.batch,
+                          drug: drug
+                        });
+                        _context10.next = 52;
+                        break;
+                      case 45:
+                        _context10.prev = 45;
+                        _context10.t0 = _context10["catch"](3);
+                        console.error("\u83B7\u53D6\u836F\u54C1".concat(item.drugName, "\u4FE1\u606F\u5931\u8D25:"), _context10.t0);
+                        uni.hideLoading();
+                        _this29.submitting = false;
+                        uni.showToast({
+                          title: "\u83B7\u53D6".concat(item.drugName || '', "\u4FE1\u606F\u5931\u8D25"),
+                          icon: 'none'
+                        });
+                        return _context10.abrupt("return", {
+                          v: void 0
+                        });
+                      case 52:
+                      case "end":
+                        return _context10.stop();
+                    }
+                  }
+                }, _loop, null, [[3, 45]]);
+              });
+              i = 0;
+            case 38:
+              if (!(i < _this29.prescriptionList.length)) {
+                _context11.next = 48;
+                break;
+              }
+              return _context11.delegateYield(_loop(i), "t0", 40);
+            case 40:
+              _ret = _context11.t0;
+              if (!(_ret === "continue")) {
+                _context11.next = 43;
+                break;
+              }
+              return _context11.abrupt("continue", 45);
+            case 43:
+              if (!((0, _typeof2.default)(_ret) === "object")) {
+                _context11.next = 45;
+                break;
+              }
+              return _context11.abrupt("return", _ret.v);
+            case 45:
+              i++;
+              _context11.next = 38;
+              break;
+            case 48:
+              hasValidDrugUsage = drugItems.length > 0;
+              _context11.next = 65;
+              break;
+            case 51:
+              if (!_this29.selectedDrug) {
+                _context11.next = 65;
+                break;
+              }
+              if (!(_this29.form.quantity && _this29.form.quantity > 0)) {
+                _context11.next = 60;
+                break;
+              }
+              if (!(_this29.form.quantity > _this29.availableStock)) {
+                _context11.next = 56;
+                break;
+              }
+              uni.showToast({
+                title: "\u5E93\u5B58\u4E0D\u8DB3\uFF0C\u6700\u591A".concat(_this29.availableStock).concat(_this29.selectedDrug.minUnit),
+                icon: 'none',
+                duration: 3000
+              });
+              return _context11.abrupt("return");
+            case 56:
+              drugItems.push({
+                drugId: _this29.form.drugId,
+                drugName: _this29.selectedDrug.name,
+                specification: _this29.selectedDrug.specification,
+                quantity: Math.floor(_this29.form.quantity),
+                unit: _this29.getRealMinUnit(_this29.selectedDrug),
+                batchId: _this29.selectedBatch._id,
+                batch: _this29.selectedBatch.batch,
+                drug: _this29.selectedDrug
+              });
+              hasValidDrugUsage = true;
+              _context11.next = 65;
+              break;
+            case 60:
+              // 选择了药材但未填写有效数量，视为本次不登记用药，清空用药相关状态
+              _this29.form.drugId = '';
+              _this29.form.quantity = null;
+              _this29.selectedDrug = null;
+              _this29.selectedBatch = null;
+              _this29.availableStock = 0;
+            case 65:
+              _this29.submitting = true;
+              uni.showLoading({
+                title: '保存中...'
+              });
+              _context11.prev = 67;
+              // 准备基础数据
+              baseData = {
+                visitDateTime: _this29.form.visitDateTime,
+                name: _this29.form.name.trim(),
+                gender: _this29.form.gender,
+                age: _this29.form.age,
+                identity: _this29.form.identity,
+                location: _this29.form.location,
+                // 园区（陆园/水园）
+                visitType: _this29.form.visitType,
+                isOutcall: _this29.form.visitType === 'outcall',
+                injuryLocation: _this29.form.injuryLocation.trim(),
+                chiefComplaint: _this29.form.chiefComplaint.trim(),
+                diseaseName: _this29.form.diseaseName.trim(),
+                diagnosis: _this29.form.diagnosis.trim(),
+                treatment: _this29.form.treatment.trim(),
+                remark: _this29.form.remark.trim()
+              }; // 如果有多个药品，需要为每个药品创建一条记录
+              if (!(drugItems.length > 1)) {
+                _context11.next = 110;
+                break;
+              }
+              // 多个药品：为每个药品创建一条门诊记录
+              successCount = 0;
+              failCount = 0;
+              _i7 = 0;
+            case 73:
+              if (!(_i7 < drugItems.length)) {
+                _context11.next = 107;
+                break;
+              }
+              item = drugItems[_i7];
+              submitData = _objectSpread({}, baseData); // 设置药品信息
+              realMinUnit = item.unit || item.drug.minUnit; // 确保quantityMin是数字类型且大于0
+              quantityMin = Math.floor(Number(item.quantity)) || 0;
+              if (!(quantityMin <= 0)) {
+                _context11.next = 82;
+                break;
+              }
+              console.warn("\u836F\u54C1".concat(item.drugName, "\u7684\u6570\u91CF\u65E0\u6548:"), item.quantity);
+              failCount++;
+              return _context11.abrupt("continue", 104);
+            case 82:
+              submitData.drugId = item.drugId;
+              submitData.drugName = item.drugName;
+              submitData.specification = item.specification || item.drug.specification;
+              submitData.batchId = item.batchId;
+              submitData.quantityMin = quantityMin; // 确保是数字类型
+              submitData.minUnit = realMinUnit;
+              submitData.packUnit = item.drug.packUnit || item.drug.unit;
+              submitData.conversionRate = item.drug.conversionRate || 1;
+              submitData.patient = _this29.form.name.trim();
+              submitData.symptom = (_this29.form.symptom || _this29.form.chiefComplaint || '').trim();
+
+              // 构建drugInfo（使用quantityMin而不是item.quantity）
+              submitData.drugInfo = "".concat(item.drugName, " ").concat(quantityMin).concat(realMinUnit);
+              _context11.prev = 93;
+              _context11.next = 96;
+              return wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'add',
+                  data: submitData
+                }
+              });
+            case 96:
+              res = _context11.sent;
+              if (res.result.success) {
+                successCount++;
+              } else {
+                failCount++;
+                console.error("\u836F\u54C1".concat(item.drugName, "\u63D0\u4EA4\u5931\u8D25:"), res.result.error);
+              }
+              _context11.next = 104;
+              break;
+            case 100:
+              _context11.prev = 100;
+              _context11.t1 = _context11["catch"](93);
+              failCount++;
+              console.error("\u836F\u54C1".concat(item.drugName, "\u63D0\u4EA4\u5F02\u5E38:"), _context11.t1);
+            case 104:
+              _i7++;
+              _context11.next = 73;
+              break;
+            case 107:
+              if (failCount > 0) {
                 uni.showToast({
-                  title: '生成失败：' + (_context10.t1.message || '未知错误'),
+                  title: "\u90E8\u5206\u836F\u54C1\u63D0\u4EA4\u5931\u8D25(".concat(successCount, "/").concat(drugItems.length, ")"),
                   icon: 'none',
                   duration: 3000
                 });
-              case 42:
-              case "end":
-                return _context10.stop();
-            }
-          }
-        }, _callee10, null, [[0, 37], [15, 22]]);
-      }))();
-    },
-    // 格式化日报
-    formatDailyReport: function formatDailyReport(records, dateStr, locationName) {
-      // 解析日期
-      var date = new Date(dateStr);
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      var dateFormatted = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
-
-      // 统计信息
-      var stats = {
-        total: records.length,
-        visitor: [],
-        employee: [],
-        outcall: []
-      };
-
-      // 按身份和疾病分类统计
-      records.forEach(function (record) {
-        var identity = record.identity || '游客';
-        var diseaseName = record.diseaseName || '未知';
-        var injuryLocation = record.injuryLocation || '';
-        var isOutcall = record.isOutcall || record.visitType === 'outcall';
-        if (isOutcall && injuryLocation) {
-          // 统计出诊
-          var existing = stats.outcall.find(function (item) {
-            return item.location === injuryLocation;
-          });
-          if (existing) {
-            existing.count++;
-          } else {
-            stats.outcall.push({
-              location: injuryLocation,
-              count: 1
-            });
-          }
-        }
-        if (identity === '游客') {
-          // 游客统计
-          var _existing = stats.visitor.find(function (item) {
-            return item.disease === diseaseName;
-          });
-          if (_existing) {
-            if (injuryLocation && injuryLocation.trim()) {
-              var loc = _existing.locations.find(function (l) {
-                return l.name === injuryLocation;
-              });
-              if (loc) {
-                loc.count++;
               } else {
-                _existing.locations.push({
-                  name: injuryLocation,
-                  count: 1
+                // 提示保存为模板
+                _this29.promptSaveTemplate();
+                if (_this29.continueAfterSubmit) {
+                  uni.showToast({
+                    title: '登记成功，可继续登记',
+                    icon: 'success',
+                    duration: 2000
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.pageScrollTo({
+                      scrollTop: 0,
+                      duration: 300
+                    });
+                  }, 800);
+                } else {
+                  uni.showToast({
+                    title: '登记成功',
+                    icon: 'success'
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.navigateBack();
+                  }, 1500);
+                }
+              }
+              _context11.next = 141;
+              break;
+            case 110:
+              if (!(drugItems.length === 1)) {
+                _context11.next = 137;
+                break;
+              }
+              // 单个药品：使用原有逻辑
+              _item = drugItems[0];
+              _submitData = _objectSpread({}, baseData);
+              _realMinUnit = _item.unit || _item.drug.minUnit; // 确保quantityMin是数字类型且大于0
+              _quantityMin = Math.floor(Number(_item.quantity)) || 0;
+              if (!(_quantityMin <= 0)) {
+                _context11.next = 120;
+                break;
+              }
+              uni.showToast({
+                title: '药品数量无效',
+                icon: 'none'
+              });
+              _this29.submitting = false;
+              uni.hideLoading();
+              return _context11.abrupt("return");
+            case 120:
+              _submitData.drugId = _item.drugId;
+              _submitData.drugName = _item.drugName;
+              _submitData.specification = _item.specification || _item.drug.specification;
+              _submitData.batchId = _item.batchId;
+              _submitData.quantityMin = _quantityMin; // 确保是数字类型
+              _submitData.minUnit = _realMinUnit;
+              _submitData.packUnit = _item.drug.packUnit || _item.drug.unit;
+              _submitData.conversionRate = _item.drug.conversionRate || 1;
+              _submitData.patient = _this29.form.name.trim();
+              _submitData.symptom = (_this29.form.symptom || _this29.form.chiefComplaint || '').trim();
+              _submitData.drugInfo = {
+                drugId: _item.drugId,
+                drugCode: _item.drug.drugCode || _item.drug.code || '',
+                drugName: _item.drugName,
+                specification: _item.specification || _item.drug.specification,
+                unit: _realMinUnit,
+                quantity: _item.quantity,
+                batchId: _item.batchId,
+                batch: _item.batch,
+                location: _this29.form.location,
+                minUnit: _realMinUnit,
+                packUnit: _item.drug.packUnit || _item.drug.unit,
+                conversionRate: _item.drug.conversionRate || 1
+              };
+              _context11.next = 133;
+              return wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'add',
+                  data: _submitData
+                }
+              });
+            case 133:
+              _res = _context11.sent;
+              if (_res.result.success) {
+                // 提示保存为模板
+                _this29.promptSaveTemplate();
+                if (_this29.continueAfterSubmit) {
+                  uni.showToast({
+                    title: '登记成功，可继续登记',
+                    icon: 'success',
+                    duration: 2000
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.pageScrollTo({
+                      scrollTop: 0,
+                      duration: 300
+                    });
+                  }, 800);
+                } else {
+                  uni.showToast({
+                    title: '登记成功',
+                    icon: 'success'
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.navigateBack();
+                  }, 1500);
+                }
+              } else {
+                uni.showToast({
+                  title: _res.result.error || '登记失败',
+                  icon: 'none'
                 });
               }
-            }
-            _existing.total++;
-          } else {
-            stats.visitor.push({
-              disease: diseaseName,
-              total: 1,
-              locations: injuryLocation && injuryLocation.trim() ? [{
+              _context11.next = 141;
+              break;
+            case 137:
+              _context11.next = 139;
+              return wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'add',
+                  data: baseData
+                }
+              });
+            case 139:
+              _res2 = _context11.sent;
+              if (_res2.result.success) {
+                // 提示保存为模板
+                _this29.promptSaveTemplate();
+                if (_this29.continueAfterSubmit) {
+                  uni.showToast({
+                    title: '登记成功，可继续登记',
+                    icon: 'success',
+                    duration: 2000
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.pageScrollTo({
+                      scrollTop: 0,
+                      duration: 300
+                    });
+                  }, 800);
+                } else {
+                  uni.showToast({
+                    title: '登记成功',
+                    icon: 'success'
+                  });
+                  setTimeout(function () {
+                    _this29.resetForm();
+                    uni.navigateBack();
+                  }, 1500);
+                }
+              } else {
+                uni.showToast({
+                  title: _res2.result.error || '登记失败',
+                  icon: 'none'
+                });
+              }
+            case 141:
+              _context11.next = 147;
+              break;
+            case 143:
+              _context11.prev = 143;
+              _context11.t2 = _context11["catch"](67);
+              console.error('登记失败:', _context11.t2);
+              uni.showToast({
+                title: '登记失败',
+                icon: 'none'
+              });
+            case 147:
+              _context11.prev = 147;
+              _this29.submitting = false;
+              uni.hideLoading();
+              return _context11.finish(147);
+            case 151:
+            case "end":
+              return _context11.stop();
+          }
+        }
+      }, _callee10, null, [[67, 143, 147, 151], [93, 100]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "resetForm", function resetForm() {
+    // 保留当前园区选择，其他信息全部重置
+    var currentLocation = this.form.location || '';
+
+    // 更新时间（就诊时间始终为当前时间）
+    this.updateDateTime();
+
+    // 逐字段重置，避免整体替换对象可能带来的响应式问题
+    this.form.name = '';
+    this.form.gender = '男';
+    this.form.age = null;
+    this.form.identity = '游客';
+    this.form.location = currentLocation; // 保留园区选择
+    this.form.visitType = 'clinic';
+    this.form.injuryLocation = '';
+    this.form.chiefComplaint = '';
+    this.form.symptom = '';
+    this.standardizedSymptoms = [];
+    this.form.diseaseName = '';
+    this.form.diagnosis = '';
+    this.form.treatment = '';
+    this.form.drugId = '';
+    this.form.quantity = null;
+    this.form.remark = '';
+    this.form.doctorSign = '';
+    this.form.signTime = '';
+
+    // 更新签名组件key，强制重新渲染签名组件
+    this.signatureKey = Date.now();
+
+    // 用药与库存相关状态
+    this.selectedDrug = null;
+    this.selectedBatch = null;
+    this.availableStock = 0;
+    this.convertedQuantity = null;
+    this.drugSearchText = '';
+    this.filteredDrugs = [];
+    this.showDrugList = false;
+
+    // 重置处方相关状态
+    this.prescriptionList = [];
+    this.enablePrescription = false;
+    this.prescriptionNo = '';
+    this.currentDrug = {
+      dosage: '',
+      frequency: '',
+      route: '',
+      usage: ''
+    };
+    this.frequencyIndex = 0;
+    this.routeIndex = 0;
+
+    // 疾病/模板/下拉相关状态
+    this.filteredDiseases = [];
+    this.showDiseaseList = false;
+    this.filteredDiagnosis = [];
+    this.showDiagnosisList = false;
+    this.filteredTreatments = [];
+    this.showTreatmentList = false;
+    this.filteredComplaints = [];
+    this.showComplaintList = false;
+    this.complaintSelectedMode = false; // 重置主诉编辑模式
+    // 症状相关状态
+    this.filteredSymptoms = [];
+    this.showSymptomList = false;
+    this.standardizedSymptoms = [];
+    // 清理计时器
+    if (this.symptomInputTimer) {
+      clearTimeout(this.symptomInputTimer);
+      this.symptomInputTimer = null;
+    }
+    if (this.fetchHvSuggestionTimer) {
+      clearTimeout(this.fetchHvSuggestionTimer);
+      this.fetchHvSuggestionTimer = null;
+    }
+    if (this.diseaseInputTimer) {
+      clearTimeout(this.diseaseInputTimer);
+      this.diseaseInputTimer = null;
+    }
+    if (this.diagnosisInputTimer) {
+      clearTimeout(this.diagnosisInputTimer);
+      this.diagnosisInputTimer = null;
+    }
+    if (this.complaintInputTimer) {
+      clearTimeout(this.complaintInputTimer);
+      this.complaintInputTimer = null;
+    }
+    if (this.complaintFocusTimer) {
+      clearTimeout(this.complaintFocusTimer);
+      this.complaintFocusTimer = null;
+    }
+  }), (0, _defineProperty2.default)(_methods, "formatDate", function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var date = new Date(dateStr);
+    var year = date.getFullYear();
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return "".concat(year, "-").concat(month, "-").concat(day);
+  }), (0, _defineProperty2.default)(_methods, "toggleContinue", function toggleContinue() {
+    this.continueAfterSubmit = !this.continueAfterSubmit;
+
+    // 保存用户偏好
+    try {
+      uni.setStorageSync('clinic_continue_mode', this.continueAfterSubmit);
+    } catch (err) {
+      console.error('保存连续登记设置失败:', err);
+    }
+    uni.showToast({
+      title: this.continueAfterSubmit ? '已开启连续登记' : '已关闭连续登记',
+      icon: 'none',
+      duration: 1500
+    });
+  }), (0, _defineProperty2.default)(_methods, "goBack", function goBack() {
+    uni.navigateBack();
+  }), (0, _defineProperty2.default)(_methods, "generateDailyReport", function generateDailyReport() {
+    var _this30 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee11() {
+      var today, year, month, day, dateStr, location, locationName, records, res, report, stats, tableData, reportDate;
+      return _regenerator.default.wrap(function _callee11$(_context12) {
+        while (1) {
+          switch (_context12.prev = _context12.next) {
+            case 0:
+              _context12.prev = 0;
+              uni.showLoading({
+                title: '生成中...'
+              });
+
+              // 获取当前日期和园区
+              today = new Date();
+              year = today.getFullYear();
+              month = String(today.getMonth() + 1).padStart(2, '0');
+              day = String(today.getDate()).padStart(2, '0');
+              dateStr = "".concat(year, "-").concat(month, "-").concat(day); // 必须先选择就诊园区
+              location = _this30.form.location;
+              if (!(!location || location !== 'land_park' && location !== 'water_park')) {
+                _context12.next = 13;
+                break;
+              }
+              uni.hideLoading();
+              uni.showToast({
+                title: '请选择就诊园区',
+                icon: 'none'
+              });
+              // 如有需要，可同时弹出园区选择提示
+              _this30.showLocationTip = true;
+              return _context12.abrupt("return");
+            case 13:
+              locationName = location === 'land_park' ? '陆园' : '水园'; // 查询当日的所有门诊记录
+              // 查询 clinic_records 集合（完整门诊登记信息）
+              records = [];
+              _context12.prev = 15;
+              _context12.next = 18;
+              return wx.cloud.callFunction({
+                name: 'clinicRecords',
+                data: {
+                  action: 'list',
+                  data: {
+                    location: location,
+                    startDate: dateStr,
+                    endDate: dateStr,
+                    pageSize: 1000,
+                    useClinicRecords: true // 查询完整的门诊登记记录
+                  }
+                }
+              });
+            case 18:
+              res = _context12.sent;
+              if (res.result && res.result.success && res.result.data && res.result.data.list) {
+                records = res.result.data.list;
+              }
+              _context12.next = 25;
+              break;
+            case 22:
+              _context12.prev = 22;
+              _context12.t0 = _context12["catch"](15);
+              console.error('查询门诊记录失败:', _context12.t0);
+            case 25:
+              if (!(records.length === 0)) {
+                _context12.next = 29;
+                break;
+              }
+              uni.hideLoading();
+              uni.showToast({
+                title: '当日无门诊记录',
+                icon: 'none',
+                duration: 2000
+              });
+              return _context12.abrupt("return");
+            case 29:
+              // 生成文档和统计信息
+              report = _this30.formatDailyReport(records, dateStr, locationName);
+              stats = _this30.calculateStats(records); // 准备详细的表格数据
+              tableData = _this30.prepareTableData(records);
+              uni.hideLoading();
+
+              // 跳转到日报显示页面
+              reportDate = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
+              uni.navigateTo({
+                url: "/pages-sub/report/daily?content=".concat(encodeURIComponent(report), "&date=").concat(encodeURIComponent(reportDate), "&location=").concat(encodeURIComponent(locationName), "&stats=").concat(encodeURIComponent(JSON.stringify(stats)), "&tableData=").concat(encodeURIComponent(JSON.stringify(tableData))),
+                fail: function fail(err) {
+                  console.error('跳转失败:', err);
+                  // 如果跳转失败，复制到剪贴板
+                  uni.setClipboardData({
+                    data: report,
+                    success: function success() {
+                      uni.showToast({
+                        title: '已复制到剪贴板',
+                        icon: 'success'
+                      });
+                    }
+                  });
+                }
+              });
+              _context12.next = 42;
+              break;
+            case 37:
+              _context12.prev = 37;
+              _context12.t1 = _context12["catch"](0);
+              console.error('生成日报失败:', _context12.t1);
+              uni.hideLoading();
+              uni.showToast({
+                title: '生成失败：' + (_context12.t1.message || '未知错误'),
+                icon: 'none',
+                duration: 3000
+              });
+            case 42:
+            case "end":
+              return _context12.stop();
+          }
+        }
+      }, _callee11, null, [[0, 37], [15, 22]]);
+    }))();
+  }), (0, _defineProperty2.default)(_methods, "formatDailyReport", function formatDailyReport(records, dateStr, locationName) {
+    // 解析日期
+    var date = new Date(dateStr);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var dateFormatted = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
+
+    // 统计信息
+    var stats = {
+      total: records.length,
+      visitor: [],
+      employee: [],
+      outcall: []
+    };
+
+    // 按身份和疾病分类统计
+    records.forEach(function (record) {
+      var identity = record.identity || '游客';
+      var diseaseName = record.diseaseName || '未知';
+      var injuryLocation = record.injuryLocation || '';
+      var isOutcall = record.isOutcall || record.visitType === 'outcall';
+      if (isOutcall && injuryLocation) {
+        // 统计出诊
+        var existing = stats.outcall.find(function (item) {
+          return item.location === injuryLocation;
+        });
+        if (existing) {
+          existing.count++;
+        } else {
+          stats.outcall.push({
+            location: injuryLocation,
+            count: 1
+          });
+        }
+      }
+      if (identity === '游客') {
+        // 游客统计
+        var _existing = stats.visitor.find(function (item) {
+          return item.disease === diseaseName;
+        });
+        if (_existing) {
+          if (injuryLocation && injuryLocation.trim()) {
+            var loc = _existing.locations.find(function (l) {
+              return l.name === injuryLocation;
+            });
+            if (loc) {
+              loc.count++;
+            } else {
+              _existing.locations.push({
                 name: injuryLocation,
                 count: 1
-              }] : []
-            });
+              });
+            }
           }
-        } else if (identity === '员工') {
-          // 员工统计
-          var _existing2 = stats.employee.find(function (item) {
-            return item.disease === diseaseName;
+          _existing.total++;
+        } else {
+          stats.visitor.push({
+            disease: diseaseName,
+            total: 1,
+            locations: injuryLocation && injuryLocation.trim() ? [{
+              name: injuryLocation,
+              count: 1
+            }] : []
           });
-          if (_existing2) {
-            _existing2.total++;
-          } else {
-            stats.employee.push({
-              disease: diseaseName,
-              total: 1
-            });
-          }
+        }
+      } else if (identity === '员工') {
+        // 员工统计
+        var _existing2 = stats.employee.find(function (item) {
+          return item.disease === diseaseName;
+        });
+        if (_existing2) {
+          _existing2.total++;
+        } else {
+          stats.employee.push({
+            disease: diseaseName,
+            total: 1
+          });
+        }
+      }
+    });
+
+    // 生成文档内容
+    var report = "".concat(dateFormatted, "\u6B22\u4E50\u8C37\u533B\u52A1\u5BA4\uFF08").concat(locationName, "\uFF09\u5F53\u65E5\u63A5\u8BCA").concat(stats.total, "\u4EBA\u3002\n");
+
+    // 游客统计
+    if (stats.visitor.length > 0) {
+      var visitorTotal = stats.visitor.reduce(function (sum, item) {
+        return sum + item.total;
+      }, 0);
+      report += "\u6E38\u5BA2".concat(visitorTotal, "\u4EBA\uFF1A");
+      var visitorParts = [];
+      stats.visitor.forEach(function (item) {
+        if (item.locations && item.locations.length > 0) {
+          // 有地点的疾病：疾病X人（地点1X人，地点2X人）
+          var locationParts = item.locations.map(function (loc) {
+            return "".concat(loc.name).concat(loc.count, "\u4EBA");
+          });
+          visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA\uFF08").concat(locationParts.join('，'), "\uFF09"));
+        } else {
+          // 无地点的疾病：疾病X人
+          visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA"));
         }
       });
-
-      // 生成文档内容
-      var report = "".concat(dateFormatted, "\u6B22\u4E50\u8C37\u533B\u52A1\u5BA4\uFF08").concat(locationName, "\uFF09\u5F53\u65E5\u63A5\u8BCA").concat(stats.total, "\u4EBA\u3002\n");
-
-      // 游客统计
-      if (stats.visitor.length > 0) {
-        var visitorTotal = stats.visitor.reduce(function (sum, item) {
-          return sum + item.total;
-        }, 0);
-        report += "\u6E38\u5BA2".concat(visitorTotal, "\u4EBA\uFF1A");
-        var visitorParts = [];
-        stats.visitor.forEach(function (item) {
-          if (item.locations && item.locations.length > 0) {
-            // 有地点的疾病：疾病X人（地点1X人，地点2X人）
-            var locationParts = item.locations.map(function (loc) {
-              return "".concat(loc.name).concat(loc.count, "\u4EBA");
-            });
-            visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA\uFF08").concat(locationParts.join('，'), "\uFF09"));
-          } else {
-            // 无地点的疾病：疾病X人
-            visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA"));
-          }
-        });
-        report += visitorParts.join('，') + '。\n';
-      }
-
-      // 员工统计
-      if (stats.employee.length > 0) {
-        var employeeTotal = stats.employee.reduce(function (sum, item) {
-          return sum + item.total;
-        }, 0);
-        report += "\u5458\u5DE5".concat(employeeTotal, "\u4EBA\uFF1A");
-        var employeeParts = stats.employee.map(function (item) {
-          return "".concat(item.disease).concat(item.total, "\u4EBA");
-        });
-        report += employeeParts.join('，') + '。\n';
-      }
-
-      // 出诊统计
-      if (stats.outcall.length > 0) {
-        var outcallTotal = stats.outcall.reduce(function (sum, item) {
-          return sum + item.count;
-        }, 0);
-        report += "\u51FA\u8BCA".concat(outcallTotal, "\u6B21\uFF1A");
-        var outcallParts = stats.outcall.map(function (item) {
-          return "".concat(item.location).concat(item.count, "\u6B21");
-        });
-        report += outcallParts.join('，') + '。\n';
-      }
-      return report.trim();
-    },
-    // 计算统计信息
-    calculateStats: function calculateStats(records) {
-      var stats = {
-        total: records.length,
-        visitorTotal: 0,
-        employeeTotal: 0,
-        outcallTotal: 0
-      };
-      records.forEach(function (record) {
-        var identity = record.identity || '游客';
-        var isOutcall = record.isOutcall || record.visitType === 'outcall';
-        if (identity === '游客') {
-          stats.visitorTotal++;
-        } else if (identity === '员工') {
-          stats.employeeTotal++;
-        }
-        if (isOutcall) {
-          stats.outcallTotal++;
-        }
-      });
-      return stats;
-    },
-    // 准备表格数据
-    prepareTableData: function prepareTableData(records) {
-      var visitorData = [];
-      var employeeData = [];
-      var doctorName = '';
-      try {
-        var userInfo = uni.getStorageSync('userInfo');
-        doctorName = (userInfo === null || userInfo === void 0 ? void 0 : userInfo.name) || '';
-      } catch (err) {
-        console.error('获取用户信息失败:', err);
-      }
-      records.forEach(function (record) {
-        var identity = record.identity || '游客';
-        var diseaseName = record.diseaseName || record.diagnosis || record.chiefComplaint || '未知';
-        var data = {
-          name: record.name || '',
-          diseaseName: diseaseName,
-          location: record.injuryLocation || '',
-          visitTime: record.visitDateTime || record.createTime || '',
-          isOutcall: record.isOutcall || record.visitType === 'outcall',
-          doctorName: doctorName
-        };
-        if (identity === '游客') {
-          visitorData.push(data);
-        } else if (identity === '员工') {
-          employeeData.push(data);
-        }
-      });
-      return {
-        visitor: visitorData,
-        employee: employeeData
-      };
+      report += visitorParts.join('，') + '。\n';
     }
-  }
+
+    // 员工统计
+    if (stats.employee.length > 0) {
+      var employeeTotal = stats.employee.reduce(function (sum, item) {
+        return sum + item.total;
+      }, 0);
+      report += "\u5458\u5DE5".concat(employeeTotal, "\u4EBA\uFF1A");
+      var employeeParts = stats.employee.map(function (item) {
+        return "".concat(item.disease).concat(item.total, "\u4EBA");
+      });
+      report += employeeParts.join('，') + '。\n';
+    }
+
+    // 出诊统计
+    if (stats.outcall.length > 0) {
+      var outcallTotal = stats.outcall.reduce(function (sum, item) {
+        return sum + item.count;
+      }, 0);
+      report += "\u51FA\u8BCA".concat(outcallTotal, "\u6B21\uFF1A");
+      var outcallParts = stats.outcall.map(function (item) {
+        return "".concat(item.location).concat(item.count, "\u6B21");
+      });
+      report += outcallParts.join('，') + '。\n';
+    }
+    return report.trim();
+  }), (0, _defineProperty2.default)(_methods, "calculateStats", function calculateStats(records) {
+    var stats = {
+      total: records.length,
+      visitorTotal: 0,
+      employeeTotal: 0,
+      outcallTotal: 0
+    };
+    records.forEach(function (record) {
+      var identity = record.identity || '游客';
+      var isOutcall = record.isOutcall || record.visitType === 'outcall';
+      if (identity === '游客') {
+        stats.visitorTotal++;
+      } else if (identity === '员工') {
+        stats.employeeTotal++;
+      }
+      if (isOutcall) {
+        stats.outcallTotal++;
+      }
+    });
+    return stats;
+  }), (0, _defineProperty2.default)(_methods, "prepareTableData", function prepareTableData(records) {
+    var visitorData = [];
+    var employeeData = [];
+    var doctorName = '';
+    try {
+      var userInfo = uni.getStorageSync('userInfo');
+      doctorName = (userInfo === null || userInfo === void 0 ? void 0 : userInfo.name) || '';
+    } catch (err) {
+      console.error('获取用户信息失败:', err);
+    }
+    records.forEach(function (record) {
+      var identity = record.identity || '游客';
+      var diseaseName = record.diseaseName || record.diagnosis || record.chiefComplaint || '未知';
+      var data = {
+        name: record.name || '',
+        diseaseName: diseaseName,
+        location: record.injuryLocation || '',
+        visitTime: record.visitDateTime || record.createTime || '',
+        isOutcall: record.isOutcall || record.visitType === 'outcall',
+        doctorName: doctorName
+      };
+      if (identity === '游客') {
+        visitorData.push(data);
+      } else if (identity === '员工') {
+        employeeData.push(data);
+      }
+    });
+    return {
+      visitor: visitorData,
+      employee: employeeData
+    };
+  }), _methods)
 };
 exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
 
-/***/ 446:
+/***/ 437:
 /*!****************************************************************************************************!*\
   !*** D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& ***!
   \****************************************************************************************************/
@@ -4019,14 +4647,14 @@ exports.default = _default;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!./node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!./node_modules/postcss-loader/src??ref--8-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 447);
-/* harmony import */ var _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_F_google_HBuilderX_4_84_2025110307_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/postcss-loader/src??ref--8-oneOf-1-3!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!../../../HBuilderX/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!./add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& */ 438);
+/* harmony import */ var _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_mini_css_extract_plugin_dist_loader_js_ref_8_oneOf_1_0_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_css_loader_dist_cjs_js_ref_8_oneOf_1_1_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_loaders_stylePostLoader_js_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_2_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_postcss_loader_src_index_js_ref_8_oneOf_1_3_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_sass_loader_dist_cjs_js_ref_8_oneOf_1_4_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_webpack_preprocess_loader_index_js_ref_8_oneOf_1_5_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_index_js_vue_loader_options_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_webpack_uni_mp_loader_lib_style_js_add_vue_vue_type_style_index_0_id_0904e2e0_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ 447:
+/***/ 438:
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--8-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--8-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-2!./node_modules/postcss-loader/src??ref--8-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/sass-loader/dist/cjs.js??ref--8-oneOf-1-4!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--8-oneOf-1-5!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/AK-PMS/pages-sub/clinic/add.vue?vue&type=style&index=0&id=0904e2e0&lang=scss&scoped=true& ***!
   \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -4039,5 +4667,5 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ })
 
-},[[440,"common/runtime","common/vendor"]]]);
+},[[431,"common/runtime","common/vendor"]]]);
 //# sourceMappingURL=../../../.sourcemap/mp-weixin/pages-sub/clinic/add.js.map

@@ -1,5 +1,5 @@
 <template>
-	<view class="page" @touchstart="onTabTouchStart" @touchend="onTabTouchEnd">
+	<view class="page">
 		<!-- 统一页面头部 -->
 		<view class="page-header">
 			<view>
@@ -125,12 +125,10 @@
 
 <script>
 import { callFunction } from '@/utils/api.js'
-import { createTabSwipeMixin } from '@/utils/tabSwipe.js'
 import FilterPanel from '@/components/filter-panel/index.vue'
 import Common from '@/utils/common.js'
 
 export default {
-	mixins: [createTabSwipeMixin(1)],
 	components: {
 		FilterPanel
 	},

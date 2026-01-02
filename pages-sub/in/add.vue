@@ -76,26 +76,22 @@
 				</view>
 			</view>
 			
-			<!-- API搜索中 -->
+			<!-- 搜索中 -->
 			<view v-if="isSearchingAPI" class="api-searching">
 				<view class="loading-wrapper">
 					<text class="loading-icon">⏳</text>
-					<text class="loading-text">正在查询药监局数据库...</text>
+					<text class="loading-text">正在查询药材档案...</text>
 				</view>
 			</view>
 			
 			<!-- 创建药材表单（内联） -->
 			<view v-if="showCreateForm" class="create-form-inline">
 				<!-- 提示信息 -->
-				<view class="create-tip" :class="createFormSource === 'api' ? 'tip-success' : 'tip-warning'">
-					<text class="tip-icon">{{ createFormSource === 'api' ? '✅' : '💡' }}</text>
+				<view class="create-tip tip-warning">
+					<text class="tip-icon">💡</text>
 					<view class="tip-content">
-						<text class="tip-title">
-							{{ createFormSource === 'api' ? '已从药监局获取数据' : '未找到相关药材' }}
-						</text>
-						<text class="tip-subtitle">
-							{{ createFormSource === 'api' ? '确认信息后即可创建' : '请完善以下信息' }}
-						</text>
+						<text class="tip-title">未找到相关药材</text>
+						<text class="tip-subtitle">请完善以下信息</text>
 					</view>
 				</view>
 				
@@ -466,7 +462,7 @@ export default {
 			}
 		},
 		
-		// ⭐ 智能搜索：本地 → NMPA → 手动创建
+		// ⭐ 智能搜索：仅查询本地药材档案
 	async searchDrugs(inputKeyword) {
 		const keyword = (inputKeyword || this.searchKeyword).trim()
 		if (!keyword) return
@@ -476,7 +472,7 @@ export default {
 			this.isSearchingAPI = true
 			this.showSearchResult = false
 			
-			// 调用云函数（内部会先查本地，本地无则查NMPA并保存）
+			// 调用云函数查询本地药材档案
 			const result = await wx.cloud.callFunction({
 				name: 'drugSearch',
 				data: { drugName: keyword }
@@ -485,7 +481,7 @@ export default {
 			this.isSearchingAPI = false
 			
 			if (result.result && result.result.success) {
-				// 找到结果（可能是本地或NMPA）
+				// 找到本地药材档案
 				const drugs = result.result.data
 				
 				// 格式化为统一结构
@@ -498,22 +494,15 @@ export default {
 					packUnit: drug.unit || '盒',
 					manufacturer: drug.manufacturer || '',
 					barcode: drug.barcode || '',
-					approvalNumber: drug.approvalNumber || '',
-					source: drug.source || result.result.source
+					approvalNumber: drug.approvalNumber || ''
 				}))
 				
 				// 显示搜索结果，隐藏创建表单
 					this.showSearchResult = true
 					this.showCreateForm = false
 				
-				// 显示数据来源提示
-				const sourceText = {
-					'local': '本地档案',
-					'nmpa': '国家药监局'
-				}[result.result.source] || '数据库'
-				
 				uni.showToast({
-					title: `找到 ${drugs.length} 条 (${sourceText})`,
+					title: `找到 ${drugs.length} 条药材`,
 					icon: 'none',
 					duration: 1500
 				})
@@ -530,33 +519,6 @@ export default {
 				// 出错也激活手动创建
 				this.activateCreateFormManual(keyword)
 			}
-		},
-		
-		// 激活创建表单（API数据）⭐
-		activateCreateFormWithAPI(apiData) {
-			this.showCreateForm = true
-			this.createFormSource = 'api'
-			this.showSearchResult = false
-			
-			// 自动填充API返回的数据
-			this.newDrug = {
-				name: apiData.name || '',
-				spec: apiData.specification || apiData.spec || '',
-				unit: apiData.unit || '',
-				barcode: apiData.barcode || '',
-				manufacturer: apiData.manufacturer || '',
-				approvalNumber: apiData.approvalNumber || ''
-			}
-			
-			// 设置单位选择器索引
-			const unitIdx = this.unitOptions.indexOf(this.newDrug.unit)
-			this.unitIndex = unitIdx >= 0 ? unitIdx : 0
-			
-			uni.showToast({
-				title: '✅ 已从药监局获取数据',
-				icon: 'none',
-				duration: 2000
-			})
 		},
 		
 		// 激活创建表单（手动）⭐

@@ -339,11 +339,11 @@ var _default = {
         this.searchDrugs();
       }
     },
-    // ⭐ 智能搜索：本地 → NMPA → 手动创建
+    // ⭐ 智能搜索：仅查询本地药材档案
     searchDrugs: function searchDrugs(inputKeyword) {
       var _this3 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        var keyword, result, drugs, sourceText;
+        var keyword, result, drugs;
         return _regenerator.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -360,7 +360,7 @@ var _default = {
                 _this3.isSearchingAPI = true;
                 _this3.showSearchResult = false;
 
-                // 调用云函数（内部会先查本地，本地无则查NMPA并保存）
+                // 调用云函数查询本地药材档案
                 _context.next = 8;
                 return wx.cloud.callFunction({
                   name: 'drugSearch',
@@ -372,7 +372,7 @@ var _default = {
                 result = _context.sent;
                 _this3.isSearchingAPI = false;
                 if (result.result && result.result.success) {
-                  // 找到结果（可能是本地或NMPA）
+                  // 找到本地药材档案
                   drugs = result.result.data; // 格式化为统一结构
                   _this3.searchResults = drugs.map(function (drug) {
                     return {
@@ -384,22 +384,15 @@ var _default = {
                       packUnit: drug.unit || '盒',
                       manufacturer: drug.manufacturer || '',
                       barcode: drug.barcode || '',
-                      approvalNumber: drug.approvalNumber || '',
-                      source: drug.source || result.result.source
+                      approvalNumber: drug.approvalNumber || ''
                     };
                   });
 
                   // 显示搜索结果，隐藏创建表单
                   _this3.showSearchResult = true;
                   _this3.showCreateForm = false;
-
-                  // 显示数据来源提示
-                  sourceText = {
-                    'local': '本地档案',
-                    'nmpa': '国家药监局'
-                  }[result.result.source] || '数据库';
                   uni.showToast({
-                    title: "\u627E\u5230 ".concat(drugs.length, " \u6761 (").concat(sourceText, ")"),
+                    title: "\u627E\u5230 ".concat(drugs.length, " \u6761\u836F\u6750"),
                     icon: 'none',
                     duration: 1500
                   });
@@ -424,31 +417,6 @@ var _default = {
           }
         }, _callee, null, [[3, 13]]);
       }))();
-    },
-    // 激活创建表单（API数据）⭐
-    activateCreateFormWithAPI: function activateCreateFormWithAPI(apiData) {
-      this.showCreateForm = true;
-      this.createFormSource = 'api';
-      this.showSearchResult = false;
-
-      // 自动填充API返回的数据
-      this.newDrug = {
-        name: apiData.name || '',
-        spec: apiData.specification || apiData.spec || '',
-        unit: apiData.unit || '',
-        barcode: apiData.barcode || '',
-        manufacturer: apiData.manufacturer || '',
-        approvalNumber: apiData.approvalNumber || ''
-      };
-
-      // 设置单位选择器索引
-      var unitIdx = this.unitOptions.indexOf(this.newDrug.unit);
-      this.unitIndex = unitIdx >= 0 ? unitIdx : 0;
-      uni.showToast({
-        title: '✅ 已从药监局获取数据',
-        icon: 'none',
-        duration: 2000
-      });
     },
     // 激活创建表单（手动）⭐
     activateCreateFormManual: function activateCreateFormManual(keyword) {

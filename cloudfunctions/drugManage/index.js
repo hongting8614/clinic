@@ -36,6 +36,15 @@ exports.main = async (event, context) => {
       case 'search':
         return await searchDrug(data)
       
+      // ⭐ 新增：获取药品详情
+      case 'getDetail':
+      case 'getDrugDetail':  // 兼容两种写法
+        return await getDrugDetail(data)
+      
+      // ⭐ 新增：获取药品和批次信息（合并查询，优化性能）
+      case 'getDrugWithBatches':
+        return await getDrugWithBatches(data)
+      
       default:
         return {
           success: false,
@@ -289,6 +298,128 @@ async function searchDrug(data) {
   return {
     success: true,
     data: result.data
+  }
+}
+
+// ⭐ 新增：获取药品详情
+async function getDrugDetail(data) {
+  const { drugId } = data
+  
+  if (!drugId) {
+    return {
+      success: false,
+      message: '药品ID不能为空'
+    }
+  }
+  
+  try {
+    const result = await db.collection('drugs').doc(drugId).get()
+    
+    if (result.data) {
+      return {
+        success: true,
+        data: result.data
+      }
+    } else {
+      return {
+        success: false,
+        message: '未找到该药品'
+      }
+    }
+  } catch (err) {
+    console.error('获取药品详情失败:', err)
+    return {
+      success: false,
+      message: err.message || '获取失败'
+    }
+  }
+}
+
+/**
+ * ⭐ 新增：获取药品和批次信息（合并查询）
+ * 优化点：将原本需要2次云函数调用合并为1次，减少网络请求，提升性能
+ * @param {Object} data - 参数对象
+ * @param {String} data.drugId - 药品ID
+ * @param {String} data.location - 库存位置
+ * @param {Boolean} data.enableFIFO - 是否启用FIFO排序（默认true）
+ * @returns {Object} {success, data: {drug, batches}}
+ */
+async function getDrugWithBatches(data) {
+  const { drugId, location, enableFIFO = true } = data
+  
+  console.log('=== getDrugWithBatches 合并查询 ===')
+  console.log('drugId:', drugId)
+  console.log('location:', location)
+  console.log('enableFIFO:', enableFIFO)
+  
+  if (!drugId) {
+    return {
+      success: false,
+      message: '药品ID不能为空'
+    }
+  }
+  
+  try {
+    // 并行查询药品信息和批次信息
+    const drugPromise = db.collection('drugs').doc(drugId).get()
+    
+    // 构建批次查询条件
+    let batchWhere = {
+      drugId: drugId,
+      quantity: _.gt(0)  // 只查询有库存的批次
+    }
+    
+    if (location) {
+      batchWhere.location = location
+    }
+    
+    let batchQuery = db.collection('stock').where(batchWhere)
+    
+    // FIFO排序：优先推荐最早批次
+    if (enableFIFO) {
+      batchQuery = batchQuery.orderBy('expireDate', 'asc')
+    } else {
+      batchQuery = batchQuery.orderBy('createTime', 'desc')
+    }
+    
+    const batchPromise = batchQuery.get()
+    
+    // 并行执行查询
+    const [drugResult, batchResult] = await Promise.all([drugPromise, batchPromise])
+    
+    console.log('查询完成 - 药品:', drugResult.data ? '✅' : '❌')
+    console.log('查询完成 - 批次数量:', batchResult.data.length)
+    
+    // 检查是否近效期
+    const now = new Date()
+    const threeMonthsLater = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)
+    
+    const batches = batchResult.data.map(batch => {
+      const expireDate = new Date(batch.expireDate)
+      const isNearExpiry = expireDate <= threeMonthsLater
+      
+      return {
+        ...batch,
+        quantity: Number(batch.quantity) || 0,
+        isNearExpiry: isNearExpiry,
+        daysToExpiry: Math.floor((expireDate - now) / (1000 * 60 * 60 * 24))
+      }
+    })
+    
+    return {
+      success: true,
+      data: {
+        drug: drugResult.data || null,
+        batches: batches
+      },
+      message: '查询成功'
+    }
+  } catch (err) {
+    console.error('合并查询失败:', err)
+    return {
+      success: false,
+      message: err.message || '查询失败'
+    }
   }
 }
 

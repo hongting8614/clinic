@@ -471,7 +471,7 @@ export default {
 			})
 		},
 		
-		// FIFO自动分配批次 ⭐ 新增
+		// FIFO自动分配批次 ⭐ 使用旧方案（性能更优）
 		async autoAllocateBatch(index) {
 			const item = this.drugList[index]
 			
@@ -497,6 +497,7 @@ export default {
 			uni.showLoading({ title: '分配批次中...' })
 			
 			try {
+				// ⭐ 使用旧方案：allocateBatchesFIFO（性能测试结果：536ms vs 829ms）
 				const result = await wx.cloud.callFunction({
 					name: 'stockManage',
 					data: {
@@ -509,18 +510,33 @@ export default {
 					}
 				})
 				
-				console.log('FIFO分配结果:', result.result)
+				console.log('🔴 旧方案分配结果:', result.result)
 				
 				if (result.result.success) {
-					const { allocation, batchCount, hasNearExpiry } = result.result.data
+					const allocations = result.result.data.allocations || []
+					
+					if (allocations.length === 0) {
+						throw new Error('库存不足，无法分配批次')
+					}
+					
+					// 转换为前端显示格式
+					const allocation = allocations.map(alloc => ({
+						batchId: alloc.batchId,
+						batch: alloc.batch,
+						expireDate: alloc.expireDate,
+						quantity: alloc.quantity,
+						stockQuantity: alloc.stockQuantity,
+						isNearExpiry: alloc.isNearExpiry || false,
+						daysToExpire: alloc.daysToExpiry || alloc.daysToExpire
+					}))
 					
 					// 保存分配结果
 					this.$set(item, 'batchAllocation', allocation)
-					this.$set(item, 'batchCount', batchCount)
-					this.$set(item, 'hasNearExpiry', hasNearExpiry)
+					this.$set(item, 'batchCount', allocation.length)
+					this.$set(item, 'hasNearExpiry', allocation.some(b => b.isNearExpiry))
 					
 					// 近效期提示
-					if (hasNearExpiry) {
+					if (item.hasNearExpiry) {
 						uni.showModal({
 							title: '近效期提示',
 							content: `${item.drugName} 包含近效期批次，是否继续？`,
@@ -535,13 +551,13 @@ export default {
 						})
 					} else {
 						uni.showToast({
-							title: `已分配 ${batchCount} 个批次`,
+							title: `✅ 已分配 ${allocation.length} 个批次`,
 							icon: 'success',
 							duration: 1500
 						})
 					}
 				} else {
-					throw new Error(result.result.message)
+					throw new Error(result.result.message || '分配失败')
 				}
 			} catch (err) {
 				console.error('批次分配失败:', err)

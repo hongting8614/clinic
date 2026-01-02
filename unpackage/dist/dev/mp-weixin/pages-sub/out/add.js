@@ -453,11 +453,11 @@ var _default = {
         duration: 1000
       });
     },
-    // FIFO自动分配批次 ⭐ 新增
+    // FIFO自动分配批次 ⭐ 使用旧方案（性能更优）
     autoAllocateBatch: function autoAllocateBatch(index) {
       var _this3 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        var item, result, _result$result$data, allocation, batchCount, hasNearExpiry;
+        var item, result, allocations, allocation;
         return _regenerator.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -506,18 +506,38 @@ var _default = {
                 });
               case 15:
                 result = _context.sent;
-                console.log('FIFO分配结果:', result.result);
+                console.log('🔴 旧方案分配结果:', result.result);
                 if (!result.result.success) {
-                  _context.next = 25;
+                  _context.next = 28;
                   break;
                 }
-                _result$result$data = result.result.data, allocation = _result$result$data.allocation, batchCount = _result$result$data.batchCount, hasNearExpiry = _result$result$data.hasNearExpiry; // 保存分配结果
+                allocations = result.result.data.allocations || [];
+                if (!(allocations.length === 0)) {
+                  _context.next = 21;
+                  break;
+                }
+                throw new Error('库存不足，无法分配批次');
+              case 21:
+                // 转换为前端显示格式
+                allocation = allocations.map(function (alloc) {
+                  return {
+                    batchId: alloc.batchId,
+                    batch: alloc.batch,
+                    expireDate: alloc.expireDate,
+                    quantity: alloc.quantity,
+                    stockQuantity: alloc.stockQuantity,
+                    isNearExpiry: alloc.isNearExpiry || false,
+                    daysToExpire: alloc.daysToExpiry || alloc.daysToExpire
+                  };
+                }); // 保存分配结果
                 _this3.$set(item, 'batchAllocation', allocation);
-                _this3.$set(item, 'batchCount', batchCount);
-                _this3.$set(item, 'hasNearExpiry', hasNearExpiry);
+                _this3.$set(item, 'batchCount', allocation.length);
+                _this3.$set(item, 'hasNearExpiry', allocation.some(function (b) {
+                  return b.isNearExpiry;
+                }));
 
                 // 近效期提示
-                if (hasNearExpiry) {
+                if (item.hasNearExpiry) {
                   uni.showModal({
                     title: '近效期提示',
                     content: "".concat(item.drugName, " \u5305\u542B\u8FD1\u6548\u671F\u6279\u6B21\uFF0C\u662F\u5426\u7EE7\u7EED\uFF1F"),
@@ -532,20 +552,20 @@ var _default = {
                   });
                 } else {
                   uni.showToast({
-                    title: "\u5DF2\u5206\u914D ".concat(batchCount, " \u4E2A\u6279\u6B21"),
+                    title: "\u2705 \u5DF2\u5206\u914D ".concat(allocation.length, " \u4E2A\u6279\u6B21"),
                     icon: 'success',
                     duration: 1500
                   });
                 }
-                _context.next = 26;
-                break;
-              case 25:
-                throw new Error(result.result.message);
-              case 26:
-                _context.next = 33;
+                _context.next = 29;
                 break;
               case 28:
-                _context.prev = 28;
+                throw new Error(result.result.message || '分配失败');
+              case 29:
+                _context.next = 36;
+                break;
+              case 31:
+                _context.prev = 31;
                 _context.t0 = _context["catch"](12);
                 console.error('批次分配失败:', _context.t0);
                 uni.showToast({
@@ -554,16 +574,16 @@ var _default = {
                   duration: 2000
                 });
                 _this3.$set(item, 'batchAllocation', []);
-              case 33:
-                _context.prev = 33;
-                uni.hideLoading();
-                return _context.finish(33);
               case 36:
+                _context.prev = 36;
+                uni.hideLoading();
+                return _context.finish(36);
+              case 39:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[12, 28, 33, 36]]);
+        }, _callee, null, [[12, 31, 36, 39]]);
       }))();
     },
     // 保存草稿

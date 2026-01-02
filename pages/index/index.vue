@@ -309,7 +309,6 @@
 		<view class="status-panel">
 			<view class="section-header">
 				<text class="section-title">系统状态</text>
-				<button class="debug-btn" @tap="debugStock">诊断库存</button>
 			</view>
 			<view class="status-grid">
 				<view class="status-item">
@@ -713,75 +712,6 @@ export default {
 			return { report, stats: statsSimple, tableData }
 		},
 		
-		// 诊断库存问题
-		async debugStock() {
-			try {
-				uni.showLoading({ title: '诊断中...' })
-				
-				// 查询药品档案
-				const db = wx.cloud.database()
-				const drugsRes = await db.collection('drugs')
-					.where({
-						name: db.RegExp({
-							regexp: '布洛芬',
-							options: 'i'
-						})
-					})
-					.get()
-				
-				console.log('📦 药品档案查询结果:', drugsRes.data)
-				
-				// 查询库存
-				const stockRes = await db.collection('stock')
-					.where({
-						drugName: db.RegExp({
-							regexp: '布洛芬',
-							options: 'i'
-						})
-					})
-					.get()
-				
-				console.log('📊 库存记录查询结果:', stockRes.data)
-				
-				// 统计各园区库存
-				const landStock = stockRes.data.filter(s => s.location === 'land_park' && s.quantity > 0)
-				const waterStock = stockRes.data.filter(s => s.location === 'water_park' && s.quantity > 0)
-				
-				const landTotal = landStock.reduce((sum, s) => sum + (s.quantity || 0), 0)
-				const waterTotal = waterStock.reduce((sum, s) => sum + (s.quantity || 0), 0)
-				
-				uni.hideLoading()
-				
-				let content = `诊断结果：\n\n`
-				content += `找到 ${drugsRes.data.length} 个药品\n`
-				content += `找到 ${stockRes.data.length} 条库存记录\n\n`
-				content += `陆园库存：${landTotal} (${landStock.length}个批次)\n`
-				content += `水园库存：${waterTotal} (${waterStock.length}个批次)\n\n`
-				
-				if (drugsRes.data.length === 0) {
-					content += `⚠️ 药品档案中没有"布洛芬"相关药品\n建议：先添加药品到药品档案`
-				} else if (stockRes.data.length === 0) {
-					content += `⚠️ 没有库存记录\n建议：需要先入库该药品`
-				} else if (landTotal === 0 && waterTotal === 0) {
-					content += `⚠️ 所有批次库存为0\n建议：需要重新入库`
-				}
-				
-				uni.showModal({
-					title: '库存诊断',
-					content: content,
-					showCancel: false,
-					confirmText: '知道了'
-				})
-			} catch (err) {
-				console.error('诊断失败:', err)
-				uni.hideLoading()
-				uni.showToast({
-					title: '诊断失败: ' + err.message,
-					icon: 'none',
-					duration: 3000
-				})
-			}
-		},
 		
 		// 页面跳转
 		goToPage(url) {
@@ -1847,20 +1777,6 @@ export default {
 	font-weight: bold;
 	color: #2c3e50;
 	margin-bottom: 8rpx;
-}
-
-.debug-btn {
-	padding: 8rpx 20rpx;
-	font-size: 24rpx;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: #ffffff;
-	border-radius: 999rpx;
-	border: none;
-	box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
-}
-
-.debug-btn::after {
-	border: none;
 }
 
 .section-subtitle {

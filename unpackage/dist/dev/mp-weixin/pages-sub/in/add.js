@@ -536,6 +536,34 @@ var _default = {
                 });
               case 8:
                 result = _context2.sent;
+                if (!_this4.newDrug.barcode) {
+                  _context2.next = 19;
+                  break;
+                }
+                _context2.prev = 10;
+                _context2.next = 13;
+                return db.collection('barcode_mapping').add({
+                  data: {
+                    barcode: _this4.newDrug.barcode,
+                    drugName: _this4.newDrug.name,
+                    specification: _this4.newDrug.spec,
+                    unit: _this4.newDrug.unit,
+                    manufacturer: _this4.newDrug.manufacturer || '',
+                    approvalNumber: _this4.newDrug.approvalNumber || '',
+                    source: 'manual',
+                    createTime: db.serverDate()
+                  }
+                });
+              case 13:
+                console.log('✅ 条形码映射创建成功');
+                _context2.next = 19;
+                break;
+              case 16:
+                _context2.prev = 16;
+                _context2.t0 = _context2["catch"](10);
+                console.error('创建条形码映射失败:', _context2.t0);
+                // 不影响主流程，继续执行
+              case 19:
                 uni.hideLoading();
                 if (result._id) {
                   uni.showToast({
@@ -544,7 +572,7 @@ var _default = {
                     duration: 1500
                   });
 
-                  // 2. 自动添加到入库列表 ⭐⭐⭐
+                  // 3. 自动添加到入库列表 ⭐⭐⭐
                   newDrugItem = {
                     drugId: result._id,
                     drugName: _this4.newDrug.name,
@@ -565,24 +593,35 @@ var _default = {
                   // 重置表单
                   _this4.cancelCreate();
                   _this4.searchKeyword = '';
+
+                  // 如果是扫码创建的，提示下次可直接识别
+                  if (_this4.newDrug.barcode) {
+                    setTimeout(function () {
+                      uni.showToast({
+                        title: '下次扫码可直接识别',
+                        icon: 'none',
+                        duration: 2000
+                      });
+                    }, 1500);
+                  }
                 }
-                _context2.next = 18;
+                _context2.next = 28;
                 break;
-              case 13:
-                _context2.prev = 13;
-                _context2.t0 = _context2["catch"](4);
-                console.error('创建失败:', _context2.t0);
+              case 23:
+                _context2.prev = 23;
+                _context2.t1 = _context2["catch"](4);
+                console.error('创建失败:', _context2.t1);
                 uni.hideLoading();
                 uni.showToast({
-                  title: '创建失败: ' + _context2.t0.message,
+                  title: '创建失败: ' + _context2.t1.message,
                   icon: 'none'
                 });
-              case 18:
+              case 28:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[4, 13]]);
+        }, _callee2, null, [[4, 23], [10, 16]]);
       }))();
     },
     selectDrug: function selectDrug(drug) {
@@ -655,47 +694,13 @@ var _default = {
     scanBarcode: function scanBarcode() {
       var _this6 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
-        var apiStats, res, scanRes, cleanBarcode;
+        var scanRes, cleanBarcode;
         return _regenerator.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
                 _context3.next = 3;
-                return _this6.getAPIStats();
-              case 3:
-                apiStats = _context3.sent;
-                if (!(apiStats.remaining === 0)) {
-                  _context3.next = 7;
-                  break;
-                }
-                uni.showModal({
-                  title: '🚫 API次数已用完',
-                  content: "\u4ECA\u65E5API\u8C03\u7528\u6B21\u6570\u5DF2\u8FBE\u4E0A\u9650 (".concat(apiStats.todayUsed, "/").concat(apiStats.limit, ")\n\n\u5EFA\u8BAE\uFF1A\n1. \u624B\u52A8\u641C\u7D22\u836F\u6750\u6863\u6848\n2. \u65B0\u5EFA\u836F\u6750\u6863\u6848\n3. \u7B49\u5F85\u660E\u5929\u91CD\u7F6E"),
-                  showCancel: false
-                });
-                return _context3.abrupt("return");
-              case 7:
-                if (!apiStats.critical) {
-                  _context3.next = 13;
-                  break;
-                }
-                _context3.next = 10;
-                return uni.showModal({
-                  title: '⚠️ API次数不足',
-                  content: "\u4ECA\u65E5API\u6B21\u6570\u4EC5\u5269 ".concat(apiStats.remaining, " \u6B21\n\n\u662F\u5426\u7EE7\u7EED\u626B\u7801\uFF1F"),
-                  confirmText: '继续',
-                  cancelText: '取消'
-                });
-              case 10:
-                res = _context3.sent;
-                if (res.confirm) {
-                  _context3.next = 13;
-                  break;
-                }
-                return _context3.abrupt("return");
-              case 13:
-                _context3.next = 15;
                 return uni.scanCode({
                   // 支持的码类型
                   scanType: ['barCode',
@@ -712,7 +717,7 @@ var _default = {
                   // 是否自动解码
                   autoDecrypt: true
                 });
-              case 15:
+              case 3:
                 scanRes = _context3.sent;
                 console.log('📷 扫码结果:', scanRes);
                 console.log('📷 条形码:', scanRes.result);
@@ -720,7 +725,7 @@ var _default = {
 
                 // 检查扫码结果
                 if (!(!scanRes || !scanRes.result)) {
-                  _context3.next = 23;
+                  _context3.next = 11;
                   break;
                 }
                 console.error('❌ 扫码结果为空');
@@ -729,14 +734,14 @@ var _default = {
                   icon: 'none'
                 });
                 return _context3.abrupt("return");
-              case 23:
+              case 11:
                 // 清洗条形码：去除空格、特殊字符
                 cleanBarcode = scanRes.result.trim().replace(/\s/g, '');
                 console.log('📷 清洗后条形码:', cleanBarcode);
 
                 // 验证条形码格式
                 if (!(!cleanBarcode || cleanBarcode.length < 8)) {
-                  _context3.next = 28;
+                  _context3.next = 16;
                   break;
                 }
                 uni.showToast({
@@ -744,14 +749,14 @@ var _default = {
                   icon: 'none'
                 });
                 return _context3.abrupt("return");
-              case 28:
-                _context3.next = 30;
+              case 16:
+                _context3.next = 18;
                 return _this6.queryDrugByBarcode(cleanBarcode);
-              case 30:
-                _context3.next = 36;
+              case 18:
+                _context3.next = 24;
                 break;
-              case 32:
-                _context3.prev = 32;
+              case 20:
+                _context3.prev = 20;
                 _context3.t0 = _context3["catch"](0);
                 console.error('扫码错误:', _context3.t0);
                 if (_context3.t0.errMsg && !_context3.t0.errMsg.includes('cancel')) {
@@ -760,66 +765,21 @@ var _default = {
                     icon: 'none'
                   });
                 }
-              case 36:
+              case 24:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[0, 32]]);
-      }))();
-    },
-    getAPIStats: function getAPIStats() {
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        var result;
-        return _regenerator.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                _context4.prev = 0;
-                _context4.next = 3;
-                return wx.cloud.callFunction({
-                  name: 'drugBarcodeQuery',
-                  data: {
-                    action: 'getUsageStats'
-                  }
-                });
-              case 3:
-                result = _context4.sent;
-                if (!(result.result && result.result.success)) {
-                  _context4.next = 6;
-                  break;
-                }
-                return _context4.abrupt("return", result.result.data);
-              case 6:
-                _context4.next = 11;
-                break;
-              case 8:
-                _context4.prev = 8;
-                _context4.t0 = _context4["catch"](0);
-                console.error('获取API统计失败:', _context4.t0);
-              case 11:
-                return _context4.abrupt("return", {
-                  todayUsed: 0,
-                  remaining: 99,
-                  limit: 99,
-                  warning: false,
-                  critical: false
-                });
-              case 12:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4, null, [[0, 8]]);
+        }, _callee3, null, [[0, 20]]);
       }))();
     },
     queryDrugByBarcode: function queryDrugByBarcode(barcode) {
       var _this7 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
-        var _res$result, _res$result2, res, drugInfo, exists, sourceText, stats;
-        return _regenerator.default.wrap(function _callee6$(_context6) {
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
+        var _res$result, _res$result2, res, drugInfo, exists, sourceText;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 console.log('========================================');
                 console.log('🔍 开始查询条形码:', barcode);
@@ -828,10 +788,10 @@ var _default = {
                   title: '识别中...',
                   mask: true
                 });
-                _context6.prev = 4;
+                _context4.prev = 4;
                 // 调用云函数查询（优先本地档案 → API次数检查 → 第三方API）
                 console.log('📡 调用云函数...');
-                _context6.next = 8;
+                _context4.next = 8;
                 return wx.cloud.callFunction({
                   name: 'drugBarcodeQuery',
                   data: {
@@ -840,13 +800,13 @@ var _default = {
                   }
                 });
               case 8:
-                res = _context6.sent;
+                res = _context4.sent;
                 console.log('📡 云函数返回:', res);
                 console.log('result.success:', (_res$result = res.result) === null || _res$result === void 0 ? void 0 : _res$result.success);
                 console.log('result.data:', (_res$result2 = res.result) === null || _res$result2 === void 0 ? void 0 : _res$result2.data);
                 uni.hideLoading();
                 if (!(res.result && res.result.success)) {
-                  _context6.next = 27;
+                  _context4.next = 26;
                   break;
                 }
                 console.log('✅ 找到药材！');
@@ -856,18 +816,18 @@ var _default = {
                   return item.drugName === drugInfo.name && item.specification === drugInfo.specification;
                 });
                 if (!exists) {
-                  _context6.next = 20;
+                  _context4.next = 20;
                   break;
                 }
                 uni.showToast({
                   title: '该药材已添加',
                   icon: 'none'
                 });
-                return _context6.abrupt("return");
+                return _context4.abrupt("return");
               case 20:
                 // 添加到列表最前面(新的在上)
                 _this7.drugList.unshift({
-                  drugId: drugInfo.drugId || 'temp_' + Date.now(),
+                  drugId: drugInfo._id || 'temp_' + Date.now(),
                   drugName: drugInfo.name,
                   specification: drugInfo.specification,
                   unit: drugInfo.unit || '盒',
@@ -879,14 +839,14 @@ var _default = {
                   quantity: '',
                   price: '',
                   amount: 0,
-                  hasError: false,
-                  isTemp: !drugInfo.drugId // 标记是否为临时药材
+                  hasError: false
                 });
 
                 // 显示数据来源
                 sourceText = {
                   'local': '本地档案',
-                  'api': 'API查询'
+                  'cache': '缓存数据',
+                  'mapping': '映射表'
                 }[res.result.source] || '数据库';
                 uni.showToast({
                   title: "\u2705 \u5DF2\u6DFB\u52A0 (".concat(sourceText, ")"),
@@ -894,93 +854,39 @@ var _default = {
                   duration: 2000
                 });
 
-                // 显示API使用情况
-                if (res.result.source === 'api' && res.result.apiStats) {
-                  stats = res.result.apiStats;
-                  if (stats.warning) {
-                    setTimeout(function () {
-                      uni.showToast({
-                        title: "\u26A0\uFE0F \u4ECA\u65E5\u5269\u4F59".concat(stats.remaining, "\u6B21API"),
-                        icon: 'none',
-                        duration: 2000
-                      });
-                    }, 2000);
-                  }
-                }
-
                 // 振动反馈
                 wx.vibrateShort({
                   type: 'light'
                 });
-                _context6.next = 28;
+                _context4.next = 29;
                 break;
-              case 27:
-                if (res.result && res.result.reason === 'api_limit_exceeded') {
-                  // API次数不足
-                  uni.showModal({
-                    title: '🚫 API次数不足',
-                    content: res.result.message + '\n\n' + res.result.suggestion,
-                    confirmText: '手动新建',
-                    cancelText: '取消',
-                    success: function success(modalRes) {
-                      if (modalRes.confirm) {
-                        _this7.newDrug.barcode = barcode;
-                        _this7.showCreateDrug = true;
-                      }
-                    }
-                  });
-                } else {
-                  // 未找到药材 - 简化录入
-                  console.log('❌ 未找到药材，云函数返回:', res.result);
-                  uni.hideLoading();
-
-                  // 选择关联方式（只有2种）
-                  uni.showActionSheet({
-                    title: '首次识别此条形码',
-                    itemList: ['从已有药材中选择', '手动新建药材'],
-                    success: function () {
-                      var _success = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5(actionRes) {
-                        return _regenerator.default.wrap(function _callee5$(_context5) {
-                          while (1) {
-                            switch (_context5.prev = _context5.next) {
-                              case 0:
-                                if (!(actionRes.tapIndex === 0)) {
-                                  _context5.next = 5;
-                                  break;
-                                }
-                                _context5.next = 3;
-                                return _this7.selectExistingDrug(barcode);
-                              case 3:
-                                _context5.next = 6;
-                                break;
-                              case 5:
-                                if (actionRes.tapIndex === 1) {
-                                  // 手动新建药材
-                                  _this7.newDrug.barcode = barcode;
-                                  _this7.showCreateDrug = true;
-                                }
-                              case 6:
-                              case "end":
-                                return _context5.stop();
-                            }
-                          }
-                        }, _callee5);
-                      }));
-                      function success(_x) {
-                        return _success.apply(this, arguments);
-                      }
-                      return success;
-                    }()
-                  });
-                }
-              case 28:
-                _context6.next = 35;
-                break;
-              case 30:
-                _context6.prev = 30;
-                _context6.t0 = _context6["catch"](4);
+              case 26:
+                // 未找到药材 - 提示用户手动创建
+                console.log('❌ 未找到药材，云函数返回:', res.result);
                 uni.hideLoading();
-                console.error('查询失败:', _context6.t0);
+                uni.showModal({
+                  title: '首次识别此条形码',
+                  content: '系统中暂无此药材信息\n\n请选择操作方式：',
+                  confirmText: '手动新建',
+                  cancelText: '取消',
+                  success: function success(modalRes) {
+                    if (modalRes.confirm) {
+                      // 激活创建表单
+                      _this7.newDrug.barcode = barcode;
+                      _this7.showCreateForm = true;
+                      _this7.createFormSource = 'manual';
+                      _this7.searchKeyword = '';
+                    }
+                  }
+                });
+              case 29:
+                _context4.next = 36;
+                break;
+              case 31:
+                _context4.prev = 31;
+                _context4.t0 = _context4["catch"](4);
+                uni.hideLoading();
+                console.error('查询失败:', _context4.t0);
                 uni.showModal({
                   title: '查询失败',
                   content: '条形码查询失败，是否手动新建药材？',
@@ -993,283 +899,12 @@ var _default = {
                     }
                   }
                 });
-              case 35:
+              case 36:
               case "end":
-                return _context6.stop();
+                return _context4.stop();
             }
           }
-        }, _callee6, null, [[4, 30]]);
-      }))();
-    },
-    // 创建映射并查询（首次录入）
-    createMappingAndQuery: function createMappingAndQuery(barcode, drugName) {
-      var _this8 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
-        var res, drug;
-        return _regenerator.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                uni.showLoading({
-                  title: '查询中...',
-                  mask: true
-                });
-                _context7.prev = 1;
-                console.log('🆕 创建映射并查询NMPA...');
-                console.log('条形码:', barcode);
-                console.log('药材名称:', drugName);
-                _context7.next = 7;
-                return _this8.$api.callFunction({
-                  name: 'drugBarcodeQuery',
-                  data: {
-                    action: 'createMappingAndQuery',
-                    barcode: barcode,
-                    drugName: drugName,
-                    specification: '',
-                    // 可选，用户稍后填写
-                    unit: '盒'
-                  }
-                });
-              case 7:
-                res = _context7.sent;
-                uni.hideLoading();
-                console.log('云函数返回:', res.result);
-                if (res.result.success && res.result.data) {
-                  drug = res.result.data; // 添加到入库列表
-                  _this8.drugList.push({
-                    drugId: null,
-                    barcode: drug.barcode,
-                    name: drug.name,
-                    specification: drug.specification || '',
-                    unit: drug.unit || '盒',
-                    manufacturer: drug.manufacturer || '',
-                    批号: '',
-                    有效期: '',
-                    数量: 1,
-                    单价: 0,
-                    apiSource: drug.apiSource
-                  });
-                  uni.showToast({
-                    title: '✅ 录入成功',
-                    icon: 'success',
-                    duration: 2000
-                  });
-
-                  // 显示提示信息
-                  setTimeout(function () {
-                    uni.showToast({
-                      title: '下次扫码可直接识别',
-                      icon: 'none',
-                      duration: 3000
-                    });
-                  }, 2100);
-                } else {
-                  uni.showModal({
-                    title: '提示',
-                    content: res.result.message || '查询失败，请稍后重试',
-                    showCancel: false
-                  });
-                }
-                _context7.next = 18;
-                break;
-              case 13:
-                _context7.prev = 13;
-                _context7.t0 = _context7["catch"](1);
-                uni.hideLoading();
-                console.error('创建映射失败:', _context7.t0);
-                uni.showModal({
-                  title: '录入失败',
-                  content: '自动录入失败，请手动新建药材档案',
-                  confirmText: '新建档案',
-                  cancelText: '取消',
-                  success: function success(modalRes) {
-                    if (modalRes.confirm) {
-                      _this8.newDrug.name = drugName;
-                      _this8.newDrug.barcode = barcode;
-                      _this8.showCreateDrug = true;
-                    }
-                  }
-                });
-              case 18:
-              case "end":
-                return _context7.stop();
-            }
-          }
-        }, _callee7, null, [[1, 13]]);
-      }))();
-    },
-    // 从已有药材中选择
-    selectExistingDrug: function selectExistingDrug(barcode) {
-      var _this9 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
-        var res, drugNames;
-        return _regenerator.default.wrap(function _callee9$(_context9) {
-          while (1) {
-            switch (_context9.prev = _context9.next) {
-              case 0:
-                uni.showLoading({
-                  title: '加载药材列表...',
-                  mask: true
-                });
-                _context9.prev = 1;
-                _context9.next = 4;
-                return _this9.$api.callFunction({
-                  name: 'drugSearch',
-                  data: {
-                    action: 'getAllDrugs'
-                  }
-                });
-              case 4:
-                res = _context9.sent;
-                uni.hideLoading();
-                if (res.result.success && res.result.data && res.result.data.length > 0) {
-                  // 显示药材选择器
-                  drugNames = res.result.data.map(function (d) {
-                    return d.name;
-                  });
-                  uni.showActionSheet({
-                    itemList: drugNames,
-                    success: function () {
-                      var _success2 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8(pickRes) {
-                        var selectedDrug;
-                        return _regenerator.default.wrap(function _callee8$(_context8) {
-                          while (1) {
-                            switch (_context8.prev = _context8.next) {
-                              case 0:
-                                selectedDrug = res.result.data[pickRes.tapIndex];
-                                console.log('选择的药材:', selectedDrug);
-
-                                // 关联条形码到选中的药材
-                                _context8.next = 4;
-                                return _this9.linkBarcodeToDrug(barcode, selectedDrug);
-                              case 4:
-                              case "end":
-                                return _context8.stop();
-                            }
-                          }
-                        }, _callee8);
-                      }));
-                      function success(_x2) {
-                        return _success2.apply(this, arguments);
-                      }
-                      return success;
-                    }()
-                  });
-                } else {
-                  uni.showToast({
-                    title: '暂无药材档案',
-                    icon: 'none'
-                  });
-                  // 提示手动新建
-                  setTimeout(function () {
-                    _this9.newDrug.barcode = barcode;
-                    _this9.showCreateDrug = true;
-                  }, 1000);
-                }
-                _context9.next = 14;
-                break;
-              case 9:
-                _context9.prev = 9;
-                _context9.t0 = _context9["catch"](1);
-                uni.hideLoading();
-                console.error('加载药材失败:', _context9.t0);
-                uni.showToast({
-                  title: '加载失败',
-                  icon: 'none'
-                });
-              case 14:
-              case "end":
-                return _context9.stop();
-            }
-          }
-        }, _callee9, null, [[1, 9]]);
-      }))();
-    },
-    // 关联条形码到现有药材
-    linkBarcodeToDrug: function linkBarcodeToDrug(barcode, drug) {
-      var _this10 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10() {
-        var db;
-        return _regenerator.default.wrap(function _callee10$(_context10) {
-          while (1) {
-            switch (_context10.prev = _context10.next) {
-              case 0:
-                uni.showLoading({
-                  title: '关联中...',
-                  mask: true
-                });
-                _context10.prev = 1;
-                _context10.next = 4;
-                return _this10.$api.callFunction({
-                  name: 'drugSearch',
-                  data: {
-                    action: 'updateDrugBarcode',
-                    drugId: drug._id,
-                    barcode: barcode
-                  }
-                });
-              case 4:
-                // 直接创建条形码映射到数据库（不需要云函数）
-                db = wx.cloud.database();
-                _context10.next = 7;
-                return db.collection('barcode_mapping').add({
-                  data: {
-                    barcode: barcode,
-                    drugName: drug.name,
-                    specification: drug.specification || '',
-                    unit: drug.unit || '盒',
-                    manufacturer: drug.manufacturer || '',
-                    approvalNumber: drug.approvalNumber || '',
-                    isPrescription: drug.isPrescription || false,
-                    prescriptionType: drug.prescriptionType || '非处方药',
-                    source: 'manual',
-                    createTime: db.serverDate()
-                  }
-                });
-              case 7:
-                uni.hideLoading();
-
-                // 添加到入库列表
-                _this10.drugList.push({
-                  drugId: drug._id,
-                  barcode: barcode,
-                  name: drug.name,
-                  specification: drug.specification || '',
-                  unit: drug.unit || '盒',
-                  manufacturer: drug.manufacturer || '',
-                  批号: '',
-                  有效期: '',
-                  数量: 1,
-                  单价: drug.price || 0
-                });
-                uni.showToast({
-                  title: '✅ 关联成功',
-                  icon: 'success'
-                });
-                setTimeout(function () {
-                  uni.showToast({
-                    title: '下次扫码可直接识别',
-                    icon: 'none',
-                    duration: 2000
-                  });
-                }, 1500);
-                _context10.next = 18;
-                break;
-              case 13:
-                _context10.prev = 13;
-                _context10.t0 = _context10["catch"](1);
-                uni.hideLoading();
-                console.error('关联失败:', _context10.t0);
-                uni.showToast({
-                  title: '关联失败',
-                  icon: 'none'
-                });
-              case 18:
-              case "end":
-                return _context10.stop();
-            }
-          }
-        }, _callee10, null, [[1, 13]]);
+        }, _callee4, null, [[4, 31]]);
       }))();
     },
     // ========== 新建药材 ==========
@@ -1323,13 +958,13 @@ var _default = {
       return Number(amount).toFixed(2);
     },
     deleteDrug: function deleteDrug(index) {
-      var _this11 = this;
+      var _this8 = this;
       uni.showModal({
         title: '确认删除',
         content: '确定要删除这个药材吗？',
         success: function success(res) {
           if (res.confirm) {
-            _this11.drugList.splice(index, 1);
+            _this8.drugList.splice(index, 1);
           }
         }
       });
@@ -1392,34 +1027,34 @@ var _default = {
       return true;
     },
     submit: function submit() {
-      var _this12 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee11() {
+      var _this9 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
         var userInfo, result, _result$result;
-        return _regenerator.default.wrap(function _callee11$(_context11) {
+        return _regenerator.default.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context11.prev = _context11.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                if (_this12.validateForm()) {
-                  _context11.next = 2;
+                if (_this9.validateForm()) {
+                  _context5.next = 2;
                   break;
                 }
-                return _context11.abrupt("return");
+                return _context5.abrupt("return");
               case 2:
                 uni.showLoading({
                   title: '提交中...',
                   mask: true
                 });
-                _context11.prev = 3;
+                _context5.prev = 3;
                 userInfo = uni.getStorageSync('userInfo');
-                _context11.next = 7;
+                _context5.next = 7;
                 return wx.cloud.callFunction({
                   name: 'inRecords',
                   data: {
                     action: 'create',
                     data: {
-                      recordNo: _this12.recordNo,
-                      remark: _this12.remark,
-                      items: _this12.drugList.map(function (item) {
+                      recordNo: _this9.recordNo,
+                      remark: _this9.remark,
+                      items: _this9.drugList.map(function (item) {
                         return {
                           drugId: item.drugId,
                           drugName: item.drugName,
@@ -1434,19 +1069,19 @@ var _default = {
                           price: Number(item.price) || 0
                         };
                       }),
-                      operator: _this12.operator,
+                      operator: _this9.operator,
                       operatorId: (userInfo === null || userInfo === void 0 ? void 0 : userInfo._id) || '',
-                      operatorSign: _this12.operatorSign,
+                      operatorSign: _this9.operatorSign,
                       operatorSignTime: new Date().toISOString(),
                       status: 'pending_review'
                     }
                   }
                 });
               case 7:
-                result = _context11.sent;
+                result = _context5.sent;
                 uni.hideLoading();
                 if (!(result.result && result.result.success)) {
-                  _context11.next = 14;
+                  _context5.next = 14;
                   break;
                 }
                 uni.showToast({
@@ -1457,28 +1092,28 @@ var _default = {
                 setTimeout(function () {
                   uni.navigateBack();
                 }, 2000);
-                _context11.next = 15;
+                _context5.next = 15;
                 break;
               case 14:
                 throw new Error(((_result$result = result.result) === null || _result$result === void 0 ? void 0 : _result$result.message) || '提交失败');
               case 15:
-                _context11.next = 22;
+                _context5.next = 22;
                 break;
               case 17:
-                _context11.prev = 17;
-                _context11.t0 = _context11["catch"](3);
+                _context5.prev = 17;
+                _context5.t0 = _context5["catch"](3);
                 uni.hideLoading();
-                console.error('提交失败:', _context11.t0);
+                console.error('提交失败:', _context5.t0);
                 uni.showToast({
-                  title: _context11.t0.message || '提交失败',
+                  title: _context5.t0.message || '提交失败',
                   icon: 'none'
                 });
               case 22:
               case "end":
-                return _context11.stop();
+                return _context5.stop();
             }
           }
-        }, _callee11, null, [[3, 17]]);
+        }, _callee5, null, [[3, 17]]);
       }))();
     }
   }

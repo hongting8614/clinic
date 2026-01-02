@@ -22,9 +22,21 @@ exports.main = async (event, context) => {
   try {
     let result
     
-    // 只支持条形码查询
+    // 支持多种操作
     if (action === 'queryByBarcode') {
       result = await queryByBarcode(barcode)
+    } else if (action === 'getUsageStats') {
+      // 返回模拟的统计数据（因为已经不使用外部API）
+      result = {
+        success: true,
+        data: {
+          todayUsed: 0,
+          remaining: 999,
+          limit: 999,
+          warning: false,
+          critical: false
+        }
+      }
     } else {
       result = { success: false, message: `未知操作: ${action}` }
     }

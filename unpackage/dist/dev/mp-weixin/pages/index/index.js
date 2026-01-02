@@ -135,7 +135,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni, wx) {
+/* WEBPACK VAR INJECTION */(function(uni) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
@@ -147,7 +147,6 @@ var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runt
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
 var _api = __webpack_require__(/*! @/utils/api.js */ 33);
 var _permission = __webpack_require__(/*! @/utils/permission.js */ 44);
-//
 //
 //
 //
@@ -983,96 +982,6 @@ var _default = {
         tableData: tableData
       };
     },
-    // 诊断库存问题
-    debugStock: function debugStock() {
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        var db, drugsRes, stockRes, landStock, waterStock, landTotal, waterTotal, content;
-        return _regenerator.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                _context4.prev = 0;
-                uni.showLoading({
-                  title: '诊断中...'
-                });
-
-                // 查询药品档案
-                db = wx.cloud.database();
-                _context4.next = 5;
-                return db.collection('drugs').where({
-                  name: db.RegExp({
-                    regexp: '布洛芬',
-                    options: 'i'
-                  })
-                }).get();
-              case 5:
-                drugsRes = _context4.sent;
-                console.log('📦 药品档案查询结果:', drugsRes.data);
-
-                // 查询库存
-                _context4.next = 9;
-                return db.collection('stock').where({
-                  drugName: db.RegExp({
-                    regexp: '布洛芬',
-                    options: 'i'
-                  })
-                }).get();
-              case 9:
-                stockRes = _context4.sent;
-                console.log('📊 库存记录查询结果:', stockRes.data);
-
-                // 统计各园区库存
-                landStock = stockRes.data.filter(function (s) {
-                  return s.location === 'land_park' && s.quantity > 0;
-                });
-                waterStock = stockRes.data.filter(function (s) {
-                  return s.location === 'water_park' && s.quantity > 0;
-                });
-                landTotal = landStock.reduce(function (sum, s) {
-                  return sum + (s.quantity || 0);
-                }, 0);
-                waterTotal = waterStock.reduce(function (sum, s) {
-                  return sum + (s.quantity || 0);
-                }, 0);
-                uni.hideLoading();
-                content = "\u8BCA\u65AD\u7ED3\u679C\uFF1A\n\n";
-                content += "\u627E\u5230 ".concat(drugsRes.data.length, " \u4E2A\u836F\u54C1\n");
-                content += "\u627E\u5230 ".concat(stockRes.data.length, " \u6761\u5E93\u5B58\u8BB0\u5F55\n\n");
-                content += "\u9646\u56ED\u5E93\u5B58\uFF1A".concat(landTotal, " (").concat(landStock.length, "\u4E2A\u6279\u6B21)\n");
-                content += "\u6C34\u56ED\u5E93\u5B58\uFF1A".concat(waterTotal, " (").concat(waterStock.length, "\u4E2A\u6279\u6B21)\n\n");
-                if (drugsRes.data.length === 0) {
-                  content += "\u26A0\uFE0F \u836F\u54C1\u6863\u6848\u4E2D\u6CA1\u6709\"\u5E03\u6D1B\u82AC\"\u76F8\u5173\u836F\u54C1\n\u5EFA\u8BAE\uFF1A\u5148\u6DFB\u52A0\u836F\u54C1\u5230\u836F\u54C1\u6863\u6848";
-                } else if (stockRes.data.length === 0) {
-                  content += "\u26A0\uFE0F \u6CA1\u6709\u5E93\u5B58\u8BB0\u5F55\n\u5EFA\u8BAE\uFF1A\u9700\u8981\u5148\u5165\u5E93\u8BE5\u836F\u54C1";
-                } else if (landTotal === 0 && waterTotal === 0) {
-                  content += "\u26A0\uFE0F \u6240\u6709\u6279\u6B21\u5E93\u5B58\u4E3A0\n\u5EFA\u8BAE\uFF1A\u9700\u8981\u91CD\u65B0\u5165\u5E93";
-                }
-                uni.showModal({
-                  title: '库存诊断',
-                  content: content,
-                  showCancel: false,
-                  confirmText: '知道了'
-                });
-                _context4.next = 30;
-                break;
-              case 25:
-                _context4.prev = 25;
-                _context4.t0 = _context4["catch"](0);
-                console.error('诊断失败:', _context4.t0);
-                uni.hideLoading();
-                uni.showToast({
-                  title: '诊断失败: ' + _context4.t0.message,
-                  icon: 'none',
-                  duration: 3000
-                });
-              case 30:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4, null, [[0, 25]]);
-      }))();
-    },
     // 页面跳转
     goToPage: function goToPage(url) {
       // tabBar 页面必须使用 switchTab，其它页面使用 navigateTo
@@ -1105,7 +1014,7 @@ var _default = {
   }
 };
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
 

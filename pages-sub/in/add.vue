@@ -637,6 +637,28 @@ export default {
 					}
 				})
 				
+				// 2. 如果有条形码，创建条形码映射
+				if (this.newDrug.barcode) {
+					try {
+						await db.collection('barcode_mapping').add({
+							data: {
+								barcode: this.newDrug.barcode,
+								drugName: this.newDrug.name,
+								specification: this.newDrug.spec,
+								unit: this.newDrug.unit,
+								manufacturer: this.newDrug.manufacturer || '',
+								approvalNumber: this.newDrug.approvalNumber || '',
+								source: 'manual',
+								createTime: db.serverDate()
+							}
+						})
+						console.log('✅ 条形码映射创建成功')
+					} catch (err) {
+						console.error('创建条形码映射失败:', err)
+						// 不影响主流程，继续执行
+					}
+				}
+				
 				uni.hideLoading()
 				
 				if (result._id) {
@@ -646,7 +668,7 @@ export default {
 						duration: 1500
 					})
 					
-					// 2. 自动添加到入库列表 ⭐⭐⭐
+					// 3. 自动添加到入库列表 ⭐⭐⭐
 					const newDrugItem = {
 						drugId: result._id,
 						drugName: this.newDrug.name,
@@ -669,6 +691,17 @@ export default {
 					// 重置表单
 					this.cancelCreate()
 					this.searchKeyword = ''
+					
+					// 如果是扫码创建的，提示下次可直接识别
+					if (this.newDrug.barcode) {
+						setTimeout(() => {
+							uni.showToast({
+								title: '下次扫码可直接识别',
+								icon: 'none',
+								duration: 2000
+							})
+						}, 1500)
+					}
 				}
 				
 			} catch (error) {
@@ -745,34 +778,7 @@ export default {
 		
 		// ========== 扫码相关 ==========
 		async scanBarcode() {
-			
 			try {
-				// 检查API剩余次数
-				const apiStats = await this.getAPIStats()
-				
-				if (apiStats.remaining === 0) {
-					uni.showModal({
-						title: '🚫 API次数已用完',
-						content: `今日API调用次数已达上限 (${apiStats.todayUsed}/${apiStats.limit})\n\n建议：\n1. 手动搜索药材档案\n2. 新建药材档案\n3. 等待明天重置`,
-						showCancel: false
-					})
-					return
-				}
-				
-				// 警告提示
-				if (apiStats.critical) {
-					const res = await uni.showModal({
-						title: '⚠️ API次数不足',
-						content: `今日API次数仅剩 ${apiStats.remaining} 次\n\n是否继续扫码？`,
-						confirmText: '继续',
-						cancelText: '取消'
-					})
-					
-					if (!res.confirm) {
-						return
-					}
-				}
-				
 				// 调用微信官方扫码API
 				const scanRes = await uni.scanCode({
 					// 支持的码类型
@@ -828,31 +834,6 @@ export default {
 			}
 		},
 		
-		async getAPIStats() {
-			try {
-				const result = await wx.cloud.callFunction({
-					name: 'drugBarcodeQuery',
-					data: {
-						action: 'getUsageStats'
-					}
-				})
-				
-				if (result.result && result.result.success) {
-					return result.result.data
-				}
-			} catch (err) {
-				console.error('获取API统计失败:', err)
-			}
-			
-			return {
-				todayUsed: 0,
-				remaining: 99,
-				limit: 99,
-				warning: false,
-				critical: false
-			}
-		},
-		
 		async queryDrugByBarcode(barcode) {
 			console.log('========================================')
 			console.log('🔍 开始查询条形码:', barcode)
@@ -898,7 +879,7 @@ export default {
 					
 					// 添加到列表最前面(新的在上)
 					this.drugList.unshift({
-						drugId: drugInfo.drugId || 'temp_' + Date.now(),
+						drugId: drugInfo._id || 'temp_' + Date.now(),
 						drugName: drugInfo.name,
 						specification: drugInfo.specification,
 						unit: drugInfo.unit || '盒',
@@ -910,14 +891,14 @@ export default {
 						quantity: '',
 						price: '',
 						amount: 0,
-						hasError: false,
-						isTemp: !drugInfo.drugId // 标记是否为临时药材
+						hasError: false
 					})
 					
 					// 显示数据来源
 					const sourceText = {
 						'local': '本地档案',
-						'api': 'API查询'
+						'cache': '缓存数据',
+						'mapping': '映射表'
 					}[res.result.source] || '数据库'
 					
 					uni.showToast({
@@ -926,58 +907,29 @@ export default {
 						duration: 2000
 					})
 					
-					// 显示API使用情况
-					if (res.result.source === 'api' && res.result.apiStats) {
-						const stats = res.result.apiStats
-						if (stats.warning) {
-							setTimeout(() => {
-								uni.showToast({
-									title: `⚠️ 今日剩余${stats.remaining}次API`,
-									icon: 'none',
-									duration: 2000
-								})
-							}, 2000)
-						}
-					}
-					
 					// 振动反馈
 					wx.vibrateShort({ type: 'light' })
 					
-				} else if (res.result && res.result.reason === 'api_limit_exceeded') {
-					// API次数不足
+				} else {
+					// 未找到药材 - 提示用户手动创建
+					console.log('❌ 未找到药材，云函数返回:', res.result)
+					uni.hideLoading()
+					
 					uni.showModal({
-						title: '🚫 API次数不足',
-						content: res.result.message + '\n\n' + res.result.suggestion,
+						title: '首次识别此条形码',
+						content: '系统中暂无此药材信息\n\n请选择操作方式：',
 						confirmText: '手动新建',
 						cancelText: '取消',
 						success: (modalRes) => {
 							if (modalRes.confirm) {
+								// 激活创建表单
 								this.newDrug.barcode = barcode
-								this.showCreateDrug = true
+								this.showCreateForm = true
+								this.createFormSource = 'manual'
+								this.searchKeyword = ''
 							}
 						}
 					})
-					
-				} else {
-				// 未找到药材 - 简化录入
-				console.log('❌ 未找到药材，云函数返回:', res.result)
-				uni.hideLoading()
-				
-				// 选择关联方式（只有2种）
-				uni.showActionSheet({
-					title: '首次识别此条形码',
-					itemList: ['从已有药材中选择', '手动新建药材'],
-					success: async (actionRes) => {
-						if (actionRes.tapIndex === 0) {
-							// 从已有药材中选择
-							await this.selectExistingDrug(barcode)
-						} else if (actionRes.tapIndex === 1) {
-							// 手动新建药材
-							this.newDrug.barcode = barcode
-							this.showCreateDrug = true
-						}
-					}
-				})
 				}
 				
 			} catch (err) {
@@ -995,213 +947,6 @@ export default {
 								this.showCreateDrug = true
 							}
 						}
-				})
-			}
-		},
-		
-		// 创建映射并查询（首次录入）
-		async createMappingAndQuery(barcode, drugName) {
-			uni.showLoading({ title: '查询中...', mask: true })
-			
-			try {
-				console.log('🆕 创建映射并查询NMPA...')
-				console.log('条形码:', barcode)
-				console.log('药材名称:', drugName)
-				
-				const res = await this.$api.callFunction({
-					name: 'drugBarcodeQuery',
-					data: {
-						action: 'createMappingAndQuery',
-						barcode: barcode,
-						drugName: drugName,
-						specification: '', // 可选，用户稍后填写
-						unit: '盒'
-					}
-				})
-				
-				uni.hideLoading()
-				
-				console.log('云函数返回:', res.result)
-				
-				if (res.result.success && res.result.data) {
-					const drug = res.result.data
-					
-					// 添加到入库列表
-					this.drugList.push({
-						drugId: null,
-						barcode: drug.barcode,
-						name: drug.name,
-						specification: drug.specification || '',
-						unit: drug.unit || '盒',
-						manufacturer: drug.manufacturer || '',
-						批号: '',
-						有效期: '',
-						数量: 1,
-						单价: 0,
-						apiSource: drug.apiSource
-					})
-					
-					uni.showToast({
-						title: '✅ 录入成功',
-						icon: 'success',
-						duration: 2000
-					})
-					
-					// 显示提示信息
-					setTimeout(() => {
-						uni.showToast({
-							title: '下次扫码可直接识别',
-							icon: 'none',
-							duration: 3000
-						})
-					}, 2100)
-					
-				} else {
-					uni.showModal({
-						title: '提示',
-						content: res.result.message || '查询失败，请稍后重试',
-						showCancel: false
-					})
-				}
-				
-			} catch (err) {
-				uni.hideLoading()
-				console.error('创建映射失败:', err)
-				
-				uni.showModal({
-					title: '录入失败',
-					content: '自动录入失败，请手动新建药材档案',
-					confirmText: '新建档案',
-					cancelText: '取消',
-					success: (modalRes) => {
-						if (modalRes.confirm) {
-							this.newDrug.name = drugName
-							this.newDrug.barcode = barcode
-							this.showCreateDrug = true
-						}
-					}
-				})
-			}
-		},
-		
-		// 从已有药材中选择
-		async selectExistingDrug(barcode) {
-			uni.showLoading({ title: '加载药材列表...', mask: true })
-			
-			try {
-				// 查询所有药材
-				const res = await this.$api.callFunction({
-					name: 'drugSearch',
-					data: {
-						action: 'getAllDrugs'
-					}
-				})
-				
-				uni.hideLoading()
-				
-				if (res.result.success && res.result.data && res.result.data.length > 0) {
-					// 显示药材选择器
-					const drugNames = res.result.data.map(d => d.name)
-					
-					uni.showActionSheet({
-						itemList: drugNames,
-						success: async (pickRes) => {
-							const selectedDrug = res.result.data[pickRes.tapIndex]
-							console.log('选择的药材:', selectedDrug)
-							
-							// 关联条形码到选中的药材
-							await this.linkBarcodeToDrug(barcode, selectedDrug)
-						}
-					})
-				} else {
-					uni.showToast({
-						title: '暂无药材档案',
-						icon: 'none'
-					})
-					// 提示手动新建
-					setTimeout(() => {
-						this.newDrug.barcode = barcode
-						this.showCreateDrug = true
-					}, 1000)
-				}
-				
-			} catch (err) {
-				uni.hideLoading()
-				console.error('加载药材失败:', err)
-				uni.showToast({
-					title: '加载失败',
-					icon: 'none'
-				})
-			}
-		},
-		
-		// 关联条形码到现有药材
-		async linkBarcodeToDrug(barcode, drug) {
-			uni.showLoading({ title: '关联中...', mask: true })
-			
-			try {
-				// 更新药材档案，添加条形码
-				await this.$api.callFunction({
-					name: 'drugSearch',
-					data: {
-						action: 'updateDrugBarcode',
-						drugId: drug._id,
-						barcode: barcode
-					}
-				})
-				
-				// 直接创建条形码映射到数据库（不需要云函数）
-				const db = wx.cloud.database()
-				await db.collection('barcode_mapping').add({
-					data: {
-						barcode: barcode,
-						drugName: drug.name,
-						specification: drug.specification || '',
-						unit: drug.unit || '盒',
-						manufacturer: drug.manufacturer || '',
-						approvalNumber: drug.approvalNumber || '',
-						isPrescription: drug.isPrescription || false,
-						prescriptionType: drug.prescriptionType || '非处方药',
-						source: 'manual',
-						createTime: db.serverDate()
-					}
-				})
-				
-				uni.hideLoading()
-				
-				// 添加到入库列表
-				this.drugList.push({
-					drugId: drug._id,
-					barcode: barcode,
-					name: drug.name,
-					specification: drug.specification || '',
-					unit: drug.unit || '盒',
-					manufacturer: drug.manufacturer || '',
-					批号: '',
-					有效期: '',
-					数量: 1,
-					单价: drug.price || 0
-				})
-				
-				uni.showToast({
-					title: '✅ 关联成功',
-					icon: 'success'
-				})
-				
-				setTimeout(() => {
-					uni.showToast({
-						title: '下次扫码可直接识别',
-						icon: 'none',
-						duration: 2000
-					})
-				}, 1500)
-				
-			} catch (err) {
-				uni.hideLoading()
-				console.error('关联失败:', err)
-				uni.showToast({
-					title: '关联失败',
-					icon: 'none'
 				})
 			}
 		},

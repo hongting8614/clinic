@@ -95,6 +95,11 @@
 .stock-card .card-item {
 	background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 40%, #cffafe 100%);
 }
+
+/* 档案模块按钮：黄绿系 */
+.archive-card .card-item {
+	background: linear-gradient(135deg, #fefce8 0%, #fef3c7 40%, #d9f99d 100%);
+}
 .card-item + .card-item {
 	border-top: none;
 }

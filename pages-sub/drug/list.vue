@@ -15,26 +15,56 @@
 		
 		<!-- 筛选条件 -->
 		<view class="filter-section">
-			<u-button 
-				size="small" 
-				:type="filterCategory === 'all' ? 'primary' : 'default'"
-				@click="setFilter('all')"
-			>全部</u-button>
-			<u-button 
-				size="small" 
-				:type="filterCategory === '抗生素' ? 'primary' : 'default'"
-				@click="setFilter('抗生素')"
-			>抗生素</u-button>
-			<u-button 
-				size="small" 
-				:type="filterCategory === '心血管' ? 'primary' : 'default'"
-				@click="setFilter('心血管')"
-			>心血管</u-button>
-			<u-button 
-				size="small" 
-				:type="filterCategory === '消化系统' ? 'primary' : 'default'"
-				@click="setFilter('消化系统')"
-			>消化系统</u-button>
+			<view class="filter-row">
+				<text class="filter-label">分类：</text>
+				<scroll-view class="filter-scroll" scroll-x>
+					<view class="filter-buttons">
+						<view 
+							class="filter-btn"
+							:class="{ 'active': filterCategory === 'all' }"
+							@click="setFilter('all')"
+						>全部</view>
+						<view 
+							class="filter-btn"
+							:class="{ 'active': filterCategory === '抗生素' }"
+							@click="setFilter('抗生素')"
+						>抗生素</view>
+						<view 
+							class="filter-btn"
+							:class="{ 'active': filterCategory === '心血管' }"
+							@click="setFilter('心血管')"
+						>心血管</view>
+						<view 
+							class="filter-btn"
+							:class="{ 'active': filterCategory === '消化系统' }"
+							@click="setFilter('消化系统')"
+						>消化系统</view>
+					</view>
+				</scroll-view>
+			</view>
+			
+			<view class="filter-row">
+				<text class="filter-label">完整度：</text>
+				<scroll-view class="filter-scroll" scroll-x>
+					<view class="filter-buttons">
+						<view 
+							class="filter-btn"
+							:class="{ 'active': filterCompleteness === 'all' }"
+							@click="setCompletenessFilter('all')"
+						>全部</view>
+						<view 
+							class="filter-btn incomplete"
+							:class="{ 'active': filterCompleteness === 'incomplete' }"
+							@click="setCompletenessFilter('incomplete')"
+						>待完善</view>
+						<view 
+							class="filter-btn complete"
+							:class="{ 'active': filterCompleteness === 'complete' }"
+							@click="setCompletenessFilter('complete')"
+						>已完善</view>
+					</view>
+				</scroll-view>
+			</view>
 		</view>
 		
 		<!-- 药材列表 -->
@@ -46,33 +76,45 @@
 				@click="handleItemClick(item)"
 			>
 				<view class="drug-header">
-					<view class="drug-name">
-						{{ item.name }}
-						<text v-if="item.isHighValue" class="drug-tag tag-high">高值</text>
-						<text v-if="item.isEmergency" class="drug-tag tag-emergency">急救</text>
+					<view class="drug-name-row">
+						<view class="drug-name">
+							{{ item.name }}
+							<text v-if="item.isHighValue" class="drug-tag tag-high">高值</text>
+							<text v-if="item.isEmergency" class="drug-tag tag-emergency">急救</text>
+						</view>
+						<!-- 完整度徽章 -->
+						<view 
+							v-if="item.completeness"
+							class="completeness-badge"
+							:class="{
+								'complete': item.completeness.percentage === 100,
+								'good': item.completeness.percentage >= 75 && item.completeness.percentage < 100,
+								'medium': item.completeness.percentage >= 50 && item.completeness.percentage < 75,
+								'low': item.completeness.percentage < 50
+							}"
+						>
+							<text>{{ item.completeness.percentage }}%</text>
+						</view>
 					</view>
 					<view class="drug-actions">
-						<u-button 
-							size="mini" 
-							type="primary" 
-							text="编辑"
-							@click.stop="editDrug(item)"
-						></u-button>
+						<view class="action-btn edit-btn" @click.stop="editDrug(item)">
+							<text>编辑</text>
+						</view>
 					</view>
 				</view>
 				
 				<view class="drug-info">
 					<view class="info-row">
 						<text class="info-label">规格：</text>
-						<text class="info-value">{{ item.spec }}</text>
+						<text class="info-value">{{ item.spec || item.specification || '-' }}</text>
 					</view>
 					<view class="info-row">
 						<text class="info-label">单位：</text>
-						<text class="info-value">{{ item.unit }}</text>
+						<text class="info-value">{{ item.unit || item.packUnit || '-' }}</text>
 					</view>
 					<view class="info-row">
 						<text class="info-label">厂家：</text>
-						<text class="info-value">{{ item.manufacturer }}</text>
+						<text class="info-value">{{ item.manufacturer || '-' }}</text>
 					</view>
 					<view class="info-row">
 						<text class="info-label">分类：</text>
@@ -80,7 +122,7 @@
 					</view>
 					<view class="info-row">
 						<text class="info-label">条形码：</text>
-						<text class="info-value">{{ item.barcode }}</text>
+						<text class="info-value">{{ item.barcode || '-' }}</text>
 					</view>
 				</view>
 				
@@ -132,6 +174,7 @@ export default {
 		return {
 			keyword: '',
 			filterCategory: 'all',
+			filterCompleteness: 'all', // all: 全部, incomplete: 不完整, complete: 完整
 			drugList: [],
 			page: 1,
 			pageSize: 20,
@@ -153,6 +196,30 @@ export default {
 	},
 	
 	methods: {
+		// ⭐ 计算档案完整度
+		calculateCompleteness(drug) {
+			const fields = [
+				drug.name,
+				drug.spec || drug.specification,
+				drug.unit || drug.packUnit,
+				drug.manufacturer,
+				drug.barcode,
+				drug.approvalNumber,
+				drug.category,
+				drug.image
+			]
+			
+			const filledCount = fields.filter(field => field && String(field).trim()).length
+			const percentage = Math.round((filledCount / fields.length) * 100)
+			
+			return {
+				percentage,
+				filledCount,
+				totalCount: fields.length,
+				isComplete: percentage === 100
+			}
+		},
+		
 		async refreshData() {
 			this.page = 1
 			this.drugList = []
@@ -167,60 +234,58 @@ export default {
 			this.loading = true
 			
 			try {
-				// TODO: 从云数据库加载药材列表
-				// 模拟数据
-				const mockData = [
-					{
-						_id: 'drug_001',
-						name: '阿莫西林胶囊',
-						pinyin: 'AMXLJN',
-						spec: '0.25g*24粒',
-						unit: '盒',
-						manufacturer: 'XX制药有限公司',
-						category: '抗生素',
-						barcode: '6901234567890',
-						isHighValue: false,
-						isEmergency: false,
-						safeStock: 100,
-						minStock: 50
-					},
-					{
-						_id: 'drug_002',
-						name: '头孢克肟颗粒',
-						pinyin: 'TBKMPJ',
-						spec: '0.5g*12袋',
-						unit: '盒',
-						manufacturer: 'YY制药',
-						category: '抗生素',
-						barcode: '6901234567891',
-						isHighValue: false,
-						isEmergency: false,
-						safeStock: 100,
-						minStock: 50
-					},
-					{
-						_id: 'drug_003',
-						name: '肾上腺素注射液',
-						pinyin: 'SSXSZSY',
-						spec: '1ml:1mg',
-						unit: '支',
-						manufacturer: 'ZZ制药',
-						category: '急救药材',
-						barcode: '6901234567892',
-						isHighValue: true,
-						isEmergency: true,
-						safeStock: 30,
-						minStock: 10
-					}
-				]
+				// 从云数据库加载药材列表
+				const db = wx.cloud.database()
+				const _ = db.command
 				
-				if (this.page === 1) {
-					this.drugList = mockData
-				} else {
-					this.drugList = [...this.drugList, ...mockData]
+				// 构建查询条件
+				let query = {}
+				
+				// 关键词搜索
+				if (this.keyword) {
+					query.name = db.RegExp({
+						regexp: this.keyword,
+						options: 'i'
+					})
 				}
 				
-				this.hasMore = mockData.length >= this.pageSize
+				// 分类筛选
+				if (this.filterCategory !== 'all') {
+					query.category = this.filterCategory
+				}
+				
+				// 查询数据
+				const result = await db.collection('drugs')
+					.where(query)
+					.skip((this.page - 1) * this.pageSize)
+					.limit(this.pageSize)
+					.orderBy('createTime', 'desc')
+					.get()
+				
+				// 计算每个药品的完整度
+				const drugsWithCompleteness = result.data.map(drug => {
+					const completeness = this.calculateCompleteness(drug)
+					return {
+						...drug,
+						completeness
+					}
+				})
+				
+				// 完整度筛选
+				let filteredDrugs = drugsWithCompleteness
+				if (this.filterCompleteness === 'incomplete') {
+					filteredDrugs = drugsWithCompleteness.filter(d => d.completeness.percentage < 100)
+				} else if (this.filterCompleteness === 'complete') {
+					filteredDrugs = drugsWithCompleteness.filter(d => d.completeness.percentage === 100)
+				}
+				
+				if (this.page === 1) {
+					this.drugList = filteredDrugs
+				} else {
+					this.drugList = [...this.drugList, ...filteredDrugs]
+				}
+				
+				this.hasMore = result.data.length >= this.pageSize
 				
 			} catch (err) {
 				console.error('加载药材列表失败:', err)
@@ -252,6 +317,13 @@ export default {
 		
 		setFilter(category) {
 			this.filterCategory = category
+			this.page = 1
+			this.drugList = []
+			this.loadDrugList()
+		},
+		
+		setCompletenessFilter(type) {
+			this.filterCompleteness = type
 			this.page = 1
 			this.drugList = []
 			this.loadDrugList()
@@ -302,7 +374,7 @@ export default {
 		
 		editDrug(item) {
 			uni.navigateTo({
-				url: `/pages-sub/drug/add?id=${item._id}`
+				url: `/pages-sub/drug/detail?id=${item._id}`
 			})
 		},
 		
@@ -336,13 +408,67 @@ export default {
 .filter-section {
 	max-width: 702rpx;
 	margin: 0 auto 8rpx;
-	padding: 12rpx 16rpx 10rpx;
+	padding: 20rpx 20rpx 16rpx;
 	background-color: #FFFFF0;
 	border-radius: 22rpx;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.filter-row {
+	display: flex;
+	align-items: center;
+	gap: 12rpx;
+}
+
+.filter-label {
+	font-size: 26rpx;
+	color: #666;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+.filter-scroll {
+	flex: 1;
+	white-space: nowrap;
+}
+
+.filter-buttons {
+	display: inline-flex;
 	gap: 10rpx;
+}
+
+.filter-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10rpx 24rpx;
+	background: #f7f8fa;
+	border-radius: 20rpx;
+	font-size: 24rpx;
+	color: #646566;
+	transition: all 0.3s;
+	white-space: nowrap;
+	
+	&:active {
+		transform: scale(0.95);
+	}
+	
+	&.active {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: white;
+		font-weight: 500;
+	}
+	
+	&.incomplete.active {
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+	}
+	
+	&.complete.active {
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	}
 }
 
 .drug-list {
@@ -363,10 +489,18 @@ export default {
 .drug-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: flex-start;
 	margin-bottom: 20rpx;
 	padding-bottom: 20rpx;
 	border-bottom: 1px solid #F0F0F0;
+	gap: 12rpx;
+}
+
+.drug-name-row {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 12rpx;
 }
 
 .drug-name {
@@ -376,7 +510,36 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 10rpx;
-	flex: 1;
+	flex-wrap: wrap;
+}
+
+.completeness-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 6rpx 16rpx;
+	border-radius: 16rpx;
+	font-size: 22rpx;
+	font-weight: 600;
+	
+	&.complete {
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+		color: white;
+	}
+	
+	&.good {
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		color: white;
+	}
+	
+	&.medium {
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		color: white;
+	}
+	
+	&.low {
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+		color: white;
+	}
 }
 
 .drug-tag {
@@ -399,6 +562,24 @@ export default {
 .drug-actions {
 	display: flex;
 	gap: 10rpx;
+	flex-shrink: 0;
+}
+
+.action-btn {
+	padding: 10rpx 20rpx;
+	border-radius: 16rpx;
+	font-size: 24rpx;
+	transition: all 0.3s;
+	
+	&:active {
+		transform: scale(0.95);
+	}
+	
+	&.edit-btn {
+		background: linear-gradient(135deg, #00c9ff 0%, #00a0ff 100%);
+		color: white;
+		font-weight: 500;
+	}
 }
 
 .drug-info {

@@ -69,9 +69,33 @@
 					@tap="selectDrug(drug)"
 				>
 					<view class="drug-info">
-						<text class="drug-name">{{ drug.name }}</text>
+						<view class="drug-name-row">
+							<text class="drug-name">{{ drug.name }}</text>
+							<!-- 完整度标签 -->
+							<view 
+								v-if="drug.completeness" 
+								class="completeness-badge"
+								:class="{
+									'complete': drug.completeness.percentage === 100,
+									'good': drug.completeness.percentage >= 75 && drug.completeness.percentage < 100,
+									'medium': drug.completeness.percentage >= 50 && drug.completeness.percentage < 75,
+									'low': drug.completeness.percentage < 50
+								}"
+							>
+								<text class="badge-text">{{ drug.completeness.percentage }}%</text>
+							</view>
+						</view>
 						<text class="drug-spec">{{ drug.spec }}</text>
+						<!-- 缺失字段提示 -->
+						<text 
+							v-if="drug.completeness && drug.completeness.missingFields.length > 0" 
+							class="missing-fields"
+						>
+							缺少：{{ drug.completeness.missingFields.join('、') }}
+						</text>
 					</view>
+					
+					<!-- 选择图标 -->
 					<text class="select-icon">›</text>
 				</view>
 			</view>
@@ -134,19 +158,70 @@
 					<!-- 单位 -->
 					<view class="inline-form-item">
 						<text class="inline-label">单位 <text class="required">*</text></text>
-						<picker 
-							mode="selector"
-							:range="unitOptions"
-							:value="unitIndex"
-							@change="onUnitChange"
-						>
-							<view class="inline-picker">
-								<text :class="['picker-text', !newDrug.unit && 'picker-placeholder']">
-									{{ newDrug.unit || '请选择单位' }}
-								</text>
-								<text class="picker-arrow">▼</text>
+						
+						<!-- 快速选择常用单位 -->
+						<view class="quick-units">
+							<view 
+								v-for="(unit, idx) in ['盒', '瓶', '袋', '支', '板']" 
+								:key="idx"
+								class="quick-unit-btn"
+								:class="{ 'active': newDrug.unit === unit }"
+								@tap="selectQuickUnit(unit)"
+							>
+								<text>{{ unit }}</text>
 							</view>
-						</picker>
+							<picker 
+								mode="selector"
+								:range="unitOptions"
+								:value="unitIndex"
+								@change="onUnitChange"
+							>
+								<view class="quick-unit-btn more-btn">
+									<text>更多 ▼</text>
+								</view>
+							</picker>
+						</view>
+					</view>
+					
+					<!-- 生产厂家（可选，带智能提示） -->
+					<view class="inline-form-item">
+						<text class="inline-label">生产厂家</text>
+						<view class="input-with-suggestions">
+							<input 
+								class="inline-input" 
+								v-model="newDrug.manufacturer" 
+								placeholder="选填，输入2个字可智能提示"
+								placeholder-class="placeholder"
+								@input="onManufacturerInput"
+								@focus="onManufacturerFocus"
+								@blur="onManufacturerBlur"
+							/>
+							<!-- 厂家建议列表 -->
+							<view 
+								v-if="showManufacturerSuggestions && manufacturerSuggestions.length > 0"
+								class="suggestions-list"
+							>
+								<view 
+									v-for="(mfr, idx) in manufacturerSuggestions"
+									:key="idx"
+									class="suggestion-item"
+									@tap="selectManufacturer(mfr)"
+								>
+									<text>{{ mfr }}</text>
+								</view>
+							</view>
+						</view>
+					</view>
+					
+					<!-- 批准文号（可选） -->
+					<view class="inline-form-item">
+						<text class="inline-label">批准文号</text>
+						<input 
+							class="inline-input" 
+							v-model="newDrug.approvalNumber" 
+							placeholder="选填"
+							placeholder-class="placeholder"
+						/>
 					</view>
 					
 					<!-- 操作按钮 -->
@@ -375,8 +450,12 @@ export default {
 				manufacturer: '',
 				approvalNumber: ''
 			},
-			unitOptions: ['盒', '瓶', '袋', '支', '板', '片', '粒', '丸'],
+			unitOptions: ['盒', '瓶', '袋', '支', '板', '片', '粒', '丸', 'g', 'kg', 'ml', 'L'],
 			unitIndex: 0,
+			
+			// 厂家智能提示
+			manufacturerSuggestions: [],
+			showManufacturerSuggestions: false,
 			
 			// 日期范围
 			minDate: '2020-01-01',
@@ -427,6 +506,19 @@ export default {
 			if (this.searchKeyword) {
 				this.showSearchResult = true
 			}
+			
+			// 延迟滚动，等待键盘弹出
+			setTimeout(() => {
+				// 滚动到搜索框位置，确保搜索结果可见
+				uni.createSelectorQuery().select('.search-card').boundingClientRect((rect) => {
+					if (rect) {
+						uni.pageScrollTo({
+							scrollTop: rect.top - 100,
+							duration: 300
+						})
+					}
+				}).exec()
+			}, 300)
 		},
 		
 		onSearchBlur() {
@@ -458,8 +550,58 @@ export default {
 		
 		onSearchConfirm() {
 			if (this.searchKeyword.trim()) {
+				// 收起键盘
+				uni.hideKeyboard()
 				this.searchDrugs()
 			}
+		},
+		
+		// ⭐ 计算档案完整度
+		calculateCompleteness(drug) {
+			const fields = [
+				drug.name,           // 名称
+				drug.specification,  // 规格
+				drug.unit,          // 单位
+				drug.manufacturer,  // 生产厂家
+				drug.barcode,       // 条形码
+				drug.approvalNumber,// 批准文号
+				drug.category,      // 分类
+				drug.image          // 图片
+			]
+			
+			const filledCount = fields.filter(field => field && field.trim()).length
+			const percentage = Math.round((filledCount / fields.length) * 100)
+			
+			return {
+				percentage,
+				filledCount,
+				totalCount: fields.length,
+				isComplete: percentage === 100,
+				missingFields: this.getMissingFields(drug)
+			}
+		},
+		
+		// 获取缺失字段
+		getMissingFields(drug) {
+			const fieldMap = {
+				name: '名称',
+				specification: '规格',
+				unit: '单位',
+				manufacturer: '生产厂家',
+				barcode: '条形码',
+				approvalNumber: '批准文号',
+				category: '分类',
+				image: '图片'
+			}
+			
+			const missing = []
+			for (const [key, label] of Object.entries(fieldMap)) {
+				if (!drug[key] || !drug[key].trim()) {
+					missing.push(label)
+				}
+			}
+			
+			return missing
 		},
 		
 		// ⭐ 智能搜索：仅查询本地药材档案
@@ -471,6 +613,9 @@ export default {
 			// 显示搜索中状态
 			this.isSearchingAPI = true
 			this.showSearchResult = false
+			
+			// 收起键盘
+			uni.hideKeyboard()
 			
 			// 调用云函数查询本地药材档案
 			const result = await wx.cloud.callFunction({
@@ -484,18 +629,28 @@ export default {
 				// 找到本地药材档案
 				const drugs = result.result.data
 				
-				// 格式化为统一结构
-				this.searchResults = drugs.map(drug => ({
-					_id: drug._id || 'temp_' + Date.now(),
-					name: drug.name,
-					spec: drug.specification || '',
-					specification: drug.specification || '',
-					unit: drug.unit || '盒',
-					packUnit: drug.unit || '盒',
-					manufacturer: drug.manufacturer || '',
-					barcode: drug.barcode || '',
-					approvalNumber: drug.approvalNumber || ''
-				}))
+				// 格式化为统一结构，并计算完整度
+				this.searchResults = drugs.map(drug => {
+					const drugData = {
+						_id: drug._id || 'temp_' + Date.now(),
+						name: drug.name,
+						spec: drug.specification || '',
+						specification: drug.specification || '',
+						unit: drug.unit || '盒',
+						packUnit: drug.unit || '盒',
+						manufacturer: drug.manufacturer || '',
+						barcode: drug.barcode || '',
+						approvalNumber: drug.approvalNumber || '',
+						category: drug.category || '',
+						image: drug.image || ''
+					}
+					
+					// 计算完整度
+					const completeness = this.calculateCompleteness(drugData)
+					drugData.completeness = completeness
+					
+					return drugData
+				})
 				
 				// 显示搜索结果，隐藏创建表单
 					this.showSearchResult = true
@@ -572,18 +727,73 @@ export default {
 			// 验证必填项
 			if (!this.newDrug.name || !this.newDrug.spec || !this.newDrug.unit) {
 				uni.showToast({
-					title: '请填写完整信息',
-					icon: 'none'
+					title: '请填写：名称、规格、单位',
+					icon: 'none',
+					duration: 2000
 				})
 				return
 			}
 			
-			uni.showLoading({ title: '创建中...', mask: true })
+			uni.showLoading({ title: '检查中...', mask: true })
 			
 			try {
 				const db = wx.cloud.database()
 				
-				// 1. 创建药材档案
+				// ⭐ 1. 检查是否已存在相同药品（名称+规格）
+				const existCheck = await db.collection('drugs')
+					.where({
+						name: this.newDrug.name,
+						spec: this.newDrug.spec
+					})
+					.get()
+				
+				if (existCheck.data.length > 0) {
+					uni.hideLoading()
+					uni.showModal({
+						title: '药品已存在',
+						content: `系统中已存在"${this.newDrug.name}"（${this.newDrug.spec}）\n\n是否直接使用现有档案？`,
+						confirmText: '使用现有',
+						cancelText: '重新填写',
+						success: (res) => {
+							if (res.confirm) {
+								// 使用现有药品
+								const existingDrug = existCheck.data[0]
+								this.addDrugToList(existingDrug)
+								this.cancelCreate()
+								this.searchKeyword = ''
+								
+								uni.showToast({
+									title: '已使用现有档案',
+									icon: 'success',
+									duration: 1500
+								})
+							}
+						}
+					})
+					return
+				}
+				
+				// ⭐ 2. 检查条形码是否重复
+				if (this.newDrug.barcode) {
+					const barcodeCheck = await db.collection('drugs')
+						.where({ barcode: this.newDrug.barcode })
+						.get()
+					
+					if (barcodeCheck.data.length > 0) {
+						uni.hideLoading()
+						uni.showModal({
+							title: '条形码已存在',
+							content: `该条形码已被"${barcodeCheck.data[0].name}"使用\n\n请检查条形码是否正确`,
+							showCancel: false,
+							confirmText: '重新填写'
+						})
+						return
+					}
+				}
+				
+				// 3. 创建药材档案
+				uni.showLoading({ title: '创建中...', mask: true })
+				
 				const result = await db.collection('drugs').add({
 					data: {
 						name: this.newDrug.name,
@@ -594,6 +804,12 @@ export default {
 						barcode: this.newDrug.barcode || '',
 						manufacturer: this.newDrug.manufacturer || '',
 						approvalNumber: this.newDrug.approvalNumber || '',
+						category: '',  // 分类可后续完善
+						image: '',  // 图片可后续上传
+						isHighValue: false,  // 默认非高值
+						isEmergency: false,  // 默认非急救
+						safeStock: 50,  // 默认安全库存
+						minStock: 20,  // 默认最低库存
 						createTime: new Date(),
 						createSource: this.createFormSource  // 记录来源：api 或 manual
 					}
@@ -674,6 +890,46 @@ export default {
 					icon: 'none'
 				})
 			}
+		},
+		
+		// ⭐ 添加药品到列表（统一方法）
+		addDrugToList(drug) {
+			// 检查是否已添加
+			const exists = this.drugList.some(item => item.drugId === drug._id)
+			if (exists) {
+				uni.showToast({
+					title: '该药材已添加',
+					icon: 'none'
+				})
+				return
+			}
+			
+			// 添加到列表最前面
+			this.drugList.unshift({
+				drugId: drug._id,
+				drugName: drug.name,
+				specification: drug.spec || drug.specification,
+				unit: drug.packUnit || drug.unit || '盒',
+				manufacturer: drug.manufacturer || '',
+				batch: '',
+				productionDate: '',
+				expireDate: '',
+				daysToExpiry: null,
+				quantity: '',
+				price: '',
+				amount: 0,
+				hasError: false
+			})
+			
+			// 用户反馈
+			uni.showToast({
+				title: '已添加到列表',
+				icon: 'success',
+				duration: 1500
+			})
+			
+			// 振动反馈
+			wx.vibrateShort({ type: 'light' })
 		},
 		
 		selectDrug(drug) {
@@ -770,9 +1026,15 @@ export default {
 					return
 				}
 				
-				// 清洗条形码：去除空格、特殊字符
-				const cleanBarcode = scanRes.result.trim().replace(/\s/g, '')
+				// 清洗条形码：去除空格、特殊字符、换行符
+				let cleanBarcode = scanRes.result
+					.trim()                    // 去除首尾空格
+					.replace(/\s/g, '')        // 去除所有空格
+					.replace(/[\r\n]/g, '')    // 去除换行符
+				
+				console.log('📷 原始条形码:', scanRes.result)
 				console.log('📷 清洗后条形码:', cleanBarcode)
+				console.log('📷 条形码长度:', cleanBarcode.length)
 				
 				// 验证条形码格式
 				if (!cleanBarcode || cleanBarcode.length < 8) {
@@ -875,7 +1137,6 @@ export default {
 				} else {
 					// 未找到药材 - 提示用户手动创建
 					console.log('❌ 未找到药材，云函数返回:', res.result)
-					uni.hideLoading()
 					
 					uni.showModal({
 						title: '首次识别此条形码',
@@ -896,19 +1157,42 @@ export default {
 				
 			} catch (err) {
 				uni.hideLoading()
-				console.error('查询失败:', err)
+				console.error('❌ 查询失败详情:', err)
+				console.error('错误类型:', err.errCode)
+				console.error('错误信息:', err.errMsg)
 				
-					uni.showModal({
-					title: '查询失败',
-					content: '条形码查询失败，是否手动新建药材？',
-						confirmText: '新建',
-						cancelText: '取消',
-						success: (modalRes) => {
-							if (modalRes.confirm) {
-								this.newDrug.barcode = barcode
-								this.showCreateDrug = true
-							}
+				// 详细的错误提示
+				let errorTitle = '查询失败'
+				let errorContent = '条形码查询失败'
+				
+				if (err.errMsg) {
+					if (err.errMsg.includes('cloud function not found')) {
+						errorTitle = '云函数未部署'
+						errorContent = '请先部署 drugBarcodeQuery 云函数\n\n操作步骤：\n1. 右键点击云函数文件夹\n2. 选择"上传并部署"\n3. 等待部署完成'
+					} else if (err.errMsg.includes('timeout')) {
+						errorTitle = '查询超时'
+						errorContent = '网络连接超时，请检查网络后重试'
+					} else if (err.errMsg.includes('permission')) {
+						errorTitle = '权限不足'
+						errorContent = '数据库权限不足，请联系管理员'
+					} else {
+						errorContent = `错误信息：${err.errMsg}\n\n是否手动新建药材？`
+					}
+				}
+				
+				uni.showModal({
+					title: errorTitle,
+					content: errorContent,
+					confirmText: '手动新建',
+					cancelText: '取消',
+					success: (modalRes) => {
+						if (modalRes.confirm) {
+							this.newDrug.barcode = barcode
+							this.showCreateForm = true
+							this.createFormSource = 'manual'
+							this.searchKeyword = ''
 						}
+					}
 				})
 			}
 		},
@@ -917,6 +1201,75 @@ export default {
 		onUnitChange(e) {
 			this.unitIndex = e.detail.value
 			this.newDrug.unit = this.unitOptions[e.detail.value]
+		},
+		
+		// ⭐ 快速选择常用单位
+		selectQuickUnit(unit) {
+			this.newDrug.unit = unit
+			const index = this.unitOptions.indexOf(unit)
+			if (index !== -1) {
+				this.unitIndex = index
+			}
+		},
+		
+		// ⭐ 厂家输入时智能提示
+		async onManufacturerInput(e) {
+			const keyword = e.detail.value.trim()
+			
+			if (!keyword || keyword.length < 2) {
+				this.manufacturerSuggestions = []
+				this.showManufacturerSuggestions = false
+				return
+			}
+			
+			try {
+				// 从现有药品中查询厂家
+				const db = wx.cloud.database()
+				const result = await db.collection('drugs')
+					.where({
+						manufacturer: db.RegExp({
+							regexp: keyword,
+							options: 'i'
+						})
+					})
+					.field({ manufacturer: true })
+					.limit(20)
+					.get()
+				
+				if (result.data.length > 0) {
+					// 去重
+					const manufacturers = [...new Set(result.data.map(item => item.manufacturer).filter(m => m))]
+					this.manufacturerSuggestions = manufacturers.slice(0, 5)
+					this.showManufacturerSuggestions = true
+				} else {
+					this.manufacturerSuggestions = []
+					this.showManufacturerSuggestions = false
+				}
+			} catch (err) {
+				console.error('查询厂家失败:', err)
+			}
+		},
+		
+		// ⭐ 厂家输入框获得焦点
+		onManufacturerFocus() {
+			if (this.manufacturerSuggestions.length > 0) {
+				this.showManufacturerSuggestions = true
+			}
+		},
+		
+		// ⭐ 厂家输入框失去焦点
+		onManufacturerBlur() {
+			// 延迟隐藏，以便点击建议项
+			setTimeout(() => {
+				this.showManufacturerSuggestions = false
+			}, 200)
+		},
+		
+		// ⭐ 选择厂家建议
+		selectManufacturer(manufacturer) {
+			this.newDrug.manufacturer = manufacturer
+			this.showManufacturerSuggestions = false
+			this.manufacturerSuggestions = []
 		},
 		
 		// 语音输入提示（使用输入法语音功能）
@@ -1289,10 +1642,13 @@ export default {
 	transform: translateY(-10rpx);
 	
 	&.show {
-	max-height: 600rpx;
+		max-height: 600rpx;
 		opacity: 1;
-	overflow-y: auto;
+		overflow-y: auto;
 		transform: translateY(0);
+		
+		// 确保在键盘上方显示
+		margin-bottom: env(safe-area-inset-bottom);
 	}
 	
 	.result-item {
@@ -1312,18 +1668,65 @@ export default {
 		.drug-info {
 			flex: 1;
 			
+			.drug-name-row {
+				display: flex;
+				align-items: center;
+				gap: 12rpx;
+				margin-bottom: 8rpx;
+			}
+			
 			.drug-name {
-				display: block;
 				font-size: 28rpx;
 				color: #323233;
 				font-weight: 500;
-				margin-bottom: 8rpx;
+			}
+			
+			.completeness-badge {
+				display: inline-flex;
+				align-items: center;
+				padding: 4rpx 12rpx;
+				border-radius: 12rpx;
+				font-size: 20rpx;
+				font-weight: 600;
+				flex-shrink: 0;
+				
+				&.complete {
+					background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+					color: white;
+				}
+				
+				&.good {
+					background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+					color: white;
+				}
+				
+				&.medium {
+					background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+					color: white;
+				}
+				
+				&.low {
+					background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+					color: white;
+				}
+				
+				.badge-text {
+					font-size: 20rpx;
+				}
 			}
 			
 			.drug-spec {
 				display: block;
 				font-size: 24rpx;
 				color: #969799;
+				margin-bottom: 6rpx;
+			}
+			
+			.missing-fields {
+				display: block;
+				font-size: 22rpx;
+				color: #f59e0b;
+				margin-top: 6rpx;
 			}
 		}
 		
@@ -1520,6 +1923,73 @@ export default {
 				.picker-arrow {
 					font-size: 20rpx;
 					color: #969799;
+				}
+			}
+			
+			// ⭐ 快速单位选择
+			.quick-units {
+				display: flex;
+				gap: 12rpx;
+				flex-wrap: wrap;
+				
+				.quick-unit-btn {
+					padding: 16rpx 24rpx;
+					background: #f7f8fa;
+					border-radius: 12rpx;
+					font-size: 26rpx;
+					color: #646566;
+					border: 2rpx solid transparent;
+					transition: all 0.3s;
+					
+					&:active {
+						transform: scale(0.95);
+					}
+					
+					&.active {
+						background: linear-gradient(135deg, #07C160 0%, #05a550 100%);
+						color: white;
+						font-weight: 500;
+						box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.3);
+					}
+					
+					&.more-btn {
+						background: #e5e7eb;
+						color: #6b7280;
+					}
+				}
+			}
+			
+			// ⭐ 厂家智能提示
+			.input-with-suggestions {
+				position: relative;
+				
+				.suggestions-list {
+					position: absolute;
+					top: 100%;
+					left: 0;
+					right: 0;
+					background: white;
+					border-radius: 12rpx;
+					margin-top: 8rpx;
+					box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+					z-index: 100;
+					max-height: 300rpx;
+					overflow-y: auto;
+					
+					.suggestion-item {
+						padding: 20rpx 24rpx;
+						font-size: 26rpx;
+						color: #323233;
+						border-bottom: 1rpx solid #ebedf0;
+						
+						&:last-child {
+							border-bottom: none;
+						}
+						
+						&:active {
+							background: #f7f8fa;
+						}
+					}
 				}
 			}
 		}

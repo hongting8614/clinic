@@ -24,18 +24,6 @@ exports.main = async (event, context) => {
     // 支持多种操作
     if (action === 'queryByBarcode') {
       result = await queryByBarcode(barcode)
-    } else if (action === 'getUsageStats') {
-      // 返回模拟的统计数据（因为已经不使用外部API）
-      result = {
-        success: true,
-        data: {
-          todayUsed: 0,
-          remaining: 999,
-          limit: 999,
-          warning: false,
-          critical: false
-        }
-      }
     } else {
       result = { success: false, message: `未知操作: ${action}` }
     }
@@ -159,22 +147,52 @@ async function queryByBarcode(barcode) {
  */
 async function queryLocalDrugs(barcode) {
   try {
+    console.log('🔍 查询条形码:', barcode)
+    console.log('🔍 条形码长度:', barcode.length)
+    console.log('🔍 条形码类型:', typeof barcode)
+    
+    // ⭐ 兼容多种字段名：barcode（小写）和 barCode（驼峰）
+    const _ = db.command
     const res = await db.collection('drugs')
-      .where({ barcode: barcode })
+      .where(_.or([
+        { barcode: barcode },      // 小写字段
+        { barCode: barcode }       // 驼峰字段
+      ]))
       .get()
+    
+    console.log('🔍 查询结果数量:', res.data.length)
     
     if (res.data && res.data.length > 0) {
       const drug = res.data[0]
+      console.log('✅ 找到药品:', drug.name || drug.drugName)
+      
       return {
         name: drug.drugName || drug.name,
         specification: drug.specification || drug.spec,
         unit: drug.packUnit || drug.unit || '盒',
         manufacturer: drug.manufacturer || '',
-        barcode: drug.barcode,
+        barcode: drug.barcode || drug.barCode,  // ⭐ 兼容两种字段
         category: drug.category || '',
         _id: drug._id
       }
     }
+    
+    // 如果没找到，输出调试信息
+    console.log('❌ 未找到匹配的药品')
+    console.log('💡 尝试查询所有药品的条形码字段...')
+    
+    // 查询前5条药品，看看条形码字段是什么
+    const sampleDrugs = await db.collection('drugs')
+      .field({ name: true, barcode: true, barCode: true })
+      .limit(5)
+      .get()
+    
+    console.log('📋 数据库中的药品示例:')
+    sampleDrugs.data.forEach((drug, index) => {
+      console.log(`  ${index + 1}. ${drug.name}`)
+      console.log(`     - barcode: ${drug.barcode || '无'}`)
+      console.log(`     - barCode: ${drug.barCode || '无'}`)
+    })
     
     return null
   } catch (err) {

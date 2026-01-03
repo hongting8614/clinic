@@ -60,7 +60,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
+/* WEBPACK VAR INJECTION */(function(uni, wx) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
@@ -69,139 +69,18 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
 var _request = _interopRequireDefault(__webpack_require__(/*! @/utils/request.js */ 37));
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var _default = {
   data: function data() {
     return {
       keyword: '',
       filterCategory: 'all',
+      filterCompleteness: 'all',
+      // all: 全部, incomplete: 不完整, complete: 完整
       drugList: [],
       page: 1,
       pageSize: 20,
@@ -221,6 +100,20 @@ var _default = {
     this.refreshData();
   },
   methods: {
+    // ⭐ 计算档案完整度
+    calculateCompleteness: function calculateCompleteness(drug) {
+      var fields = [drug.name, drug.spec || drug.specification, drug.unit || drug.packUnit, drug.manufacturer, drug.barcode, drug.approvalNumber, drug.category, drug.image];
+      var filledCount = fields.filter(function (field) {
+        return field && String(field).trim();
+      }).length;
+      var percentage = Math.round(filledCount / fields.length * 100);
+      return {
+        percentage: percentage,
+        filledCount: filledCount,
+        totalCount: fields.length,
+        isComplete: percentage === 100
+      };
+    },
     refreshData: function refreshData() {
       var _this = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
@@ -246,7 +139,7 @@ var _default = {
     loadDrugList: function loadDrugList() {
       var _this2 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
-        var mockData;
+        var db, _, query, result, drugsWithCompleteness, filteredDrugs;
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -258,70 +151,71 @@ var _default = {
                 return _context2.abrupt("return");
               case 2:
                 _this2.loading = true;
-                try {
-                  // TODO: 从云数据库加载药材列表
-                  // 模拟数据
-                  mockData = [{
-                    _id: 'drug_001',
-                    name: '阿莫西林胶囊',
-                    pinyin: 'AMXLJN',
-                    spec: '0.25g*24粒',
-                    unit: '盒',
-                    manufacturer: 'XX制药有限公司',
-                    category: '抗生素',
-                    barcode: '6901234567890',
-                    isHighValue: false,
-                    isEmergency: false,
-                    safeStock: 100,
-                    minStock: 50
-                  }, {
-                    _id: 'drug_002',
-                    name: '头孢克肟颗粒',
-                    pinyin: 'TBKMPJ',
-                    spec: '0.5g*12袋',
-                    unit: '盒',
-                    manufacturer: 'YY制药',
-                    category: '抗生素',
-                    barcode: '6901234567891',
-                    isHighValue: false,
-                    isEmergency: false,
-                    safeStock: 100,
-                    minStock: 50
-                  }, {
-                    _id: 'drug_003',
-                    name: '肾上腺素注射液',
-                    pinyin: 'SSXSZSY',
-                    spec: '1ml:1mg',
-                    unit: '支',
-                    manufacturer: 'ZZ制药',
-                    category: '急救药材',
-                    barcode: '6901234567892',
-                    isHighValue: true,
-                    isEmergency: true,
-                    safeStock: 30,
-                    minStock: 10
-                  }];
-                  if (_this2.page === 1) {
-                    _this2.drugList = mockData;
-                  } else {
-                    _this2.drugList = [].concat((0, _toConsumableArray2.default)(_this2.drugList), mockData);
-                  }
-                  _this2.hasMore = mockData.length >= _this2.pageSize;
-                } catch (err) {
-                  console.error('加载药材列表失败:', err);
-                  uni.showToast({
-                    title: '加载失败',
-                    icon: 'none'
+                _context2.prev = 3;
+                // 从云数据库加载药材列表
+                db = wx.cloud.database();
+                _ = db.command; // 构建查询条件
+                query = {}; // 关键词搜索
+                if (_this2.keyword) {
+                  query.name = db.RegExp({
+                    regexp: _this2.keyword,
+                    options: 'i'
                   });
-                } finally {
-                  _this2.loading = false;
                 }
-              case 4:
+
+                // 分类筛选
+                if (_this2.filterCategory !== 'all') {
+                  query.category = _this2.filterCategory;
+                }
+
+                // 查询数据
+                _context2.next = 11;
+                return db.collection('drugs').where(query).skip((_this2.page - 1) * _this2.pageSize).limit(_this2.pageSize).orderBy('createTime', 'desc').get();
+              case 11:
+                result = _context2.sent;
+                // 计算每个药品的完整度
+                drugsWithCompleteness = result.data.map(function (drug) {
+                  var completeness = _this2.calculateCompleteness(drug);
+                  return _objectSpread(_objectSpread({}, drug), {}, {
+                    completeness: completeness
+                  });
+                }); // 完整度筛选
+                filteredDrugs = drugsWithCompleteness;
+                if (_this2.filterCompleteness === 'incomplete') {
+                  filteredDrugs = drugsWithCompleteness.filter(function (d) {
+                    return d.completeness.percentage < 100;
+                  });
+                } else if (_this2.filterCompleteness === 'complete') {
+                  filteredDrugs = drugsWithCompleteness.filter(function (d) {
+                    return d.completeness.percentage === 100;
+                  });
+                }
+                if (_this2.page === 1) {
+                  _this2.drugList = filteredDrugs;
+                } else {
+                  _this2.drugList = [].concat((0, _toConsumableArray2.default)(_this2.drugList), (0, _toConsumableArray2.default)(filteredDrugs));
+                }
+                _this2.hasMore = result.data.length >= _this2.pageSize;
+                _context2.next = 23;
+                break;
+              case 19:
+                _context2.prev = 19;
+                _context2.t0 = _context2["catch"](3);
+                console.error('加载药材列表失败:', _context2.t0);
+                uni.showToast({
+                  title: '加载失败',
+                  icon: 'none'
+                });
+              case 23:
+                _context2.prev = 23;
+                _this2.loading = false;
+                return _context2.finish(23);
+              case 26:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2);
+        }, _callee2, null, [[3, 19, 23, 26]]);
       }))();
     },
     loadMore: function loadMore() {
@@ -340,6 +234,12 @@ var _default = {
     },
     setFilter: function setFilter(category) {
       this.filterCategory = category;
+      this.page = 1;
+      this.drugList = [];
+      this.loadDrugList();
+    },
+    setCompletenessFilter: function setCompletenessFilter(type) {
+      this.filterCompleteness = type;
       this.page = 1;
       this.drugList = [];
       this.loadDrugList();
@@ -385,7 +285,7 @@ var _default = {
     },
     editDrug: function editDrug(item) {
       uni.navigateTo({
-        url: "/pages-sub/drug/add?id=".concat(item._id)
+        url: "/pages-sub/drug/detail?id=".concat(item._id)
       });
     },
     batchImport: function batchImport() {
@@ -397,7 +297,7 @@ var _default = {
   }
 };
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
 

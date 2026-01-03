@@ -188,9 +188,9 @@ async function addDrug(data) {
   }
 }
 
-// 更新药材
+// ⭐ 更新药材（支持 updateData 格式）
 async function updateDrug(data) {
-  const { _id, barcode, name, pinyin, spec, unit, manufacturer, category, isHighValue, isEmergency, remark } = data
+  const { _id, updateData } = data
   
   if (!_id) {
     return {
@@ -199,13 +199,31 @@ async function updateDrug(data) {
     }
   }
   
+  if (!updateData || Object.keys(updateData).length === 0) {
+    return {
+      success: false,
+      message: '更新数据不能为空'
+    }
+  }
+  
+  console.log('🔧 云函数更新药品档案')
+  console.log('药品ID:', _id)
+  console.log('更新数据:', updateData)
+  
   // 如果修改了条码，检查新条码是否已存在
-  if (barcode) {
+  if (updateData.barcode || updateData.barCode) {
+    const barcodeToCheck = updateData.barcode || updateData.barCode
     const existResult = await db.collection('drugs')
-      .where({
-        barcode: barcode,
-        _id: _.neq(_id)
-      })
+      .where(_.or([
+        {
+          barcode: barcodeToCheck,
+          _id: _.neq(_id)
+        },
+        {
+          barCode: barcodeToCheck,
+          _id: _.neq(_id)
+        }
+      ]))
       .count()
     
     if (existResult.total > 0) {
@@ -216,31 +234,26 @@ async function updateDrug(data) {
     }
   }
   
-  // 构建更新数据
-  const updateData = {
+  // 确保更新时间使用服务器时间
+  const finalUpdateData = {
+    ...updateData,
     updateTime: db.serverDate()
   }
   
-  if (barcode !== undefined) updateData.barcode = barcode
-  if (name !== undefined) updateData.name = name
-  if (pinyin !== undefined) updateData.pinyin = pinyin
-  if (spec !== undefined) updateData.spec = spec
-  if (unit !== undefined) updateData.unit = unit
-  if (manufacturer !== undefined) updateData.manufacturer = manufacturer
-  if (category !== undefined) updateData.category = category
-  if (isHighValue !== undefined) updateData.isHighValue = isHighValue
-  if (isEmergency !== undefined) updateData.isEmergency = isEmergency
-  if (remark !== undefined) updateData.remark = remark
+  console.log('最终更新数据:', finalUpdateData)
   
-  await db.collection('drugs')
+  const result = await db.collection('drugs')
     .doc(_id)
     .update({
-      data: updateData
+      data: finalUpdateData
     })
+  
+  console.log('✅ 云函数更新成功:', result)
   
   return {
     success: true,
-    message: '更新成功'
+    message: '更新成功',
+    result: result
   }
 }
 
@@ -422,5 +435,3 @@ async function getDrugWithBatches(data) {
     }
   }
 }
-
-

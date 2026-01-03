@@ -75,6 +75,24 @@
 			</view>
 		</view>
 
+		<!-- 药材信息档案 -->
+		<view class="info-card archive-card">
+			<view class="card-title">
+				<text class="title-icon">📋</text>
+				<text class="title-text">药材信息档案</text>
+			</view>
+			<view class="card-list">
+				<view class="card-item" @tap="go('/pages-sub/drug/list')">
+					<text class="item-text">药材列表</text>
+					<text class="item-arrow">›</text>
+				</view>
+				<view class="card-item" @tap="go('/pages-sub/drug/add')">
+					<text class="item-text">添加药材</text>
+					<text class="item-arrow">›</text>
+				</view>
+			</view>
+		</view>
+
 		<!-- 药材库存 -->
 		<view class="info-card stock-card">
 			<view class="card-title">
@@ -293,6 +311,11 @@ export default {
 /* 库存模块按钮：紫蓝系 */
 .stock-card .card-item {
 	background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 40%, #cffafe 100%);
+}
+
+/* 档案模块按钮：黄绿系 */
+.archive-card .card-item {
+	background: linear-gradient(135deg, #fefce8 0%, #fef3c7 40%, #d9f99d 100%);
 }
 
 .card-item + .card-item {

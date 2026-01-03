@@ -126,10 +126,23 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   var g0 = _vm.showSearchResult && _vm.searchResults.length > 0
-  var g1 = _vm.drugList.length
-  var g2 = _vm.drugList.length
-  var l0 =
-    g2 > 0
+  var l0 = _vm.__map(_vm.searchResults, function (drug, index) {
+    var $orig = _vm.__get_orig(drug)
+    var g1 = drug.completeness && drug.completeness.missingFields.length > 0
+    var g2 = g1 ? drug.completeness.missingFields.join("、") : null
+    return {
+      $orig: $orig,
+      g1: g1,
+      g2: g2,
+    }
+  })
+  var g3 = _vm.showCreateForm
+    ? _vm.showManufacturerSuggestions && _vm.manufacturerSuggestions.length > 0
+    : null
+  var g4 = _vm.drugList.length
+  var g5 = _vm.drugList.length
+  var l1 =
+    g5 > 0
       ? _vm.__map(_vm.drugList, function (item, index) {
           var $orig = _vm.__get_orig(item)
           var m0 = item.amount > 0 ? _vm.formatAmount(item.amount) : null
@@ -139,23 +152,19 @@ var render = function () {
           }
         })
       : null
-  var g3 =
+  var g6 =
     _vm.drugList.length === 0 && !_vm.searchKeyword && !_vm.showSearchResult
-  var g4 = _vm.drugList.length
-  var g5 = g4 > 0 ? _vm.drugList.length : null
+  var g7 = _vm.drugList.length
+  var g8 = g7 > 0 ? _vm.drugList.length : null
   var m1 =
-    g4 > 0 && _vm.totalAmount > 0 ? _vm.formatAmount(_vm.totalAmount) : null
+    g7 > 0 && _vm.totalAmount > 0 ? _vm.formatAmount(_vm.totalAmount) : null
   if (!_vm._isMounted) {
-    _vm.e0 = function (e, index) {
-      var args = [],
-        len = arguments.length - 2
-      while (len-- > 0) args[len] = arguments[len + 2]
-
-      var _temp = args[args.length - 1].currentTarget.dataset,
+    _vm.e0 = function ($event, unit) {
+      var _temp = arguments[arguments.length - 1].currentTarget.dataset,
         _temp2 = _temp.eventParams || _temp["event-params"],
-        index = _temp2.index
+        unit = _temp2.unit
       var _temp, _temp2
-      return _vm.onDateChange(index, "productionDate", e.detail.value)
+      return _vm.selectQuickUnit(unit)
     }
     _vm.e1 = function (e, index) {
       var args = [],
@@ -166,6 +175,17 @@ var render = function () {
         _temp4 = _temp3.eventParams || _temp3["event-params"],
         index = _temp4.index
       var _temp3, _temp4
+      return _vm.onDateChange(index, "productionDate", e.detail.value)
+    }
+    _vm.e2 = function (e, index) {
+      var args = [],
+        len = arguments.length - 2
+      while (len-- > 0) args[len] = arguments[len + 2]
+
+      var _temp5 = args[args.length - 1].currentTarget.dataset,
+        _temp6 = _temp5.eventParams || _temp5["event-params"],
+        index = _temp6.index
+      var _temp5, _temp6
       return _vm.onDateChange(index, "expireDate", e.detail.value)
     }
   }
@@ -174,12 +194,14 @@ var render = function () {
     {
       $root: {
         g0: g0,
-        g1: g1,
-        g2: g2,
         l0: l0,
         g3: g3,
         g4: g4,
         g5: g5,
+        l1: l1,
+        g6: g6,
+        g7: g7,
+        g8: g8,
         m1: m1,
       },
     }
@@ -225,7 +247,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
+var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
 var _common = _interopRequireDefault(__webpack_require__(/*! @/utils/common.js */ 94));
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
@@ -263,8 +287,11 @@ var _default = {
         manufacturer: '',
         approvalNumber: ''
       },
-      unitOptions: ['盒', '瓶', '袋', '支', '板', '片', '粒', '丸'],
+      unitOptions: ['盒', '瓶', '袋', '支', '板', '片', '粒', '丸', 'g', 'kg', 'ml', 'L'],
       unitIndex: 0,
+      // 厂家智能提示
+      manufacturerSuggestions: [],
+      showManufacturerSuggestions: false,
       // 日期范围
       minDate: '2020-01-01',
       maxDate: '',
@@ -308,6 +335,19 @@ var _default = {
       if (this.searchKeyword) {
         this.showSearchResult = true;
       }
+
+      // 延迟滚动，等待键盘弹出
+      setTimeout(function () {
+        // 滚动到搜索框位置，确保搜索结果可见
+        uni.createSelectorQuery().select('.search-card').boundingClientRect(function (rect) {
+          if (rect) {
+            uni.pageScrollTo({
+              scrollTop: rect.top - 100,
+              duration: 300
+            });
+          }
+        }).exec();
+      }, 300);
     },
     onSearchBlur: function onSearchBlur() {
       var _this = this;
@@ -336,8 +376,64 @@ var _default = {
     },
     onSearchConfirm: function onSearchConfirm() {
       if (this.searchKeyword.trim()) {
+        // 收起键盘
+        uni.hideKeyboard();
         this.searchDrugs();
       }
+    },
+    // ⭐ 计算档案完整度
+    calculateCompleteness: function calculateCompleteness(drug) {
+      var fields = [drug.name,
+      // 名称
+      drug.specification,
+      // 规格
+      drug.unit,
+      // 单位
+      drug.manufacturer,
+      // 生产厂家
+      drug.barcode,
+      // 条形码
+      drug.approvalNumber,
+      // 批准文号
+      drug.category,
+      // 分类
+      drug.image // 图片
+      ];
+
+      var filledCount = fields.filter(function (field) {
+        return field && field.trim();
+      }).length;
+      var percentage = Math.round(filledCount / fields.length * 100);
+      return {
+        percentage: percentage,
+        filledCount: filledCount,
+        totalCount: fields.length,
+        isComplete: percentage === 100,
+        missingFields: this.getMissingFields(drug)
+      };
+    },
+    // 获取缺失字段
+    getMissingFields: function getMissingFields(drug) {
+      var fieldMap = {
+        name: '名称',
+        specification: '规格',
+        unit: '单位',
+        manufacturer: '生产厂家',
+        barcode: '条形码',
+        approvalNumber: '批准文号',
+        category: '分类',
+        image: '图片'
+      };
+      var missing = [];
+      for (var _i = 0, _Object$entries = Object.entries(fieldMap); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i], 2),
+          key = _Object$entries$_i[0],
+          label = _Object$entries$_i[1];
+        if (!drug[key] || !drug[key].trim()) {
+          missing.push(label);
+        }
+      }
+      return missing;
     },
     // ⭐ 智能搜索：仅查询本地药材档案
     searchDrugs: function searchDrugs(inputKeyword) {
@@ -360,22 +456,25 @@ var _default = {
                 _this3.isSearchingAPI = true;
                 _this3.showSearchResult = false;
 
+                // 收起键盘
+                uni.hideKeyboard();
+
                 // 调用云函数查询本地药材档案
-                _context.next = 8;
+                _context.next = 9;
                 return wx.cloud.callFunction({
                   name: 'drugSearch',
                   data: {
                     drugName: keyword
                   }
                 });
-              case 8:
+              case 9:
                 result = _context.sent;
                 _this3.isSearchingAPI = false;
                 if (result.result && result.result.success) {
                   // 找到本地药材档案
-                  drugs = result.result.data; // 格式化为统一结构
+                  drugs = result.result.data; // 格式化为统一结构，并计算完整度
                   _this3.searchResults = drugs.map(function (drug) {
-                    return {
+                    var drugData = {
                       _id: drug._id || 'temp_' + Date.now(),
                       name: drug.name,
                       spec: drug.specification || '',
@@ -384,8 +483,15 @@ var _default = {
                       packUnit: drug.unit || '盒',
                       manufacturer: drug.manufacturer || '',
                       barcode: drug.barcode || '',
-                      approvalNumber: drug.approvalNumber || ''
+                      approvalNumber: drug.approvalNumber || '',
+                      category: drug.category || '',
+                      image: drug.image || ''
                     };
+
+                    // 计算完整度
+                    var completeness = _this3.calculateCompleteness(drugData);
+                    drugData.completeness = completeness;
+                    return drugData;
                   });
 
                   // 显示搜索结果，隐藏创建表单
@@ -401,21 +507,21 @@ var _default = {
                   _this3.showSearchResult = false;
                   _this3.activateCreateFormManual(keyword);
                 }
-                _context.next = 18;
+                _context.next = 19;
                 break;
-              case 13:
-                _context.prev = 13;
+              case 14:
+                _context.prev = 14;
                 _context.t0 = _context["catch"](3);
                 console.error('搜索失败:', _context.t0);
                 _this3.isSearchingAPI = false;
                 // 出错也激活手动创建
                 _this3.activateCreateFormManual(keyword);
-              case 18:
+              case 19:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[3, 13]]);
+        }, _callee, null, [[3, 14]]);
       }))();
     },
     // 激活创建表单（手动）⭐
@@ -464,7 +570,7 @@ var _default = {
     confirmCreate: function confirmCreate() {
       var _this4 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
-        var db, result, newDrugItem;
+        var db, existCheck, barcodeCheck, result, newDrugItem;
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -474,18 +580,81 @@ var _default = {
                   break;
                 }
                 uni.showToast({
-                  title: '请填写完整信息',
-                  icon: 'none'
+                  title: '请填写：名称、规格、单位',
+                  icon: 'none',
+                  duration: 2000
                 });
                 return _context2.abrupt("return");
               case 3:
                 uni.showLoading({
-                  title: '创建中...',
+                  title: '检查中...',
                   mask: true
                 });
                 _context2.prev = 4;
-                db = wx.cloud.database(); // 1. 创建药材档案
+                db = wx.cloud.database(); // ⭐ 1. 检查是否已存在相同药品（名称+规格）
                 _context2.next = 8;
+                return db.collection('drugs').where({
+                  name: _this4.newDrug.name,
+                  spec: _this4.newDrug.spec
+                }).get();
+              case 8:
+                existCheck = _context2.sent;
+                if (!(existCheck.data.length > 0)) {
+                  _context2.next = 13;
+                  break;
+                }
+                uni.hideLoading();
+                uni.showModal({
+                  title: '药品已存在',
+                  content: "\u7CFB\u7EDF\u4E2D\u5DF2\u5B58\u5728\"".concat(_this4.newDrug.name, "\"\uFF08").concat(_this4.newDrug.spec, "\uFF09\n\n\u662F\u5426\u76F4\u63A5\u4F7F\u7528\u73B0\u6709\u6863\u6848\uFF1F"),
+                  confirmText: '使用现有',
+                  cancelText: '重新填写',
+                  success: function success(res) {
+                    if (res.confirm) {
+                      // 使用现有药品
+                      var existingDrug = existCheck.data[0];
+                      _this4.addDrugToList(existingDrug);
+                      _this4.cancelCreate();
+                      _this4.searchKeyword = '';
+                      uni.showToast({
+                        title: '已使用现有档案',
+                        icon: 'success',
+                        duration: 1500
+                      });
+                    }
+                  }
+                });
+                return _context2.abrupt("return");
+              case 13:
+                if (!_this4.newDrug.barcode) {
+                  _context2.next = 21;
+                  break;
+                }
+                _context2.next = 16;
+                return db.collection('drugs').where({
+                  barcode: _this4.newDrug.barcode
+                }).get();
+              case 16:
+                barcodeCheck = _context2.sent;
+                if (!(barcodeCheck.data.length > 0)) {
+                  _context2.next = 21;
+                  break;
+                }
+                uni.hideLoading();
+                uni.showModal({
+                  title: '条形码已存在',
+                  content: "\u8BE5\u6761\u5F62\u7801\u5DF2\u88AB\"".concat(barcodeCheck.data[0].name, "\"\u4F7F\u7528\n\n\u8BF7\u68C0\u67E5\u6761\u5F62\u7801\u662F\u5426\u6B63\u786E"),
+                  showCancel: false,
+                  confirmText: '重新填写'
+                });
+                return _context2.abrupt("return");
+              case 21:
+                // 3. 创建药材档案
+                uni.showLoading({
+                  title: '创建中...',
+                  mask: true
+                });
+                _context2.next = 24;
                 return db.collection('drugs').add({
                   data: {
                     name: _this4.newDrug.name,
@@ -498,18 +667,30 @@ var _default = {
                     barcode: _this4.newDrug.barcode || '',
                     manufacturer: _this4.newDrug.manufacturer || '',
                     approvalNumber: _this4.newDrug.approvalNumber || '',
+                    category: '',
+                    // 分类可后续完善
+                    image: '',
+                    // 图片可后续上传
+                    isHighValue: false,
+                    // 默认非高值
+                    isEmergency: false,
+                    // 默认非急救
+                    safeStock: 50,
+                    // 默认安全库存
+                    minStock: 20,
+                    // 默认最低库存
                     createTime: new Date(),
                     createSource: _this4.createFormSource // 记录来源：api 或 manual
                   }
                 });
-              case 8:
+              case 24:
                 result = _context2.sent;
                 if (!_this4.newDrug.barcode) {
-                  _context2.next = 19;
+                  _context2.next = 35;
                   break;
                 }
-                _context2.prev = 10;
-                _context2.next = 13;
+                _context2.prev = 26;
+                _context2.next = 29;
                 return db.collection('barcode_mapping').add({
                   data: {
                     barcode: _this4.newDrug.barcode,
@@ -522,16 +703,16 @@ var _default = {
                     createTime: db.serverDate()
                   }
                 });
-              case 13:
+              case 29:
                 console.log('✅ 条形码映射创建成功');
-                _context2.next = 19;
+                _context2.next = 35;
                 break;
-              case 16:
-                _context2.prev = 16;
-                _context2.t0 = _context2["catch"](10);
+              case 32:
+                _context2.prev = 32;
+                _context2.t0 = _context2["catch"](26);
                 console.error('创建条形码映射失败:', _context2.t0);
                 // 不影响主流程，继续执行
-              case 19:
+              case 35:
                 uni.hideLoading();
                 if (result._id) {
                   uni.showToast({
@@ -573,10 +754,10 @@ var _default = {
                     }, 1500);
                   }
                 }
-                _context2.next = 28;
+                _context2.next = 44;
                 break;
-              case 23:
-                _context2.prev = 23;
+              case 39:
+                _context2.prev = 39;
                 _context2.t1 = _context2["catch"](4);
                 console.error('创建失败:', _context2.t1);
                 uni.hideLoading();
@@ -584,13 +765,56 @@ var _default = {
                   title: '创建失败: ' + _context2.t1.message,
                   icon: 'none'
                 });
-              case 28:
+              case 44:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[4, 23], [10, 16]]);
+        }, _callee2, null, [[4, 39], [26, 32]]);
       }))();
+    },
+    // ⭐ 添加药品到列表（统一方法）
+    addDrugToList: function addDrugToList(drug) {
+      // 检查是否已添加
+      var exists = this.drugList.some(function (item) {
+        return item.drugId === drug._id;
+      });
+      if (exists) {
+        uni.showToast({
+          title: '该药材已添加',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 添加到列表最前面
+      this.drugList.unshift({
+        drugId: drug._id,
+        drugName: drug.name,
+        specification: drug.spec || drug.specification,
+        unit: drug.packUnit || drug.unit || '盒',
+        manufacturer: drug.manufacturer || '',
+        batch: '',
+        productionDate: '',
+        expireDate: '',
+        daysToExpiry: null,
+        quantity: '',
+        price: '',
+        amount: 0,
+        hasError: false
+      });
+
+      // 用户反馈
+      uni.showToast({
+        title: '已添加到列表',
+        icon: 'success',
+        duration: 1500
+      });
+
+      // 振动反馈
+      wx.vibrateShort({
+        type: 'light'
+      });
     },
     selectDrug: function selectDrug(drug) {
       var _this5 = this;
@@ -703,13 +927,17 @@ var _default = {
                 });
                 return _context3.abrupt("return");
               case 11:
-                // 清洗条形码：去除空格、特殊字符
-                cleanBarcode = scanRes.result.trim().replace(/\s/g, '');
+                // 清洗条形码：去除空格、特殊字符、换行符
+                cleanBarcode = scanRes.result.trim() // 去除首尾空格
+                .replace(/\s/g, '') // 去除所有空格
+                .replace(/[\r\n]/g, ''); // 去除换行符
+                console.log('📷 原始条形码:', scanRes.result);
                 console.log('📷 清洗后条形码:', cleanBarcode);
+                console.log('📷 条形码长度:', cleanBarcode.length);
 
                 // 验证条形码格式
                 if (!(!cleanBarcode || cleanBarcode.length < 8)) {
-                  _context3.next = 16;
+                  _context3.next = 18;
                   break;
                 }
                 uni.showToast({
@@ -717,14 +945,14 @@ var _default = {
                   icon: 'none'
                 });
                 return _context3.abrupt("return");
-              case 16:
-                _context3.next = 18;
-                return _this6.queryDrugByBarcode(cleanBarcode);
               case 18:
-                _context3.next = 24;
-                break;
+                _context3.next = 20;
+                return _this6.queryDrugByBarcode(cleanBarcode);
               case 20:
-                _context3.prev = 20;
+                _context3.next = 26;
+                break;
+              case 22:
+                _context3.prev = 22;
                 _context3.t0 = _context3["catch"](0);
                 console.error('扫码错误:', _context3.t0);
                 if (_context3.t0.errMsg && !_context3.t0.errMsg.includes('cancel')) {
@@ -733,18 +961,18 @@ var _default = {
                     icon: 'none'
                   });
                 }
-              case 24:
+              case 26:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[0, 20]]);
+        }, _callee3, null, [[0, 22]]);
       }))();
     },
     queryDrugByBarcode: function queryDrugByBarcode(barcode) {
       var _this7 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        var _res$result, _res$result2, res, drugInfo, exists, sourceText;
+        var _res$result, _res$result2, res, drugInfo, exists, sourceText, errorTitle, errorContent;
         return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -826,12 +1054,11 @@ var _default = {
                 wx.vibrateShort({
                   type: 'light'
                 });
-                _context4.next = 29;
+                _context4.next = 28;
                 break;
               case 26:
                 // 未找到药材 - 提示用户手动创建
                 console.log('❌ 未找到药材，云函数返回:', res.result);
-                uni.hideLoading();
                 uni.showModal({
                   title: '首次识别此条形码',
                   content: '系统中暂无此药材信息\n\n请选择操作方式：',
@@ -847,38 +1074,147 @@ var _default = {
                     }
                   }
                 });
-              case 29:
-                _context4.next = 36;
+              case 28:
+                _context4.next = 40;
                 break;
-              case 31:
-                _context4.prev = 31;
+              case 30:
+                _context4.prev = 30;
                 _context4.t0 = _context4["catch"](4);
                 uni.hideLoading();
-                console.error('查询失败:', _context4.t0);
+                console.error('❌ 查询失败详情:', _context4.t0);
+                console.error('错误类型:', _context4.t0.errCode);
+                console.error('错误信息:', _context4.t0.errMsg);
+
+                // 详细的错误提示
+                errorTitle = '查询失败';
+                errorContent = '条形码查询失败';
+                if (_context4.t0.errMsg) {
+                  if (_context4.t0.errMsg.includes('cloud function not found')) {
+                    errorTitle = '云函数未部署';
+                    errorContent = '请先部署 drugBarcodeQuery 云函数\n\n操作步骤：\n1. 右键点击云函数文件夹\n2. 选择"上传并部署"\n3. 等待部署完成';
+                  } else if (_context4.t0.errMsg.includes('timeout')) {
+                    errorTitle = '查询超时';
+                    errorContent = '网络连接超时，请检查网络后重试';
+                  } else if (_context4.t0.errMsg.includes('permission')) {
+                    errorTitle = '权限不足';
+                    errorContent = '数据库权限不足，请联系管理员';
+                  } else {
+                    errorContent = "\u9519\u8BEF\u4FE1\u606F\uFF1A".concat(_context4.t0.errMsg, "\n\n\u662F\u5426\u624B\u52A8\u65B0\u5EFA\u836F\u6750\uFF1F");
+                  }
+                }
                 uni.showModal({
-                  title: '查询失败',
-                  content: '条形码查询失败，是否手动新建药材？',
-                  confirmText: '新建',
+                  title: errorTitle,
+                  content: errorContent,
+                  confirmText: '手动新建',
                   cancelText: '取消',
                   success: function success(modalRes) {
                     if (modalRes.confirm) {
                       _this7.newDrug.barcode = barcode;
-                      _this7.showCreateDrug = true;
+                      _this7.showCreateForm = true;
+                      _this7.createFormSource = 'manual';
+                      _this7.searchKeyword = '';
                     }
                   }
                 });
-              case 36:
+              case 40:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, null, [[4, 31]]);
+        }, _callee4, null, [[4, 30]]);
       }))();
     },
     // ========== 新建药材 ==========
     onUnitChange: function onUnitChange(e) {
       this.unitIndex = e.detail.value;
       this.newDrug.unit = this.unitOptions[e.detail.value];
+    },
+    // ⭐ 快速选择常用单位
+    selectQuickUnit: function selectQuickUnit(unit) {
+      this.newDrug.unit = unit;
+      var index = this.unitOptions.indexOf(unit);
+      if (index !== -1) {
+        this.unitIndex = index;
+      }
+    },
+    // ⭐ 厂家输入时智能提示
+    onManufacturerInput: function onManufacturerInput(e) {
+      var _this8 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+        var keyword, db, result, manufacturers;
+        return _regenerator.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                keyword = e.detail.value.trim();
+                if (!(!keyword || keyword.length < 2)) {
+                  _context5.next = 5;
+                  break;
+                }
+                _this8.manufacturerSuggestions = [];
+                _this8.showManufacturerSuggestions = false;
+                return _context5.abrupt("return");
+              case 5:
+                _context5.prev = 5;
+                // 从现有药品中查询厂家
+                db = wx.cloud.database();
+                _context5.next = 9;
+                return db.collection('drugs').where({
+                  manufacturer: db.RegExp({
+                    regexp: keyword,
+                    options: 'i'
+                  })
+                }).field({
+                  manufacturer: true
+                }).limit(20).get();
+              case 9:
+                result = _context5.sent;
+                if (result.data.length > 0) {
+                  // 去重
+                  manufacturers = (0, _toConsumableArray2.default)(new Set(result.data.map(function (item) {
+                    return item.manufacturer;
+                  }).filter(function (m) {
+                    return m;
+                  })));
+                  _this8.manufacturerSuggestions = manufacturers.slice(0, 5);
+                  _this8.showManufacturerSuggestions = true;
+                } else {
+                  _this8.manufacturerSuggestions = [];
+                  _this8.showManufacturerSuggestions = false;
+                }
+                _context5.next = 16;
+                break;
+              case 13:
+                _context5.prev = 13;
+                _context5.t0 = _context5["catch"](5);
+                console.error('查询厂家失败:', _context5.t0);
+              case 16:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, null, [[5, 13]]);
+      }))();
+    },
+    // ⭐ 厂家输入框获得焦点
+    onManufacturerFocus: function onManufacturerFocus() {
+      if (this.manufacturerSuggestions.length > 0) {
+        this.showManufacturerSuggestions = true;
+      }
+    },
+    // ⭐ 厂家输入框失去焦点
+    onManufacturerBlur: function onManufacturerBlur() {
+      var _this9 = this;
+      // 延迟隐藏，以便点击建议项
+      setTimeout(function () {
+        _this9.showManufacturerSuggestions = false;
+      }, 200);
+    },
+    // ⭐ 选择厂家建议
+    selectManufacturer: function selectManufacturer(manufacturer) {
+      this.newDrug.manufacturer = manufacturer;
+      this.showManufacturerSuggestions = false;
+      this.manufacturerSuggestions = [];
     },
     // 语音输入提示（使用输入法语音功能）
     startVoiceInput: function startVoiceInput(field) {
@@ -926,13 +1262,13 @@ var _default = {
       return Number(amount).toFixed(2);
     },
     deleteDrug: function deleteDrug(index) {
-      var _this8 = this;
+      var _this10 = this;
       uni.showModal({
         title: '确认删除',
         content: '确定要删除这个药材吗？',
         success: function success(res) {
           if (res.confirm) {
-            _this8.drugList.splice(index, 1);
+            _this10.drugList.splice(index, 1);
           }
         }
       });
@@ -995,34 +1331,34 @@ var _default = {
       return true;
     },
     submit: function submit() {
-      var _this9 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+      var _this11 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
         var userInfo, result, _result$result;
-        return _regenerator.default.wrap(function _callee5$(_context5) {
+        return _regenerator.default.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                if (_this9.validateForm()) {
-                  _context5.next = 2;
+                if (_this11.validateForm()) {
+                  _context6.next = 2;
                   break;
                 }
-                return _context5.abrupt("return");
+                return _context6.abrupt("return");
               case 2:
                 uni.showLoading({
                   title: '提交中...',
                   mask: true
                 });
-                _context5.prev = 3;
+                _context6.prev = 3;
                 userInfo = uni.getStorageSync('userInfo');
-                _context5.next = 7;
+                _context6.next = 7;
                 return wx.cloud.callFunction({
                   name: 'inRecords',
                   data: {
                     action: 'create',
                     data: {
-                      recordNo: _this9.recordNo,
-                      remark: _this9.remark,
-                      items: _this9.drugList.map(function (item) {
+                      recordNo: _this11.recordNo,
+                      remark: _this11.remark,
+                      items: _this11.drugList.map(function (item) {
                         return {
                           drugId: item.drugId,
                           drugName: item.drugName,
@@ -1037,19 +1373,19 @@ var _default = {
                           price: Number(item.price) || 0
                         };
                       }),
-                      operator: _this9.operator,
+                      operator: _this11.operator,
                       operatorId: (userInfo === null || userInfo === void 0 ? void 0 : userInfo._id) || '',
-                      operatorSign: _this9.operatorSign,
+                      operatorSign: _this11.operatorSign,
                       operatorSignTime: new Date().toISOString(),
                       status: 'pending_review'
                     }
                   }
                 });
               case 7:
-                result = _context5.sent;
+                result = _context6.sent;
                 uni.hideLoading();
                 if (!(result.result && result.result.success)) {
-                  _context5.next = 14;
+                  _context6.next = 14;
                   break;
                 }
                 uni.showToast({
@@ -1060,28 +1396,28 @@ var _default = {
                 setTimeout(function () {
                   uni.navigateBack();
                 }, 2000);
-                _context5.next = 15;
+                _context6.next = 15;
                 break;
               case 14:
                 throw new Error(((_result$result = result.result) === null || _result$result === void 0 ? void 0 : _result$result.message) || '提交失败');
               case 15:
-                _context5.next = 22;
+                _context6.next = 22;
                 break;
               case 17:
-                _context5.prev = 17;
-                _context5.t0 = _context5["catch"](3);
+                _context6.prev = 17;
+                _context6.t0 = _context6["catch"](3);
                 uni.hideLoading();
-                console.error('提交失败:', _context5.t0);
+                console.error('提交失败:', _context6.t0);
                 uni.showToast({
-                  title: _context5.t0.message || '提交失败',
+                  title: _context6.t0.message || '提交失败',
                   icon: 'none'
                 });
               case 22:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, null, [[3, 17]]);
+        }, _callee6, null, [[3, 17]]);
       }))();
     }
   }

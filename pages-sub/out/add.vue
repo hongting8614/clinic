@@ -487,12 +487,20 @@ export default {
 			
 			// 检查drugId
 			if (!item.drugId) {
+				console.error('❌ 药材ID缺失:', item)
 				uni.showToast({
 					title: '药材ID缺失，无法分配批次',
 					icon: 'none'
 				})
 				return
 			}
+			
+			console.log('📦 开始分配批次:', {
+				drugId: item.drugId,
+				drugName: item.drugName,
+				quantity: item.quantity,
+				location: 'drug_storage'
+			})
 			
 			uni.showLoading({ title: '分配批次中...' })
 			
@@ -510,13 +518,32 @@ export default {
 					}
 				})
 				
-				console.log('🔴 旧方案分配结果:', result.result)
+				console.log('📦 云函数返回结果:', result.result)
+				console.log('📦 result.result.data:', result.result.data)
+				console.log('📦 result.result.data 的类型:', typeof result.result.data)
+				console.log('📦 result.result.data 的所有键:', result.result.data ? Object.keys(result.result.data) : 'null')
 				
-				if (result.result.success) {
-					const allocations = result.result.data.allocations || []
+				if (result.result && result.result.success) {
+					// ⭐ 注意：云函数返回的是 allocation（单数），不是 allocations（复数）
+					const allocations = result.result.data?.allocation || []
+					
+					console.log('📦 分配的批次数量:', allocations.length)
+					console.log('📦 分配详情:', allocations)
 					
 					if (allocations.length === 0) {
-						throw new Error('库存不足，无法分配批次')
+						// 更详细的错误提示
+						const totalStock = result.result.data?.totalStock || 0
+						const errorMsg = totalStock > 0 
+							? `当前库存 ${totalStock} ${item.unit}，需求 ${item.quantity} ${item.unit}，库存不足`
+							: `该药材在总库暂无库存`
+						
+						console.error('❌ 库存不足:', {
+							drugName: item.drugName,
+							required: item.quantity,
+							available: totalStock
+						})
+						
+						throw new Error(errorMsg)
 					}
 					
 					// 转换为前端显示格式
@@ -530,6 +557,8 @@ export default {
 						daysToExpire: alloc.daysToExpiry || alloc.daysToExpire
 					}))
 					
+					console.log('✅ 批次分配成功:', allocation)
+					
 					// 保存分配结果
 					this.$set(item, 'batchAllocation', allocation)
 					this.$set(item, 'batchCount', allocation.length)
@@ -537,6 +566,7 @@ export default {
 					
 					// 近效期提示
 					if (item.hasNearExpiry) {
+						uni.hideLoading()
 						uni.showModal({
 							title: '近效期提示',
 							content: `${item.drugName} 包含近效期批次，是否继续？`,
@@ -550,6 +580,7 @@ export default {
 							}
 						})
 					} else {
+						uni.hideLoading()
 						uni.showToast({
 							title: `✅ 已分配 ${allocation.length} 个批次`,
 							icon: 'success',
@@ -557,18 +588,26 @@ export default {
 						})
 					}
 				} else {
-					throw new Error(result.result.message || '分配失败')
+					const errorMsg = result.result?.message || '分配失败'
+					console.error('❌ 云函数返回失败:', errorMsg)
+					throw new Error(errorMsg)
 				}
 			} catch (err) {
-				console.error('批次分配失败:', err)
-				uni.showToast({
-					title: err.message || '分配失败',
-					icon: 'none',
-					duration: 2000
-				})
-				this.$set(item, 'batchAllocation', [])
-			} finally {
+				console.error('❌ 批次分配失败:', err)
 				uni.hideLoading()
+				
+				// 显示更友好的错误提示
+				uni.showModal({
+					title: '批次分配失败',
+					content: err.message || '未知错误',
+					showCancel: false,
+					confirmText: '知道了'
+				})
+				
+				// 清空分配结果
+				this.$set(item, 'batchAllocation', [])
+				this.$set(item, 'batchCount', 0)
+				this.$set(item, 'hasNearExpiry', false)
 			}
 		},
 		

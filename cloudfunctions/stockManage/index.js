@@ -588,6 +588,23 @@ async function allocateBatchesFIFO(data) {
     
     console.log('查询到批次数量:', batches.data.length)
     
+    // 🔍 详细打印每个批次的信息
+    if (batches.data.length > 0) {
+      console.log('📦 查询到的批次详情:')
+      batches.data.forEach((batch, index) => {
+        console.log(`  批次${index + 1}:`, {
+          _id: batch._id,
+          batch: batch.batch,
+          expireDate: batch.expireDate,
+          productionDate: batch.productionDate,
+          quantity: batch.quantity,
+          location: batch.location,
+          drugId: batch.drugId,
+          drugName: batch.drugName
+        })
+      })
+    }
+    
     if (batches.data.length === 0) {
       return {
         success: false,

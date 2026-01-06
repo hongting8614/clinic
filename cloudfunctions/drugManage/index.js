@@ -316,7 +316,11 @@ async function searchDrug(data) {
 
 // ⭐ 新增：获取药品详情
 async function getDrugDetail(data) {
-  const { drugId } = data
+  // 兼容 drugId 和 id 两种参数名
+  const drugId = data.drugId || data.id || data._id
+  
+  console.log('📦 [getDrugDetail] 参数:', data)
+  console.log('📦 [getDrugDetail] 解析的drugId:', drugId)
   
   if (!drugId) {
     return {
@@ -327,6 +331,8 @@ async function getDrugDetail(data) {
   
   try {
     const result = await db.collection('drugs').doc(drugId).get()
+    
+    console.log('📦 [getDrugDetail] 查询结果:', result.data ? '找到' : '未找到')
     
     if (result.data) {
       return {
@@ -340,10 +346,11 @@ async function getDrugDetail(data) {
       }
     }
   } catch (err) {
-    console.error('获取药品详情失败:', err)
+    console.error('❌ [getDrugDetail] 获取药品详情失败:', err)
     return {
       success: false,
-      message: err.message || '获取失败'
+      message: err.message || '获取失败',
+      error: err.message
     }
   }
 }

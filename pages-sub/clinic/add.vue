@@ -554,7 +554,7 @@
               </view>
               
               <!-- ✨ FIFO 批次分配信息展示 -->
-              <view v-if="item.batchAllocation && item.batchAllocation.length > 0" class="batch-allocation-info">
+              <view v-if="false" class="batch-allocation-info">
                 <view class="batch-allocation-header">
                   <text class="batch-label">📦 批次分配：</text>
                   <text class="batch-count">{{ item.batchCount }}个批次</text>
@@ -578,7 +578,7 @@
               </view>
               
               <!-- 兼容旧的单批次显示 -->
-              <view v-else-if="item.batchNumber" class="batch-single-info">
+              <view v-if="false" class="batch-single-info">
                 <text class="batch-label">批次：</text>
                 <text class="batch-value">{{ item.batchNumber }}</text>
               </view>
@@ -4100,7 +4100,22 @@ export default {
         if (res.result.success && res.result.data && res.result.data.length > 0) {
           const batches = res.result.data;
           console.log('[loadBatches] 找到批次:', batches.length, '个');
-          console.log('[loadBatches] 批次详情:', batches);
+          console.log('[loadBatches] 批次详情:');
+          batches.forEach((b, i) => {
+            console.log(`  批次${i+1}:`, {
+              _id: b._id,
+              batch: b.batch,
+              quantity: b.quantity,
+              unit: b.unit,
+              minUnit: b.minUnit,
+              packUnit: b.packUnit,
+              expireDate: b.expireDate,
+              productionDate: b.productionDate,
+              location: b.location,
+              drugId: b.drugId,
+              drugName: b.drugName
+            });
+          });
           
           this.selectedBatch = batches[0];
           // 确保数量是数字类型

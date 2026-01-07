@@ -52,8 +52,6 @@
           </view>
         </view>
         <view class="template-actions">
-          <button class="mini-btn" @click="copyTemplateRow('visitor')">模板复制-游客</button>
-          <button class="mini-btn" @click="copyTemplateRow('employee')">模板复制-员工</button>
           <button class="mini-btn" @click="exportTemplateCSV('visitor')">模板CSV-游客</button>
           <button class="mini-btn" @click="exportTemplateCSV('employee')">模板CSV-员工</button>
         </view>
@@ -214,7 +212,7 @@ export default {
         }
       })
       
-      let report = `${dateFormatted}欢乐谷医务室（${locationName}）当日接诊共计${agg.total}人。`
+      let report = `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊共计${agg.total}人。`
       if (agg.visitor.length) {
         const vt = agg.visitor.reduce((s, i) => s + i.total, 0)
         const parts = agg.visitor.map(i => {
@@ -524,32 +522,79 @@ export default {
       })
       const remarkParts = []
       otherMap.forEach((v,k) => remarkParts.push(`${k}${v}人`))
-      const remark = remarkParts.join('、')
+      
+      // 收集出诊信息
+      const outcallMap = new Map()
+      let outcallTotal = 0
+      rows.forEach(r => {
+        const isOutcall = r.isOutcall || false
+        const location = (r.location || '').trim()
+        if (isOutcall) {
+          outcallTotal++
+          if (location) {
+            outcallMap.set(location, (outcallMap.get(location) || 0) + 1)
+          }
+        }
+      })
+      
+      // 构建备注文本
+      let remark = ''
+      if (remarkParts.length > 0) {
+        remark = remarkParts.join('，')
+      }
+      if (outcallTotal > 0) {
+        const outcallParts = []
+        outcallMap.forEach((v, k) => outcallParts.push(`${k}${v}次`))
+        const outcallText = `共计出诊${outcallTotal}次` + (outcallParts.length > 0 ? `，${outcallParts.join('，')}` : '')
+        remark = remark ? `${remark}。${outcallText}` : outcallText
+      }
+      
       // 合计
       const total = rows.length
+      
+      // 格式化函数：0显示为空字符串
+      const formatCount = (count) => count === 0 ? '' : count
+      
+      // 如果当日无记录，所有数据列都为空
+      if (total === 0) {
+        return [
+          dateText,     // 日期/受伤类型
+          '', '', '',   // 扭伤、擦伤、地点
+          '', '', '',   // 烫伤、磕伤、冻伤
+          '', '', '',   // 腹泻、头晕、头痛
+          '', '', '',   // 感冒、脱臼、骨折
+          '',           // 地点
+          '', '', '',   // 过敏、痛经、测血压
+          '',           // 其他
+          '',           // 合计（0时也显示为空）
+          doctorName,
+          ''            // 备注
+        ]
+      }
+      
       // 输出顺序
       return [
-        dateText,               // 日期/受伤类型
-        counts['扭伤'],
-        counts['擦伤'],
+        dateText,                      // 日期/受伤类型
+        formatCount(counts['扭伤']),
+        formatCount(counts['擦伤']),
         loc擦伤 || '',
-        counts['烫伤'],
-        counts['磕伤'],
-        counts['冻伤'],
-        counts['腹泻'],
-        counts['头晕'],
-        counts['头痛'],
-        counts['感冒'],
-        counts['脱臼'],
-        counts['骨折'],
+        formatCount(counts['烫伤']),
+        formatCount(counts['磕伤']),
+        formatCount(counts['冻伤']),
+        formatCount(counts['腹泻']),
+        formatCount(counts['头晕']),
+        formatCount(counts['头痛']),
+        formatCount(counts['感冒']),
+        formatCount(counts['脱臼']),
+        formatCount(counts['骨折']),
         loc骨折 || '',
-        counts['过敏'],
-        counts['痛经'],
-        counts['测血压'],
-        other,
-        total,
+        formatCount(counts['过敏']),
+        formatCount(counts['痛经']),
+        formatCount(counts['测血压']),
+        formatCount(other),            // 其他（0时显示为空）
+        total,                         // 合计（总数）
         doctorName,
-        remark
+        remark                         // 备注：详细列出"其他"项目
       ]
     },
     copyTemplateRow(type) {
@@ -588,43 +633,12 @@ export default {
         return
       }
 
-      // 生成完整的日报内容（包括表格，Excel格式）
-      let fullContent = this.reportContent + '\n\n'
-      
-      if (this.tableData && this.tableData.visitor && this.tableData.visitor.length > 0) {
-        fullContent += '游客接诊明细：\n'
-        // 表头（制表符分隔）
-        fullContent += '疾病名称\t地点\t出诊\t接诊医生\n'
-        // 数据行（制表符分隔）
-        this.tableData.visitor.forEach(item => {
-          const disease = item.diseaseName || '-'
-          const location = item.location || '-'
-          const outcall = item.isOutcall ? '是' : '否'
-          const doctor = item.doctorName || '-'
-          fullContent += `${disease}\t${location}\t${outcall}\t${doctor}\n`
-        })
-        fullContent += '\n'
-      }
-
-      if (this.tableData && this.tableData.employee && this.tableData.employee.length > 0) {
-        fullContent += '员工接诊明细：\n'
-        // 表头（制表符分隔）
-        fullContent += '疾病名称\t地点\t出诊\t接诊医生\n'
-        // 数据行（制表符分隔）
-        this.tableData.employee.forEach(item => {
-          const disease = item.diseaseName || '-'
-          const location = item.location || '-'
-          const outcall = item.isOutcall ? '是' : '否'
-          const doctor = item.doctorName || '-'
-          fullContent += `${disease}\t${location}\t${outcall}\t${doctor}\n`
-        })
-      }
-
+      // 只复制文本日报内容，不包含表格
       uni.setClipboardData({
-        data: fullContent.trim(),
+        data: this.reportContent.trim(),
         success: () => {
           uni.showToast({
-            title: '已复制到剪贴板（可粘贴到Excel）',
+            title: '已复制到剪贴板',
             icon: 'success',
             duration: 2000
           })

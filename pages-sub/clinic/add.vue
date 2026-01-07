@@ -633,54 +633,29 @@
         </view>
         <view class="batch-item">
           <text class="label">有效期：</text>
-          <text>{{ formatDate(selectedBatch.expiryDate) }}</text>
+          <text>{{ formatDate(selectedBatch.expireDate) }}</text>
           <text v-if="selectedBatch.daysToExpiry <= 60" class="warning">
             （{{ selectedBatch.daysToExpiry }}天后到期）
           </text>
         </view>
         <view class="batch-item">
           <text class="label">剩余库存：</text>
-          <text>{{ selectedBatch.quantity }} {{ selectedDrug.minUnit }}</text>
+          <text>{{ selectedBatch.quantity }} {{ selectedBatch.minUnit || selectedBatch.unit }}</text>
         </view>
       </view>
     </view>
 
-    <!-- 备注 -->
-    <view class="form-section">
-      <view class="section-title">备注</view>
-      <view class="form-item">
-        <input
-          v-model="form.remark"
-          type="text"
-          placeholder="其他说明或建议（可选）"
-          maxlength="200"
-          class="input-uniform"
-        />
-      </view>
-    </view>
+
 
     <!-- 接诊医生签名 -->
     <view class="form-section">
-      <view class="section-title">接诊医生签名</view>
-        <view class="signature-info">
-          <view class="signature-tip">
-          <text class="tip-text">请医生在下方签名确认本次就诊信息</text>
-        </view>
-      </view>
       <view class="signature-section">
-        <view class="signature-label-row">
-          <view class="signature-label">医生签名</view>
-          <text class="required">*</text>
-        </view>
         <Signature
           :key="signatureKey"
           v-model="form.doctorSign"
           title="医生签名"
           @change="onDoctorSignChange"
         />
-        <view v-if="form.signTime" class="signature-time">
-          签名时间：{{ form.signTime }}
-        </view>
       </view>
     </view>
 
@@ -4846,17 +4821,7 @@ export default {
           console.error('查询门诊记录失败:', err);
         }
 
-        if (records.length === 0) {
-          uni.hideLoading();
-          uni.showToast({
-            title: '当日无门诊记录',
-            icon: 'none',
-            duration: 2000
-          });
-          return;
-        }
-
-        // 生成文档和统计信息
+        // 生成文档和统计信息（即使没有记录也生成）
         const report = this.formatDailyReport(records, dateStr, locationName);
         const stats = this.calculateStats(records);
         
@@ -4963,7 +4928,12 @@ export default {
       });
 
       // 生成文档内容
-      let report = `${dateFormatted}欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
+      let report = '';
+      
+      // 只有当有记录时才显示接诊人数
+      if (stats.total > 0) {
+        report = `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
+      }
 
       // 游客统计
       if (stats.visitor.length > 0) {
@@ -6548,9 +6518,12 @@ export default {
 }
 
 .continue-option {
-  padding: 20rpx 24rpx 40rpx;
-  margin: 0 auto 8rpx;
   max-width: 702rpx;
+  margin: 0 auto 8rpx;
+  padding: 32rpx 30rpx 30rpx;
+  background: #FFFFF0;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
 
 .continue-card {

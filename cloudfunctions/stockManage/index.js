@@ -340,6 +340,11 @@ async function getBatchesByDrugId(data) {
     return {
       ...batch,
       quantity: quantity,  // 确保是数字类型
+      unit: batch.unit || batch.minUnit || batch.packUnit || '盒',  // 兼容多种单位字段
+      minUnit: batch.minUnit || batch.unit || '片',  // 确保有最小单位
+      packUnit: batch.packUnit || batch.unit || '盒',  // 确保有包装单位
+      expireDate: batch.expireDate || '',  // 确保有有效期字段
+      productionDate: batch.productionDate || '',  // 确保有生产日期字段
       isNearExpiry: isNearExpiry,
       daysToExpiry: Math.floor((expireDate - now) / (1000 * 60 * 60 * 24))
     }

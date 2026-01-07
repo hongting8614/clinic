@@ -365,15 +365,15 @@ export default {
 	flex-direction: row;
 	align-items: center;
 	gap: 6rpx;
+}
 
 .placeholder-icon {
-		font-size: 24rpx;
+	font-size: 24rpx;
 }
 
 .placeholder-text {
-		font-size: 24rpx;
-		color: #999999;
-	}
+	font-size: 24rpx;
+	color: #999999;
 }
 
 .signature-preview {
@@ -385,19 +385,19 @@ export default {
 	position: absolute;
 	bottom: 8rpx;
 	right: 12rpx;
-	
-	.btn-resign {
-		padding: 4rpx 16rpx;
-		background-color: #FF976A;
-		color: #FFFFFF;
-		font-size: 20rpx;
-		border-radius: 16rpx;
-		border: none;
-		
-		&::after {
-			border: none;
-		}
-	}
+}
+
+.btn-resign {
+	padding: 4rpx 16rpx;
+	background-color: #FF976A;
+	color: #FFFFFF;
+	font-size: 20rpx;
+	border-radius: 16rpx;
+	border: none;
+}
+
+.btn-resign::after {
+	border: none;
 }
 
 // ==================== 全屏签名弹窗 ====================
@@ -438,6 +438,7 @@ export default {
 	padding: 0 30rpx;
 	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 	flex-shrink: 0;
+}
 
 .header-left,
 .header-right {
@@ -445,6 +446,7 @@ export default {
 	align-items: center;
 	gap: 10rpx;
 	padding: 10rpx;
+}
 
 .header-icon {
 	font-size: 32rpx;
@@ -453,19 +455,17 @@ export default {
 .header-text {
 	font-size: 28rpx;
 	color: #333333;
-		}
 }
 
 .header-center {
 	flex: 1;
 	text-align: center;
+}
 
 .header-title {
 	font-size: 32rpx;
 	font-weight: bold;
 	color: #333333;
-		}
-	}
 }
 
 // 签名画布
@@ -478,6 +478,7 @@ export default {
 	position: relative;
 	overflow: hidden;
 	border: 1rpx solid #E5E5E5;
+}
 
 .signature-canvas {
 	width: 100%;
@@ -493,7 +494,6 @@ export default {
 	color: #CCCCCC;
 	pointer-events: none;
 	z-index: 0;
-	}
 }
 
 // 底部按钮
@@ -508,33 +508,33 @@ export default {
 	gap: 20rpx;
 	flex-shrink: 0;
 	border-radius: 24rpx;
+}
 
-	button {
-		flex: 1;
-		height: 72rpx;
-		border-radius: 36rpx;
-		font-size: 28rpx;
-		border: none;
-		
-		&::after {
-			border: none;
-		}
-	}
-	
-	.btn-clear {
-		background-color: #F7F8FA;
-		color: #646566;
-	}
-	
-	.btn-save {
-		background-color: #07C160;
-		color: #FFFFFF;
-		
-		&:disabled {
-			background-color: #C8C9CC;
-			color: #FFFFFF;
-		}
-	}
+.signature-footer button {
+	flex: 1;
+	height: 72rpx;
+	border-radius: 36rpx;
+	font-size: 28rpx;
+	border: none;
+}
+
+.signature-footer button::after {
+	border: none;
+}
+
+.btn-clear {
+	background-color: #F7F8FA;
+	color: #646566;
+}
+
+.btn-save {
+	background-color: #07C160;
+	color: #FFFFFF;
+}
+
+.btn-save:disabled {
+	background-color: #C8C9CC;
+	color: #FFFFFF;
 }
 </style>
 

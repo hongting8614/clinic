@@ -101,7 +101,7 @@ var components
 try {
   components = {
     signature: function () {
-      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 453))
+      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 401))
     },
   }
 } catch (e) {
@@ -208,7 +208,7 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 var _common = _interopRequireDefault(__webpack_require__(/*! @/utils/common.js */ 94));
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 453));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 401));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {

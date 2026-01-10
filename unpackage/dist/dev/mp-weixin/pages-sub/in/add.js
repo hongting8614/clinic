@@ -101,7 +101,7 @@ var components
 try {
   components = {
     signature: function () {
-      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 453))
+      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 401))
     },
   }
 } catch (e) {
@@ -253,7 +253,7 @@ var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runt
 var _common = _interopRequireDefault(__webpack_require__(/*! @/utils/common.js */ 94));
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 453));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 401));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -886,87 +886,129 @@ var _default = {
     scanBarcode: function scanBarcode() {
       var _this6 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
-        var scanRes, cleanBarcode;
+        var scanRes, result, scanType, _scanRes, err, res, cleanBarcode;
         return _regenerator.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
-                _context3.next = 3;
+                console.log('🎯 开始扫码...');
+
+                // 调用微信官方扫码API
+                _context3.next = 4;
                 return uni.scanCode({
                   // 支持的码类型
-                  scanType: ['barCode',
-                  // 条形码（一维码）
-                  'qrCode',
-                  // 二维码
-                  'datamatrix',
-                  // Data Matrix码
-                  'pdf417' // PDF417码
-                  ],
-
-                  // 是否只能从相机扫码，默认false（可以从相册选择）
-                  onlyFromCamera: false,
+                  scanType: ['barCode', 'qrCode'],
+                  // 是否只能从相机扫码
+                  onlyFromCamera: true,
                   // 是否自动解码
                   autoDecrypt: true
                 });
-              case 3:
+              case 4:
                 scanRes = _context3.sent;
-                console.log('📷 扫码结果:', scanRes);
-                console.log('📷 条形码:', scanRes.result);
-                console.log('📷 条形码类型:', scanRes.scanType);
+                console.log('📷 扫码成功:', scanRes);
+                console.log('📷 完整返回:', JSON.stringify(scanRes));
+
+                // uni.scanCode 返回格式：[err, res]
+                // 需要从数组中取出结果
+                result = null;
+                scanType = null;
+                if (Array.isArray(scanRes)) {
+                  // 数组格式：[err, res]
+                  _scanRes = (0, _slicedToArray2.default)(scanRes, 2), err = _scanRes[0], res = _scanRes[1];
+                  if (res && res.result) {
+                    result = res.result;
+                    scanType = res.scanType;
+                  }
+                } else if (scanRes && scanRes.result) {
+                  // 对象格式：{result, scanType}
+                  result = scanRes.result;
+                  scanType = scanRes.scanType;
+                }
+                console.log('📷 扫码结果:', result);
+                console.log('📷 扫码类型:', scanType);
 
                 // 检查扫码结果
-                if (!(!scanRes || !scanRes.result)) {
-                  _context3.next = 11;
+                if (result) {
+                  _context3.next = 16;
                   break;
                 }
                 console.error('❌ 扫码结果为空');
                 uni.showToast({
                   title: '扫码失败，请重试',
-                  icon: 'none'
+                  icon: 'none',
+                  duration: 2000
                 });
                 return _context3.abrupt("return");
-              case 11:
+              case 16:
                 // 清洗条形码：去除空格、特殊字符、换行符
-                cleanBarcode = scanRes.result.trim() // 去除首尾空格
+                cleanBarcode = String(result).trim() // 去除首尾空格
                 .replace(/\s/g, '') // 去除所有空格
-                .replace(/[\r\n]/g, ''); // 去除换行符
-                console.log('📷 原始条形码:', scanRes.result);
+                .replace(/[\r\n]/g, '') // 去除换行符
+                .replace(/[^\w\-]/g, ''); // 只保留字母数字和连字符
+                console.log('📷 原始条形码:', result);
                 console.log('📷 清洗后条形码:', cleanBarcode);
                 console.log('📷 条形码长度:', cleanBarcode.length);
 
                 // 验证条形码格式
-                if (!(!cleanBarcode || cleanBarcode.length < 8)) {
-                  _context3.next = 18;
+                if (!(!cleanBarcode || cleanBarcode.length < 6)) {
+                  _context3.next = 23;
                   break;
                 }
                 uni.showToast({
-                  title: '条形码格式错误',
-                  icon: 'none'
+                  title: '条形码格式错误，请重新扫描',
+                  icon: 'none',
+                  duration: 2000
                 });
                 return _context3.abrupt("return");
-              case 18:
-                _context3.next = 20;
+              case 23:
+                _context3.next = 25;
                 return _this6.queryDrugByBarcode(cleanBarcode);
-              case 20:
-                _context3.next = 26;
+              case 25:
+                _context3.next = 38;
                 break;
-              case 22:
-                _context3.prev = 22;
+              case 27:
+                _context3.prev = 27;
                 _context3.t0 = _context3["catch"](0);
-                console.error('扫码错误:', _context3.t0);
-                if (_context3.t0.errMsg && !_context3.t0.errMsg.includes('cancel')) {
-                  uni.showToast({
-                    title: '扫码失败',
-                    icon: 'none'
-                  });
+                console.error('❌ 扫码错误:', _context3.t0);
+                console.error('错误信息:', _context3.t0.errMsg);
+
+                // 用户取消扫码
+                if (!(_context3.t0.errMsg && _context3.t0.errMsg.includes('cancel'))) {
+                  _context3.next = 34;
+                  break;
                 }
-              case 26:
+                console.log('用户取消扫码');
+                return _context3.abrupt("return");
+              case 34:
+                if (!(_context3.t0.errMsg && _context3.t0.errMsg.includes('authorize'))) {
+                  _context3.next = 37;
+                  break;
+                }
+                uni.showModal({
+                  title: '需要相机权限',
+                  content: '请在手机设置中允许小程序使用相机权限',
+                  confirmText: '去设置',
+                  success: function success(res) {
+                    if (res.confirm) {
+                      uni.openSetting();
+                    }
+                  }
+                });
+                return _context3.abrupt("return");
+              case 37:
+                // 其他错误
+                uni.showToast({
+                  title: '扫码失败，请重试',
+                  icon: 'none',
+                  duration: 2000
+                });
+              case 38:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[0, 22]]);
+        }, _callee3, null, [[0, 27]]);
       }))();
     },
     queryDrugByBarcode: function queryDrugByBarcode(barcode) {

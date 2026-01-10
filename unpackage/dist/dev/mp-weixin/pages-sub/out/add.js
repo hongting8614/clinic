@@ -101,10 +101,10 @@ var components
 try {
   components = {
     batchSelector: function () {
-      return __webpack_require__.e(/*! import() | components/batch-selector/index */ "components/batch-selector/index").then(__webpack_require__.bind(null, /*! @/components/batch-selector/index.vue */ 460))
+      return __webpack_require__.e(/*! import() | components/batch-selector/index */ "components/batch-selector/index").then(__webpack_require__.bind(null, /*! @/components/batch-selector/index.vue */ 408))
     },
     signature: function () {
-      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 453))
+      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 401))
     },
   }
 } catch (e) {
@@ -221,16 +221,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
 var _common = _interopRequireDefault(__webpack_require__(/*! @/utils/common.js */ 94));
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 453));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 401));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var BatchSelector = function BatchSelector() {
   __webpack_require__.e(/*! require.ensure | components/batch-selector/index */ "components/batch-selector/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/batch-selector/index.vue */ 460));
+    return resolve(__webpack_require__(/*! @/components/batch-selector/index.vue */ 408));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -457,7 +458,7 @@ var _default = {
     autoAllocateBatch: function autoAllocateBatch(index) {
       var _this3 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        var item, result, allocations, allocation;
+        var item, result, _result$result$data, allocations, _result$result$data2, totalStock, errorMsg, allocation, _result$result, _errorMsg;
         return _regenerator.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -479,20 +480,27 @@ var _default = {
                 return _context.abrupt("return");
               case 8:
                 if (item.drugId) {
-                  _context.next = 11;
+                  _context.next = 12;
                   break;
                 }
+                console.error('❌ 药材ID缺失:', item);
                 uni.showToast({
                   title: '药材ID缺失，无法分配批次',
                   icon: 'none'
                 });
                 return _context.abrupt("return");
-              case 11:
+              case 12:
+                console.log('📦 开始分配批次:', {
+                  drugId: item.drugId,
+                  drugName: item.drugName,
+                  quantity: item.quantity,
+                  location: 'drug_storage'
+                });
                 uni.showLoading({
                   title: '分配批次中...'
                 });
-                _context.prev = 12;
-                _context.next = 15;
+                _context.prev = 14;
+                _context.next = 17;
                 return wx.cloud.callFunction({
                   name: 'stockManage',
                   data: {
@@ -504,20 +512,34 @@ var _default = {
                     }
                   }
                 });
-              case 15:
+              case 17:
                 result = _context.sent;
-                console.log('🔴 旧方案分配结果:', result.result);
-                if (!result.result.success) {
-                  _context.next = 28;
+                console.log('📦 云函数返回结果:', result.result);
+                console.log('📦 result.result.data:', result.result.data);
+                console.log('📦 result.result.data 的类型:', (0, _typeof2.default)(result.result.data));
+                console.log('📦 result.result.data 的所有键:', result.result.data ? Object.keys(result.result.data) : 'null');
+                if (!(result.result && result.result.success)) {
+                  _context.next = 39;
                   break;
                 }
-                allocations = result.result.data.allocations || [];
+                // ⭐ 注意：云函数返回的是 allocation（单数），不是 allocations（复数）
+                allocations = ((_result$result$data = result.result.data) === null || _result$result$data === void 0 ? void 0 : _result$result$data.allocation) || [];
+                console.log('📦 分配的批次数量:', allocations.length);
+                console.log('📦 分配详情:', allocations);
                 if (!(allocations.length === 0)) {
-                  _context.next = 21;
+                  _context.next = 31;
                   break;
                 }
-                throw new Error('库存不足，无法分配批次');
-              case 21:
+                // 更详细的错误提示
+                totalStock = ((_result$result$data2 = result.result.data) === null || _result$result$data2 === void 0 ? void 0 : _result$result$data2.totalStock) || 0;
+                errorMsg = totalStock > 0 ? "\u5F53\u524D\u5E93\u5B58 ".concat(totalStock, " ").concat(item.unit, "\uFF0C\u9700\u6C42 ").concat(item.quantity, " ").concat(item.unit, "\uFF0C\u5E93\u5B58\u4E0D\u8DB3") : "\u8BE5\u836F\u6750\u5728\u603B\u5E93\u6682\u65E0\u5E93\u5B58";
+                console.error('❌ 库存不足:', {
+                  drugName: item.drugName,
+                  required: item.quantity,
+                  available: totalStock
+                });
+                throw new Error(errorMsg);
+              case 31:
                 // 转换为前端显示格式
                 allocation = allocations.map(function (alloc) {
                   return {
@@ -529,7 +551,10 @@ var _default = {
                     isNearExpiry: alloc.isNearExpiry || false,
                     daysToExpire: alloc.daysToExpiry || alloc.daysToExpire
                   };
-                }); // 保存分配结果
+                });
+                console.log('✅ 批次分配成功:', allocation);
+
+                // 保存分配结果
                 _this3.$set(item, 'batchAllocation', allocation);
                 _this3.$set(item, 'batchCount', allocation.length);
                 _this3.$set(item, 'hasNearExpiry', allocation.some(function (b) {
@@ -538,6 +563,7 @@ var _default = {
 
                 // 近效期提示
                 if (item.hasNearExpiry) {
+                  uni.hideLoading();
                   uni.showModal({
                     title: '近效期提示',
                     content: "".concat(item.drugName, " \u5305\u542B\u8FD1\u6548\u671F\u6279\u6B21\uFF0C\u662F\u5426\u7EE7\u7EED\uFF1F"),
@@ -551,39 +577,46 @@ var _default = {
                     }
                   });
                 } else {
+                  uni.hideLoading();
                   uni.showToast({
                     title: "\u2705 \u5DF2\u5206\u914D ".concat(allocation.length, " \u4E2A\u6279\u6B21"),
                     icon: 'success',
                     duration: 1500
                   });
                 }
-                _context.next = 29;
+                _context.next = 42;
                 break;
-              case 28:
-                throw new Error(result.result.message || '分配失败');
-              case 29:
-                _context.next = 36;
-                break;
-              case 31:
-                _context.prev = 31;
-                _context.t0 = _context["catch"](12);
-                console.error('批次分配失败:', _context.t0);
-                uni.showToast({
-                  title: _context.t0.message || '分配失败',
-                  icon: 'none',
-                  duration: 2000
-                });
-                _this3.$set(item, 'batchAllocation', []);
-              case 36:
-                _context.prev = 36;
-                uni.hideLoading();
-                return _context.finish(36);
               case 39:
+                _errorMsg = ((_result$result = result.result) === null || _result$result === void 0 ? void 0 : _result$result.message) || '分配失败';
+                console.error('❌ 云函数返回失败:', _errorMsg);
+                throw new Error(_errorMsg);
+              case 42:
+                _context.next = 52;
+                break;
+              case 44:
+                _context.prev = 44;
+                _context.t0 = _context["catch"](14);
+                console.error('❌ 批次分配失败:', _context.t0);
+                uni.hideLoading();
+
+                // 显示更友好的错误提示
+                uni.showModal({
+                  title: '批次分配失败',
+                  content: _context.t0.message || '未知错误',
+                  showCancel: false,
+                  confirmText: '知道了'
+                });
+
+                // 清空分配结果
+                _this3.$set(item, 'batchAllocation', []);
+                _this3.$set(item, 'batchCount', 0);
+                _this3.$set(item, 'hasNearExpiry', false);
+              case 52:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[12, 31, 36, 39]]);
+        }, _callee, null, [[14, 44]]);
       }))();
     },
     // 保存草稿

@@ -66,6 +66,22 @@
 					</view>
 				</view>
 				
+				<!-- 管理员 & 医生：新建出库单（项目经理首页不再展示此入口） -->
+				<view
+					v-if="canEditInOut && (role === 'admin' || role === 'doctor')"
+					class="grid-card clinic-card register"
+					@tap="goToPage('/pages-sub/out/add')"
+				>
+					<view class="clinic-card-glass"></view>
+					<view class="clinic-card-content">
+						<view class="clinic-card-icon outbound"></view>
+						<view class="clinic-card-text">
+							<text class="clinic-card-title">新建出库单</text>
+							<text class="clinic-card-desc"></text>
+						</view>
+					</view>
+				</view>
+				
 				<!-- 管理员 & 医生：待复核出库单 -->
 				<view
 					v-if="canReviewOut && (role === 'admin' || role === 'doctor')"
@@ -80,22 +96,6 @@
 							<view class="review-count-badge">
 								<text class="review-count-text">{{ pendingOutReviewCount || 0 }}</text>
 							</view>
-						</view>
-					</view>
-				</view>
-				
-				<!-- 管理员 & 医生：新建出库单（项目经理首页不再展示此入口） -->
-				<view
-					v-if="canEditInOut && (role === 'admin' || role === 'doctor')"
-					class="grid-card clinic-card register"
-					@tap="goToPage('/pages-sub/out/add')"
-				>
-					<view class="clinic-card-glass"></view>
-					<view class="clinic-card-content">
-						<view class="clinic-card-icon outbound"></view>
-						<view class="clinic-card-text">
-							<text class="clinic-card-title">新建出库单</text>
-							<text class="clinic-card-desc"></text>
 						</view>
 					</view>
 				</view>
@@ -230,11 +230,8 @@
 				
 				<!-- 医生：一个门诊卡片 + 一个近效期药材卡片 -->
 				<block v-if="role === 'doctor'">
-					<!-- 当前园区的今日就诊人数 -->
-					<view
-						class="stat-card"
-						@tap="goToPage(`/pages-sub/clinic/list?filter=today&location=${currentClinicLocation}`)"
-					>
+					<!-- 当前园区的今日就诊人数 - 仅显示数据，不可点击 -->
+					<view class="stat-card">
 						<view class="stat-icon-wrapper orange">
 							<view class="stat-icon-shape">
 								<view class="pill-shape"></view>
@@ -268,10 +265,10 @@
 					</view>
 				</block>
 				
-				<!-- 管理员 / 项目经理等：继续显示陆园 / 水园两张门诊卡片 -->
+				<!-- 管理员 / 项目经理等：继续显示陆园 / 水园两张门诊卡片 - 仅显示数据，不可点击 -->
 				<block v-else>
 					<!-- 今日就诊人数（陆园） -->
-					<view class="stat-card" @tap="goToPage('/pages-sub/clinic/list?filter=today&location=land_park')">
+					<view class="stat-card">
 						<view class="stat-icon-wrapper orange">
 							<view class="stat-icon-shape">
 								<view class="pill-shape"></view>
@@ -287,7 +284,7 @@
 					</view>
 					
 					<!-- 今日就诊人数（水园） -->
-					<view class="stat-card" @tap="goToPage('/pages-sub/clinic/list?filter=today&location=water_park')">
+					<view class="stat-card">
 						<view class="stat-icon-wrapper red">
 							<view class="stat-icon-shape">
 								<view class="alert-triangle"></view>

@@ -50,13 +50,6 @@
       ]
     },
     {
-      "root": "pages-sub/requisition",
-      "pages": [
-        "add",
-        "list"
-      ]
-    },
-    {
       "root": "pages-sub/inventory",
       "pages": [
         "add",
@@ -65,24 +58,11 @@
       ]
     },
     {
-      "root": "pages-sub/damage",
-      "pages": [
-        "add",
-        "list"
-      ]
-    },
-    {
-      "root": "pages-sub/return",
-      "pages": [
-        "add",
-        "list"
-      ]
-    },
-    {
       "root": "pages-sub/stock",
       "pages": [
-        "query",
-        "park"
+        "overview",
+        "park",
+        "query"
       ]
     },
     {
@@ -93,12 +73,15 @@
         "outbound",
         "stock",
         "daily",
-        "weekly",
-        "monthly",
         "clinic",
-        "clinic-analysis",
         "prescription",
         "record"
+      ]
+    },
+    {
+      "root": "pages-sub/analysis",
+      "pages": [
+        "index"
       ]
     },
     {

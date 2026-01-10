@@ -57,11 +57,12 @@
             已阅读并同意
           </button>
           <view v-if="!esigAgreeEnabled" class="esig-hint">
-            请先向下滑动阅读完整内容后再点击“已阅读并同意”。
+            请先向下滑动阅读完整内容后再点击"已阅读并同意"。
           </view>
         </view>
       </view>
     </view>
+    
     <!-- 顶部标题区域 -->
     <view class="header-card">
       <view class="header-content">
@@ -93,19 +94,11 @@
           </view>
         </view>
 
-        <!-- 门诊日报：跳转到专用日报页面，自动按当天+园区生成 -->
-        <view class="grid-card" @tap="goToPage('/pages-sub/report/daily')">
+        <!-- 门诊日报：统一使用快速生成逻辑 -->
+        <view class="grid-card" @tap="generateTodayReport">
           <view class="card-icon daily"></view>
           <view class="card-text">
             <text class="card-title">门诊日报</text>
-          </view>
-        </view>
-
-        <!-- 门诊统计分析 -->
-        <view class="grid-card" @tap="goToPage('/pages-sub/report/clinic-analysis')">
-          <view class="card-icon analysis"></view>
-          <view class="card-text">
-            <text class="card-title">门诊统计分析</text>
           </view>
         </view>
       </view>
@@ -116,17 +109,43 @@
         <text class="section-title">快速导出</text>
       </view>
       <view class="export-grid">
-        <view class="export-btn" @tap="exportClinicExcel">
+        <view class="export-btn" @tap="showExportDialog">
           <text class="export-icon">📄</text>
-          <text class="export-text">就诊人报表</text>
+          <text class="export-text">门诊登记表</text>
         </view>
-        <view class="export-btn" @tap="exportUsageExcel">
-          <text class="export-icon">💊</text>
-          <text class="export-text">用药统计报表</text>
+      </view>
+    </view>
+
+    <!-- 导出时间段选择弹窗 -->
+    <view v-if="showDatePicker" class="date-picker-mask" @tap="closeDatePicker">
+      <view class="date-picker-dialog" @tap.stop>
+        <view class="dialog-title">选择导出时间段</view>
+        
+        <view class="date-range-section">
+          <view class="date-item">
+            <text class="date-label">开始日期</text>
+            <picker mode="date" :value="exportStartDate" @change="onStartDateChange">
+              <view class="date-value">{{ exportStartDate || '请选择' }}</view>
+            </picker>
+          </view>
+          
+          <view class="date-item">
+            <text class="date-label">结束日期</text>
+            <picker mode="date" :value="exportEndDate" @change="onEndDateChange">
+              <view class="date-value">{{ exportEndDate || '请选择' }}</view>
+            </picker>
+          </view>
         </view>
-        <view class="export-btn" @tap="exportStatsExcel">
-          <text class="export-icon">📑</text>
-          <text class="export-text">就诊+用药(双表)</text>
+
+        <view class="quick-date-btns">
+          <view class="quick-btn" @tap="selectToday">今天</view>
+          <view class="quick-btn" @tap="selectThisWeek">本周</view>
+          <view class="quick-btn" @tap="selectThisMonth">本月</view>
+        </view>
+
+        <view class="dialog-actions">
+          <button class="dialog-btn cancel" @tap="closeDatePicker">取消</button>
+          <button class="dialog-btn confirm" @tap="confirmExport">确定导出</button>
         </view>
       </view>
     </view>
@@ -139,7 +158,10 @@ export default {
     return {
       showEsigNotice: false,
       esigAgreeEnabled: false,
-      esigNoMore: false
+      esigNoMore: false,
+      showDatePicker: false,
+      exportStartDate: '',
+      exportEndDate: ''
     };
   },
   onShow() {
@@ -154,6 +176,60 @@ export default {
         }
       })
     },
+    
+    // 生成今日门诊日报（与报表中心逻辑统一）
+    async generateTodayReport() {
+      try {
+        uni.showLoading({ title: '生成中...' })
+        
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        const dateStr = `${year}-${month}-${day}`
+        
+        // 获取最近使用的园区
+        let location = 'land_park'
+        try {
+          const last = uni.getStorageSync('clinic_last_location')
+          if (last === 'land_park' || last === 'water_park') location = last
+        } catch (e) {}
+        
+        // 查询今日门诊记录
+        const res = await wx.cloud.callFunction({
+          name: 'clinicRecords',
+          data: {
+            action: 'list',
+            data: {
+              location,
+              startDate: dateStr,
+              endDate: dateStr,
+              pageSize: 1000,
+              useClinicRecords: true
+            }
+          }
+        })
+        
+        const records = res?.result?.data?.list || []
+        
+        uni.hideLoading()
+        
+        if (!records || records.length === 0) {
+          uni.showToast({ title: '今日暂无门诊记录', icon: 'none' })
+          return
+        }
+        
+        // 跳转到门诊日报页面
+        uni.navigateTo({
+          url: `/pages-sub/report/daily?date=${dateStr}&location=${location}`
+        })
+      } catch (err) {
+        console.error('生成日报失败:', err)
+        uni.hideLoading()
+        uni.showToast({ title: '生成失败', icon: 'none' })
+      }
+    },
+    
     checkEsigNotice() {
       try {
         const closed = uni.getStorageSync('esig_notice_closed');
@@ -186,31 +262,104 @@ export default {
       }
       this.showEsigNotice = false;
     },
-    showDevTip() {
-      uni.showToast({
-        title: '门诊分析功能开发中',
-        icon: 'none'
-      })
+    
+    // 显示导出对话框
+    showExportDialog() {
+      // 默认选择今天
+      const today = this.formatDate(new Date())
+      this.exportStartDate = today
+      this.exportEndDate = today
+      this.showDatePicker = true
     },
-    getTodayRange() {
-      const today = new Date()
-      const y = today.getFullYear()
-      const m = String(today.getMonth() + 1).padStart(2, '0')
-      const d = String(today.getDate()).padStart(2, '0')
-      const dateStr = `${y}-${m}-${d}`
-      return { startDate: dateStr, endDate: dateStr }
+    
+    // 关闭日期选择器
+    closeDatePicker() {
+      this.showDatePicker = false
     },
+    
+    // 开始日期变化
+    onStartDateChange(e) {
+      this.exportStartDate = e.detail.value
+    },
+    
+    // 结束日期变化
+    onEndDateChange(e) {
+      this.exportEndDate = e.detail.value
+    },
+    
+    // 格式化日期
+    formatDate(date) {
+      const y = date.getFullYear()
+      const m = String(date.getMonth() + 1).padStart(2, '0')
+      const d = String(date.getDate()).padStart(2, '0')
+      return `${y}-${m}-${d}`
+    },
+    
+    // 选择今天
+    selectToday() {
+      const today = this.formatDate(new Date())
+      this.exportStartDate = today
+      this.exportEndDate = today
+    },
+    
+    // 选择本周
+    selectThisWeek() {
+      const now = new Date()
+      const day = now.getDay()
+      const diff = day === 0 ? 6 : day - 1 // 周一为第一天
+      
+      const monday = new Date(now)
+      monday.setDate(now.getDate() - diff)
+      
+      const sunday = new Date(monday)
+      sunday.setDate(monday.getDate() + 6)
+      
+      this.exportStartDate = this.formatDate(monday)
+      this.exportEndDate = this.formatDate(sunday)
+    },
+    
+    // 选择本月
+    selectThisMonth() {
+      const now = new Date()
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      
+      this.exportStartDate = this.formatDate(firstDay)
+      this.exportEndDate = this.formatDate(lastDay)
+    },
+    
+    // 确认导出
+    async confirmExport() {
+      if (!this.exportStartDate || !this.exportEndDate) {
+        uni.showToast({ title: '请选择时间段', icon: 'none' })
+        return
+      }
+      
+      // 验证日期范围
+      if (this.exportStartDate > this.exportEndDate) {
+        uni.showToast({ title: '开始日期不能晚于结束日期', icon: 'none' })
+        return
+      }
+      
+      this.closeDatePicker()
+      await this.exportClinicExcel()
+    },
+    
+    // 导出门诊登记表
     async exportClinicExcel() {
       try {
-        const { startDate, endDate } = this.getTodayRange()
+        // 获取当前用户的园区信息
+        const userInfo = uni.getStorageSync('userInfo') || {}
+        const location = userInfo.location || 'land_park' // 默认陆园
+        
         uni.showLoading({ title: '生成报表...', mask: true })
         const res = await this.$api.callFunction('reports', {
           action: 'exportClinicExcel',
           data: {
-            startDate,
-            endDate,
-            location: 'all',
-            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
+            startDate: this.exportStartDate,
+            endDate: this.exportEndDate,
+            location: location,
+            printUser: userInfo.name || ''
           }
         })
         uni.hideLoading()
@@ -227,69 +376,11 @@ export default {
         }
       } catch (err) {
         uni.hideLoading()
+        console.error('导出失败:', err)
         uni.showToast({ title: '导出失败', icon: 'none' })
       }
     },
-    async exportUsageExcel() {
-      try {
-        const { startDate, endDate } = this.getTodayRange()
-        uni.showLoading({ title: '生成报表...', mask: true })
-        const res = await this.$api.callFunction('reports', {
-          action: 'exportClinicUsageExcel',
-          data: {
-            startDate,
-            endDate,
-            location: 'all',
-            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
-          }
-        })
-        uni.hideLoading()
-        if (res?.success && res.fileID && res.filename) {
-          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
-          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
-          if (fileUrl) {
-            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
-          } else {
-            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
-          }
-        } else {
-          uni.showToast({ title: '生成报表失败', icon: 'none' })
-        }
-      } catch (err) {
-        uni.hideLoading()
-        uni.showToast({ title: '导出失败', icon: 'none' })
-      }
-    },
-    async exportStatsExcel() {
-      try {
-        const { startDate, endDate } = this.getTodayRange()
-        uni.showLoading({ title: '生成报表...', mask: true })
-        const res = await this.$api.callFunction('reports', {
-          action: 'exportClinicStatsExcel',
-          data: {
-            startDate,
-            endDate,
-            location: 'all',
-            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
-          }
-        })
-        uni.hideLoading()
-        if (res?.success && res.fileID && res.filename) {
-          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
-          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
-          if (fileUrl) {
-            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
-          } else {
-            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
-          }
-        } else {
-          uni.showToast({ title: '生成报表失败', icon: 'none' })
-        }
-      } catch (err) {
-        uni.hideLoading()
-        uni.showToast({ title: '导出失败', icon: 'none' })
-      }
-    },
+    
     downloadAndSaveLocal(fileUrl, filename) {
       const fs = wx.getFileSystemManager()
       const folder = `${wx.env.USER_DATA_PATH}`
@@ -342,17 +433,14 @@ export default {
 <style>
 .clinic-page {
 	min-height: 100vh;
-	/* 使用与首页/“我的”页相同的蓝色渐变背景，统一整体风格 */
 	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
 	padding-bottom: 40rpx;
 }
 
 .header-card {
-	/* 统一三张大卡片的上下间距：上 22rpx，下 16rpx */
 	margin: 22rpx auto 16rpx;
 	padding: 32rpx 28rpx;
 	max-width: 702rpx;
-	/* 顶部门诊工作台卡片：象牙白圆角卡片，与首页 header-card 一致 */
 	background: #FFFFF0;
 	border-radius: 22rpx;
 	box-shadow:
@@ -377,12 +465,10 @@ export default {
 }
 
 .quick-actions {
-	/* 与 header-card / export-actions 保持一致的下间距 */
 	margin: 0 auto 16rpx;
 	padding: 24rpx 20rpx 22rpx;
 	max-width: 702rpx;
 	border-radius: 24rpx;
-	/* 门诊功能入口整体为一张象牙白大卡片，与首页快捷操作一致 */
 	background: #FFFFF0;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
@@ -435,10 +521,6 @@ export default {
   background: linear-gradient(135deg, #6366f1, #4f46e5);
 }
 
-.card-icon.analysis {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-}
-
 .card-text {
   flex: 1;
 }
@@ -458,12 +540,10 @@ export default {
 }
 
 .export-actions {
-	/* 与前两张卡片保持统一的上下间距 */
 	margin: 0 auto 24rpx;
 	padding: 22rpx 20rpx 26rpx;
 	max-width: 702rpx;
 	border-radius: 24rpx;
-	/* 快速导出区同样使用象牙白卡片容器，统一视觉层级 */
 	background: #FFFFF0;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
@@ -493,6 +573,106 @@ export default {
 .export-text {
   font-size: 26rpx;
   color: #111827;
+}
+
+/* 日期选择弹窗样式 */
+.date-picker-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.date-picker-dialog {
+  width: 86%;
+  max-width: 640rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.35);
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.date-range-section {
+  margin-bottom: 20rpx;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 20rpx;
+  background: #f9fafb;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.date-label {
+  font-size: 28rpx;
+  color: #374151;
+  font-weight: 500;
+}
+
+.date-value {
+  font-size: 28rpx;
+  color: #2563eb;
+  padding: 8rpx 16rpx;
+  background: #ffffff;
+  border-radius: 8rpx;
+  border: 1rpx solid #e5e7eb;
+}
+
+.quick-date-btns {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  padding: 12rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 8rpx;
+  border: 1rpx solid #bfdbfe;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.dialog-btn {
+  flex: 1;
+  padding: 14rpx 0;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.dialog-btn.cancel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.dialog-btn.confirm {
+  background: #2563eb;
+  color: #ffffff;
 }
 
 .esig-mask {

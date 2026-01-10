@@ -3,17 +3,38 @@
 		<!-- 统一页面头部 -->
 		<view class="page-header">
 			<view>
-				<text class="page-title">库存总览</text>
+				<text class="page-title">药材库存</text>
 			</view>
 			<view class="header-actions">
 				<view class="header-btn secondary" @tap="onExpirySettingTap">
 					<text class="btn-icon">⏱</text>
 					<text class="btn-text">预警设置</text>
 				</view>
-				<view class="header-btn" @tap="goToPage('/pages-sub/report/stock')">
-					<text class="btn-icon">📄</text>
-					<text class="btn-text">库存报表</text>
+			</view>
+		</view>
+		
+		<!-- 库存模块入口 -->
+		<view class="menu-section">
+			<view class="menu-item" @tap="goToPage('/pages-sub/stock/overview')">
+				<view class="menu-icon-wrapper primary">
+					<text class="menu-icon">📊</text>
 				</view>
+				<view class="menu-content">
+					<text class="menu-title">库存总览</text>
+					<text class="menu-desc">查询、统计、导出库存数据</text>
+				</view>
+				<text class="menu-arrow">→</text>
+			</view>
+			
+			<view class="menu-item" @tap="goToPage('/pages-sub/stock/park')">
+				<view class="menu-icon-wrapper success">
+					<text class="menu-icon">🏞️</text>
+				</view>
+				<view class="menu-content">
+					<text class="menu-title">园区库存</text>
+					<text class="menu-desc">查看园区批次明细</text>
+				</view>
+				<text class="menu-arrow">→</text>
 			</view>
 		</view>
 		
@@ -409,6 +430,89 @@ export default {
 	/* 兼容底部安全区，避免被 Tab 覆盖 */
 	padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
 	padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
+}
+
+.page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30rpx;
+}
+
+.page-title {
+	display: block;
+	font-size: 36rpx;
+	font-weight: 700;
+	color: #1f2937;
+}
+
+/* 库存模块入口菜单 */
+.menu-section {
+	padding: 0 30rpx 20rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.menu-item {
+	display: flex;
+	align-items: center;
+	background: #ffffff;
+	border-radius: 20rpx;
+	padding: 24rpx 26rpx;
+	box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+	transition: all 0.3s;
+}
+
+.menu-item:active {
+	transform: translateY(-2rpx);
+	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.12);
+}
+
+.menu-icon-wrapper {
+	width: 88rpx;
+	height: 88rpx;
+	border-radius: 20rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 20rpx;
+}
+
+.menu-icon-wrapper.primary {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.menu-icon-wrapper.success {
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.menu-icon {
+	font-size: 44rpx;
+}
+
+.menu-content {
+	flex: 1;
+}
+
+.menu-title {
+	display: block;
+	font-size: 32rpx;
+	font-weight: 700;
+	color: #1f2937;
+	margin-bottom: 6rpx;
+}
+
+.menu-desc {
+	display: block;
+	font-size: 24rpx;
+	color: #6b7280;
+}
+
+.menu-arrow {
+	font-size: 32rpx;
+	color: #cbd5e1;
+	font-weight: bold;
 }
 
 .page-header {

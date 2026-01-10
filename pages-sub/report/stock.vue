@@ -8,6 +8,21 @@
 		
 		<!-- 筛选区域 -->
 		<view class="filter-card">
+			<!-- 园区筛选 -->
+			<view class="filter-row location-row">
+				<view
+					v-for="opt in locationOptions"
+					:key="opt.value"
+					class="location-tab"
+					:class="{ active: activeLocation === opt.value }"
+					@tap="onLocationChange(opt.value)"
+				>
+					<text class="location-icon">{{ opt.icon }}</text>
+					<text class="location-text">{{ opt.label }}</text>
+				</view>
+			</view>
+
+			<!-- 关键词搜索 -->
 			<view class="filter-row">
 				<view class="filter-item keyword-item">
 					<text class="label">药材筛选</text>
@@ -23,6 +38,7 @@
 				</view>
 			</view>
 
+			<!-- 状态筛选 -->
 			<view class="filter-row status-row">
 				<view
 					v-for="opt in statusOptions"
@@ -35,6 +51,7 @@
 				</view>
 			</view>
 
+			<!-- 操作按钮 -->
 			<view class="filter-row actions-row">
 				<view class="action-buttons">
 					<button class="btn ghost" size="mini" @tap="onReset">重置</button>
@@ -76,13 +93,18 @@
 					:key="item._id"
 					class="detail-card"
 				>
-					<!-- 顶部：药名 + 序号 -->
+					<!-- 顶部：药名 + 园区标签 + 序号 -->
 					<view class="detail-row detail-row-top">
 						<view class="detail-main-left">
 							<text class="detail-drug">{{ item.drugName || '-' }}</text>
 							<text class="detail-spec">{{ item.specification || '-' }}</text>
 						</view>
-						<text class="detail-no">#{{ index + 1 }}</text>
+						<view class="detail-top-right">
+							<text v-if="item.locationName" class="location-badge" :class="'badge-' + (item.location || 'all')">
+								{{ item.locationName }}
+							</text>
+							<text class="detail-no">#{{ index + 1 }}</text>
+						</view>
 		</view>
 		
 					<!-- 数量 + 状态 -->
@@ -126,6 +148,13 @@ export default {
 		return {
 			keyword: '',
 			loading: false,
+			activeLocation: 'all', // 新增：当前选中的园区
+			locationOptions: [
+				{ label: '总库存', value: 'all', icon: '📦' },
+				{ label: '有库存', value: 'has_stock', icon: '✓' },
+				{ label: '水园', value: 'water_park', icon: '💧' },
+				{ label: '陆园', value: 'land_park', icon: '🏞️' }
+			],
 			activeStatus: 'all',
 			statusOptions: [
 				{ label: '全部', value: 'all' },
@@ -151,6 +180,8 @@ export default {
 	computed: {
 		displayList() {
 			let list = this.rows
+			
+			// 关键词筛选
 			const kw = (this.keyword || '').toLowerCase()
 			if (kw) {
 				list = list.filter(item => {
@@ -159,6 +190,19 @@ export default {
 					return name.includes(kw) || spec.includes(kw)
 				})
 			}
+			
+			// 园区筛选
+			if (this.activeLocation !== 'all') {
+				if (this.activeLocation === 'has_stock') {
+					// 有库存：数量 > 0
+					list = list.filter(i => (i.quantity || 0) > 0)
+				} else {
+					// 具体园区筛选
+					list = list.filter(i => i.location === this.activeLocation)
+				}
+			}
+			
+			// 状态筛选
 			if (this.activeStatus === 'all') return list
 			if (this.activeStatus === 'near_expiry') {
 				return list.filter(i => i.expireTag === 'near')
@@ -207,7 +251,8 @@ export default {
 			}
 			return {
 				stockFilter,
-				expiryFilter
+				expiryFilter,
+				location: this.activeLocation // 新增：传递园区参数
 			}
 		},
 		async fetchReport() {
@@ -220,19 +265,15 @@ export default {
 				})
 				if (res && res.success && res.data) {
 					const { statistics = {}, items = [] } = res.data
-					// 顶部概览数字映射
-					this.summary = {
-						totalDrugs: statistics.totalDrugs || 0,
-						totalQuantity: statistics.totalStock || 0,
-						warningCount: statistics.lowStockCount || 0,
-						expiryRiskCount: statistics.expiringCount || 0
-					}
+					
 					// 明细行：计算状态与有效期标签
 					const today = new Date()
 					this.rows = (items || []).map(raw => {
 						const item = { ...raw }
 						const qty = item.quantity || 0
 						const min = item.minStock || item.reorderLevel || 10
+						
+						// 库存状态
 						if (qty <= 0) {
 							item.statusTag = 'empty'
 							item.statusText = '缺货'
@@ -243,6 +284,17 @@ export default {
 							item.statusTag = 'normal'
 							item.statusText = '充足'
 						}
+						
+						// 园区名称映射
+						if (item.location === 'water_park') {
+							item.locationName = '水园'
+						} else if (item.location === 'land_park') {
+							item.locationName = '陆园'
+						} else {
+							item.locationName = ''
+						}
+						
+						// 有效期计算
 						if (item.expireDate) {
 							const d = new Date(item.expireDate)
 							if (!Number.isNaN(d.getTime())) {
@@ -262,6 +314,20 @@ export default {
 						}
 						return item
 					})
+					
+					// 重新计算统计数据：只统计数量不为0的记录
+					const validRows = this.rows.filter(item => (item.quantity || 0) > 0)
+					const totalQuantity = validRows.reduce((sum, item) => sum + (item.quantity || 0), 0)
+					const warningRows = validRows.filter(item => item.statusTag === 'warning')
+					const expiryRiskRows = this.rows.filter(item => item.expireTag === 'near' || item.expireTag === 'expired')
+					
+					// 顶部概览数字映射
+					this.summary = {
+						totalDrugs: statistics.totalDrugs || 0,
+						totalQuantity: totalQuantity, // 使用重新计算的值（只统计数量>0的）
+						warningCount: warningRows.length,
+						expiryRiskCount: expiryRiskRows.length
+					}
 				} else {
 					this.rows = []
 					this.summary = {
@@ -278,12 +344,17 @@ export default {
 				this.loading = false
 			}
 		},
+		onLocationChange(val) {
+			this.activeLocation = val
+			this.fetchReport()
+		},
 		onStatusChange(val) {
 			this.activeStatus = val
 			this.fetchReport()
 		},
 		onReset() {
 			this.keyword = ''
+			this.activeLocation = 'all'
 			this.activeStatus = 'all'
 			this.fetchReport()
 		},
@@ -459,6 +530,45 @@ export default {
 	margin-top: 6rpx;
 	font-size: 24rpx;
 	color: #6b7280;
+}
+
+/* 园区筛选行样式 */
+.location-row {
+	margin-bottom: 12rpx;
+	justify-content: space-between;
+	gap: 8rpx;
+}
+
+.location-tab {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 12rpx 8rpx;
+	border-radius: 16rpx;
+	background: #f3f4f6;
+	transition: all 0.3s ease;
+}
+
+.location-tab.active {
+	background: linear-gradient(135deg, #06b6d4, #0891b2);
+	box-shadow: 0 4rpx 12rpx rgba(6, 182, 212, 0.3);
+}
+
+.location-icon {
+	font-size: 28rpx;
+	margin-bottom: 4rpx;
+}
+
+.location-text {
+	font-size: 22rpx;
+	color: #4b5563;
+	font-weight: 500;
+}
+
+.location-tab.active .location-text {
+	color: #ffffff;
 }
 
 .filter-card {
@@ -769,6 +879,34 @@ export default {
 
 .detail-row-top {
 	margin-bottom: 6rpx;
+}
+
+.detail-top-right {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+}
+
+.location-badge {
+	font-size: 20rpx;
+	padding: 4rpx 10rpx;
+	border-radius: 8rpx;
+	font-weight: 500;
+}
+
+.location-badge.badge-water_park {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+.location-badge.badge-land_park {
+	background: #d1fae5;
+	color: #065f46;
+}
+
+.location-badge.badge-all {
+	background: #f3f4f6;
+	color: #6b7280;
 }
 
 .detail-no {

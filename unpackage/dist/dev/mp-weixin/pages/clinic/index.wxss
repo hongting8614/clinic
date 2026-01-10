@@ -1,16 +1,13 @@
 
 .clinic-page {
 	min-height: 100vh;
-	/* 使用与首页/“我的”页相同的蓝色渐变背景，统一整体风格 */
 	background: linear-gradient(180deg, #00c9ff 0%, #00a0ff 35%, #e5e7eb 100%);
 	padding-bottom: 40rpx;
 }
 .header-card {
-	/* 统一三张大卡片的上下间距：上 22rpx，下 16rpx */
 	margin: 22rpx auto 16rpx;
 	padding: 32rpx 28rpx;
 	max-width: 702rpx;
-	/* 顶部门诊工作台卡片：象牙白圆角卡片，与首页 header-card 一致 */
 	background: #FFFFF0;
 	border-radius: 22rpx;
 	box-shadow:
@@ -31,12 +28,10 @@
   opacity: 0.85;
 }
 .quick-actions {
-	/* 与 header-card / export-actions 保持一致的下间距 */
 	margin: 0 auto 16rpx;
 	padding: 24rpx 20rpx 22rpx;
 	max-width: 702rpx;
 	border-radius: 24rpx;
-	/* 门诊功能入口整体为一张象牙白大卡片，与首页快捷操作一致 */
 	background: #FFFFF0;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
@@ -79,9 +74,6 @@
 .card-icon.daily {
   background: linear-gradient(135deg, #6366f1, #4f46e5);
 }
-.card-icon.analysis {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-}
 .card-text {
   flex: 1;
 }
@@ -98,12 +90,10 @@
   color: #6b7280;
 }
 .export-actions {
-	/* 与前两张卡片保持统一的上下间距 */
 	margin: 0 auto 24rpx;
 	padding: 22rpx 20rpx 26rpx;
 	max-width: 702rpx;
 	border-radius: 24rpx;
-	/* 快速导出区同样使用象牙白卡片容器，统一视觉层级 */
 	background: #FFFFF0;
 	box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
 }
@@ -129,6 +119,94 @@
 .export-text {
   font-size: 26rpx;
   color: #111827;
+}
+
+/* 日期选择弹窗样式 */
+.date-picker-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.date-picker-dialog {
+  width: 86%;
+  max-width: 640rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 18rpx 40rpx rgba(15, 23, 42, 0.35);
+}
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+.date-range-section {
+  margin-bottom: 20rpx;
+}
+.date-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 20rpx;
+  background: #f9fafb;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+.date-label {
+  font-size: 28rpx;
+  color: #374151;
+  font-weight: 500;
+}
+.date-value {
+  font-size: 28rpx;
+  color: #2563eb;
+  padding: 8rpx 16rpx;
+  background: #ffffff;
+  border-radius: 8rpx;
+  border: 1rpx solid #e5e7eb;
+}
+.quick-date-btns {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+.quick-btn {
+  flex: 1;
+  padding: 12rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 8rpx;
+  border: 1rpx solid #bfdbfe;
+}
+.dialog-actions {
+  display: flex;
+  gap: 12rpx;
+}
+.dialog-btn {
+  flex: 1;
+  padding: 14rpx 0;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  border: none;
+}
+.dialog-btn.cancel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.dialog-btn.confirm {
+  background: #2563eb;
+  color: #ffffff;
 }
 .esig-mask {
   position: fixed;

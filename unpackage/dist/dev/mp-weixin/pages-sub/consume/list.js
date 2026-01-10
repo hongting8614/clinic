@@ -278,7 +278,10 @@ var _default = {
       this.loadRecords();
     },
     selectThisMonth: function selectThisMonth() {
-      this.selectedDate = '';
+      // 设置为本月第一天
+      var now = new Date();
+      var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      this.selectedDate = this.formatDate(firstDay);
       this.loadRecords();
     },
     formatDate: function formatDate(date) {
@@ -299,12 +302,11 @@ var _default = {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
                 uni.showLoading({
-                  title: '加载中...'
+                  title: '加载中...',
+                  mask: true
                 });
-
-                // 调用门诊用药云函数，按日期读取 clinic_usage 明细
+                _context.prev = 1;
                 _context.next = 4;
                 return _this.$api.callFunction('clinicRecords', {
                   action: 'list',
@@ -335,7 +337,7 @@ var _default = {
                 break;
               case 14:
                 _context.prev = 14;
-                _context.t0 = _context["catch"](0);
+                _context.t0 = _context["catch"](1);
                 uni.hideLoading();
                 console.error('加载消耗记录失败:', _context.t0);
                 uni.showToast({
@@ -347,7 +349,7 @@ var _default = {
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 14]]);
+        }, _callee, null, [[1, 14]]);
       }))();
     },
     loadStats: function loadStats() {
@@ -365,7 +367,7 @@ var _default = {
                   data: {
                     date: _this2.selectedDate
                   }
-                });
+                }, false);
               case 3:
                 result = _context2.sent;
                 if (result.success && result.data) {

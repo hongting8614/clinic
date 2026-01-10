@@ -24,6 +24,11 @@
   padding-bottom: 20rpx;
   border-bottom: 2rpx solid #f0f0f0;
 }
+.report-card .report-header .header-left.data-v-4d34a038 {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
 .report-card .report-header .report-date.data-v-4d34a038 {
   font-size: 32rpx;
   font-weight: bold;
@@ -37,7 +42,7 @@
 }
 .report-card .report-header .header-actions.data-v-4d34a038 {
   display: flex;
-  gap: 10rpx;
+  gap: 12rpx;
 }
 .report-card .report-content .report-text.data-v-4d34a038 {
   display: block;
@@ -124,18 +129,38 @@
   text-align: center;
 }
 .action-btn.data-v-4d34a038 {
-  padding: 8rpx 16rpx;
+  padding: 10rpx 20rpx;
   background: rgba(20, 184, 166, 0.1);
-  border-radius: 8rpx;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6rpx;
+  transition: all 0.3s ease;
+}
+.action-btn.edit-btn.data-v-4d34a038 {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+}
+.action-btn.edit-btn.data-v-4d34a038:active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+}
+.action-btn.copy-btn.data-v-4d34a038 {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+}
+.action-btn.copy-btn.data-v-4d34a038:active {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
 }
 .action-btn.small.data-v-4d34a038 {
   padding: 6rpx 12rpx;
 }
 .action-btn .action-icon.data-v-4d34a038 {
   font-size: 28rpx;
+  line-height: 1;
+}
+.action-btn .action-label.data-v-4d34a038 {
+  font-size: 24rpx;
+  color: #334155;
+  font-weight: 500;
 }
 .stats-card.data-v-4d34a038 {
   background: #ffffff;

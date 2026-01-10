@@ -120,7 +120,10 @@ export default {
 		},
 		
 		selectThisMonth() {
-			this.selectedDate = ''
+			// 设置为本月第一天
+			const now = new Date()
+			const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+			this.selectedDate = this.formatDate(firstDay)
 			this.loadRecords()
 		},
 		
@@ -137,9 +140,8 @@ export default {
 		},
 		
 		async loadRecords() {
+			uni.showLoading({ title: '加载中...', mask: true })
 			try {
-				uni.showLoading({ title: '加载中...' })
-				
 				// 调用门诊用药云函数，按日期读取 clinic_usage 明细
 				const result = await this.$api.callFunction('clinicRecords', {
 					action: 'list',
@@ -173,13 +175,13 @@ export default {
 		
 		async loadStats() {
 			try {
-				// 调用门诊日消耗统计接口
+				// 调用门诊日消耗统计接口（不显示loading，避免与loadRecords冲突）
 				const result = await this.$api.callFunction('clinicRecords', {
 					action: 'getDailyUsageStats',
 					data: {
 						date: this.selectedDate
 					}
-				})
+				}, false)
 				
 				if (result.success && result.data) {
 					this.totalRecords = result.data.totalRecords || 0

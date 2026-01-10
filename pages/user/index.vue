@@ -61,11 +61,11 @@
 					
 					<view class="menu-item" @tap="goToPage('/pages-sub/out/list')">
 						<view class="menu-icon-wrapper green">
-							<text class="menu-icon">📤</text>
+							<text class="menu-icon">🏥</text>
 						</view>
 						<view class="menu-content">
-							<text class="menu-title">园区领用</text>
-							<text class="menu-desc">水园·陆园·园区项目</text>
+							<text class="menu-title">出库管理</text>
+							<text class="menu-desc">园区领用·库存调拨</text>
 						</view>
 						<text class="menu-arrow">→</text>
 					</view>
@@ -97,27 +97,27 @@
 			<view class="menu-group">
 				<view class="group-header">
 					<text class="group-icon"></text>
-					<text class="group-title">数据分析</text>
+					<text class="group-title">数据中心</text>
 				</view>
 				<view class="menu-items">
-					<view class="menu-item" @tap="goToPage('/pages-sub/report/index')">
+					<view class="menu-item" @tap="goToPage('/pages-sub/analysis/index')">
 						<view class="menu-icon-wrapper orange">
-							<text class="menu-icon">📈</text>
+							<text class="menu-icon">📊</text>
 						</view>
 						<view class="menu-content">
-							<text class="menu-title">数据报表</text>
-							<text class="menu-desc">日报、周报、月报</text>
+							<text class="menu-title">统计分析</text>
+							<text class="menu-desc">伤情·地点·药品消耗</text>
 						</view>
 						<text class="menu-arrow">→</text>
 					</view>
 					
-					<view class="menu-item" @tap="goToPage('/pages/index/index')">
-						<view class="menu-icon-wrapper teal">
-							<text class="menu-icon">📉</text>
+					<view class="menu-item" @tap="goToPage('/pages-sub/report/index')">
+						<view class="menu-icon-wrapper purple">
+							<text class="menu-icon">📈</text>
 						</view>
 						<view class="menu-content">
-							<text class="menu-title">统计分析</text>
-							<text class="menu-desc">数据统计、趋势分析</text>
+							<text class="menu-title">报表中心</text>
+							<text class="menu-desc">数据报表·导出查询</text>
 						</view>
 						<text class="menu-arrow">→</text>
 					</view>
@@ -176,7 +176,7 @@
 						<text class="info-icon">📱</text>
 					</view>
 					<text class="info-label">系统版本</text>
-					<text class="info-value">v1.0.0</text>
+					<text class="info-value">v3.16.5</text>
 				</view>
 				
 				<view class="info-item">
@@ -520,7 +520,7 @@ export default {
 		showAbout() {
 			uni.showModal({
 				title: '关于系统',
-				content: '北京欢乐谷医务室管理系统\n\n版本：v1.1.2\n开发者：于建华（微信：bjkfjz）',
+				content: '北京欢乐谷医务室管理系统\n\n版本：v3.16.5\n开发者：于建华（微信：bjkfjz）',
 				showCancel: false,
 				confirmText: '确定',
 				confirmColor: '#667eea'

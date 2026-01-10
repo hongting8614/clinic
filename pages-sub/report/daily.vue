@@ -5,14 +5,18 @@
       <!-- 日报文本（可编辑） -->
       <view class="report-card">
         <view class="report-header">
-          <text class="report-date">{{ reportDate }}</text>
-          <text class="report-location">{{ reportLocation }}</text>
+          <view class="header-left">
+            <text class="report-date">{{ reportDate }}</text>
+            <text class="report-location">{{ reportLocation }}</text>
+          </view>
           <view class="header-actions">
-            <view class="action-btn" @click="editReportText">
+            <view class="action-btn edit-btn" @click="editReportText">
               <text class="action-icon">{{ isEditingText ? '✓' : '✏️' }}</text>
+              <text class="action-label">{{ isEditingText ? '完成' : '编辑' }}</text>
             </view>
-            <view class="action-btn" @click="copyReport">
+            <view class="action-btn copy-btn" @click="copyReport">
               <text class="action-icon">📋</text>
+              <text class="action-label">复制</text>
             </view>
           </view>
         </view>
@@ -51,10 +55,7 @@
             <text class="stat-label">出诊次数</text>
           </view>
         </view>
-        <view class="template-actions">
-          <button class="mini-btn" @click="exportTemplateCSV('visitor')">模板CSV-游客</button>
-          <button class="mini-btn" @click="exportTemplateCSV('employee')">模板CSV-员工</button>
-        </view>
+
       </view>
 
       <!-- 下方仅保留统计信息卡片和底部操作栏，去掉明细与汇总表格 -->
@@ -63,8 +64,8 @@
     <!-- 底部操作栏（统一使用顶部导航返回箭头） -->
     <view class="bottom-actions">
       <button class="action-button secondary" @click="goClinic">门诊登记</button>
-      <button class="action-button primary" @click="copyReport">复制全部</button>
-      <button class="action-button primary" @click="exportCSV">导出CSV</button>
+      <button class="action-button primary" @click="copyVisitorReport">复制游客</button>
+      <button class="action-button primary" @click="copyEmployeeReport">复制员工</button>
     </view>
   </view>
 </template>
@@ -93,54 +94,42 @@ export default {
     }
   },
   onLoad(options) {
-    // 从页面参数获取日报内容
-    if (options.content) {
-      this.reportContent = decodeURIComponent(options.content)
-    }
+    // 优先从 URL 参数获取日期和园区
+    let dateStr = ''
+    let location = 'land_park'
+    
     if (options.date) {
-      this.reportDate = decodeURIComponent(options.date)
+      dateStr = decodeURIComponent(options.date)
     }
     if (options.location) {
-      this.reportLocation = decodeURIComponent(options.location)
+      location = decodeURIComponent(options.location)
     }
-    if (options.stats) {
-      try {
-        this.stats = JSON.parse(decodeURIComponent(options.stats))
-      } catch (e) {
-        console.error('解析统计信息失败:', e)
-      }
-    }
-    if (options.tableData) {
-      try {
-        this.tableData = JSON.parse(decodeURIComponent(options.tableData))
-      } catch (e) {
-        console.error('解析表格数据失败:', e)
-      }
-    }
-
-    // 如果未携带内容，则在本页直接根据门诊登记生成（默认当天 + 最近园区）
-    if (!this.reportContent) {
+    
+    // 如果没有传递日期，使用当天
+    if (!dateStr) {
       const now = new Date()
       const y = now.getFullYear()
       const m = String(now.getMonth() + 1).padStart(2, '0')
       const d = String(now.getDate()).padStart(2, '0')
-      const dateStr = `${y}-${m}-${d}`
-      let loc = 'land_park'
+      dateStr = `${y}-${m}-${d}`
+    }
+    
+    // 如果没有传递园区，尝试从缓存获取
+    if (!options.location) {
       try {
         const saved = uni.getStorageSync('clinic_last_location')
-        if (saved === 'land_park' || saved === 'water_park') loc = saved
+        if (saved === 'land_park' || saved === 'water_park') location = saved
       } catch (e) {}
-      this.generateFromClinicRecords(dateStr, loc)
-      return
     }
-    // 生成汇总（带参打开时）
-    this.generateSummaries()
+    
+    // 统一生成日报
+    this.generateFromClinicRecords(dateStr, location)
   },
   methods: {
     // 在本页直接调用门诊信息生成日报
     async generateFromClinicRecords(dateStr, location) {
+      uni.showLoading({ title: '加载中...', mask: true })
       try {
-        uni.showLoading({ title: '加载中...' })
         const res = await wx.cloud.callFunction({
           name: 'clinicRecords',
           data: {
@@ -154,6 +143,9 @@ export default {
             }
           }
         })
+        
+        uni.hideLoading()
+        
         const records = res?.result?.data?.list || []
         const locationName = location === 'land_park' ? '陆园' : '水园'
         
@@ -169,10 +161,9 @@ export default {
         this.reportLocation = locationName
         this.generateSummaries()
       } catch (e) {
+        uni.hideLoading()
         console.error('生成日报失败:', e)
         uni.showToast({ title: '生成失败', icon: 'none' })
-      } finally {
-        uni.hideLoading()
       }
     },
 
@@ -400,48 +391,52 @@ export default {
       })
     },
     
-    // 导出CSV（Excel可直接打开）
-    exportCSV() {
-      const toCSV = (title, summary) => {
-        let csv = `${title}\n疾病名称,次数\n`
-        this.diseaseList.forEach(name => {
-          csv += `${name},${summary[name] ?? 0}\n`
+    // 导出日报（包含游客和员工的日报列表）
+    exportDailyReport() {
+      if (!this.tableData) {
+        uni.showToast({
+          title: '暂无数据',
+          icon: 'none'
         })
-        return csv + '\n'
+        return
       }
-      const vCSV = toCSV('游客汇总', this.visitorSummary || {})
-      const eCSV = toCSV('员工汇总', this.employeeSummary || {})
-      const content = vCSV + eCSV
+
+      // 获取表头
+      const header = this.getTemplateHeader()
       
-      try {
-        const fs = wx.getFileSystemManager()
-        const filePath = `${wx.env.USER_DATA_PATH}/daily_report_${Date.now()}.csv`
-        fs.writeFile({
-          filePath,
-          data: content,
-          encoding: 'utf8',
-          success: () => {
-            wx.openDocument({
-              filePath,
-              fileType: 'csv',
-              showMenu: true
-            })
-          },
-          fail: () => {
-            // 回退为复制
-            uni.setClipboardData({
-              data: content,
-              success: () => uni.showToast({ title: '已复制CSV文本', icon: 'success' })
-            })
-          }
-        })
-      } catch (e) {
-        // 不支持文件系统时，复制
-        uni.setClipboardData({
-          data: content,
-          success: () => uni.showToast({ title: '已复制CSV文本', icon: 'success' })
-        })
-      }
+      // 构建游客和员工的日报行
+      const visitorRow = this.buildTemplateRow('visitor')
+      const employeeRow = this.buildTemplateRow('employee')
+      
+      // 组合成完整的表格数据（制表符分隔，可直接粘贴到Excel）
+      let content = ''
+      
+      // 添加表头
+      content += header.join('\t') + '\n'
+      
+      // 添加游客数据行
+      content += visitorRow.map(v => String(v ?? '')).join('\t') + '\n'
+      
+      // 添加员工数据行
+      content += employeeRow.map(v => String(v ?? '')).join('\t') + '\n'
+      
+      // 复制到剪贴板
+      uni.setClipboardData({
+        data: content,
+        success: () => {
+          uni.showToast({
+            title: '已复制日报列表（可粘贴到Excel）',
+            icon: 'success',
+            duration: 2000
+          })
+        },
+        fail: () => {
+          uni.showToast({
+            title: '复制失败',
+            icon: 'none'
+          })
+        }
+      })
     },
 
     // ================= 模板导出（指定列顺序） =================
@@ -555,7 +550,7 @@ export default {
       // 格式化函数：0显示为空字符串
       const formatCount = (count) => count === 0 ? '' : count
       
-      // 如果当日无记录，所有数据列都为空
+      // 如果当日无记录，所有数据列都为空，但合计显示为0
       if (total === 0) {
         return [
           dateText,     // 日期/受伤类型
@@ -566,7 +561,7 @@ export default {
           '',           // 地点
           '', '', '',   // 过敏、痛经、测血压
           '',           // 其他
-          '',           // 合计（0时也显示为空）
+          0,            // 合计（0时显示为0）
           doctorName,
           ''            // 备注
         ]
@@ -591,10 +586,10 @@ export default {
         formatCount(counts['过敏']),
         formatCount(counts['痛经']),
         formatCount(counts['测血压']),
-        formatCount(other),            // 其他（0时显示为空）
+        remarkParts.join('，') || '',  // 其他：显示具体疾病名称和人数
         total,                         // 合计（总数）
         doctorName,
-        remark                         // 备注：详细列出"其他"项目
+        outcallTotal > 0 ? `出诊${outcallTotal}次` + (outcallMap.size > 0 ? `（${Array.from(outcallMap.entries()).map(([k,v]) => `${k}${v}次`).join('，')}）` : '') : ''  // 备注：只显示出诊信息
       ]
     },
     copyTemplateRow(type) {
@@ -623,22 +618,59 @@ export default {
         })
       }
     },
-    // 复制日报
-    copyReport() {
-      if (!this.reportContent) {
+    // 复制游客报表（只复制数据行，不复制表头）
+    copyVisitorReport() {
+      if (!this.tableData) {
         uni.showToast({
-          title: '暂无内容可复制',
+          title: '暂无数据',
           icon: 'none'
         })
         return
       }
 
-      // 只复制文本日报内容，不包含表格
+      // 构建游客的日报行（只有数据，不含表头）
+      const visitorRow = this.buildTemplateRow('visitor')
+      const text = visitorRow.map(v => String(v ?? '')).join('\t')
+      
+      // 复制到剪贴板
       uni.setClipboardData({
-        data: this.reportContent.trim(),
+        data: text,
         success: () => {
           uni.showToast({
-            title: '已复制到剪贴板',
+            title: '已复制游客报表（可粘贴到Excel）',
+            icon: 'success',
+            duration: 2000
+          })
+        },
+        fail: () => {
+          uni.showToast({
+            title: '复制失败',
+            icon: 'none'
+          })
+        }
+      })
+    },
+
+    // 复制员工报表（只复制数据行，不复制表头）
+    copyEmployeeReport() {
+      if (!this.tableData) {
+        uni.showToast({
+          title: '暂无数据',
+          icon: 'none'
+        })
+        return
+      }
+
+      // 构建员工的日报行（只有数据，不含表头）
+      const employeeRow = this.buildTemplateRow('employee')
+      const text = employeeRow.map(v => String(v ?? '')).join('\t')
+      
+      // 复制到剪贴板
+      uni.setClipboardData({
+        data: text,
+        success: () => {
+          uni.showToast({
+            title: '已复制员工报表（可粘贴到Excel）',
             icon: 'success',
             duration: 2000
           })
@@ -655,6 +687,13 @@ export default {
     // 返回
     goBack() {
       uni.navigateBack()
+    },
+
+    // 跳转到门诊登记页面
+    goClinic() {
+      uni.navigateTo({
+        url: '/pages-sub/clinic/add'
+      })
     }
   }
 }
@@ -690,6 +729,12 @@ export default {
     padding-bottom: 20rpx;
     border-bottom: 2rpx solid #f0f0f0;
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
     .report-date {
       font-size: 32rpx;
       font-weight: bold;
@@ -705,7 +750,7 @@ export default {
 
     .header-actions {
       display: flex;
-      gap: 10rpx;
+      gap: 12rpx;
     }
   }
 
@@ -810,12 +855,30 @@ export default {
 }
 
 .action-btn {
-  padding: 8rpx 16rpx;
+  padding: 10rpx 20rpx;
   background: rgba(20, 184, 166, 0.1);
-  border-radius: 8rpx;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6rpx;
+  transition: all 0.3s ease;
+
+  &.edit-btn {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    
+    &:active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+    }
+  }
+
+  &.copy-btn {
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    
+    &:active {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
+    }
+  }
 
   &.small {
     padding: 6rpx 12rpx;
@@ -823,6 +886,13 @@ export default {
 
   .action-icon {
     font-size: 28rpx;
+    line-height: 1;
+  }
+
+  .action-label {
+    font-size: 24rpx;
+    color: #334155;
+    font-weight: 500;
   }
 }
 

@@ -997,64 +997,108 @@ export default {
 		// ========== 扫码相关 ==========
 		async scanBarcode() {
 			try {
+				console.log('🎯 开始扫码...')
+				
 				// 调用微信官方扫码API
 				const scanRes = await uni.scanCode({
 					// 支持的码类型
-					scanType: [
-						'barCode',    // 条形码（一维码）
-						'qrCode',     // 二维码
-						'datamatrix', // Data Matrix码
-						'pdf417'      // PDF417码
-					],
-					// 是否只能从相机扫码，默认false（可以从相册选择）
-					onlyFromCamera: false,
+					scanType: ['barCode', 'qrCode'],
+					// 是否只能从相机扫码
+					onlyFromCamera: true,
 					// 是否自动解码
 					autoDecrypt: true
 				})
 				
-				console.log('📷 扫码结果:', scanRes)
-				console.log('📷 条形码:', scanRes.result)
-				console.log('📷 条形码类型:', scanRes.scanType)
+				console.log('📷 扫码成功:', scanRes)
+				console.log('📷 完整返回:', JSON.stringify(scanRes))
+				
+				// uni.scanCode 返回格式：[err, res]
+				// 需要从数组中取出结果
+				let result = null
+				let scanType = null
+				
+				if (Array.isArray(scanRes)) {
+					// 数组格式：[err, res]
+					const [err, res] = scanRes
+					if (res && res.result) {
+						result = res.result
+						scanType = res.scanType
+					}
+				} else if (scanRes && scanRes.result) {
+					// 对象格式：{result, scanType}
+					result = scanRes.result
+					scanType = scanRes.scanType
+				}
+				
+				console.log('📷 扫码结果:', result)
+				console.log('📷 扫码类型:', scanType)
 				
 				// 检查扫码结果
-				if (!scanRes || !scanRes.result) {
+				if (!result) {
 					console.error('❌ 扫码结果为空')
 					uni.showToast({
 						title: '扫码失败，请重试',
-						icon: 'none'
+						icon: 'none',
+						duration: 2000
 					})
 					return
 				}
 				
 				// 清洗条形码：去除空格、特殊字符、换行符
-				let cleanBarcode = scanRes.result
+				let cleanBarcode = String(result)
 					.trim()                    // 去除首尾空格
 					.replace(/\s/g, '')        // 去除所有空格
 					.replace(/[\r\n]/g, '')    // 去除换行符
+					.replace(/[^\w\-]/g, '')   // 只保留字母数字和连字符
 				
-				console.log('📷 原始条形码:', scanRes.result)
+				console.log('📷 原始条形码:', result)
 				console.log('📷 清洗后条形码:', cleanBarcode)
 				console.log('📷 条形码长度:', cleanBarcode.length)
 				
 				// 验证条形码格式
-				if (!cleanBarcode || cleanBarcode.length < 8) {
+				if (!cleanBarcode || cleanBarcode.length < 6) {
 					uni.showToast({
-						title: '条形码格式错误',
-						icon: 'none'
+						title: '条形码格式错误，请重新扫描',
+						icon: 'none',
+						duration: 2000
 					})
 					return
 				}
 				
+				// 查询药材
 				await this.queryDrugByBarcode(cleanBarcode)
 				
 			} catch (err) {
-				console.error('扫码错误:', err)
-				if (err.errMsg && !err.errMsg.includes('cancel')) {
-					uni.showToast({
-						title: '扫码失败',
-						icon: 'none'
-					})
+				console.error('❌ 扫码错误:', err)
+				console.error('错误信息:', err.errMsg)
+				
+				// 用户取消扫码
+				if (err.errMsg && err.errMsg.includes('cancel')) {
+					console.log('用户取消扫码')
+					return
 				}
+				
+				// 权限问题
+				if (err.errMsg && err.errMsg.includes('authorize')) {
+					uni.showModal({
+						title: '需要相机权限',
+						content: '请在手机设置中允许小程序使用相机权限',
+						confirmText: '去设置',
+						success: (res) => {
+							if (res.confirm) {
+								uni.openSetting()
+							}
+						}
+					})
+					return
+				}
+				
+				// 其他错误
+				uni.showToast({
+					title: '扫码失败，请重试',
+					icon: 'none',
+					duration: 2000
+				})
 			}
 		},
 		

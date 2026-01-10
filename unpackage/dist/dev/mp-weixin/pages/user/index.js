@@ -716,7 +716,7 @@ var _default = {
     showAbout: function showAbout() {
       uni.showModal({
         title: '关于系统',
-        content: '北京欢乐谷医务室管理系统\n\n版本：v1.1.2\n开发者：于建华（微信：bjkfjz）',
+        content: '北京欢乐谷医务室管理系统\n\n版本：v3.16.5\n开发者：于建华（微信：bjkfjz）',
         showCancel: false,
         confirmText: '确定',
         confirmColor: '#667eea'

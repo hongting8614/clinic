@@ -162,23 +162,7 @@
 				}
 			]
 		},
-		{
-			"root": "pages-sub/requisition",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "新建请领单"
-					}
-				},
-				{
-					"path": "list",
-					"style": {
-						"navigationBarTitleText": "请领单列表"
-					}
-				}
-			]
-		},
+
 		{
 			"root": "pages-sub/inventory",
 			"pages": [
@@ -202,54 +186,29 @@
 				}
 			]
 		},
-		{
-			"root": "pages-sub/damage",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "新建报损单"
-					}
-				},
-				{
-					"path": "list",
-					"style": {
-						"navigationBarTitleText": "报损记录"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages-sub/return",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "新建退货单"
-					}
-				},
-				{
-					"path": "list",
-					"style": {
-						"navigationBarTitleText": "退货记录"
-					}
-				}
-			]
-		},
+
+
 		{
 			"root": "pages-sub/stock",
 			"pages": [
 				{
-					"path": "query",
+					"path": "overview",
 					"style": {
-						"navigationBarTitleText": "库存查询",
+						"navigationBarTitleText": "库存总览",
 						"enablePullDownRefresh": true
 					}
 				},
 				{
 					"path": "park",
 					"style": {
-						"navigationBarTitleText": "园区库存明细"
+						"navigationBarTitleText": "园区库存"
+					}
+				},
+				{
+					"path": "query",
+					"style": {
+						"navigationBarTitleText": "库存查询",
+						"enablePullDownRefresh": true
 					}
 				}
 			]
@@ -260,7 +219,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "数据报表"
+						"navigationBarTitleText": "报表中心"
 					}
 				},
 				{
@@ -294,27 +253,9 @@
 					}
 				},
 				{
-					"path": "weekly",
-					"style": {
-						"navigationBarTitleText": "周统计"
-					}
-				},
-				{
-					"path": "monthly",
-					"style": {
-						"navigationBarTitleText": "月统计"
-					}
-				},
-				{
 					"path": "clinic",
 					"style": {
 						"navigationBarTitleText": "门诊登记报表"
-					}
-				},
-				{
-					"path": "clinic-analysis",
-					"style": {
-						"navigationBarTitleText": "门诊统计分析"
 					}
 				},
 				{
@@ -327,6 +268,18 @@
 					"path": "record",
 					"style": {
 						"navigationBarTitleText": "门诊病历查询"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages-sub/analysis",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "统计分析",
+						"enablePullDownRefresh": true
 					}
 				}
 			]

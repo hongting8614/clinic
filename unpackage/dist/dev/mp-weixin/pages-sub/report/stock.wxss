@@ -30,6 +30,40 @@
 	font-size: 24rpx;
 	color: #6b7280;
 }
+
+/* 园区筛选行样式 */
+.location-row.data-v-6c630261 {
+	margin-bottom: 12rpx;
+	justify-content: space-between;
+	gap: 8rpx;
+}
+.location-tab.data-v-6c630261 {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 12rpx 8rpx;
+	border-radius: 16rpx;
+	background: #f3f4f6;
+	transition: all 0.3s ease;
+}
+.location-tab.active.data-v-6c630261 {
+	background: linear-gradient(135deg, #06b6d4, #0891b2);
+	box-shadow: 0 4rpx 12rpx rgba(6, 182, 212, 0.3);
+}
+.location-icon.data-v-6c630261 {
+	font-size: 28rpx;
+	margin-bottom: 4rpx;
+}
+.location-text.data-v-6c630261 {
+	font-size: 22rpx;
+	color: #4b5563;
+	font-weight: 500;
+}
+.location-tab.active .location-text.data-v-6c630261 {
+	color: #ffffff;
+}
 .filter-card.data-v-6c630261 {
 	max-width: 702rpx;
 	margin: 0 auto 8rpx;
@@ -286,6 +320,29 @@
 }
 .detail-row-top.data-v-6c630261 {
 	margin-bottom: 6rpx;
+}
+.detail-top-right.data-v-6c630261 {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+}
+.location-badge.data-v-6c630261 {
+	font-size: 20rpx;
+	padding: 4rpx 10rpx;
+	border-radius: 8rpx;
+	font-weight: 500;
+}
+.location-badge.badge-water_park.data-v-6c630261 {
+	background: #dbeafe;
+	color: #1e40af;
+}
+.location-badge.badge-land_park.data-v-6c630261 {
+	background: #d1fae5;
+	color: #065f46;
+}
+.location-badge.badge-all.data-v-6c630261 {
+	background: #f3f4f6;
+	color: #6b7280;
 }
 .detail-no.data-v-6c630261 {
 	font-size: 24rpx;

@@ -279,12 +279,34 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
       showEsigNotice: false,
       esigAgreeEnabled: false,
-      esigNoMore: false
+      esigNoMore: false,
+      showDatePicker: false,
+      exportStartDate: '',
+      exportEndDate: ''
     };
   },
   onShow: function onShow() {
@@ -301,6 +323,81 @@ var _default = {
           });
         }
       });
+    },
+    // 生成今日门诊日报（与报表中心逻辑统一）
+    generateTodayReport: function generateTodayReport() {
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var _res$result, _res$result$data, today, year, month, day, dateStr, location, last, res, records;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.prev = 0;
+                uni.showLoading({
+                  title: '生成中...'
+                });
+                today = new Date();
+                year = today.getFullYear();
+                month = String(today.getMonth() + 1).padStart(2, '0');
+                day = String(today.getDate()).padStart(2, '0');
+                dateStr = "".concat(year, "-").concat(month, "-").concat(day); // 获取最近使用的园区
+                location = 'land_park';
+                try {
+                  last = uni.getStorageSync('clinic_last_location');
+                  if (last === 'land_park' || last === 'water_park') location = last;
+                } catch (e) {}
+
+                // 查询今日门诊记录
+                _context.next = 11;
+                return wx.cloud.callFunction({
+                  name: 'clinicRecords',
+                  data: {
+                    action: 'list',
+                    data: {
+                      location: location,
+                      startDate: dateStr,
+                      endDate: dateStr,
+                      pageSize: 1000,
+                      useClinicRecords: true
+                    }
+                  }
+                });
+              case 11:
+                res = _context.sent;
+                records = (res === null || res === void 0 ? void 0 : (_res$result = res.result) === null || _res$result === void 0 ? void 0 : (_res$result$data = _res$result.data) === null || _res$result$data === void 0 ? void 0 : _res$result$data.list) || [];
+                uni.hideLoading();
+                if (!(!records || records.length === 0)) {
+                  _context.next = 17;
+                  break;
+                }
+                uni.showToast({
+                  title: '今日暂无门诊记录',
+                  icon: 'none'
+                });
+                return _context.abrupt("return");
+              case 17:
+                // 跳转到门诊日报页面
+                uni.navigateTo({
+                  url: "/pages-sub/report/daily?date=".concat(dateStr, "&location=").concat(location)
+                });
+                _context.next = 25;
+                break;
+              case 20:
+                _context.prev = 20;
+                _context.t0 = _context["catch"](0);
+                console.error('生成日报失败:', _context.t0);
+                uni.hideLoading();
+                uni.showToast({
+                  title: '生成失败',
+                  icon: 'none'
+                });
+              case 25:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[0, 20]]);
+      }))();
     },
     checkEsigNotice: function checkEsigNotice() {
       try {
@@ -337,133 +434,140 @@ var _default = {
       }
       this.showEsigNotice = false;
     },
-    showDevTip: function showDevTip() {
-      uni.showToast({
-        title: '门诊分析功能开发中',
-        icon: 'none'
-      });
+    // 显示导出对话框
+    showExportDialog: function showExportDialog() {
+      // 默认选择今天
+      var today = this.formatDate(new Date());
+      this.exportStartDate = today;
+      this.exportEndDate = today;
+      this.showDatePicker = true;
     },
-    getTodayRange: function getTodayRange() {
-      var today = new Date();
-      var y = today.getFullYear();
-      var m = String(today.getMonth() + 1).padStart(2, '0');
-      var d = String(today.getDate()).padStart(2, '0');
-      var dateStr = "".concat(y, "-").concat(m, "-").concat(d);
-      return {
-        startDate: dateStr,
-        endDate: dateStr
-      };
+    // 关闭日期选择器
+    closeDatePicker: function closeDatePicker() {
+      this.showDatePicker = false;
     },
-    exportClinicExcel: function exportClinicExcel() {
+    // 开始日期变化
+    onStartDateChange: function onStartDateChange(e) {
+      this.exportStartDate = e.detail.value;
+    },
+    // 结束日期变化
+    onEndDateChange: function onEndDateChange(e) {
+      this.exportEndDate = e.detail.value;
+    },
+    // 格式化日期
+    formatDate: function formatDate(date) {
+      var y = date.getFullYear();
+      var m = String(date.getMonth() + 1).padStart(2, '0');
+      var d = String(date.getDate()).padStart(2, '0');
+      return "".concat(y, "-").concat(m, "-").concat(d);
+    },
+    // 选择今天
+    selectToday: function selectToday() {
+      var today = this.formatDate(new Date());
+      this.exportStartDate = today;
+      this.exportEndDate = today;
+    },
+    // 选择本周
+    selectThisWeek: function selectThisWeek() {
+      var now = new Date();
+      var day = now.getDay();
+      var diff = day === 0 ? 6 : day - 1; // 周一为第一天
+
+      var monday = new Date(now);
+      monday.setDate(now.getDate() - diff);
+      var sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      this.exportStartDate = this.formatDate(monday);
+      this.exportEndDate = this.formatDate(sunday);
+    },
+    // 选择本月
+    selectThisMonth: function selectThisMonth() {
+      var now = new Date();
+      var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      var lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      this.exportStartDate = this.formatDate(firstDay);
+      this.exportEndDate = this.formatDate(lastDay);
+    },
+    // 确认导出
+    confirmExport: function confirmExport() {
       var _this = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        var _this$getTodayRange, startDate, endDate, res, _urlRes$fileList, _urlRes$fileList$, urlRes, fileUrl;
-        return _regenerator.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.prev = 0;
-                _this$getTodayRange = _this.getTodayRange(), startDate = _this$getTodayRange.startDate, endDate = _this$getTodayRange.endDate;
-                uni.showLoading({
-                  title: '生成报表...',
-                  mask: true
-                });
-                _context.next = 5;
-                return _this.$api.callFunction('reports', {
-                  action: 'exportClinicExcel',
-                  data: {
-                    startDate: startDate,
-                    endDate: endDate,
-                    location: 'all',
-                    printUser: (uni.getStorageSync('userInfo') || {}).name || ''
-                  }
-                });
-              case 5:
-                res = _context.sent;
-                uni.hideLoading();
-                if (!(res !== null && res !== void 0 && res.success && res.fileID && res.filename)) {
-                  _context.next = 15;
-                  break;
-                }
-                _context.next = 10;
-                return wx.cloud.getTempFileURL({
-                  fileList: [res.fileID]
-                });
-              case 10:
-                urlRes = _context.sent;
-                fileUrl = urlRes === null || urlRes === void 0 ? void 0 : (_urlRes$fileList = urlRes.fileList) === null || _urlRes$fileList === void 0 ? void 0 : (_urlRes$fileList$ = _urlRes$fileList[0]) === null || _urlRes$fileList$ === void 0 ? void 0 : _urlRes$fileList$.tempFileURL;
-                if (fileUrl) {
-                  _this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel');
-                } else {
-                  uni.showToast({
-                    title: '获取下载链接失败',
-                    icon: 'none'
-                  });
-                }
-                _context.next = 16;
-                break;
-              case 15:
-                uni.showToast({
-                  title: '生成报表失败',
-                  icon: 'none'
-                });
-              case 16:
-                _context.next = 22;
-                break;
-              case 18:
-                _context.prev = 18;
-                _context.t0 = _context["catch"](0);
-                uni.hideLoading();
-                uni.showToast({
-                  title: '导出失败',
-                  icon: 'none'
-                });
-              case 22:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[0, 18]]);
-      }))();
-    },
-    exportUsageExcel: function exportUsageExcel() {
-      var _this2 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
-        var _this2$getTodayRange, startDate, endDate, res, _urlRes$fileList2, _urlRes$fileList2$, urlRes, fileUrl;
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.prev = 0;
-                _this2$getTodayRange = _this2.getTodayRange(), startDate = _this2$getTodayRange.startDate, endDate = _this2$getTodayRange.endDate;
+                if (!(!_this.exportStartDate || !_this.exportEndDate)) {
+                  _context2.next = 3;
+                  break;
+                }
+                uni.showToast({
+                  title: '请选择时间段',
+                  icon: 'none'
+                });
+                return _context2.abrupt("return");
+              case 3:
+                if (!(_this.exportStartDate > _this.exportEndDate)) {
+                  _context2.next = 6;
+                  break;
+                }
+                uni.showToast({
+                  title: '开始日期不能晚于结束日期',
+                  icon: 'none'
+                });
+                return _context2.abrupt("return");
+              case 6:
+                _this.closeDatePicker();
+                _context2.next = 9;
+                return _this.exportClinicExcel();
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    // 导出门诊登记表
+    exportClinicExcel: function exportClinicExcel() {
+      var _this2 = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
+        var userInfo, location, res, _urlRes$fileList, _urlRes$fileList$, urlRes, fileUrl;
+        return _regenerator.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.prev = 0;
+                // 获取当前用户的园区信息
+                userInfo = uni.getStorageSync('userInfo') || {};
+                location = userInfo.location || 'land_park'; // 默认陆园
                 uni.showLoading({
                   title: '生成报表...',
                   mask: true
                 });
-                _context2.next = 5;
+                _context3.next = 6;
                 return _this2.$api.callFunction('reports', {
-                  action: 'exportClinicUsageExcel',
+                  action: 'exportClinicExcel',
                   data: {
-                    startDate: startDate,
-                    endDate: endDate,
-                    location: 'all',
-                    printUser: (uni.getStorageSync('userInfo') || {}).name || ''
+                    startDate: _this2.exportStartDate,
+                    endDate: _this2.exportEndDate,
+                    location: location,
+                    printUser: userInfo.name || ''
                   }
                 });
-              case 5:
-                res = _context2.sent;
+              case 6:
+                res = _context3.sent;
                 uni.hideLoading();
                 if (!(res !== null && res !== void 0 && res.success && res.fileID && res.filename)) {
-                  _context2.next = 15;
+                  _context3.next = 16;
                   break;
                 }
-                _context2.next = 10;
+                _context3.next = 11;
                 return wx.cloud.getTempFileURL({
                   fileList: [res.fileID]
                 });
-              case 10:
-                urlRes = _context2.sent;
-                fileUrl = urlRes === null || urlRes === void 0 ? void 0 : (_urlRes$fileList2 = urlRes.fileList) === null || _urlRes$fileList2 === void 0 ? void 0 : (_urlRes$fileList2$ = _urlRes$fileList2[0]) === null || _urlRes$fileList2$ === void 0 ? void 0 : _urlRes$fileList2$.tempFileURL;
+              case 11:
+                urlRes = _context3.sent;
+                fileUrl = urlRes === null || urlRes === void 0 ? void 0 : (_urlRes$fileList = urlRes.fileList) === null || _urlRes$fileList === void 0 ? void 0 : (_urlRes$fileList$ = _urlRes$fileList[0]) === null || _urlRes$fileList$ === void 0 ? void 0 : _urlRes$fileList$.tempFileURL;
                 if (fileUrl) {
                   _this2.downloadAndSaveLocal(fileUrl, res.filename, 'Excel');
                 } else {
@@ -472,102 +576,31 @@ var _default = {
                     icon: 'none'
                   });
                 }
-                _context2.next = 16;
+                _context3.next = 17;
                 break;
-              case 15:
+              case 16:
                 uni.showToast({
                   title: '生成报表失败',
                   icon: 'none'
                 });
-              case 16:
-                _context2.next = 22;
+              case 17:
+                _context3.next = 24;
                 break;
-              case 18:
-                _context2.prev = 18;
-                _context2.t0 = _context2["catch"](0);
-                uni.hideLoading();
-                uni.showToast({
-                  title: '导出失败',
-                  icon: 'none'
-                });
-              case 22:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, null, [[0, 18]]);
-      }))();
-    },
-    exportStatsExcel: function exportStatsExcel() {
-      var _this3 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
-        var _this3$getTodayRange, startDate, endDate, res, _urlRes$fileList3, _urlRes$fileList3$, urlRes, fileUrl;
-        return _regenerator.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _context3.prev = 0;
-                _this3$getTodayRange = _this3.getTodayRange(), startDate = _this3$getTodayRange.startDate, endDate = _this3$getTodayRange.endDate;
-                uni.showLoading({
-                  title: '生成报表...',
-                  mask: true
-                });
-                _context3.next = 5;
-                return _this3.$api.callFunction('reports', {
-                  action: 'exportClinicStatsExcel',
-                  data: {
-                    startDate: startDate,
-                    endDate: endDate,
-                    location: 'all',
-                    printUser: (uni.getStorageSync('userInfo') || {}).name || ''
-                  }
-                });
-              case 5:
-                res = _context3.sent;
-                uni.hideLoading();
-                if (!(res !== null && res !== void 0 && res.success && res.fileID && res.filename)) {
-                  _context3.next = 15;
-                  break;
-                }
-                _context3.next = 10;
-                return wx.cloud.getTempFileURL({
-                  fileList: [res.fileID]
-                });
-              case 10:
-                urlRes = _context3.sent;
-                fileUrl = urlRes === null || urlRes === void 0 ? void 0 : (_urlRes$fileList3 = urlRes.fileList) === null || _urlRes$fileList3 === void 0 ? void 0 : (_urlRes$fileList3$ = _urlRes$fileList3[0]) === null || _urlRes$fileList3$ === void 0 ? void 0 : _urlRes$fileList3$.tempFileURL;
-                if (fileUrl) {
-                  _this3.downloadAndSaveLocal(fileUrl, res.filename, 'Excel');
-                } else {
-                  uni.showToast({
-                    title: '获取下载链接失败',
-                    icon: 'none'
-                  });
-                }
-                _context3.next = 16;
-                break;
-              case 15:
-                uni.showToast({
-                  title: '生成报表失败',
-                  icon: 'none'
-                });
-              case 16:
-                _context3.next = 22;
-                break;
-              case 18:
-                _context3.prev = 18;
+              case 19:
+                _context3.prev = 19;
                 _context3.t0 = _context3["catch"](0);
                 uni.hideLoading();
+                console.error('导出失败:', _context3.t0);
                 uni.showToast({
                   title: '导出失败',
                   icon: 'none'
                 });
-              case 22:
+              case 24:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[0, 18]]);
+        }, _callee3, null, [[0, 19]]);
       }))();
     },
     downloadAndSaveLocal: function downloadAndSaveLocal(fileUrl, filename) {

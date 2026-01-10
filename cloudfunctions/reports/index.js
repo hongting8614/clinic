@@ -1885,7 +1885,7 @@ async function fetchClinicRecords(params = {}) {
 }
 
 // 映射门诊记录为导出行
-// 序号 | 就诊日期时间(yyyy-MM-dd HH:mm) | 姓名 | 性别 | 年龄 | 身份 | 主诉 | 诊断 | 处置措施 | 用药信息 | 医生
+// 序号 | 就诊日期时间(yyyy-MM-dd HH:mm) | 姓名 | 性别 | 年龄 | 身份 | 主诉 | 诊断 | 处置及用药情况 | 医生 | 备注
 function mapClinicRecordsForExport(records = []) {
   return records.map((r, index) => {
     const dt = r.visitDateTime || r.createTime || null
@@ -1895,6 +1895,8 @@ function mapClinicRecordsForExport(records = []) {
     const identity = r.identity || ''
     const chief = r.chiefComplaint || ''
     const diag = r.diagnosis || ''
+    
+    // 处置：包含处置措施和用药信息
     const treatment = r.treatment || r.disposal || ''
     const drugName = r.drugName || ''
     const quantity = r.quantityMin || r.quantity || ''
@@ -1903,7 +1905,20 @@ function mapClinicRecordsForExport(records = []) {
       ? `${drugName}${quantity ? ' ' + quantity : ''}${unit || ''}`
       : ''
     const drugInfo = r.drugInfo || composedDrugInfo
-    const doctor = r.doctorName || r.operator || ''
+    const disposal = [treatment, drugInfo].filter(Boolean).join('；')
+    
+    // 医生：使用 signedByName（电子签名医生名）
+    const doctor = r.signedByName || r.operator || r.doctorName || ''
+    
+    // 备注：提取出诊信息，格式为"出诊（具体地点）"
+    // 从 injuryLocation 字段提取出诊地点
+    let remark = ''
+    const visitLoc = r.injuryLocation || ''
+    if (visitLoc) {
+      remark = `出诊（${visitLoc}）`
+    } else if (r.remark) {
+      remark = r.remark
+    }
 
     return {
       index: index + 1,
@@ -1914,9 +1929,9 @@ function mapClinicRecordsForExport(records = []) {
       identity,
       chiefComplaint: chief,
       diagnosis: diag,
-      treatment,
-      drugInfo,
-      doctor
+      disposal,
+      doctor,
+      remark
     }
   });
 }
@@ -1939,16 +1954,17 @@ async function exportClinicExcel(params = {}) {
 
   worksheet.columns = [
     { key: 'index', width: 6 },
-    { key: 'dateTime', width: 20 },
+    { key: 'dateTime', width: 16 },
     { key: 'name', width: 10 },
-    { key: 'gender', width: 8 },
-    { key: 'age', width: 8 },
-    { key: 'identity', width: 10 },
-    { key: 'chiefComplaint', width: 22 },
-    { key: 'diagnosis', width: 22 },
+    { key: 'gender', width: 6 },
+    { key: 'age', width: 6 },
+    { key: 'identity', width: 8 },
+    { key: 'chiefComplaint', width: 20 },
+    { key: 'diagnosis', width: 18 },
     // 合并原“处置措施”和“用药信息”为一列，宽度适当加大
-    { key: 'treatmentAndDrug', width: 40 },
-    { key: 'doctor', width: 10 }
+    { key: 'disposal', width: 30 },
+    { key: 'doctor', width: 10 },
+    { key: 'remark', width: 20 }
   ]
 
   const locMap = { land_park: '陆园', water_park: '水园' }
@@ -1982,7 +1998,7 @@ async function exportClinicExcel(params = {}) {
   worksheet.getRow(3).height = 20
 
   // 表头：将“处置措施”和“用药信息”合并为一列
-  const headers = ['序号', '就诊日期时间', '姓名', '性别', '年龄', '身份', '主诉', '诊断', '处置及用药情况', '医生']
+  const headers = ['序号', '就诊日期时间', '姓名', '性别', '年龄', '身份', '主诉', '诊断', '处置及用药情况', '医生', '备注']
   const headerRow = worksheet.getRow(4)
   headers.forEach((header, idx) => {
     const cell = headerRow.getCell(idx + 1)
@@ -1998,8 +2014,6 @@ async function exportClinicExcel(params = {}) {
 
   rows.forEach((row, rowIdx) => {
     const excelRow = worksheet.getRow(5 + rowIdx)
-    // 合并处置措施与用药信息的文案
-    const mergedTreatment = [row.treatment, row.drugInfo].filter(Boolean).join('，')
     excelRow.values = [
       row.index,
       row.dateTime,
@@ -2009,13 +2023,14 @@ async function exportClinicExcel(params = {}) {
       row.identity,
       row.chiefComplaint,
       row.diagnosis,
-      mergedTreatment,
-      row.doctor
+      row.disposal,
+      row.doctor,
+      row.remark
     ]
     excelRow.font = { name: '仿宋_GB2312', size: 11 }
     excelRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
     excelRow.height = 22
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 11; i++) {
       const cell = excelRow.getCell(i)
       cell.border = {
         top: { style: 'thin' },

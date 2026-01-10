@@ -1914,21 +1914,49 @@ export default {
         if (hasRelatedData) {
           // 延迟执行，避免与输入事件冲突
           this.$nextTick(() => {
-            uni.showModal({
-              title: '清空确认',
-              content: '清空主诉将同时清空症状、诊断、疾病名称、处置和处方等相关信息，是否继续？',
-              confirmText: '确认清空',
-              cancelText: '取消',
-              confirmColor: '#dc2626',
-              success: (res) => {
-                if (res.confirm) {
-                  this.clearAllRelatedFields();
-                } else {
-                  // 恢复主诉内容
-                  this.form.chiefComplaint = oldComplaint;
+            // 检查是否有可保存的模板内容
+            const disease = (this.form.diseaseName || '').trim();
+            const complaint = (this.form.chiefComplaint || '').trim();
+            const diagnosis = (this.form.diagnosis || '').trim();
+            const treatment = (this.form.treatment || '').trim();
+            const canSaveTemplate = disease && (complaint || diagnosis || treatment);
+            
+            if (canSaveTemplate) {
+              // 如果有可保存的内容，询问是否保存为模板后再清空
+              uni.showModal({
+                title: '清空确认',
+                content: '是否将当前主诉、诊断、处置保存为模板后再清空？\n\n点击"保存并清空"将保存模板后清空所有信息\n点击"直接清空"将不保存直接清空',
+                confirmText: '保存并清空',
+                cancelText: '直接清空',
+                success: (res) => {
+                  if (res.confirm) {
+                    // 保存为模板后清空
+                    this.saveCurrentAsTemplate();
+                    this.clearAllRelatedFields();
+                  } else if (res.cancel) {
+                    // 直接清空
+                    this.clearAllRelatedFields();
+                  }
                 }
-              }
-            });
+              });
+            } else {
+              // 没有可保存的内容，直接询问是否清空
+              uni.showModal({
+                title: '清空确认',
+                content: '清空主诉将同时清空症状、诊断、疾病名称、处置和处方等相关信息，是否继续？',
+                confirmText: '确认清空',
+                cancelText: '取消',
+                confirmColor: '#dc2626',
+                success: (res) => {
+                  if (res.confirm) {
+                    this.clearAllRelatedFields();
+                  } else {
+                    // 恢复主诉内容
+                    this.form.chiefComplaint = oldComplaint;
+                  }
+                }
+              });
+            }
           });
         } else {
           // 没有相关数据，直接清空
@@ -1941,11 +1969,17 @@ export default {
   methods: {
     // ✨ 清空所有相关字段（主诉清空时调用）
     clearAllRelatedFields() {
+      // 在连续登记模式下，保留疾病相关信息
+      const preserveDisease = this.continueAfterSubmit;
+      const savedDiseaseName = preserveDisease ? this.form.diseaseName : '';
+      const savedDiagnosis = preserveDisease ? this.form.diagnosis : '';
+      const savedTreatment = preserveDisease ? this.form.treatment : '';
+      
       // 1. 清空就诊信息相关字段
       this.form.symptom = '';           // 症状
-      this.form.diagnosis = '';         // 诊断
-      this.form.diseaseName = '';       // 疾病名称
-      this.form.treatment = '';         // 处置
+      this.form.diagnosis = savedDiagnosis;  // 连续登记模式下保留
+      this.form.diseaseName = savedDiseaseName;  // 连续登记模式下保留
+      this.form.treatment = savedTreatment;  // 连续登记模式下保留
       
       // 2. 清空用药信息
       this.selectedDrug = null;         // 选中的药材
@@ -2257,9 +2291,9 @@ export default {
       // ✅ 清空数量输入框
       this.form.quantity = null;
       
-      // ✅ 重新加载批次和库存
+      // ✅ 重新加载批次和库存（不显示loading，避免与其他loading冲突）
       if (this.selectedDrug && this.selectedDrug._id) {
-        this.loadBatches();
+        this.loadBatches(false);
       }
       
       // 成功提示
@@ -4039,7 +4073,7 @@ export default {
       await this.loadBatches();
     },
 
-    async loadBatches() {
+    async loadBatches(showLoading = true) {
       if (!this.form.drugId || !this.form.location) {
         console.warn('[loadBatches] 缺少必要参数:', {
           drugId: this.form.drugId,
@@ -4050,7 +4084,9 @@ export default {
         return;
       }
       
-      uni.showLoading({ title: '加载库存...' });
+      if (showLoading) {
+        uni.showLoading({ title: '加载库存...' });
+      }
       try {
         console.log('[loadBatches] 查询参数:', {
           drugId: this.form.drugId,
@@ -4121,7 +4157,9 @@ export default {
         this.selectedBatch = null;
         this.availableStock = 0;
       } finally {
-        uni.hideLoading();
+        if (showLoading) {
+          uni.hideLoading();
+        }
       }
     },
 
@@ -4480,9 +4518,6 @@ export default {
               duration: 3000
             });
           } else {
-            // 提示保存为模板
-            this.promptSaveTemplate();
-            
             if (this.continueAfterSubmit) {
               uni.showToast({
                 title: '登记成功，可继续登记',
@@ -4560,9 +4595,6 @@ export default {
           });
 
           if (res.result.success) {
-            // 提示保存为模板
-            this.promptSaveTemplate();
-            
             if (this.continueAfterSubmit) {
               uni.showToast({
                 title: '登记成功，可继续登记',
@@ -4603,9 +4635,6 @@ export default {
           });
 
           if (res.result.success) {
-            // 提示保存为模板
-            this.promptSaveTemplate();
-            
             if (this.continueAfterSubmit) {
               uni.showToast({
                 title: '登记成功，可继续登记',
@@ -4649,8 +4678,14 @@ export default {
     },
 
     resetForm() {
-      // 保留当前园区选择，其他信息全部重置
+      // 保留当前园区选择，在连续登记模式下还要保留疾病相关信息
       const currentLocation = this.form.location || '';
+      
+      // 在连续登记模式下，保留疾病相关信息，方便连续登记相同疾病的患者
+      const preserveDisease = this.continueAfterSubmit;
+      const savedDiseaseName = preserveDisease ? this.form.diseaseName : '';
+      const savedDiagnosis = preserveDisease ? this.form.diagnosis : '';
+      const savedTreatment = preserveDisease ? this.form.treatment : '';
 
       // 更新时间（就诊时间始终为当前时间）
       this.updateDateTime();
@@ -4666,9 +4701,9 @@ export default {
       this.form.chiefComplaint = '';
       this.form.symptom = '';
       this.standardizedSymptoms = [];
-      this.form.diseaseName = '';
-      this.form.diagnosis = '';
-      this.form.treatment = '';
+      this.form.diseaseName = savedDiseaseName; // 连续登记模式下保留
+      this.form.diagnosis = savedDiagnosis; // 连续登记模式下保留
+      this.form.treatment = savedTreatment; // 连续登记模式下保留
       this.form.drugId = '';
       this.form.quantity = null;
       this.form.remark = '';
@@ -4930,10 +4965,8 @@ export default {
       // 生成文档内容
       let report = '';
       
-      // 只有当有记录时才显示接诊人数
-      if (stats.total > 0) {
-        report = `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
-      }
+      // 显示接诊人数（包括0人的情况）
+      report = `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
 
       // 游客统计
       if (stats.visitor.length > 0) {

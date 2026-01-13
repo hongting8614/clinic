@@ -36,7 +36,7 @@ exports.main = async (event, context) => {
       case 'exportClinicExcel':
         return await exportClinicExcel(data)
       case 'exportClinicPDF':
-        return await exportClinicPDF(data)
+        return await exportClinicPDFNew(data)
       case 'exportClinicUsageExcel':
         return await exportClinicUsageExcel(data)
       case 'exportClinicStatsExcel':
@@ -447,7 +447,7 @@ async function inventorySummaryReport(params = {}) {
       { key: 'systemQty', width: 10 },
       { key: 'actualQty', width: 10 },
       { key: 'diffQty', width: 10 },
-      { key: 'remark', width: 20 }
+      { key: 'remark', width: 30 }
     ]
 
     // 标题
@@ -1638,7 +1638,7 @@ async function exportInboundExcel(params = {}) {
   }
   
   totalRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    cell.font = { name: '仿宋_GB2312', size: 12, bold: true }
+    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
     const lastCol = mode === 'summary' ? 8 : 14
     // 合计行：除金额列外居中，金额列保持右对齐
     if (colNumber !== lastCol) {
@@ -1686,9 +1686,12 @@ async function exportStockExcel(params = {}) {
       paperSize: 9,
       orientation: 'landscape', // 横向
       margins: {
-        left: 0.98, right: 0.98, top: 0.98, bottom: 0.98,
-        header: 0.5, footer: 0.5
-      }
+        left: 0.3, right: 0.3, top: 0.5, bottom: 0.5,
+        header: 0.3, footer: 0.3
+      },
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0
     }
   })
   
@@ -1808,7 +1811,7 @@ async function exportStockExcel(params = {}) {
   totalRow.getCell(13).numFmt = '#,##0.00'
   
   totalRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    cell.font = { name: '仿宋_GB2312', size: 12, bold: true }
+    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
     // 除金额列外，其余列居中；金额列（13）保持右对齐
     if (colNumber !== 13) {
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
@@ -1946,24 +1949,27 @@ async function exportClinicExcel(params = {}) {
       paperSize: 9,
       orientation: 'landscape',
       margins: {
-        left: 0.98, right: 0.98, top: 0.98, bottom: 0.98,
-        header: 0.5, footer: 0.5
-      }
+        left: 0.3, right: 0.3, top: 0.5, bottom: 0.5,
+        header: 0.3, footer: 0.3
+      },
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0
     }
   })
 
   worksheet.columns = [
-    { key: 'index', width: 6 },
-    { key: 'dateTime', width: 16 },
-    { key: 'name', width: 10 },
-    { key: 'gender', width: 6 },
-    { key: 'age', width: 6 },
-    { key: 'identity', width: 8 },
-    { key: 'chiefComplaint', width: 20 },
+    { key: 'index', width: 4 },
+    { key: 'dateTime', width: 14 },
+    { key: 'name', width: 6 },
+    { key: 'gender', width: 4 },
+    { key: 'age', width: 4 },
+    { key: 'identity', width: 6 },
+    { key: 'chiefComplaint', width: 35 },
     { key: 'diagnosis', width: 18 },
     // 合并原“处置措施”和“用药信息”为一列，宽度适当加大
-    { key: 'disposal', width: 30 },
-    { key: 'doctor', width: 10 },
+    { key: 'disposal', width: 38 },
+    { key: 'doctor', width: 6 },
     { key: 'remark', width: 20 }
   ]
 
@@ -1973,9 +1979,9 @@ async function exportClinicExcel(params = {}) {
   worksheet.mergeCells('A1', 'K1')
   const titleCell = worksheet.getCell('A1')
   titleCell.value = title
-  titleCell.font = { name: '黑体', size: 22, bold: true }
+  titleCell.font = { name: '黑体', size: 18, bold: true }
   titleCell.alignment = { vertical: 'middle', horizontal: 'center' }
-  worksheet.getRow(1).height = 40
+  worksheet.getRow(1).height = 32
 
   const filterTextParts = []
   if (startDate || endDate) {
@@ -1986,34 +1992,31 @@ async function exportClinicExcel(params = {}) {
   worksheet.mergeCells('A2', 'K2')
   const timeCell = worksheet.getCell('A2')
   timeCell.value = filterText
-  timeCell.font = { name: '仿宋_GB2312', size: 12 }
+  timeCell.font = { name: '仿宋_GB2312', size: 11 }
   timeCell.alignment = { vertical: 'middle', horizontal: 'center' }
-  worksheet.getRow(2).height = 22
+  worksheet.getRow(2).height = 20
 
-  worksheet.mergeCells('A3', 'K3')
-  const makerCell = worksheet.getCell('A3')
-  makerCell.value = `制表人：${printUser || '——'}    制表日期：${formatDate(new Date())}`
-  makerCell.font = { name: '仿宋_GB2312', size: 12 }
-  makerCell.alignment = { vertical: 'middle', horizontal: 'right' }
-  worksheet.getRow(3).height = 20
 
   // 表头：将“处置措施”和“用药信息”合并为一列
-  const headers = ['序号', '就诊日期时间', '姓名', '性别', '年龄', '身份', '主诉', '诊断', '处置及用药情况', '医生', '备注']
-  const headerRow = worksheet.getRow(4)
+  const headers = ['序号', '就诊日期时间', '姓名', '性别', '年龄', '身份', '主诉与症状', '诊断', '处置及用药情况', '医生', '备注']
+  const headerRow = worksheet.getRow(3)
   headers.forEach((header, idx) => {
     const cell = headerRow.getCell(idx + 1)
     cell.value = header
-    cell.font = { name: '仿宋_GB2312', size: 12, bold: true }
+    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
     cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } }
     cell.border = {
       top: { style: 'medium' },
+      left: { style: 'thin' },
+      bottom: { style: 'medium' },
+      right: { style: 'thin' }
     }
   })
-  headerRow.height = 26
+  headerRow.height = 24
 
   rows.forEach((row, rowIdx) => {
-    const excelRow = worksheet.getRow(5 + rowIdx)
+    const excelRow = worksheet.getRow(4 + rowIdx)
     excelRow.values = [
       row.index,
       row.dateTime,
@@ -2027,8 +2030,24 @@ async function exportClinicExcel(params = {}) {
       row.doctor,
       row.remark
     ]
-    excelRow.font = { name: '仿宋_GB2312', size: 11 }
-    excelRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
+    excelRow.font = { name: '仿宋_GB2312', size: 9 }
+    excelRow.alignment = { vertical: 'top', horizontal: 'left', wrapText: true, shrinkToFit: true }
+    
+    // 序号、性别、年龄、医生列居中
+    excelRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(4).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(5).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(10).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    
+    // 日期时间、姓名、身份列居中
+    excelRow.getCell(2).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(3).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(6).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
+    
+    // 主诉与症状、诊断列垂直居中
+    excelRow.getCell(7).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, shrinkToFit: true }
+    excelRow.getCell(8).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, shrinkToFit: true }
+    
     excelRow.height = 22
     for (let i = 1; i <= 11; i++) {
       const cell = excelRow.getCell(i)
@@ -2127,6 +2146,199 @@ async function exportClinicPDF(params = {}) {
   })
 
   drawPdfFooter(doc, printUser)
+  doc.end()
+  await done
+
+  const arrayBuffer = Buffer.concat(buffers)
+  const upload = await cloud.uploadFile({
+    cloudPath: `reports/clinic_${Date.now()}.pdf`,
+    fileContent: arrayBuffer
+  })
+  return { success: true, fileID: upload.fileID }
+}
+
+// 导出门诊登记 PDF（新版本，支持分页和每页表头）
+async function exportClinicPDFNew(params = {}) {
+  const { startDate, endDate, name, location, printUser } = params
+  const records = await fetchClinicRecords({ startDate, endDate, name, location })
+  const rows = mapClinicRecordsForExport(records)
+
+  const doc = new PDFDocument({ 
+    size: 'A4', 
+    layout: 'landscape', 
+    margin: 36,
+    bufferPages: true
+  })
+  const buffers = []
+  doc.on('data', buffers.push.bind(buffers))
+  const done = new Promise(resolve => doc.on('end', resolve))
+
+  const fontDir = path.join(__dirname, 'fonts')
+  const simheiFont = path.join(fontDir, 'SimHei.ttf')
+  const fangsongFont = path.join(fontDir, 'FangSong_GB2312.ttf')
+  doc.registerFont('HeiTi', simheiFont)
+  doc.registerFont('FangSong', fangsongFont)
+
+  const locMap = { land_park: '陆园', water_park: '水园' }
+  const locText = location && location !== 'all' && locMap[location]
+    ? `（${locMap[location]}）`
+    : ''
+  const clinicTitle = `北京欢乐谷医务室${locText}门诊登记表`
+
+  const header = ['序号', '就诊日期时间', '姓名', '性别', '年龄', '身份', '主诉与症状', '诊断', '处置及用药情况', '医生', '备注']
+  const widths = [30, 80, 50, 30, 30, 50, 100, 100, 140, 40, 80]
+  const rowHeight = 20
+  const headerHeight = 25
+
+  const pageHeight = doc.page.height
+  const pageWidth = doc.page.width
+  const topMargin = doc.page.margins.top
+  const bottomMargin = doc.page.margins.bottom
+  
+  // 计算表格总宽度并居中
+  const tableWidth = widths.reduce((a, b) => a + b, 0)
+  const tableStartX = (pageWidth - tableWidth) / 2
+
+  const drawPageHeader = (isFirstPage = false) => {
+    if (isFirstPage) {
+      doc.font('HeiTi').fontSize(18).text(clinicTitle, { align: 'center' })
+      doc.moveDown(0.3)
+      
+      const filterParts = []
+      if (startDate || endDate) {
+        filterParts.push(`时间：${startDate || '——'} —— ${endDate || '——'}`)
+      }
+      if (name) filterParts.push(`姓名：${name}`)
+      if (filterParts.length > 0) {
+        doc.font('FangSong').fontSize(10).text(filterParts.join(' ｜ '), { align: 'center' })
+      }
+      doc.moveDown(0.5)
+    } else {
+      doc.font('HeiTi').fontSize(14).text(clinicTitle, { align: 'center' })
+      doc.moveDown(0.5)
+    }
+  }
+
+  const drawTableHeader = () => {
+    const startX = tableStartX
+    const startY = doc.y
+    
+    doc.font('HeiTi').fontSize(10)
+    for (let i = 0; i < header.length; i++) {
+      const x = startX + widths.slice(0, i).reduce((a, b) => a + b, 0)
+      const w = widths[i]
+      doc.rect(x, startY, w, headerHeight).stroke()
+      
+      // 计算文字高度，实现垂直居中
+      const textHeight = doc.heightOfString(header[i], {
+        width: w - 4,
+        align: 'center'
+      })
+      const textY = startY + (headerHeight - textHeight) / 2
+      
+      doc.text(header[i], x + 2, textY, {
+        width: w - 4,
+        align: 'center'
+      })
+    }
+    doc.y = startY + headerHeight
+  }
+
+  const drawDataRow = (rowData) => {
+    const startX = tableStartX
+    const startY = doc.y
+    
+    // 计算这一行需要的最大高度
+    doc.font('HeiTi').fontSize(9)
+    let maxHeight = rowHeight
+    for (let i = 0; i < rowData.length; i++) {
+      const w = widths[i]
+      const text = rowData[i] == null ? '' : String(rowData[i])
+      // 根据列索引确定对齐方式
+      let align = 'center'
+      if (i === 6 || i === 7 || i === 10) { // 主诉与症状(6)、诊断(7)、备注(10) 左对齐
+        align = 'left'
+      }
+      const textHeight = doc.heightOfString(text, {
+        width: w - 4,
+        align: align
+      })
+      maxHeight = Math.max(maxHeight, textHeight + 6)
+    }
+    
+    // 检查是否需要换页
+    if (startY + maxHeight > pageHeight - bottomMargin - 30) {
+      doc.addPage()
+      drawPageHeader(false)
+      drawTableHeader()
+      return drawDataRow(rowData)
+    }
+    
+    // 绘制单元格边框和文字
+    doc.font('HeiTi').fontSize(9)
+    for (let i = 0; i < rowData.length; i++) {
+      const x = startX + widths.slice(0, i).reduce((a, b) => a + b, 0)
+      const w = widths[i]
+      doc.rect(x, startY, w, maxHeight).stroke()
+      const text = rowData[i] == null ? '' : String(rowData[i])
+      
+      // 根据列索引确定对齐方式和垂直位置
+      let align = 'center'
+      let textY = startY + 3
+      
+      if (i === 6 || i === 7 || i === 10) { // 主诉与症状(6)、诊断(7)、备注(10) 左对齐
+        align = 'left'
+      } else if (i === 9) { // 医生(9) 垂直居中
+        const textHeight = doc.heightOfString(text, {
+          width: w - 4,
+          align: 'center'
+        })
+        textY = startY + (maxHeight - textHeight) / 2
+      }
+      
+      doc.text(text, x + 2, textY, {
+        width: w - 4,
+        align: align,
+        lineBreak: true
+      })
+    }
+    doc.y = startY + maxHeight
+  }
+
+  drawPageHeader(true)
+  drawTableHeader()
+
+  rows.forEach(r => {
+    drawDataRow([
+      r.index || '',
+      r.dateTime || '',
+      r.name || '',
+      r.gender || '',
+      r.age || '',
+      r.identity || '',
+      r.chiefComplaint || '',
+      r.diagnosis || '',
+      r.disposal || '',
+      r.doctor || '',
+      r.remark || ''
+    ])
+  })
+
+  const range = doc.bufferedPageRange()
+  for (let i = 0; i < range.count; i++) {
+    doc.switchToPage(i)
+    doc.font('FangSong').fontSize(9)
+    doc.text(
+      `第 ${i + 1} 页 / 共 ${range.count} 页`,
+      doc.page.margins.left,
+      pageHeight - bottomMargin + 10,
+      {
+        width: doc.page.width - doc.page.margins.left - doc.page.margins.right,
+        align: 'center'
+      }
+    )
+  }
+
   doc.end()
   await done
 
@@ -2357,7 +2569,7 @@ async function exportClinicStatsExcel(params = {}) {
   s1Headers.forEach((header, idx) => {
     const cell = s1HeaderRow.getCell(idx + 1)
     cell.value = header
-    cell.font = { name: '仿宋_GB2312', size: 12, bold: true }
+    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
     cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } }
     cell.border = {
@@ -2980,7 +3192,7 @@ async function exportOutboundExcel(params = {}) {
   }
 
   totalRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    cell.font = { name: '仿宋_GB2312', size: 12, bold: true }
+    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
     const lastCol = mode === 'summary' ? 7 : 14
     if (colNumber !== lastCol) {
       cell.alignment = { vertical: 'middle', horizontal: 'center' }

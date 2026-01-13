@@ -5272,6 +5272,736 @@ export default {
   }
 }
 
+/* ==================== 打印样式 - A4横版门诊登记表 ==================== */
+@media print {
+  /* A4横版页面设置 */
+  @page {
+    size: A4 landscape; /* A4横版 (297mm x 210mm) */
+    margin: 12mm 15mm; /* 上下12mm，左右15mm - 优化边距以容纳更多内容 */
+  }
+  
+  /* 全局打印设置 */
+  body {
+    font-family: "SimSun", "宋体", serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* 隐藏不需要打印的元素 */
+  .top-actions-card,
+  .location-modal-overlay,
+  .submit-section,
+  .continue-option,
+  .drug-selector,
+  .form-item button,
+  .add-prescription-btn,
+  .action-btn,
+  .top-btn,
+  .clinic-scroll {
+    display: none !important;
+  }
+  
+  /* 页面容器 */
+  .clinic-add {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    background: white;
+    overflow: visible;
+  }
+  
+  /* 页面标题 - 表格样式 */
+  .page-header {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border: 2px solid #000;
+    border-bottom: 1px solid #000;
+    
+    .title {
+      font-size: 16pt;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      line-height: 1.3;
+    }
+    
+    .subtitle {
+      font-size: 14pt;
+      font-weight: 600;
+      color: #000;
+      margin: 3px 0 0 0;
+    }
+  }
+  
+  /* 时间范围显示 */
+  .date-range-info {
+    text-align: center;
+    font-size: 10pt;
+    color: #000;
+    margin-bottom: 5px;
+    padding: 3px 0;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+  }
+  
+  /* 制表信息 */
+  .print-meta-info {
+    text-align: right;
+    font-size: 9pt;
+    color: #000;
+    margin-bottom: 5px;
+    padding: 3px 10px;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+  }
+  
+  /* 表格容器 - 汇总表格式 */
+  .records-table-wrapper {
+    width: 100%;
+    overflow: visible;
+    margin-top: 5px;
+  }
+  
+  /* 门诊登记汇总表格 */
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    font-size: 9pt;
+    table-layout: fixed;
+    
+    thead {
+      tr {
+        background: #f0f0f0;
+        
+        th {
+          border: 1px solid #000;
+          padding: 5px 3px;
+          font-weight: bold;
+          text-align: center;
+          color: #000;
+          vertical-align: middle;
+          word-wrap: break-word;
+          line-height: 1.3;
+          
+          /* 列宽设置 */
+          &:nth-child(1) { width: 4%; }   /* 序号 */
+          &:nth-child(2) { width: 10%; }  /* 就诊日期时间 */
+          &:nth-child(3) { width: 6%; }   /* 姓名 */
+          &:nth-child(4) { width: 4%; }   /* 性别 */
+          &:nth-child(5) { width: 4%; }   /* 年龄 */
+          &:nth-child(6) { width: 5%; }   /* 身份 */
+          &:nth-child(7) { width: 15%; }  /* 主诉 */
+          &:nth-child(8) { width: 15%; }  /* 诊断 */
+          &:nth-child(9) { width: 17%; }  /* 处置及用药情况 */
+          &:nth-child(10) { width: 6%; }  /* 医生 */
+          &:nth-child(11) { width: 14%; } /* 备注 */
+        }
+      }
+    }
+    
+    tbody {
+      tr {
+        page-break-inside: avoid;
+        
+        &:nth-child(even) {
+          background: #fafafa;
+        }
+        
+        td {
+          border: 1px solid #000;
+          padding: 4px 3px;
+          vertical-align: top;
+          color: #000;
+          word-wrap: break-word;
+          word-break: break-all;
+          overflow: visible;
+          line-height: 1.4;
+          font-size: 8.5pt;
+          
+          /* 序号居中 */
+          &:nth-child(1) {
+            text-align: center;
+            font-weight: bold;
+          }
+          
+          /* 日期时间 */
+          &:nth-child(2) {
+            text-align: center;
+            font-size: 8pt;
+            white-space: normal;
+          }
+          
+          /* 姓名 */
+          &:nth-child(3) {
+            text-align: center;
+            font-weight: 600;
+          }
+          
+          /* 性别、年龄居中 */
+          &:nth-child(4),
+          &:nth-child(5) {
+            text-align: center;
+          }
+          
+          /* 身份 */
+          &:nth-child(6) {
+            text-align: center;
+            font-size: 8pt;
+          }
+          
+          /* 主诉、诊断、处置 - 左对齐，允许换行 */
+          &:nth-child(7),
+          &:nth-child(8),
+          &:nth-child(9) {
+            text-align: left;
+            white-space: normal;
+            line-height: 1.5;
+          }
+          
+          /* 医生 */
+          &:nth-child(10) {
+            text-align: center;
+            font-size: 8pt;
+          }
+          
+          /* 备注 */
+          &:nth-child(11) {
+            text-align: left;
+            font-size: 8pt;
+            white-space: normal;
+          }
+        }
+      }
+    }
+  }
+  
+  /* 表单区域 - 保留原有样式 */
+  .form-section {
+    page-break-inside: avoid;
+    margin-bottom: 15px;
+    overflow: visible;
+    
+    .section-title {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #666;
+    }
+  }
+  
+  /* 表格页脚信息 */
+  .table-footer-info {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: 1px solid #000;
+    font-size: 9pt;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .footer-left {
+      text-align: left;
+      
+      .total-count {
+        font-weight: bold;
+        color: #000;
+      }
+    }
+    
+    .footer-right {
+      text-align: right;
+      
+      .print-date {
+        color: #000;
+      }
+    }
+  }
+  
+  /* 统计信息区域 */
+  .statistics-section {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #000;
+    font-size: 9pt;
+    
+    .stat-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #000;
+    }
+    
+    .stat-items {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      
+      .stat-item {
+        color: #000;
+        
+        .stat-label {
+          font-weight: 600;
+        }
+        
+        .stat-value {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  
+  /* 表单项 */
+  .form-item {
+    flex: 1;
+    overflow: visible;
+    
+    &.half {
+      flex: 0 0 48%;
+    }
+    
+    .label {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 5px;
+      white-space: normal;
+      word-wrap: break-word;
+      
+      &.required::before {
+        content: "* ";
+        color: #000;
+      }
+    }
+    
+    input,
+    textarea,
+    .picker-input,
+    .datetime-display {
+      font-size: 10pt;
+      color: #000;
+      border: 1px solid #666;
+      padding: 5px 8px;
+      background: white;
+      border-radius: 0;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    
+    textarea {
+      min-height: 60px;
+      line-height: 1.5;
+      overflow: visible;
+      height: auto;
+    }
+  }
+  
+  /* 身份选择器 */
+  .identity-selector,
+  .gender-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    
+    .identity-item,
+    .gender-item {
+      padding: 5px 12px;
+      border: 1px solid #666;
+      font-size: 10pt;
+      color: #000;
+      background: white;
+      white-space: nowrap;
+      
+      &.active {
+        background: #000;
+        color: white;
+        font-weight: bold;
+      }
+    }
+  }
+  
+  /* 性别年龄行 */
+  .gender-age-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    .gender-selector {
+      flex: 0 0 auto;
+    }
+    
+    input {
+      flex: 1;
+      min-width: 80px;
+    }
+  }
+  
+  /* 处方预览区域 */
+  .prescription-preview-section {
+    page-break-inside: avoid;
+    border: 2px solid #000;
+    padding: 15px;
+    margin: 20px 0;
+    background: white;
+    overflow: visible;
+    
+    .prescription-header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #000;
+      
+      .prescription-title {
+        font-size: 20pt;
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 8px;
+        word-wrap: break-word;
+      }
+      
+      .hospital-name {
+        font-size: 14pt;
+        color: #333;
+        word-wrap: break-word;
+      }
+    }
+    
+    .patient-info-section {
+      margin-bottom: 15px;
+      overflow: visible;
+      
+      .patient-info-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+        
+        .patient-info-item {
+          display: flex;
+          gap: 5px;
+          font-size: 10pt;
+          white-space: nowrap;
+          
+          .info-label {
+            font-weight: 600;
+            color: #000;
+          }
+          
+          .info-value {
+            color: #000;
+            word-wrap: break-word;
+          }
+        }
+      }
+      
+      .patient-diagnosis-row {
+        display: flex;
+        gap: 5px;
+        font-size: 10pt;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #ccc;
+        overflow: visible;
+        
+        .diagnosis-label {
+          font-weight: 600;
+          color: #000;
+          white-space: nowrap;
+        }
+        
+        .diagnosis-value {
+          flex: 1;
+          color: #000;
+          word-wrap: break-word;
+          word-break: break-all;
+          white-space: normal;
+          line-height: 1.5;
+        }
+      }
+    }
+    
+    .prescription-body {
+      margin-bottom: 15px;
+      overflow: visible;
+      
+      .prescription-rp-header {
+        margin-bottom: 10px;
+        
+        .rp-symbol {
+          font-size: 16pt;
+          font-weight: bold;
+          color: #000;
+        }
+      }
+      
+      .prescription-drugs-list {
+        overflow: visible;
+        
+        .prescription-drug-item {
+          margin-bottom: 12px;
+          padding-bottom: 10px;
+          border-bottom: 1px dashed #999;
+          page-break-inside: avoid;
+          overflow: visible;
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+          .drug-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            overflow: visible;
+            
+            .drug-name-spec {
+              flex: 1;
+              overflow: visible;
+              word-wrap: break-word;
+              word-break: break-all;
+              white-space: normal;
+              
+              .drug-name {
+                font-size: 11pt;
+                font-weight: bold;
+                color: #000;
+                margin-right: 10px;
+                display: inline;
+                word-wrap: break-word;
+              }
+              
+              .drug-spec-quantity {
+                font-size: 10pt;
+                color: #333;
+                display: inline;
+                word-wrap: break-word;
+              }
+            }
+            
+            .drug-actions {
+              display: none;
+            }
+          }
+          
+          .drug-usage-row {
+            display: flex;
+            gap: 5px;
+            font-size: 10pt;
+            overflow: visible;
+            
+            .usage-label {
+              font-weight: 600;
+              color: #000;
+              white-space: nowrap;
+            }
+            
+            .usage-value {
+              color: #000;
+              flex: 1;
+              word-wrap: break-word;
+              word-break: break-all;
+              white-space: normal;
+              line-height: 1.5;
+            }
+          }
+        }
+        
+        .drugs-empty {
+          display: none;
+        }
+      }
+      
+      .prescription-summary {
+        text-align: right;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #ccc;
+        
+        .summary-text {
+          font-size: 10pt;
+          font-weight: 600;
+          color: #000;
+        }
+      }
+      
+      .prescription-blank-line {
+        margin-top: 15px;
+        text-align: center;
+        
+        .blank-text {
+          font-size: 9pt;
+          color: #999;
+        }
+      }
+    }
+    
+    .prescription-footer-section {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #000;
+      overflow: visible;
+      
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+        
+        .footer-item {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          min-width: 200px;
+          
+          .footer-label {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #000;
+            white-space: nowrap;
+          }
+          
+          .signature-placeholder {
+            flex: 1;
+            border-bottom: 1px solid #000;
+            min-height: 30px;
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+    
+    .prescription-notes {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f5f5f5;
+      border: 1px solid #ccc;
+      overflow: visible;
+      
+      .note-title {
+        font-size: 10pt;
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 8px;
+      }
+      
+      .note-item {
+        display: flex;
+        margin-bottom: 5px;
+        font-size: 9pt;
+        overflow: visible;
+        
+        .note-bullet {
+          margin-right: 5px;
+          color: #000;
+          flex-shrink: 0;
+        }
+        
+        .note-text {
+          color: #000;
+          line-height: 1.4;
+          word-wrap: break-word;
+          word-break: break-all;
+          white-space: normal;
+          flex: 1;
+        }
+      }
+    }
+  }
+  
+  /* 签名区域 */
+  .signature-section {
+    page-break-inside: avoid;
+    margin-top: 20px;
+    overflow: visible;
+    
+    .section-title {
+      font-size: 12pt;
+      font-weight: bold;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+    
+    .signature-canvas-wrapper {
+      border: 1px solid #000;
+      min-height: 80px;
+      background: white;
+      overflow: visible;
+    }
+  }
+  
+  /* 备注区域 */
+  .remark-section {
+    page-break-inside: avoid;
+    overflow: visible;
+    
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      border: 1px solid #666;
+      padding: 8px;
+      font-size: 10pt;
+      line-height: 1.5;
+      box-sizing: border-box;
+      overflow: visible;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+  }
+  
+  /* 强制黑白打印优化 */
+  * {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow: visible !important;
+  }
+  
+  /* 移除所有背景渐变和阴影 */
+  .drug-quick-info,
+  .batch-allocation-info,
+  .form-section,
+  .prescription-preview-section {
+    background: white !important;
+    box-shadow: none !important;
+  }
+  
+  /* 确保所有文本容器都能完整显示 */
+  input,
+  textarea,
+  .picker-input,
+  .datetime-display,
+  .info-value,
+  .diagnosis-value,
+  .usage-value,
+  .note-text,
+  .drug-name,
+  .drug-spec-quantity {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+  }
+  
+  /* 确保flex容器不会隐藏内容 */
+  .form-row,
+  .patient-info-row,
+  .footer-row {
+    overflow: visible !important;
+    flex-wrap: wrap !important;
+  }
+}
+
 .input-compact {
   height: 80rpx;
   line-height: 80rpx;
@@ -7366,6 +8096,160 @@ export default {
         }
       }
     }
+  }
+}
+
+/* ==================== 打印样式 - A4横版门诊登记汇总表 ==================== */
+@media print {
+  /* A4横版页面设置 */
+  @page {
+    size: A4 landscape;
+    margin: 12mm 15mm;
+  }
+  
+  /* 全局打印设置 */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  body {
+    font-family: "SimSun", "宋体", serif;
+  }
+  
+  /* 隐藏不需要打印的元素 */
+  .top-actions-card,
+  .location-modal-overlay,
+  .submit-section,
+  .continue-option,
+  .drug-selector,
+  button,
+  .action-btn {
+    display: none !important;
+  }
+  
+  /* 页面容器 */
+  .clinic-add {
+    width: 100%;
+    padding: 0;
+    background: white;
+  }
+  
+  /* 表格标题 */
+  .page-header {
+    text-align: center;
+    margin-bottom: 5px;
+    padding: 8px 0;
+    border: 2px solid #000;
+    
+    .title {
+      font-size: 16pt;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      line-height: 1.3;
+    }
+    
+    .subtitle {
+      font-size: 14pt;
+      font-weight: 600;
+      color: #000;
+      margin: 3px 0 0 0;
+    }
+  }
+  
+  /* 时间范围 */
+  .date-range {
+    text-align: center;
+    font-size: 10pt;
+    padding: 3px;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+    margin-bottom: 5px;
+  }
+  
+  /* 汇总表格 */
+  table,
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    font-size: 8.5pt;
+    margin-top: 5px;
+    
+    thead th {
+      border: 1px solid #000;
+      padding: 4px 2px;
+      font-weight: bold;
+      text-align: center;
+      background: #f0f0f0;
+      color: #000;
+      line-height: 1.2;
+      word-wrap: break-word;
+    }
+    
+    tbody td {
+      border: 1px solid #000;
+      padding: 3px 2px;
+      vertical-align: top;
+      color: #000;
+      word-wrap: break-word;
+      word-break: break-all;
+      line-height: 1.3;
+      font-size: 8pt;
+    }
+    
+    /* 列宽优化 */
+    th:nth-child(1), td:nth-child(1) { width: 3%; text-align: center; } /* 序号 */
+    th:nth-child(2), td:nth-child(2) { width: 9%; text-align: center; font-size: 7.5pt; } /* 日期时间 */
+    th:nth-child(3), td:nth-child(3) { width: 5%; text-align: center; font-weight: 600; } /* 姓名 */
+    th:nth-child(4), td:nth-child(4) { width: 3%; text-align: center; } /* 性别 */
+    th:nth-child(5), td:nth-child(5) { width: 3%; text-align: center; } /* 年龄 */
+    th:nth-child(6), td:nth-child(6) { width: 5%; text-align: center; font-size: 7.5pt; } /* 身份 */
+    th:nth-child(7), td:nth-child(7) { width: 16%; text-align: left; line-height: 1.4; } /* 主诉 */
+    th:nth-child(8), td:nth-child(8) { width: 16%; text-align: left; line-height: 1.4; } /* 诊断 */
+    th:nth-child(9), td:nth-child(9) { width: 18%; text-align: left; line-height: 1.4; } /* 处置及用药 */
+    th:nth-child(10), td:nth-child(10) { width: 5%; text-align: center; font-size: 7.5pt; } /* 医生 */
+    th:nth-child(11), td:nth-child(11) { width: 17%; text-align: left; font-size: 7.5pt; } /* 备注 */
+    
+    /* 斑马纹 */
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+    
+    /* 避免行内分页 */
+    tbody tr {
+      page-break-inside: avoid;
+    }
+  }
+  
+  /* 表格页脚统计 */
+  .table-footer {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border: 1px solid #000;
+    font-size: 9pt;
+    display: flex;
+    justify-content: space-between;
+    
+    .total-count {
+      font-weight: bold;
+    }
+  }
+  
+  /* 确保文本完整显示 */
+  td, th {
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+  
+  /* 长文本单元格 */
+  .long-text {
+    max-height: none;
+    overflow: visible;
+    word-wrap: break-word;
+    word-break: break-all;
   }
 }
 

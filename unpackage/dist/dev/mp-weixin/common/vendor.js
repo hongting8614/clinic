@@ -837,8 +837,8 @@ function populateParameters(result) {
   var parameters = {
     appId: "__UNI__AKPMS",
     appName: "爱康医务室管理系统",
-    appVersion: "3.16.3",
-    appVersionCode: "31603",
+    appVersion: "3.16.5",
+    appVersionCode: "31605",
     appLanguage: getAppLanguage(hostLanguage),
     uniCompileVersion: "4.87",
     uniCompilerVersion: "4.87",
@@ -938,8 +938,8 @@ var getAppBaseInfo = {
     result = sortObject(Object.assign(result, {
       appId: "__UNI__AKPMS",
       appName: "爱康医务室管理系统",
-      appVersion: "3.16.3",
-      appVersionCode: "31603",
+      appVersion: "3.16.5",
+      appVersionCode: "31605",
       appLanguage: getAppLanguage(hostLanguage),
       hostVersion: version,
       hostLanguage: hostLanguage,

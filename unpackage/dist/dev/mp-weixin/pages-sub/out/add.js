@@ -101,10 +101,10 @@ var components
 try {
   components = {
     batchSelector: function () {
-      return __webpack_require__.e(/*! import() | components/batch-selector/index */ "components/batch-selector/index").then(__webpack_require__.bind(null, /*! @/components/batch-selector/index.vue */ 408))
+      return __webpack_require__.e(/*! import() | components/batch-selector/index */ "components/batch-selector/index").then(__webpack_require__.bind(null, /*! @/components/batch-selector/index.vue */ 416))
     },
     signature: function () {
-      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 401))
+      return __webpack_require__.e(/*! import() | components/signature/index */ "components/signature/index").then(__webpack_require__.bind(null, /*! @/components/signature/index.vue */ 409))
     },
   }
 } catch (e) {
@@ -226,12 +226,12 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 var _common = _interopRequireDefault(__webpack_require__(/*! @/utils/common.js */ 94));
 var Signature = function Signature() {
   __webpack_require__.e(/*! require.ensure | components/signature/index */ "components/signature/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 401));
+    return resolve(__webpack_require__(/*! @/components/signature/index.vue */ 409));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var BatchSelector = function BatchSelector() {
   __webpack_require__.e(/*! require.ensure | components/batch-selector/index */ "components/batch-selector/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/batch-selector/index.vue */ 408));
+    return resolve(__webpack_require__(/*! @/components/batch-selector/index.vue */ 416));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {

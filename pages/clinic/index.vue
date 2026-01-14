@@ -145,7 +145,8 @@
 
         <view class="dialog-actions">
           <button class="dialog-btn cancel" @tap="closeDatePicker">取消</button>
-          <button class="dialog-btn confirm" @tap="confirmExport">确定导出</button>
+          <button class="dialog-btn confirm excel" @tap="confirmExport('excel')">导出Excel</button>
+          <button class="dialog-btn confirm pdf" @tap="confirmExport('pdf')">导出PDF</button>
         </view>
       </view>
     </view>
@@ -329,7 +330,7 @@ export default {
     },
     
     // 确认导出
-    async confirmExport() {
+    async confirmExport(format) {
       if (!this.exportStartDate || !this.exportEndDate) {
         uni.showToast({ title: '请选择时间段', icon: 'none' })
         return
@@ -342,17 +343,22 @@ export default {
       }
       
       this.closeDatePicker()
-      await this.exportClinicExcel()
+      
+      if (format === 'pdf') {
+        await this.exportClinicPDF()
+      } else {
+        await this.exportClinicExcel()
+      }
     },
     
-    // 导出门诊登记表
+    // 导出门诊登记表 Excel
     async exportClinicExcel() {
       try {
         // 获取当前用户的园区信息
         const userInfo = uni.getStorageSync('userInfo') || {}
         const location = userInfo.location || 'land_park' // 默认陆园
         
-        uni.showLoading({ title: '生成报表...', mask: true })
+        uni.showLoading({ title: '生成Excel...', mask: true })
         const res = await this.$api.callFunction('reports', {
           action: 'exportClinicExcel',
           data: {
@@ -372,11 +378,52 @@ export default {
             uni.showToast({ title: '获取下载链接失败', icon: 'none' })
           }
         } else {
-          uni.showToast({ title: '生成报表失败', icon: 'none' })
+          uni.showToast({ title: '生成Excel失败', icon: 'none' })
         }
       } catch (err) {
         uni.hideLoading()
-        console.error('导出失败:', err)
+        console.error('导出Excel失败:', err)
+        uni.showToast({ title: '导出失败', icon: 'none' })
+      }
+    },
+    
+    // 导出门诊登记表 PDF
+    async exportClinicPDF() {
+      try {
+        // 获取当前用户的园区信息
+        const userInfo = uni.getStorageSync('userInfo') || {}
+        const location = userInfo.location || 'land_park' // 默认陆园
+        
+        uni.showLoading({ title: '生成PDF...', mask: true })
+        const res = await this.$api.callFunction('reports', {
+          action: 'exportClinicPDF',
+          data: {
+            startDate: this.exportStartDate,
+            endDate: this.exportEndDate,
+            location: location,
+            printUser: userInfo.name || ''
+          }
+        })
+        uni.hideLoading()
+        if (res?.success && res.fileID) {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
+          let filename = ''
+          if (res.fileID) {
+            const parts = res.fileID.split('/')
+            filename = parts[parts.length - 1] || `clinic_report_${Date.now()}.pdf`
+          }
+          if (fileUrl) {
+            this.downloadAndSaveLocal(fileUrl, filename, 'PDF')
+          } else {
+            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+          }
+        } else {
+          uni.showToast({ title: '生成PDF失败', icon: 'none' })
+        }
+      } catch (err) {
+        uni.hideLoading()
+        console.error('导出PDF失败:', err)
         uni.showToast({ title: '导出失败', icon: 'none' })
       }
     },
@@ -661,7 +708,7 @@ export default {
   flex: 1;
   padding: 14rpx 0;
   border-radius: 999rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   border: none;
 }
 
@@ -671,8 +718,15 @@ export default {
 }
 
 .dialog-btn.confirm {
-  background: #2563eb;
   color: #ffffff;
+}
+
+.dialog-btn.excel {
+  background: #10b981;
+}
+
+.dialog-btn.pdf {
+  background: #ef4444;
 }
 
 .esig-mask {

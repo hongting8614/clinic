@@ -197,7 +197,7 @@
   flex: 1;
   padding: 14rpx 0;
   border-radius: 999rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   border: none;
 }
 .dialog-btn.cancel {
@@ -205,8 +205,13 @@
   color: #6b7280;
 }
 .dialog-btn.confirm {
-  background: #2563eb;
   color: #ffffff;
+}
+.dialog-btn.excel {
+  background: #10b981;
+}
+.dialog-btn.pdf {
+  background: #ef4444;
 }
 .esig-mask {
   position: fixed;

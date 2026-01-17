@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/hongting8614/---/issues"
   },
-  "homepage": "https://github.com/hongting8614/---#readme"
+  "homepage": "https://github.com/hongting8614/---#readme",
+  "devDependencies": {
+    "cross-env": "^10.1.0"
+  }
 }

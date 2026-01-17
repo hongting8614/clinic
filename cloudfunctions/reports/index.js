@@ -169,13 +169,19 @@ async function inboundDetailReport(params = {}) {
         recordId: record._id,
         recordNo: record.recordNo,
         date: record.createTime,
+        inboundDate: record.createTime,
         drugName: item.drugName || '',
         specification: item.specification || item.spec || '',
         unit: item.unit || '',
+        barcode: item.barcode || item.barCode || '',
         batchNo: item.batch || '',
         productionDate: item.productionDate || '',
         expireDate: item.expireDate || '',
         manufacturer: item.manufacturer || '',
+        approvalNumber: item.approvalNumber || '',
+        category: item.category || '',
+        isHighValue: item.isHighValue || false,
+        isEmergency: item.isEmergency || false,
         quantity: Number(item.quantity || 0),
         price: Number(item.price || 0),
         amount: Number(((item.price || 0) * (item.quantity || 0)).toFixed(2)),
@@ -958,23 +964,29 @@ async function exportInboundPDF(params = {}) {
   drawPdfHeader(doc, title, data.filters, data.statistics, params.printUser)
 
   if (mode === 'detail') {
-    const header = ['单号', '日期', '药材名', '规格', '单位', '批号', '生产日期', '有效期', '生产厂家', '数量', '单价', '金额', '医生']
-    const widths = [70, 55, 80, 70, 40, 60, 60, 60, 80, 45, 45, 50, 55]
+    // 删除批号和批准文号，重新设计列宽，A4横向优化
+    const header = ['序号', '入库日期', '药材名称', '规格', '单位', '生产日期', '有效期', '生产厂家', '数量', '操作人']
+    const widths = [35, 70, 120, 85, 40, 70, 70, 150, 55, 70]
+    
+    // 计算表格总宽度并居中
+    const page = doc.page
+    const usableWidth = page.width - page.margins.left - page.margins.right
+    const tableWidth = widths.reduce((a, b) => a + b, 0)
+    const offsetX = page.margins.left + Math.max(0, (usableWidth - tableWidth) / 2)
+    doc.x = offsetX
+    
     drawRow(doc, header, widths, true)
-    data.details.forEach(item => {
+    data.details.forEach((item, index) => {
       drawRow(doc, [
-        item.recordNo || '',
-        formatDate(item.date),
+        index + 1,
+        formatDate(item.inboundDate || item.date),
         item.drugName || '',
         item.specification || '',
         item.unit || '',
-        item.batchNo || '',
         item.productionDate || '',
         item.expireDate || '',
         item.manufacturer || '',
         String(item.quantity ?? ''),
-        String(item.price ?? ''),
-        String(item.amount ?? ''),
         item.operator || ''
       ], widths, false)
     })
@@ -1478,28 +1490,24 @@ async function exportInboundExcel(params = {}) {
       { key: 'totalAmount', width: 16 }  // 入库金额
     ]
   } else {
+    // 删除批号和批准文号，重新设计列宽
     worksheet.columns = [
-      // 横向 A4 下，总宽度控制在约 132：在不超页的前提下适当加宽主要文本列
-      { key: 'index', width: 4 },            // 序号
-      { key: 'recordNo', width: 13 },        // 单号
-      { key: 'date', width: 8 },             // 日期
-      { key: 'drugName', width: 13 },        // 药材名
-      { key: 'specification', width: 13 },   // 规格
-      { key: 'unit', width: 6 },             // 单位
-      { key: 'batchNo', width: 11 },         // 批号
-      { key: 'productionDate', width: 8 },   // 生产日期
-      { key: 'expireDate', width: 8 },       // 有效期
-      { key: 'manufacturer', width: 13 },    // 生产厂家/去向
-      { key: 'quantity', width: 7 },         // 数量
-      { key: 'price', width: 7 },            // 单价
-      { key: 'amount', width: 8 },           // 金额
-      { key: 'operator', width: 7 }          // 医生/发放人
+      { key: 'index', width: 6 },            // 序号
+      { key: 'inboundDate', width: 14 },     // 入库日期
+      { key: 'drugName', width: 28 },        // 药材名称（加宽）
+      { key: 'specification', width: 20 },   // 规格
+      { key: 'unit', width: 8 },             // 单位
+      { key: 'productionDate', width: 14 },  // 生产日期
+      { key: 'expireDate', width: 14 },      // 有效期
+      { key: 'manufacturer', width: 32 },    // 生产厂家（加宽）
+      { key: 'quantity', width: 10 },        // 数量
+      { key: 'operator', width: 12 }         // 操作人
     ]
   }
   
   // 标题行（第1行）
   const titleText = mode === 'summary' ? '北京欢乐谷医务室入库汇总表' : '北京欢乐谷医务室入库明细表'
-  worksheet.mergeCells('A1', mode === 'summary' ? 'H1' : 'N1')
+  worksheet.mergeCells('A1', mode === 'summary' ? 'H1' : 'J1')
   const titleCell = worksheet.getCell('A1')
   titleCell.value = titleText
   titleCell.font = { name: '黑体', size: 22, bold: true }
@@ -1509,7 +1517,7 @@ async function exportInboundExcel(params = {}) {
   
   // 统计时间 & 制表人行（第2行）
   const timeText = `统计时间：${startDate || '——'} ~ ${endDate || '——'}    制表人：${printUser || '——'}`
-  worksheet.mergeCells('A2', mode === 'summary' ? 'G2' : 'N2')
+  worksheet.mergeCells('A2', mode === 'summary' ? 'H2' : 'J2')
   const timeCell = worksheet.getCell('A2')
   timeCell.value = timeText
   timeCell.font = { name: '仿宋_GB2312', size: 14 }
@@ -1522,7 +1530,7 @@ async function exportInboundExcel(params = {}) {
     // 将“品种数”“数量”“金额”改为含义更清晰的表头
     headers = ['序号', '单号', '日期', '医生', '状态', '入库品种数', '入库数量（最小单位）', '入库金额（元）']
   } else {
-    headers = ['序号', '单号', '日期', '药材名', '规格', '单位', '批号', '生产日期', '有效期', '生产厂家', '数量（最小单位）', '单价（元）', '金额（元）', '医生']
+    headers = ['序号', '入库日期', '药材名称', '规格', '单位', '生产日期', '有效期', '生产厂家', '数量', '操作人']
   }
   
   const headerRow = worksheet.getRow(3)
@@ -1530,7 +1538,7 @@ async function exportInboundExcel(params = {}) {
     const cell = headerRow.getCell(index + 1)
     cell.value = header
     // 明细表适当减小字号，便于在一页 A4 内放下更多列
-    const fontSize = mode === 'summary' ? 14 : 12
+    const fontSize = mode === 'summary' ? 14 : 11
     cell.font = { name: '仿宋_GB2312', size: fontSize, bold: true }
     cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } }
@@ -1545,7 +1553,7 @@ async function exportInboundExcel(params = {}) {
   
   // 数据行（从第4行开始）
   const dataRows = mode === 'summary' ? reportData.records : reportData.details
-  const colCount = mode === 'summary' ? 8 : 14
+  const colCount = mode === 'summary' ? 8 : 10
   
   dataRows.forEach((row, rowIndex) => {
     const excelRow = worksheet.getRow(4 + rowIndex)
@@ -1568,43 +1576,31 @@ async function exportInboundExcel(params = {}) {
       excelRow.getCell(7).alignment = { vertical: 'middle', horizontal: 'right' }
       excelRow.getCell(8).alignment = { vertical: 'middle', horizontal: 'right' }
     } else {
-      // 明细模式：序号-单号-日期-药材名-规格-单位-批号-生产日期-有效期-生产厂家-数量-单价-金额-医生
+      // 明细模式：删除批号和批准文号字段
       excelRow.values = [
         rowIndex + 1,
-        row.recordNo,
-        formatDate(row.date),
+        formatDate(row.inboundDate || row.date),
         row.drugName,
         row.specification,
         row.unit,
-        row.batchNo,
         row.productionDate || '',
         row.expireDate || '',
         row.manufacturer || '',
         row.quantity,
-        row.price || '',
-        row.amount || '',
         row.operator || ''
       ]
-      // 数量、单价、金额右对齐，金额设置数值格式
-      excelRow.getCell(11).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(12).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(13).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(13).numFmt = '#,##0.00'
+      // 数量列居中显示
+      excelRow.getCell(9).alignment = { vertical: 'middle', horizontal: 'center' }
     }
     
     // 批量设置样式（更快）
     // 明细表数据行字号略小一些
     const rowFontSize = mode === 'summary' ? 12 : 11
     excelRow.font = { name: '仿宋_GB2312', size: rowFontSize }
-    if (mode === 'summary') {
-      excelRow.alignment = { vertical: 'middle', horizontal: 'center' }
-    } else {
-      // 明细默认居中，数值列在上面已经单独改为右对齐
-      excelRow.alignment = { vertical: 'middle', horizontal: 'center' }
-    }
+    excelRow.alignment = { vertical: 'middle', horizontal: 'center' }
     excelRow.height = 22
     
-    // 只设置边框
+    // 设置边框 - 确保所有单元格都有边框
     for (let i = 1; i <= colCount; i++) {
       const cell = excelRow.getCell(i)
       cell.border = {
@@ -1615,44 +1611,6 @@ async function exportInboundExcel(params = {}) {
       }
     }
   })
-  
-  // 合计行（最后一行）
-  const stats = reportData.statistics
-  const totalRow = worksheet.addRow([])
-  totalRow.getCell(1).value = '合计'
-  
-  if (mode === 'summary') {
-    totalRow.getCell(6).value = stats.totalDrugs || 0
-    totalRow.getCell(7).value = stats.totalQuantity || 0
-    totalRow.getCell(8).value = stats.totalAmount || 0
-    totalRow.getCell(7).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(8).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(7).numFmt = '#,##0.00'
-    totalRow.getCell(8).numFmt = '#,##0.00'
-  } else {
-    totalRow.getCell(11).value = stats.totalQuantity || 0
-    totalRow.getCell(13).value = stats.totalAmount || 0
-    totalRow.getCell(11).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(13).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(13).numFmt = '#,##0.00'
-  }
-  
-  totalRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
-    const lastCol = mode === 'summary' ? 8 : 14
-    // 合计行：除金额列外居中，金额列保持右对齐
-    if (colNumber !== lastCol) {
-      cell.alignment = { vertical: 'middle', horizontal: 'center' }
-    }
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } }
-    cell.border = {
-      top: { style: 'medium' },
-      left: { style: 'thin' },
-      bottom: { style: 'medium' },
-      right: { style: 'thin' }
-    }
-  })
-  totalRow.height = 25
   
   // 生成Buffer
   const buffer = await workbook.xlsx.writeBuffer()
@@ -1959,11 +1917,11 @@ async function exportClinicExcel(params = {}) {
   })
 
   worksheet.columns = [
-    { key: 'index', width: 4 },
+    { key: 'index', width: 4.86 },
     { key: 'dateTime', width: 14 },
     { key: 'name', width: 6 },
-    { key: 'gender', width: 4 },
-    { key: 'age', width: 4 },
+    { key: 'gender', width: 4.86 },
+    { key: 'age', width: 4.86 },
     { key: 'identity', width: 6 },
     { key: 'chiefComplaint', width: 35 },
     { key: 'diagnosis', width: 18 },
@@ -2018,17 +1976,17 @@ async function exportClinicExcel(params = {}) {
   rows.forEach((row, rowIdx) => {
     const excelRow = worksheet.getRow(4 + rowIdx)
     excelRow.values = [
-      row.index,
-      row.dateTime,
-      row.name,
-      row.gender,
-      row.age,
-      row.identity,
-      row.chiefComplaint,
-      row.diagnosis,
-      row.disposal,
-      row.doctor,
-      row.remark
+      String(row.index || ''),
+      String(row.dateTime || ''),
+      String(row.name || ''),
+      String(row.gender || ''),
+      String(row.age || ''),
+      String(row.identity || ''),
+      String(row.chiefComplaint || ''),
+      String(row.diagnosis || ''),
+      String(row.disposal || ''),
+      String(row.doctor || ''),
+      String(row.remark || '')
     ]
     excelRow.font = { name: '仿宋_GB2312', size: 9 }
     excelRow.alignment = { vertical: 'top', horizontal: 'left', wrapText: true, shrinkToFit: true }
@@ -2044,9 +2002,12 @@ async function exportClinicExcel(params = {}) {
     excelRow.getCell(3).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
     excelRow.getCell(6).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true, shrinkToFit: true }
     
-    // 主诉与症状、诊断列垂直居中
+    // 主诉与症状、诊断列垂直居中、左对齐
     excelRow.getCell(7).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, shrinkToFit: true }
     excelRow.getCell(8).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, shrinkToFit: true }
+    
+    // 备注列：左对齐、垂直居中
+    excelRow.getCell(11).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, shrinkToFit: true }
     
     excelRow.height = 22
     for (let i = 1; i <= 11; i++) {
@@ -2966,12 +2927,20 @@ async function exportOutboundPDF(params = {}) {
   drawPdfHeader(doc, title, data.filters, data.statistics, params.printUser)
 
   if (mode === 'detail') {
-    const header = ['单号', '日期', '药材名', '规格', '单位', '批号', '生产日期', '有效期', '发往园区', '数量', '单价', '金额', '发放人']
-    const widths = [70, 55, 80, 70, 40, 60, 60, 60, 80, 45, 45, 50, 55]
+    const header = ['序号', '出库日期', '药材名称', '规格', '单位', '批号', '生产日期', '有效期', '发往园区', '数量', '发放人']
+    const widths = [35, 70, 95, 85, 40, 75, 65, 65, 90, 60, 70]
+    
+    // 计算表格总宽度并居中
+    const page = doc.page
+    const usableWidth = page.width - page.margins.left - page.margins.right
+    const tableWidth = widths.reduce((a, b) => a + b, 0)
+    const offsetX = page.margins.left + Math.max(0, (usableWidth - tableWidth) / 2)
+    doc.x = offsetX
+    
     drawRow(doc, header, widths, true)
-    data.details.forEach(item => {
+    data.details.forEach((item, index) => {
       drawRow(doc, [
-        item.recordNo || '',
+        index + 1,
         formatDate(item.date),
         item.drugName || '',
         item.specification || '',
@@ -2981,8 +2950,6 @@ async function exportOutboundPDF(params = {}) {
         item.expireDate || '',
         item.manufacturer || '',
         String(item.quantity ?? ''),
-        String(item.price ?? ''),
-        String(item.amount ?? ''),
         item.operator || ''
       ], widths, false)
     })
@@ -3052,27 +3019,24 @@ async function exportOutboundExcel(params = {}) {
       { key: 'totalAmount', width: 16 }
     ]
   } else {
-    // 明细模式：与入库明细保持一致的列宽配置，总宽约 126，适配横向 A4
+    // 明细模式：删除单号列，改为11列
     worksheet.columns = [
-      { key: 'index', width: 4 },           // 序号
-      { key: 'recordNo', width: 13 },       // 单号
-      { key: 'date', width: 8 },            // 日期
-      { key: 'drugName', width: 13 },       // 药材名
-      { key: 'specification', width: 13 },  // 规格
-      { key: 'unit', width: 6 },            // 单位
-      { key: 'batchNo', width: 11 },        // 批号
-      { key: 'productionDate', width: 8 },  // 生产日期
-      { key: 'expireDate', width: 8 },      // 有效期
-      { key: 'manufacturer', width: 13 },   // 发往园区
-      { key: 'quantity', width: 7 },        // 数量
-      { key: 'price', width: 7 },           // 单价
-      { key: 'amount', width: 8 },          // 金额
-      { key: 'operator', width: 7 }         // 发放人
+      { key: 'index', width: 6 },           // 序号
+      { key: 'date', width: 14 },           // 出库日期
+      { key: 'drugName', width: 22 },       // 药材名
+      { key: 'specification', width: 20 },  // 规格
+      { key: 'unit', width: 8 },            // 单位
+      { key: 'batchNo', width: 16 },        // 批号
+      { key: 'productionDate', width: 12 }, // 生产日期
+      { key: 'expireDate', width: 12 },     // 有效期
+      { key: 'manufacturer', width: 22 },   // 发往园区
+      { key: 'quantity', width: 10 },       // 数量
+      { key: 'operator', width: 12 }        // 发放人
     ]
   }
 
   const titleText = mode === 'summary' ? '北京欢乐谷医务室出库汇总表' : '北京欢乐谷医务室出库明细表'
-  worksheet.mergeCells('A1', mode === 'summary' ? 'H1' : 'N1')
+  worksheet.mergeCells('A1', mode === 'summary' ? 'H1' : 'K1')
   const titleCell = worksheet.getCell('A1')
   titleCell.value = titleText
   titleCell.font = { name: '黑体', size: 22, bold: true }
@@ -3081,7 +3045,7 @@ async function exportOutboundExcel(params = {}) {
   worksheet.getRow(1).height = 40
 
   const timeText = `统计时间：${startDate || '——'} ~ ${endDate || '——'}    制表人：${printUser || '——'}`
-  worksheet.mergeCells('A2', mode === 'summary' ? 'H2' : 'N2')
+  worksheet.mergeCells('A2', mode === 'summary' ? 'H2' : 'K2')
   const timeCell = worksheet.getCell('A2')
   timeCell.value = timeText
   timeCell.font = { name: '仿宋_GB2312', size: 14 }
@@ -3090,9 +3054,9 @@ async function exportOutboundExcel(params = {}) {
 
   let headers
   if (mode === 'summary') {
-    headers = ['序号', '单号', '日期', '发放人', '状态', '出库品种数', '出库数量（最小单位）', '出库金额（元）']
+    headers = ['序号', '单号', '日期', '医生', '状态', '出库品种数', '出库数量', '出库金额（元）']
   } else {
-    headers = ['序号', '单号', '日期', '药材名', '规格', '单位', '批号', '生产日期', '有效期', '发往园区', '数量（最小单位）', '单价（元）', '金额（元）', '发放人']
+    headers = ['序号', '出库日期', '药材名称', '规格', '单位', '批号', '生产日期', '有效期', '发往园区', '数量', '发放人']
   }
 
   const headerRow = worksheet.getRow(3)
@@ -3112,8 +3076,8 @@ async function exportOutboundExcel(params = {}) {
   headerRow.height = 30
 
   const dataRows = mode === 'summary' ? reportData.records : reportData.details
-  // 注意：汇总有 8 列，明细有 14 列，colCount 必须与列数一致，边框才能画满
-  const colCount = mode === 'summary' ? 8 : 14
+  // 注意：汇总有 8 列，明细有 11 列
+  const colCount = mode === 'summary' ? 8 : 11
 
   dataRows.forEach((row, rowIndex) => {
     const excelRow = worksheet.getRow(4 + rowIndex)
@@ -3136,7 +3100,6 @@ async function exportOutboundExcel(params = {}) {
     } else {
       excelRow.values = [
         rowIndex + 1,
-        row.recordNo,
         formatDate(row.date),
         row.drugName,
         row.specification,
@@ -3146,14 +3109,9 @@ async function exportOutboundExcel(params = {}) {
         row.expireDate || '',
         row.manufacturer || '',
         row.quantity,
-        row.price || '',
-        row.amount || '',
         row.operator || ''
       ]
-      excelRow.getCell(11).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(12).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(13).alignment = { vertical: 'middle', horizontal: 'right' }
-      excelRow.getCell(13).numFmt = '#,##0.00'
+      excelRow.getCell(10).alignment = { vertical: 'middle', horizontal: 'center' }
     }
 
     excelRow.font = { name: '仿宋_GB2312', size: 12 }
@@ -3170,42 +3128,6 @@ async function exportOutboundExcel(params = {}) {
       }
     }
   })
-
-  const stats = reportData.statistics
-  const totalRow = worksheet.addRow([])
-  totalRow.getCell(1).value = '合计'
-
-  if (mode === 'summary') {
-    totalRow.getCell(6).value = stats.totalDrugs || 0
-    totalRow.getCell(7).value = stats.totalQuantity || 0
-    totalRow.getCell(8).value = stats.totalAmount || 0
-    totalRow.getCell(7).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(8).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(7).numFmt = '#,##0.00'
-    totalRow.getCell(8).numFmt = '#,##0.00'
-  } else {
-    totalRow.getCell(11).value = stats.totalQuantity || 0
-    totalRow.getCell(13).value = stats.totalAmount || 0
-    totalRow.getCell(11).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(13).alignment = { vertical: 'middle', horizontal: 'right' }
-    totalRow.getCell(13).numFmt = '#,##0.00'
-  }
-
-  totalRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    cell.font = { name: '仿宋_GB2312', size: 10, bold: true }
-    const lastCol = mode === 'summary' ? 7 : 14
-    if (colNumber !== lastCol) {
-      cell.alignment = { vertical: 'middle', horizontal: 'center' }
-    }
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } }
-    cell.border = {
-      top: { style: 'medium' },
-      left: { style: 'thin' },
-      bottom: { style: 'medium' },
-      right: { style: 'thin' }
-    }
-  })
-  totalRow.height = 25
 
   const buffer = await workbook.xlsx.writeBuffer()
   const timestamp = Date.now()

@@ -408,7 +408,7 @@ wx.cloud.callFunction({
 
 ---
 
-**维护**: AI Assistant  
+**维护**: 于建华  
 **项目**: AK-PMS (爱康医务室管理系统)
 
 

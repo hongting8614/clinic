@@ -345,7 +345,7 @@ const result = await wx.cloud.callFunction({
 ## 👥 团队协作
 
 ### 开发团队
-- **AI Assistant**：方案设计、代码开发、文档编写
+- **于建华**：方案设计、代码开发、文档编写
 
 ### 感谢
 - 感谢项目负责人提供需求和反馈

@@ -357,6 +357,7 @@ to {
   color: #323233;
   border: 2rpx solid transparent;
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 .create-form-inline .inline-form .inline-form-item .inline-input.data-v-58f3a51d:focus {
   background: white;

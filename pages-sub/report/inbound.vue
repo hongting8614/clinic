@@ -117,12 +117,46 @@
         >
           {{ item.label }}
         </view>
+        <view
+          :class="['period-chip', { active: periodFilter === 'custom' }]"
+          @tap="showCustomDatePicker"
+        >
+          自定义
+        </view>
       </view>
       <view class="period-range">
         <text>当前区间：{{ periodRange.startDate }} ~ {{ periodRange.endDate }}</text>
-        <text class="range-hint">系统自动套用时间段，直接生成报表</text>
+        <text class="range-hint">{{ periodFilter === 'custom' ? '点击"自定义"可修改时间段' : '系统自动套用时间段，直接生成报表' }}</text>
       </view>
-		</view>
+      
+      <!-- 自定义日期选择器 -->
+      <view v-if="showCustomPicker" class="custom-date-picker">
+        <view class="picker-row">
+          <text class="picker-label">开始日期：</text>
+          <picker
+            mode="date"
+            :value="customStartDate"
+            @change="onCustomStartChange"
+          >
+            <view class="picker-value">{{ customStartDate || '请选择' }}</view>
+          </picker>
+        </view>
+        <view class="picker-row">
+          <text class="picker-label">结束日期：</text>
+          <picker
+            mode="date"
+            :value="customEndDate"
+            @change="onCustomEndChange"
+          >
+            <view class="picker-value">{{ customEndDate || '请选择' }}</view>
+          </picker>
+        </view>
+        <view class="picker-actions">
+          <view class="picker-btn cancel" @tap="cancelCustomDate">取消</view>
+          <view class="picker-btn confirm" @tap="confirmCustomDate">确定</view>
+        </view>
+      </view>
+    </view>
 		
     <view class="stats-card" v-if="statistics">
       <view class="stat-item">
@@ -143,47 +177,6 @@
       </view>
 		</view>
 		
-    <view v-if="activeTab === 'summary'" class="table-section">
-			<view v-if="summaryRows.length" class="detail-list">
-				<view 
-					class="detail-card"
-					v-for="item in summaryRows"
-					:key="item._id"
-					@tap="viewDetail(item._id)"
-				>
-					<!-- 顶部：单号 + 日期 -->
-					<view class="detail-row detail-row-top">
-						<text class="detail-no">{{ item.recordNo }}</text>
-						<text class="detail-date">{{ formatDate(item.createTime) }}</text>
-				</view>
-
-					<!-- 医生 + 状态 -->
-					<view class="detail-row detail-row-meta">
-						<text class="meta-label">医生</text>
-						<text class="meta-value">{{ item.operator || '-' }}</text>
-						<text class="meta-label">状态</text>
-						<text class="meta-value">{{ renderStatus(item.status) }}</text>
-		</view>
-		
-					<!-- 品种数 + 总数量 + 总金额 -->
-					<view class="detail-row detail-row-main">
-						<view class="detail-main-left">
-							<text class="detail-spec">品种：{{ item.drugCount }} 种</text>
-						</view>
-						<view class="detail-main-right">
-							<text class="detail-qty">{{ item.totalQuantity }}</text>
-							<text class="detail-amount">¥{{ item.totalAmount }}</text>
-						</view>
-					</view>
-				</view>
-			</view>
-			<view v-else class="empty-state">
-			<text class="empty-icon">📊</text>
-			<text class="empty-text">暂无数据</text>
-				<text class="empty-hint">调整筛选条件后重新生成报表</text>
-			</view>
-		</view>
-		
     <view v-if="activeTab === 'detail'" class="table-section">
 			<view v-if="detailRows.length" class="detail-list">
 				<view
@@ -191,44 +184,58 @@
 					v-for="(item, idx) in detailRows"
 					:key="idx"
 				>
-					<!-- 顶部：单号 + 日期 -->
+					<!-- 顶部：单号 + 入库日期 -->
 					<view class="detail-row detail-row-top">
 						<text class="detail-no">{{ item.recordNo }}</text>
-						<text class="detail-date">{{ formatDate(item.date) }}</text>
+						<text class="detail-date">{{ formatDate(item.inboundDate || item.date) }}</text>
 			</view>
 
-					<!-- 药名 + 数量 + 金额 -->
+					<!-- 药品名称 + 数量金额 -->
 					<view class="detail-row detail-row-main">
 						<view class="detail-main-left">
-							<text class="detail-drug">{{ item.drugName }}</text>
-							<text class="detail-spec">{{ item.specification }}</text>
+							<view class="drug-name-row">
+								<text class="detail-drug">{{ item.drugName || item.name }}</text>
+								<text v-if="item.isHighValue" class="drug-tag tag-high">高值</text>
+								<text v-if="item.isEmergency" class="drug-tag tag-emergency">急救</text>
+							</view>
+							<text class="detail-spec">{{ item.specification || item.spec || '-' }}</text>
 			</view>
 						<view class="detail-main-right">
-							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
+							<text class="detail-qty">{{ item.quantity }}{{ item.unit || item.packUnit }}</text>
 							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
 			</view>
 		</view>
 		
-					<!-- 批号 + 医生 -->
+					<!-- 批号 -->
 					<view class="detail-row detail-row-meta">
 						<text class="meta-label">批号</text>
-						<text class="meta-value mono">{{ item.batchNo || '-' }}</text>
-						<text class="meta-label">医生</text>
-						<text class="meta-value">{{ item.operator || '-' }}</text>
+						<text class="meta-value mono">{{ item.batchNo || item.batch || '-' }}</text>
 					</view>
 
-					<!-- 生产 / 有效期 -->
+					<!-- 生产日期 / 有效期 -->
 					<view class="detail-row detail-row-meta">
-						<text class="meta-label">生产</text>
+						<text class="meta-label">生产日期</text>
 						<text class="meta-value">{{ item.productionDate || '-' }}</text>
-						<text class="meta-label">有效</text>
+						<text class="meta-label">有效期</text>
 						<text class="meta-value">{{ item.expireDate || '-' }}</text>
 				</view>
 
-					<!-- 厂家 -->
-					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
-						<text class="meta-label">厂家</text>
+					<!-- 生产厂家 -->
+					<view class="detail-row detail-row-full" v-if="item.manufacturer">
+						<text class="meta-label">生产厂家</text>
 						<text class="meta-value">{{ item.manufacturer }}</text>
+					</view>
+
+					<!-- 批准文号 -->
+					<view class="detail-row detail-row-full" v-if="item.approvalNumber">
+						<text class="meta-label">批准文号</text>
+						<text class="meta-value">{{ item.approvalNumber }}</text>
+					</view>
+
+					<!-- 操作人 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">操作人</text>
+						<text class="meta-value">{{ item.operator || '-' }}</text>
 					</view>
 				</view>
 			</view>
@@ -246,45 +253,63 @@
 					v-for="(item, idx) in periodRows"
 					:key="idx"
 				>
-					<!-- 顶部：单号 + 日期 -->
+					<!-- 顶部：单号 + 入库日期 -->
 					<view class="detail-row detail-row-top">
 						<text class="detail-no">{{ item.recordNo }}</text>
-						<text class="detail-date">{{ formatDate(item.date) }}</text>
+						<text class="detail-date">{{ formatDate(item.inboundDate || item.date) }}</text>
 					</view>
 
-					<!-- 药名 + 数量 + 金额 -->
+					<!-- 药品名称 + 数量金额 -->
 					<view class="detail-row detail-row-main">
 						<view class="detail-main-left">
-							<text class="detail-drug">{{ item.drugName }}</text>
-							<text class="detail-spec">{{ item.specification }}</text>
+							<view class="drug-name-row">
+								<text class="detail-drug">{{ item.drugName || item.name }}</text>
+								<text v-if="item.isHighValue" class="drug-tag tag-high">高值</text>
+								<text v-if="item.isEmergency" class="drug-tag tag-emergency">急救</text>
+							</view>
+							<text class="detail-spec">{{ item.specification || item.spec || '-' }}</text>
 				</view>
 						<view class="detail-main-right">
-							<text class="detail-qty">{{ item.quantity }}{{ item.unit }}</text>
+							<text class="detail-qty">{{ item.quantity }}{{ item.unit || item.packUnit }}</text>
 							<text class="detail-amount" v-if="item.amount != null">¥{{ item.amount }}</text>
 			</view>
 					</view>
 
-					<!-- 批号 + 操作人 -->
+					<!-- 批号 + 条形码 -->
 					<view class="detail-row detail-row-meta">
 						<text class="meta-label">批号</text>
-						<text class="meta-value mono">{{ item.batchNo || '-' }}</text>
-						<text class="meta-label">操作人</text>
-						<text class="meta-value">{{ item.operator || '-' }}</text>
+						<text class="meta-value mono">{{ item.batchNo || item.batch || '-' }}</text>
+						<text class="meta-label">条形码</text>
+						<text class="meta-value mono">{{ item.barcode || item.barCode || '-' }}</text>
 				</view>
 
-					<!-- 生产 / 有效期 -->
+					<!-- 生产日期 / 有效期 -->
 					<view class="detail-row detail-row-meta">
-						<text class="meta-label">生产</text>
+						<text class="meta-label">生产日期</text>
 						<text class="meta-value">{{ item.productionDate || '-' }}</text>
-						<text class="meta-label">有效</text>
+						<text class="meta-label">有效期</text>
 						<text class="meta-value">{{ item.expireDate || '-' }}</text>
 					</view>
 
-					<!-- 厂家 -->
-					<view class="detail-row detail-row-manufacturer" v-if="item.manufacturer">
-						<text class="meta-label">厂家</text>
+					<!-- 生产厂家 -->
+					<view class="detail-row detail-row-full" v-if="item.manufacturer">
+						<text class="meta-label">生产厂家</text>
 						<text class="meta-value">{{ item.manufacturer }}</text>
 				</view>
+
+					<!-- 批准文号 -->
+					<view class="detail-row detail-row-full" v-if="item.approvalNumber">
+						<text class="meta-label">批准文号</text>
+						<text class="meta-value">{{ item.approvalNumber }}</text>
+					</view>
+
+					<!-- 分类 + 操作人 -->
+					<view class="detail-row detail-row-meta">
+						<text class="meta-label">分类</text>
+						<text class="meta-value">{{ item.category || '未分类' }}</text>
+						<text class="meta-label">操作人</text>
+						<text class="meta-value">{{ item.operator || '-' }}</text>
+					</view>
 			</view>
 			</view>
 			<view v-else class="empty-state">
@@ -303,10 +328,6 @@
         <text class="export-icon">📑</text>
         <text class="export-text">导出PDF</text>
 					</view>
-      <view class="export-btn disabled">
-        <text class="export-icon">🖨️</text>
-        <text class="export-text">打印(开发中)</text>
-				</view>
 		</view>
 		</view>
 	</view>
@@ -320,13 +341,11 @@ export default {
 	data() {
 		return {
       tabs: [
-        { value: 'summary', label: '入库汇总', desc: '逐单统计' },
         { value: 'detail', label: '药材明细', desc: '逐批记录' },
         { value: 'period', label: '时间段明细', desc: '一键时间段' }
       ],
-      activeTab: 'summary',
+      activeTab: 'detail',
       loading: false,
-      summaryData: null,
       detailData: null,
       periodData: null,
       filters: {
@@ -344,6 +363,9 @@ export default {
         startDate: '',
         endDate: ''
       },
+      showCustomPicker: false,
+      customStartDate: '',
+      customEndDate: '',
 			quickFilters: [
 				{ label: '今天', value: 'today' },
 				{ label: '本周', value: 'week' },
@@ -358,14 +380,10 @@ export default {
         { label: '本月', value: 'month' },
         { label: '本季度', value: 'quarter' },
         { label: '本年', value: 'year' }
-      ],
-      userInfo: uni.getStorageSync('userInfo') || {}
+      ]
     }
   },
   computed: {
-    summaryRows() {
-      return this.summaryData?.records || []
-    },
     detailRows() {
       return this.detailData?.details || []
     },
@@ -373,13 +391,11 @@ export default {
       return this.periodData?.details || []
     },
     statistics() {
-      if (this.activeTab === 'summary') return this.summaryData?.statistics || null
       if (this.activeTab === 'detail') return this.detailData?.statistics || null
       if (this.activeTab === 'period') return this.periodData?.statistics || null
       return null
     },
     hasData() {
-      if (this.activeTab === 'summary') return !!(this.summaryRows.length)
       if (this.activeTab === 'detail') return !!(this.detailRows.length)
       if (this.activeTab === 'period') return !!(this.periodRows.length)
       return false
@@ -403,29 +419,10 @@ export default {
       this.fetchCurrentTab()
     },
     fetchCurrentTab() {
-      if (this.activeTab === 'summary') {
-        this.loadSummary()
-      } else if (this.activeTab === 'detail') {
+      if (this.activeTab === 'detail') {
         this.loadDetail()
       } else {
         this.loadPeriod()
-      }
-    },
-    async loadSummary() {
-      this.loading = true
-      try {
-        const payload = this.buildBasePayload()
-        const res = await this.$api.callFunction('reports', {
-          action: 'inboundReport',
-          data: payload
-        })
-        if (res?.success) {
-          this.summaryData = res.data
-        }
-      } catch (err) {
-        console.error('加载汇总失败', err)
-      } finally {
-        this.loading = false
       }
     },
     async loadDetail() {
@@ -498,8 +495,56 @@ export default {
     selectPeriodFilter(value) {
       if (this.periodFilter === value) return
       this.periodFilter = value
+      this.showCustomPicker = false
       this.applyPeriodRange(value)
       this.loadPeriod()
+    },
+    showCustomDatePicker() {
+      this.periodFilter = 'custom'
+      this.showCustomPicker = true
+      // 初始化为当前时间段
+      if (!this.customStartDate) {
+        this.customStartDate = this.periodRange.startDate
+      }
+      if (!this.customEndDate) {
+        this.customEndDate = this.periodRange.endDate
+      }
+    },
+    onCustomStartChange(e) {
+      this.customStartDate = e.detail.value
+    },
+    onCustomEndChange(e) {
+      this.customEndDate = e.detail.value
+    },
+    confirmCustomDate() {
+      if (!this.customStartDate || !this.customEndDate) {
+        uni.showToast({
+          title: '请选择完整的日期区间',
+          icon: 'none'
+        })
+        return
+      }
+      if (this.customStartDate > this.customEndDate) {
+        uni.showToast({
+          title: '开始日期不能晚于结束日期',
+          icon: 'none'
+        })
+        return
+      }
+      this.periodRange.startDate = this.customStartDate
+      this.periodRange.endDate = this.customEndDate
+      this.showCustomPicker = false
+      this.loadPeriod()
+    },
+    cancelCustomDate() {
+      this.showCustomPicker = false
+      if (this.periodRange.startDate && this.periodRange.endDate) {
+        // 保持当前时间段
+      } else {
+        // 如果没有设置过，回到默认的本月
+        this.periodFilter = 'month'
+        this.applyPeriodRange('month')
+      }
     },
     applyPeriodRange(value) {
       const { start, end } = this.getRangeByQuick(value)
@@ -576,12 +621,19 @@ export default {
         const payload = this.activeTab === 'period'
           ? { startDate: this.periodRange.startDate, endDate: this.periodRange.endDate }
           : this.buildBasePayload()
+        
+        // 获取当前登录用户信息
+        const userInfo = uni.getStorageSync('userInfo') || {}
+        const printUser = userInfo.name || userInfo.nickName || userInfo.username || '系统管理员'
+        
+        console.log('导出Excel - 制表人:', printUser, '用户信息:', userInfo)
+        
         const res = await this.$api.callFunction('reports', {
           action: 'exportInboundExcel',
 					data: {
             ...payload,
-            mode: this.activeTab === 'summary' ? 'summary' : 'detail',
-            printUser: this.userInfo?.name || ''
+            mode: 'detail',
+            printUser: printUser
           }
         })
 				uni.hideLoading()
@@ -614,12 +666,19 @@ export default {
         const payload = this.activeTab === 'period'
           ? { startDate: this.periodRange.startDate, endDate: this.periodRange.endDate }
           : this.buildBasePayload()
+        
+        // 获取当前登录用户信息
+        const userInfo = uni.getStorageSync('userInfo') || {}
+        const printUser = userInfo.name || userInfo.nickName || userInfo.username || '系统管理员'
+        
+        console.log('导出PDF - 制表人:', printUser, '用户信息:', userInfo)
+        
 				const res = await this.$api.callFunction('reports', {
 					action: 'exportInboundPDF',
 					data: {
             ...payload,
-            mode: this.activeTab === 'summary' ? 'summary' : 'detail',
-            printUser: this.userInfo?.name || ''
+            mode: 'detail',
+            printUser: printUser
 					}
 				})
 				uni.hideLoading()
@@ -693,12 +752,6 @@ export default {
         }
       })
     },
-		printReport() {
-			uni.showToast({
-				title: '打印功能开发中',
-				icon: 'none'
-			})
-		},
 		formatDate(date) {
       if (!date) return ''
       const d = new Date(date)
@@ -710,6 +763,7 @@ export default {
 		}
 	}
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -1002,6 +1056,66 @@ export default {
 	color: #94a3b8;
 }
 
+/* 自定义日期选择器 */
+.custom-date-picker {
+	margin-top: 20rpx;
+	padding: 20rpx;
+	background: #f8fafc;
+	border-radius: 12rpx;
+	border: 2rpx solid #e2e8f0;
+}
+
+.picker-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 16rpx;
+	
+	&:last-of-type {
+		margin-bottom: 20rpx;
+	}
+}
+
+.picker-label {
+	font-size: 26rpx;
+	color: #475569;
+	min-width: 140rpx;
+	font-weight: 500;
+}
+
+.picker-value {
+	flex: 1;
+	padding: 12rpx 20rpx;
+	background: #ffffff;
+	border-radius: 8rpx;
+	border: 2rpx solid #cbd5e1;
+	font-size: 26rpx;
+	color: #1e293b;
+}
+
+.picker-actions {
+	display: flex;
+	gap: 12rpx;
+	justify-content: flex-end;
+}
+
+.picker-btn {
+	padding: 10rpx 28rpx;
+	border-radius: 8rpx;
+	font-size: 26rpx;
+	font-weight: 500;
+	
+	&.cancel {
+		background: #f1f5f9;
+		color: #64748b;
+	}
+	
+	&.confirm {
+		background: linear-gradient(135deg, #06b6d4, #22c1c3);
+		color: #ffffff;
+		box-shadow: 0 4rpx 12rpx rgba(6, 182, 212, 0.3);
+	}
+}
+
 /* 顶部统计信息卡片 */
 .stats-card {
 	max-width: 702rpx;
@@ -1113,9 +1227,40 @@ export default {
 }
 
 .detail-row-meta,
-.detail-row-manufacturer {
+.detail-row-full {
 	font-size: 22rpx;
 	color: #4b5563;
+}
+
+.detail-row-full {
+	display: flex;
+	flex-direction: column;
+	gap: 6rpx;
+	margin-top: 4rpx;
+}
+
+.drug-name-row {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	flex-wrap: wrap;
+}
+
+.drug-tag {
+	font-size: 18rpx;
+	padding: 2rpx 8rpx;
+	border-radius: 6rpx;
+	font-weight: 500;
+}
+
+.tag-high {
+	background: #FFF3E0;
+	color: #FF9800;
+}
+
+.tag-emergency {
+	background: #FFEBEE;
+	color: #F44336;
 }
 
 .meta-label {

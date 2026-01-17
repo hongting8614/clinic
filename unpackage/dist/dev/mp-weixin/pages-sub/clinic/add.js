@@ -2000,7 +2000,11 @@ var _default = {
       if (!preserveSymptom) {
         var currentSymptom = (this.form.symptom || '').trim();
         if (!currentSymptom && record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
+          this.form.symptom = record.symptoms.map(function (s) {
+            return String(s || '');
+          }).filter(function (s) {
+            return s;
+          }).join('；');
         }
       }
 
@@ -2008,7 +2012,11 @@ var _default = {
       if (!preserveDiagnosis) {
         var currentDiagnosis = (this.form.diagnosis || '').trim();
         if (!currentDiagnosis && record.diagnoses && record.diagnoses.length) {
-          this.form.diagnosis = record.diagnoses.join('；');
+          this.form.diagnosis = record.diagnoses.map(function (d) {
+            return String(d || '');
+          }).filter(function (d) {
+            return d;
+          }).join('；');
         }
       }
 
@@ -2016,7 +2024,11 @@ var _default = {
       if (!preserveTreatment) {
         var currentTreatment = (this.form.treatment || '').trim();
         if (!currentTreatment && record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
+          this.form.treatment = record.treatments.map(function (t) {
+            return String(t || '');
+          }).filter(function (t) {
+            return t;
+          }).join('；');
         }
       }
 
@@ -2501,7 +2513,11 @@ var _default = {
     if (complaint) this.form.chiefComplaint = complaint;
     if (diag) {
       // 初步诊断使用模板中的完整诊断组合
-      this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+      this.form.diagnosis = diagList.length ? diagList.map(function (d) {
+        return String(d || '');
+      }).filter(function (d) {
+        return d;
+      }).join('；') : diag;
       // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
       var analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
       if (analyzedDisease) {
@@ -2513,7 +2529,11 @@ var _default = {
         this.form.diseaseName = '其他';
       }
     }
-    if (merged.length) this.form.treatment = merged.join('；');
+    if (merged.length) this.form.treatment = merged.map(function (t) {
+      return String(t || '');
+    }).filter(function (t) {
+      return t;
+    }).join('；');
   }), (0, _defineProperty2.default)(_methods, "onDiagnosisFocus", function onDiagnosisFocus() {
     // 触发全局搜索，基于所有三个框的关键词
     var result = this.performGlobalSearch(this.form.diseaseName, this.form.chiefComplaint, this.form.diagnosis);
@@ -2568,7 +2588,11 @@ var _default = {
         });
         if (hasExactMatch) {
           // 如果完全匹配，使用模板的完整诊断组合
-          this.form.diagnosis = bestRecord.diagnoses.join('；');
+          this.form.diagnosis = bestRecord.diagnoses.map(function (d) {
+            return String(d || '');
+          }).filter(function (d) {
+            return d;
+          }).join('；');
         } else {
           // 否则使用选择的诊断
           this.form.diagnosis = text;
@@ -3021,7 +3045,11 @@ var _default = {
     if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
       // 找到匹配的模板记录，智能填充处置（如果处置为空）
       if (!this.form.treatment || !this.form.treatment.trim()) {
-        this.form.treatment = bestRecord.treatments.join('；');
+        this.form.treatment = bestRecord.treatments.map(function (t) {
+          return String(t || '');
+        }).filter(function (t) {
+          return t;
+        }).join('；');
       }
       // 如果主诉为空，也可以填充主诉（确保字段关联）
       if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
@@ -3032,7 +3060,11 @@ var _default = {
       // 如果症状为空，也可以填充症状
       if (!this.form.symptom || !this.form.symptom.trim()) {
         if (bestRecord.symptoms && bestRecord.symptoms.length) {
-          this.form.symptom = bestRecord.symptoms.join('；');
+          this.form.symptom = bestRecord.symptoms.map(function (s) {
+            return String(s || '');
+          }).filter(function (s) {
+            return s;
+          }).join('；');
         }
       }
     } else {
@@ -3043,7 +3075,11 @@ var _default = {
         var treatments = ((_this$treatmentTempla4 = this.treatmentTemplates) === null || _this$treatmentTempla4 === void 0 ? void 0 : _this$treatmentTempla4[diseaseName]) || [];
         if (treatments.length > 0) {
           // 使用前两个处置模板
-          this.form.treatment = treatments.slice(0, 2).join('；');
+          this.form.treatment = treatments.slice(0, 2).map(function (t) {
+            return String(t || '');
+          }).filter(function (t) {
+            return t;
+          }).join('；');
         }
       }
     }
@@ -4379,17 +4415,13 @@ var _default = {
   }), (0, _defineProperty2.default)(_methods, "generateDailyReport", function generateDailyReport() {
     var _this30 = this;
     return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee11() {
-      var today, year, month, day, dateStr, location, locationName, records, res, report, stats, tableData, reportDate;
+      var today, year, month, day, dateStr, location;
       return _regenerator.default.wrap(function _callee11$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
             case 0:
               _context12.prev = 0;
-              uni.showLoading({
-                title: '生成中...'
-              });
-
-              // 获取当前日期和园区
+              // 获取当前日期
               today = new Date();
               year = today.getFullYear();
               month = String(today.getMonth() + 1).padStart(2, '0');
@@ -4397,276 +4429,42 @@ var _default = {
               dateStr = "".concat(year, "-").concat(month, "-").concat(day); // 必须先选择就诊园区
               location = _this30.form.location;
               if (!(!location || location !== 'land_park' && location !== 'water_park')) {
-                _context12.next = 13;
+                _context12.next = 11;
                 break;
               }
-              uni.hideLoading();
               uni.showToast({
-                title: '请选择就诊园区',
+                title: '请先选择就诊园区',
                 icon: 'none'
               });
-              // 如有需要，可同时弹出园区选择提示
               _this30.showLocationTip = true;
               return _context12.abrupt("return");
-            case 13:
-              locationName = location === 'land_park' ? '陆园' : '水园'; // 查询当日的所有门诊记录
-              // 查询 clinic_records 集合（完整门诊登记信息）
-              records = [];
-              _context12.prev = 15;
-              _context12.next = 18;
-              return wx.cloud.callFunction({
-                name: 'clinicRecords',
-                data: {
-                  action: 'list',
-                  data: {
-                    location: location,
-                    startDate: dateStr,
-                    endDate: dateStr,
-                    pageSize: 1000,
-                    useClinicRecords: true // 查询完整的门诊登记记录
-                  }
-                }
+            case 11:
+              console.log('门诊登记页生成日报参数:', {
+                dateStr: dateStr,
+                location: location
               });
-            case 18:
-              res = _context12.sent;
-              if (res.result && res.result.success && res.result.data && res.result.data.list) {
-                records = res.result.data.list;
-              }
-              _context12.next = 25;
-              break;
-            case 22:
-              _context12.prev = 22;
-              _context12.t0 = _context12["catch"](15);
-              console.error('查询门诊记录失败:', _context12.t0);
-            case 25:
-              // 生成文档和统计信息（即使没有记录也生成）
-              report = _this30.formatDailyReport(records, dateStr, locationName);
-              stats = _this30.calculateStats(records); // 准备详细的表格数据
-              tableData = _this30.prepareTableData(records);
-              uni.hideLoading();
 
-              // 跳转到日报显示页面
-              reportDate = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
+              // 直接跳转到门诊日报页面（传递 location 代码，不是名称）
               uni.navigateTo({
-                url: "/pages-sub/report/daily?content=".concat(encodeURIComponent(report), "&date=").concat(encodeURIComponent(reportDate), "&location=").concat(encodeURIComponent(locationName), "&stats=").concat(encodeURIComponent(JSON.stringify(stats)), "&tableData=").concat(encodeURIComponent(JSON.stringify(tableData))),
-                fail: function fail(err) {
-                  console.error('跳转失败:', err);
-                  // 如果跳转失败，复制到剪贴板
-                  uni.setClipboardData({
-                    data: report,
-                    success: function success() {
-                      uni.showToast({
-                        title: '已复制到剪贴板',
-                        icon: 'success'
-                      });
-                    }
-                  });
-                }
+                url: "/pages-sub/report/daily?date=".concat(dateStr, "&location=").concat(location)
               });
-              _context12.next = 38;
+              _context12.next = 19;
               break;
-            case 33:
-              _context12.prev = 33;
-              _context12.t1 = _context12["catch"](0);
-              console.error('生成日报失败:', _context12.t1);
-              uni.hideLoading();
+            case 15:
+              _context12.prev = 15;
+              _context12.t0 = _context12["catch"](0);
+              console.error('生成日报失败:', _context12.t0);
               uni.showToast({
-                title: '生成失败：' + (_context12.t1.message || '未知错误'),
-                icon: 'none',
-                duration: 3000
+                title: '生成失败',
+                icon: 'none'
               });
-            case 38:
+            case 19:
             case "end":
               return _context12.stop();
           }
         }
-      }, _callee11, null, [[0, 33], [15, 22]]);
+      }, _callee11, null, [[0, 15]]);
     }))();
-  }), (0, _defineProperty2.default)(_methods, "formatDailyReport", function formatDailyReport(records, dateStr, locationName) {
-    // 解析日期
-    var date = new Date(dateStr);
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    var dateFormatted = "".concat(year, "\u5E74").concat(month, "\u6708").concat(day, "\u65E5");
-
-    // 统计信息
-    var stats = {
-      total: records.length,
-      visitor: [],
-      employee: [],
-      outcall: []
-    };
-
-    // 按身份和疾病分类统计
-    records.forEach(function (record) {
-      var identity = record.identity || '游客';
-      var diseaseName = record.diseaseName || '未知';
-      var injuryLocation = record.injuryLocation || '';
-      var isOutcall = record.isOutcall || record.visitType === 'outcall';
-      if (isOutcall && injuryLocation) {
-        // 统计出诊
-        var existing = stats.outcall.find(function (item) {
-          return item.location === injuryLocation;
-        });
-        if (existing) {
-          existing.count++;
-        } else {
-          stats.outcall.push({
-            location: injuryLocation,
-            count: 1
-          });
-        }
-      }
-      if (identity === '游客') {
-        // 游客统计
-        var _existing = stats.visitor.find(function (item) {
-          return item.disease === diseaseName;
-        });
-        if (_existing) {
-          if (injuryLocation && injuryLocation.trim()) {
-            var loc = _existing.locations.find(function (l) {
-              return l.name === injuryLocation;
-            });
-            if (loc) {
-              loc.count++;
-            } else {
-              _existing.locations.push({
-                name: injuryLocation,
-                count: 1
-              });
-            }
-          }
-          _existing.total++;
-        } else {
-          stats.visitor.push({
-            disease: diseaseName,
-            total: 1,
-            locations: injuryLocation && injuryLocation.trim() ? [{
-              name: injuryLocation,
-              count: 1
-            }] : []
-          });
-        }
-      } else if (identity === '员工') {
-        // 员工统计
-        var _existing2 = stats.employee.find(function (item) {
-          return item.disease === diseaseName;
-        });
-        if (_existing2) {
-          _existing2.total++;
-        } else {
-          stats.employee.push({
-            disease: diseaseName,
-            total: 1
-          });
-        }
-      }
-    });
-
-    // 生成文档内容
-    var report = '';
-
-    // 显示接诊人数（包括0人的情况）
-    report = "".concat(dateFormatted, "\u5317\u4EAC\u6B22\u4E50\u8C37\u533B\u52A1\u5BA4\uFF08").concat(locationName, "\uFF09\u5F53\u65E5\u63A5\u8BCA").concat(stats.total, "\u4EBA\u3002\n");
-
-    // 游客统计
-    if (stats.visitor.length > 0) {
-      var visitorTotal = stats.visitor.reduce(function (sum, item) {
-        return sum + item.total;
-      }, 0);
-      report += "\u6E38\u5BA2".concat(visitorTotal, "\u4EBA\uFF1A");
-      var visitorParts = [];
-      stats.visitor.forEach(function (item) {
-        if (item.locations && item.locations.length > 0) {
-          // 有地点的疾病：疾病X人（地点1X人，地点2X人）
-          var locationParts = item.locations.map(function (loc) {
-            return "".concat(loc.name).concat(loc.count, "\u4EBA");
-          });
-          visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA\uFF08").concat(locationParts.join('，'), "\uFF09"));
-        } else {
-          // 无地点的疾病：疾病X人
-          visitorParts.push("".concat(item.disease).concat(item.total, "\u4EBA"));
-        }
-      });
-      report += visitorParts.join('，') + '。\n';
-    }
-
-    // 员工统计
-    if (stats.employee.length > 0) {
-      var employeeTotal = stats.employee.reduce(function (sum, item) {
-        return sum + item.total;
-      }, 0);
-      report += "\u5458\u5DE5".concat(employeeTotal, "\u4EBA\uFF1A");
-      var employeeParts = stats.employee.map(function (item) {
-        return "".concat(item.disease).concat(item.total, "\u4EBA");
-      });
-      report += employeeParts.join('，') + '。\n';
-    }
-
-    // 出诊统计
-    if (stats.outcall.length > 0) {
-      var outcallTotal = stats.outcall.reduce(function (sum, item) {
-        return sum + item.count;
-      }, 0);
-      report += "\u51FA\u8BCA".concat(outcallTotal, "\u6B21\uFF1A");
-      var outcallParts = stats.outcall.map(function (item) {
-        return "".concat(item.location).concat(item.count, "\u6B21");
-      });
-      report += outcallParts.join('，') + '。\n';
-    }
-    return report.trim();
-  }), (0, _defineProperty2.default)(_methods, "calculateStats", function calculateStats(records) {
-    var stats = {
-      total: records.length,
-      visitorTotal: 0,
-      employeeTotal: 0,
-      outcallTotal: 0
-    };
-    records.forEach(function (record) {
-      var identity = record.identity || '游客';
-      var isOutcall = record.isOutcall || record.visitType === 'outcall';
-      if (identity === '游客') {
-        stats.visitorTotal++;
-      } else if (identity === '员工') {
-        stats.employeeTotal++;
-      }
-      if (isOutcall) {
-        stats.outcallTotal++;
-      }
-    });
-    return stats;
-  }), (0, _defineProperty2.default)(_methods, "prepareTableData", function prepareTableData(records) {
-    var visitorData = [];
-    var employeeData = [];
-    var doctorName = '';
-    try {
-      var userInfo = uni.getStorageSync('userInfo');
-      doctorName = (userInfo === null || userInfo === void 0 ? void 0 : userInfo.name) || '';
-    } catch (err) {
-      console.error('获取用户信息失败:', err);
-    }
-    records.forEach(function (record) {
-      var identity = record.identity || '游客';
-      var diseaseName = record.diseaseName || record.diagnosis || record.chiefComplaint || '未知';
-      var data = {
-        name: record.name || '',
-        diseaseName: diseaseName,
-        location: record.injuryLocation || '',
-        visitTime: record.visitDateTime || record.createTime || '',
-        isOutcall: record.isOutcall || record.visitType === 'outcall',
-        doctorName: doctorName
-      };
-      if (identity === '游客') {
-        visitorData.push(data);
-      } else if (identity === '员工') {
-        employeeData.push(data);
-      }
-    });
-    return {
-      visitor: visitorData,
-      employee: employeeData
-    };
   }), _methods)
 };
 exports.default = _default;

@@ -114,12 +114,32 @@ export default {
       dateStr = `${y}-${m}-${d}`
     }
     
+    // 验证日期格式
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      console.error('日期格式错误:', dateStr)
+      uni.showToast({ 
+        title: '日期格式错误', 
+        icon: 'none',
+        duration: 2000
+      })
+      // 使用今天作为备选
+      const now = new Date()
+      const y = now.getFullYear()
+      const m = String(now.getMonth() + 1).padStart(2, '0')
+      const d = String(now.getDate()).padStart(2, '0')
+      dateStr = `${y}-${m}-${d}`
+    }
+    
     // 如果没有传递园区，尝试从缓存获取
     if (!options.location) {
       try {
         const saved = uni.getStorageSync('clinic_last_location')
-        if (saved === 'land_park' || saved === 'water_park') location = saved
-      } catch (e) {}
+        if (saved === 'land_park' || saved === 'water_park') {
+          location = saved
+        }
+      } catch (e) {
+        console.error('获取园区缓存失败:', e)
+      }
     }
     
     // 统一生成日报
@@ -153,11 +173,28 @@ export default {
         this.reportContent = this.formatDailyReport(records, dateStr, locationName)
         this.stats = this.calculateStats(records)
         this.tableData = this.prepareTableData(records)
-        const d = new Date(dateStr)
-        const yy = d.getFullYear()
-        const mm = String(d.getMonth() + 1).padStart(2, '0')
-        const dd = String(d.getDate()).padStart(2, '0')
-        this.reportDate = `${yy}年${mm}月${dd}日`
+        
+        // 修复日期格式化：兼容 iOS，将 yyyy-MM-dd 转换为 yyyy/MM/dd
+        const dateForParse = dateStr.replace(/-/g, '/')
+        const d = new Date(dateForParse)
+        
+        // 验证日期是否有效
+        if (isNaN(d.getTime())) {
+          console.error('日期解析失败:', dateStr)
+          // 使用原始字符串作为备选
+          const parts = dateStr.split('-')
+          if (parts.length === 3) {
+            this.reportDate = `${parts[0]}年${parts[1]}月${parts[2]}日`
+          } else {
+            this.reportDate = dateStr
+          }
+        } else {
+          const yy = d.getFullYear()
+          const mm = String(d.getMonth() + 1).padStart(2, '0')
+          const dd = String(d.getDate()).padStart(2, '0')
+          this.reportDate = `${yy}年${mm}月${dd}日`
+        }
+        
         this.reportLocation = locationName
         this.generateSummaries()
       } catch (e) {
@@ -169,30 +206,68 @@ export default {
 
     // 文本日报构建（与登记页口径一致）
     formatDailyReport(records, dateStr, locationName) {
-      const dt = new Date(dateStr)
-      const y = dt.getFullYear()
-      const m = dt.getMonth() + 1
-      const d = dt.getDate()
-      const dateFormatted = `${y}年${m}月${d}日`
+      // 兼容 iOS：将 yyyy-MM-dd 转换为 yyyy/MM/dd
+      const dateForParse = dateStr.replace(/-/g, '/')
+      const dt = new Date(dateForParse)
+      
+      // 验证日期是否有效
+      let dateFormatted = ''
+      if (isNaN(dt.getTime())) {
+        console.error('日期解析失败:', dateStr)
+        // 使用原始字符串作为备选
+        const parts = dateStr.split('-')
+        if (parts.length === 3) {
+          dateFormatted = `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`
+        } else {
+          dateFormatted = dateStr
+        }
+      } else {
+        const y = dt.getFullYear()
+        const m = dt.getMonth() + 1
+        const d = dt.getDate()
+        dateFormatted = `${y}年${m}月${d}日`
+      }
       
       const agg = { total: records.length, visitor: [], employee: [], outcall: [] }
+      
+      if (!records || records.length === 0) {
+        return `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊共计0人。`
+      }
+      
       records.forEach(r => {
-        const identity = r.identity || '游客'
-        const disease = r.diseaseName || r.diagnosis || r.chiefComplaint || '未知'
-        const site = r.injuryLocation || ''
+        const identity = (r.identity || '游客').trim()
+        const disease = (r.diseaseName || r.diagnosis || r.chiefComplaint || '未知').trim()
+        const site = (r.injuryLocation || '').trim()
         const isOut = r.isOutcall || r.visitType === 'outcall'
+        
+        // 统计出诊
         if (isOut && site) {
           const ex = agg.outcall.find(i => i.location === site)
-          ex ? ex.count++ : agg.outcall.push({ location: site, count: 1 })
+          if (ex) {
+            ex.count++
+          } else {
+            agg.outcall.push({ location: site, count: 1 })
+          }
         }
+        
+        // 按身份分类统计
         const bucket = identity === '员工' ? 'employee' : 'visitor'
         const list = agg[bucket]
         const existed = list.find(i => i.disease === disease)
+        
         if (existed) {
           existed.total++
+          // 游客记录地点分布
           if (bucket === 'visitor' && site) {
-            const l = existed.locations?.find(x => x.name === site)
-            l ? l.count++ : existed.locations.push({ name: site, count: 1 })
+            if (!existed.locations) {
+              existed.locations = []
+            }
+            const l = existed.locations.find(x => x.name === site)
+            if (l) {
+              l.count++
+            } else {
+              existed.locations.push({ name: site, count: 1 })
+            }
           }
         } else {
           list.push({
@@ -228,37 +303,70 @@ export default {
 
     // 简要统计
     calculateStats(records) {
-      const s = { total: records.length, visitorTotal: 0, employeeTotal: 0, outcallTotal: 0 }
+      if (!records || records.length === 0) {
+        return { total: 0, visitorTotal: 0, employeeTotal: 0, outcallTotal: 0 }
+      }
+      
+      const s = { 
+        total: records.length, 
+        visitorTotal: 0, 
+        employeeTotal: 0, 
+        outcallTotal: 0 
+      }
+      
       records.forEach(r => {
-        const id = r.identity || '游客'
+        const id = (r.identity || '游客').trim()
         const isOut = r.isOutcall || r.visitType === 'outcall'
-        if (id === '游客') s.visitorTotal++
-        else if (id === '员工') s.employeeTotal++
-        if (isOut) s.outcallTotal++
+        
+        if (id === '游客') {
+          s.visitorTotal++
+        } else if (id === '员工') {
+          s.employeeTotal++
+        }
+        
+        if (isOut) {
+          s.outcallTotal++
+        }
       })
+      
       return s
     },
 
     // 表格数据
     prepareTableData(records) {
+      if (!records || records.length === 0) {
+        return { visitor: [], employee: [] }
+      }
+      
       let doctorName = ''
       try {
-        const u = uni.getStorageSync('userInfo'); doctorName = u?.name || ''
-      } catch (e) {}
+        const u = uni.getStorageSync('userInfo')
+        doctorName = u?.name || ''
+      } catch (e) {
+        console.error('获取用户信息失败:', e)
+      }
+      
       const visitor = []
       const employee = []
+      
       records.forEach(r => {
-        const id = r.identity || '游客'
+        const id = (r.identity || '游客').trim()
         const obj = {
           name: r.name || '',
           diseaseName: r.diseaseName || r.diagnosis || r.chiefComplaint || '未知',
           location: r.injuryLocation || '',
           visitTime: r.visitDateTime || r.createTime || '',
           isOutcall: r.isOutcall || r.visitType === 'outcall',
-          doctorName
+          doctorName: r.doctorName || r.operator || doctorName
         }
-        if (id === '游客') visitor.push(obj); else if (id === '员工') employee.push(obj)
+        
+        if (id === '游客') {
+          visitor.push(obj)
+        } else if (id === '员工') {
+          employee.push(obj)
+        }
       })
+      
       return { visitor, employee }
     },
     // 生成员工/游客汇总
@@ -268,19 +376,27 @@ export default {
         this.diseaseList.forEach(name => { obj[name] = 0 })
         return obj
       }
+      
       const normalize = (name) => {
-        if (!name) return '其他'
-        const found = this.diseaseList.find(d => name.indexOf(d) !== -1)
+        if (!name || typeof name !== 'string') return '其他'
+        const trimmed = name.trim()
+        if (!trimmed) return '其他'
+        const found = this.diseaseList.find(d => trimmed.indexOf(d) !== -1)
         return found || '其他'
       }
+      
       const build = (rows) => {
         const counts = initCounts()
-        ;(rows || []).forEach(item => {
+        if (!rows || !Array.isArray(rows)) return counts
+        
+        rows.forEach(item => {
+          if (!item) return
           const key = normalize(item.diseaseName)
           counts[key] = (counts[key] || 0) + 1
         })
         return counts
       }
+      
       this.visitorSummary = build(this.tableData?.visitor || [])
       this.employeeSummary = build(this.tableData?.employee || [])
     },
@@ -296,6 +412,34 @@ export default {
           duration: 1000
         })
       }
+    },
+    
+    // 复制日报文本
+    copyReport() {
+      if (!this.reportContent) {
+        uni.showToast({
+          title: '暂无内容',
+          icon: 'none'
+        })
+        return
+      }
+
+      uni.setClipboardData({
+        data: this.reportContent,
+        success: () => {
+          uni.showToast({
+            title: '已复制日报文本',
+            icon: 'success',
+            duration: 1500
+          })
+        },
+        fail: () => {
+          uni.showToast({
+            title: '复制失败',
+            icon: 'none'
+          })
+        }
+      })
     },
 
     // 切换表格编辑模式

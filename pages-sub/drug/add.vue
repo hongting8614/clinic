@@ -690,14 +690,14 @@ export default {
 .scan-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #FFFFFF;
+	color: #333333;
 	margin-bottom: 10rpx;
 	text-align: center;
 }
 
 .scan-desc {
 	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.8);
+	color: #666666;
 	text-align: center;
 	margin-bottom: 30rpx;
 }

@@ -123,34 +123,77 @@
 				<view class="inline-form">
 					<view class="inline-form-title">📝 新建药材档案</view>
 					
-				<!-- 药材名称 -->
+					<!-- 药材名称 -->
 					<view class="inline-form-item">
-					<text class="inline-label">药材名称 <text class="required">*</text></text>
-					<view class="input-with-voice">
+						<text class="inline-label">药材名称 <text class="required">*</text></text>
 						<input 
-							class="inline-input voice-input" 
+							class="inline-input" 
 							v-model="newDrug.name" 
 							placeholder="请输入药材名称"
 							placeholder-class="placeholder"
 						/>
-						<view class="voice-btn" @tap="startVoiceInput('name')">
-							<text class="voice-icon">🎤</text>
-						</view>
 					</view>
+					
+					<!-- 药材代码（可选） -->
+					<view class="inline-form-item">
+						<text class="inline-label">药材代码</text>
+						<input 
+							class="inline-input" 
+							v-model="newDrug.drugCode" 
+							placeholder="如：AMOX500-TAB（可选，系统可自动生成）"
+							placeholder-class="placeholder"
+						/>
+					</view>
+					
+					<!-- 条形码 -->
+					<view class="inline-form-item">
+						<text class="inline-label">条形码</text>
+						<input 
+							class="inline-input" 
+							v-model="newDrug.barcode" 
+							placeholder="请输入或扫描条形码"
+							placeholder-class="placeholder"
+							:disabled="!!newDrug.barcode"
+						/>
 					</view>
 					
 					<!-- 规格 -->
 					<view class="inline-form-item">
 						<text class="inline-label">规格 <text class="required">*</text></text>
-						<view class="input-with-voice">
 						<input 
-								class="inline-input voice-input" 
+							class="inline-input" 
 							v-model="newDrug.spec" 
-							placeholder="如：0.25g×24粒/盒"
+							placeholder="如：0.25g×24粒"
 							placeholder-class="placeholder"
 						/>
-							<view class="voice-btn" @tap="startVoiceInput('spec')">
-								<text class="voice-icon">🎤</text>
+					</view>
+					
+					<!-- 生产厂家 -->
+					<view class="inline-form-item">
+						<text class="inline-label">生产厂家 <text class="required">*</text></text>
+						<view class="input-with-suggestions">
+							<input 
+								class="inline-input" 
+								v-model="newDrug.manufacturer" 
+								placeholder="请输入生产厂家"
+								placeholder-class="placeholder"
+								@input="onManufacturerInput"
+								@focus="onManufacturerFocus"
+								@blur="onManufacturerBlur"
+							/>
+							<!-- 厂家建议列表 -->
+							<view 
+								v-if="showManufacturerSuggestions && manufacturerSuggestions.length > 0"
+								class="suggestions-list"
+							>
+								<view 
+									v-for="(mfr, idx) in manufacturerSuggestions"
+									:key="idx"
+									class="suggestion-item"
+									@tap="selectManufacturer(mfr)"
+								>
+									<text>{{ mfr }}</text>
+								</view>
 							</view>
 						</view>
 					</view>
@@ -181,47 +224,6 @@
 								</view>
 							</picker>
 						</view>
-					</view>
-					
-					<!-- 生产厂家（可选，带智能提示） -->
-					<view class="inline-form-item">
-						<text class="inline-label">生产厂家</text>
-						<view class="input-with-suggestions">
-							<input 
-								class="inline-input" 
-								v-model="newDrug.manufacturer" 
-								placeholder="选填，输入2个字可智能提示"
-								placeholder-class="placeholder"
-								@input="onManufacturerInput"
-								@focus="onManufacturerFocus"
-								@blur="onManufacturerBlur"
-							/>
-							<!-- 厂家建议列表 -->
-							<view 
-								v-if="showManufacturerSuggestions && manufacturerSuggestions.length > 0"
-								class="suggestions-list"
-							>
-								<view 
-									v-for="(mfr, idx) in manufacturerSuggestions"
-									:key="idx"
-									class="suggestion-item"
-									@tap="selectManufacturer(mfr)"
-								>
-									<text>{{ mfr }}</text>
-								</view>
-							</view>
-						</view>
-					</view>
-					
-					<!-- 批准文号（可选） -->
-					<view class="inline-form-item">
-						<text class="inline-label">批准文号</text>
-						<input 
-							class="inline-input" 
-							v-model="newDrug.approvalNumber" 
-							placeholder="选填"
-							placeholder-class="placeholder"
-						/>
 					</view>
 					
 					<!-- 操作按钮 -->
@@ -444,6 +446,7 @@ export default {
 			createFormSource: '',
 			newDrug: {
 				name: '',
+				drugCode: '',
 				spec: '',
 				unit: '',
 				barcode: '',
@@ -685,6 +688,7 @@ export default {
 			// 仅填充搜索词
 			this.newDrug = {
 				name: keyword,
+				drugCode: '',
 				spec: '',
 				unit: '',
 				barcode: '',
@@ -713,6 +717,7 @@ export default {
 			this.showCreateForm = false
 			this.newDrug = {
 				name: '',
+				drugCode: '',
 				spec: '',
 				unit: '',
 				barcode: '',
@@ -725,9 +730,9 @@ export default {
 		// 确认创建并添加 ⭐⭐⭐
 		async confirmCreate() {
 			// 验证必填项
-			if (!this.newDrug.name || !this.newDrug.spec || !this.newDrug.unit) {
+			if (!this.newDrug.name || !this.newDrug.spec || !this.newDrug.manufacturer || !this.newDrug.unit) {
 				uni.showToast({
-					title: '请填写：名称、规格、单位',
+					title: '请填写：名称、规格、生产厂家、单位',
 					icon: 'none',
 					duration: 2000
 				})
@@ -794,11 +799,15 @@ export default {
 				// 3. 创建药材档案
 				uni.showLoading({ title: '创建中...', mask: true })
 				
+				// 如果没有药材代码，自动生成
+				const drugCode = this.newDrug.drugCode || this.generateDrugCode()
+				
 				const result = await db.collection('drugs').add({
 					data: {
 						name: this.newDrug.name,
-						spec: this.newDrug.spec,
-						specification: this.newDrug.spec,  // 兼容字段
+						drugCode: drugCode,
+						specification: this.newDrug.spec,  // 主字段
+						spec: this.newDrug.spec,  // 兼容字段
 						packUnit: this.newDrug.unit,
 						unit: this.newDrug.unit,  // 兼容字段
 						barcode: this.newDrug.barcode || '',
@@ -1314,6 +1323,20 @@ export default {
 			this.newDrug.manufacturer = manufacturer
 			this.showManufacturerSuggestions = false
 			this.manufacturerSuggestions = []
+		},
+		
+		// 生成药材代码
+		generateDrugCode() {
+			// 简单的代码生成逻辑：取药材名称拼音首字母 + 规格首字母 + 时间戳后4位
+			const name = this.newDrug.name
+			const spec = this.newDrug.spec
+			const timestamp = Date.now().toString().slice(-4)
+			
+			// 这里简化处理，实际应该用拼音库
+			const nameCode = name.substring(0, 3).toUpperCase()
+			const specCode = spec ? spec.substring(0, 3).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : ''
+			
+			return `${nameCode}${specCode}-${timestamp}`
 		},
 		
 		// 语音输入提示（使用输入法语音功能）
@@ -1904,6 +1927,7 @@ export default {
 				color: #323233;
 				border: 2rpx solid transparent;
 				transition: all 0.3s;
+				box-sizing: border-box;
 				
 				&:focus {
 					background: white;

@@ -255,19 +255,13 @@
 				{
 					"path": "clinic",
 					"style": {
-						"navigationBarTitleText": "门诊登记报表"
+						"navigationBarTitleText": "门诊查询"
 					}
 				},
 				{
 					"path": "prescription",
 					"style": {
 						"navigationBarTitleText": "处方查询"
-					}
-				},
-				{
-					"path": "record",
-					"style": {
-						"navigationBarTitleText": "门诊病历查询"
 					}
 				}
 			]

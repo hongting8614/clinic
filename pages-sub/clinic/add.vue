@@ -689,18 +689,6 @@
       </button>
     </view>
 
-    <!-- 继续登记选项 -->
-    <view class="continue-option">
-      <view class="continue-card" @click="toggleContinue">
-        <view class="continue-checkbox">
-          <checkbox :checked="continueAfterSubmit" />
-        </view>
-        <view class="continue-text">
-          <view class="continue-title">连续登记模式</view>
-          <view class="continue-desc">提交后自动清空表单，继续登记下一位患者</view>
-        </view>
-      </view>
-    </view>
 
     <!-- 药材选择器 -->
     <drug-selector
@@ -2709,7 +2697,7 @@ export default {
       if (!preserveSymptom) {
         const currentSymptom = (this.form.symptom || '').trim();
         if (!currentSymptom && record.symptoms && record.symptoms.length) {
-          this.form.symptom = record.symptoms.join('；');
+          this.form.symptom = record.symptoms.map(s => String(s || '')).filter(s => s).join('；');
         }
       }
       
@@ -2717,7 +2705,7 @@ export default {
       if (!preserveDiagnosis) {
         const currentDiagnosis = (this.form.diagnosis || '').trim();
         if (!currentDiagnosis && record.diagnoses && record.diagnoses.length) {
-          this.form.diagnosis = record.diagnoses.join('；');
+          this.form.diagnosis = record.diagnoses.map(d => String(d || '')).filter(d => d).join('；');
         }
       }
       
@@ -2725,7 +2713,7 @@ export default {
       if (!preserveTreatment) {
         const currentTreatment = (this.form.treatment || '').trim();
         if (!currentTreatment && record.treatments && record.treatments.length) {
-          this.form.treatment = record.treatments.join('；');
+          this.form.treatment = record.treatments.map(t => String(t || '')).filter(t => t).join('；');
         }
       }
       
@@ -3189,7 +3177,7 @@ export default {
       if (complaint) this.form.chiefComplaint = complaint;
       if (diag) {
         // 初步诊断使用模板中的完整诊断组合
-        this.form.diagnosis = diagList.length ? diagList.join('；') : diag;
+        this.form.diagnosis = diagList.length ? diagList.map(d => String(d || '')).filter(d => d).join('；') : diag;
         // 从诊断中分析提取标准疾病名称（确保使用标准名称归类）
         const analyzedDisease = this.analyzeDiseaseFromDiagnosis(this.form.diagnosis);
         if (analyzedDisease) {
@@ -3201,7 +3189,7 @@ export default {
           this.form.diseaseName = '其他';
         }
       }
-      if (merged.length) this.form.treatment = merged.join('；');
+      if (merged.length) this.form.treatment = merged.map(t => String(t || '')).filter(t => t).join('；');
     },
     // 诊断输入与选择
     // 诊断获得焦点：显示下拉列表
@@ -3263,7 +3251,7 @@ export default {
           const hasExactMatch = bestRecord.diagnoses.some(d => d === text);
           if (hasExactMatch) {
             // 如果完全匹配，使用模板的完整诊断组合
-            this.form.diagnosis = bestRecord.diagnoses.join('；');
+            this.form.diagnosis = bestRecord.diagnoses.map(d => String(d || '')).filter(d => d).join('；');
           } else {
             // 否则使用选择的诊断
             this.form.diagnosis = text;
@@ -3668,7 +3656,7 @@ export default {
       if (bestRecord && bestRecord.treatments && bestRecord.treatments.length) {
         // 找到匹配的模板记录，智能填充处置（如果处置为空）
         if (!this.form.treatment || !this.form.treatment.trim()) {
-          this.form.treatment = bestRecord.treatments.join('；');
+          this.form.treatment = bestRecord.treatments.map(t => String(t || '')).filter(t => t).join('；');
         }
         // 如果主诉为空，也可以填充主诉（确保字段关联）
         if (!this.form.chiefComplaint || !this.form.chiefComplaint.trim()) {
@@ -3679,7 +3667,7 @@ export default {
         // 如果症状为空，也可以填充症状
         if (!this.form.symptom || !this.form.symptom.trim()) {
           if (bestRecord.symptoms && bestRecord.symptoms.length) {
-            this.form.symptom = bestRecord.symptoms.join('；');
+            this.form.symptom = bestRecord.symptoms.map(s => String(s || '')).filter(s => s).join('；');
           }
         }
       } else {
@@ -3689,7 +3677,7 @@ export default {
           const treatments = this.treatmentTemplates?.[diseaseName] || [];
           if (treatments.length > 0) {
             // 使用前两个处置模板
-            this.form.treatment = treatments.slice(0, 2).join('；');
+            this.form.treatment = treatments.slice(0, 2).map(t => String(t || '')).filter(t => t).join('；');
           }
         }
       }
@@ -4807,12 +4795,10 @@ export default {
       uni.navigateBack();
     },
 
-    // 生成日报
+    // 生成日报（与门诊首页逻辑统一）
     async generateDailyReport() {
       try {
-        uni.showLoading({ title: '生成中...' });
-
-        // 获取当前日期和园区
+        // 获取当前日期
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -4822,256 +4808,21 @@ export default {
         // 必须先选择就诊园区
         const location = this.form.location;
         if (!location || (location !== 'land_park' && location !== 'water_park')) {
-          uni.hideLoading();
-          uni.showToast({ title: '请选择就诊园区', icon: 'none' });
-          // 如有需要，可同时弹出园区选择提示
+          uni.showToast({ title: '请先选择就诊园区', icon: 'none' });
           this.showLocationTip = true;
           return;
         }
-        const locationName = location === 'land_park' ? '陆园' : '水园';
 
-        // 查询当日的所有门诊记录
-        // 查询 clinic_records 集合（完整门诊登记信息）
-        let records = [];
-        try {
-          // 使用 clinicRecords 云函数查询完整的门诊登记记录
-          const res = await wx.cloud.callFunction({
-            name: 'clinicRecords',
-            data: {
-              action: 'list',
-              data: {
-                location: location,
-                startDate: dateStr,
-                endDate: dateStr,
-                pageSize: 1000,
-                useClinicRecords: true  // 查询完整的门诊登记记录
-              }
-            }
-          });
+        console.log('门诊登记页生成日报参数:', { dateStr, location });
 
-          if (res.result && res.result.success && res.result.data && res.result.data.list) {
-            records = res.result.data.list;
-          }
-        } catch (err) {
-          console.error('查询门诊记录失败:', err);
-        }
-
-        // 生成文档和统计信息（即使没有记录也生成）
-        const report = this.formatDailyReport(records, dateStr, locationName);
-        const stats = this.calculateStats(records);
-        
-        // 准备详细的表格数据
-        const tableData = this.prepareTableData(records);
-
-        uni.hideLoading();
-
-        // 跳转到日报显示页面
-        const reportDate = `${year}年${month}月${day}日`;
+        // 直接跳转到门诊日报页面（传递 location 代码，不是名称）
         uni.navigateTo({
-          url: `/pages-sub/report/daily?content=${encodeURIComponent(report)}&date=${encodeURIComponent(reportDate)}&location=${encodeURIComponent(locationName)}&stats=${encodeURIComponent(JSON.stringify(stats))}&tableData=${encodeURIComponent(JSON.stringify(tableData))}`,
-          fail: (err) => {
-            console.error('跳转失败:', err);
-            // 如果跳转失败，复制到剪贴板
-            uni.setClipboardData({
-              data: report,
-              success: () => {
-                uni.showToast({
-                  title: '已复制到剪贴板',
-                  icon: 'success'
-                });
-              }
-            });
-          }
+          url: `/pages-sub/report/daily?date=${dateStr}&location=${location}`
         });
       } catch (err) {
         console.error('生成日报失败:', err);
-        uni.hideLoading();
-        uni.showToast({
-          title: '生成失败：' + (err.message || '未知错误'),
-          icon: 'none',
-          duration: 3000
-        });
+        uni.showToast({ title: '生成失败', icon: 'none' });
       }
-    },
-
-    // 格式化日报
-    formatDailyReport(records, dateStr, locationName) {
-      // 解析日期
-      const date = new Date(dateStr);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      const dateFormatted = `${year}年${month}月${day}日`;
-
-      // 统计信息
-      const stats = {
-        total: records.length,
-        visitor: [],
-        employee: [],
-        outcall: []
-      };
-
-      // 按身份和疾病分类统计
-      records.forEach(record => {
-        const identity = record.identity || '游客';
-        const diseaseName = record.diseaseName || '未知';
-        const injuryLocation = record.injuryLocation || '';
-        const isOutcall = record.isOutcall || record.visitType === 'outcall';
-
-        if (isOutcall && injuryLocation) {
-          // 统计出诊
-          const existing = stats.outcall.find(item => item.location === injuryLocation);
-          if (existing) {
-            existing.count++;
-          } else {
-            stats.outcall.push({ location: injuryLocation, count: 1 });
-          }
-        }
-
-        if (identity === '游客') {
-          // 游客统计
-          const existing = stats.visitor.find(item => item.disease === diseaseName);
-          if (existing) {
-            if (injuryLocation && injuryLocation.trim()) {
-              const loc = existing.locations.find(l => l.name === injuryLocation);
-              if (loc) {
-                loc.count++;
-              } else {
-                existing.locations.push({ name: injuryLocation, count: 1 });
-              }
-            }
-            existing.total++;
-          } else {
-            stats.visitor.push({
-              disease: diseaseName,
-              total: 1,
-              locations: (injuryLocation && injuryLocation.trim()) ? [{ name: injuryLocation, count: 1 }] : []
-            });
-          }
-        } else if (identity === '员工') {
-          // 员工统计
-          const existing = stats.employee.find(item => item.disease === diseaseName);
-          if (existing) {
-            existing.total++;
-          } else {
-            stats.employee.push({
-              disease: diseaseName,
-              total: 1
-            });
-          }
-        }
-      });
-
-      // 生成文档内容
-      let report = '';
-      
-      // 显示接诊人数（包括0人的情况）
-      report = `${dateFormatted}北京欢乐谷医务室（${locationName}）当日接诊${stats.total}人。\n`;
-
-      // 游客统计
-      if (stats.visitor.length > 0) {
-        const visitorTotal = stats.visitor.reduce((sum, item) => sum + item.total, 0);
-        report += `游客${visitorTotal}人：`;
-        
-        const visitorParts = [];
-        stats.visitor.forEach(item => {
-          if (item.locations && item.locations.length > 0) {
-            // 有地点的疾病：疾病X人（地点1X人，地点2X人）
-            const locationParts = item.locations.map(loc => `${loc.name}${loc.count}人`);
-            visitorParts.push(`${item.disease}${item.total}人（${locationParts.join('，')}）`);
-          } else {
-            // 无地点的疾病：疾病X人
-            visitorParts.push(`${item.disease}${item.total}人`);
-          }
-        });
-        report += visitorParts.join('，') + '。\n';
-      }
-
-      // 员工统计
-      if (stats.employee.length > 0) {
-        const employeeTotal = stats.employee.reduce((sum, item) => sum + item.total, 0);
-        report += `员工${employeeTotal}人：`;
-        const employeeParts = stats.employee.map(item => `${item.disease}${item.total}人`);
-        report += employeeParts.join('，') + '。\n';
-      }
-
-      // 出诊统计
-      if (stats.outcall.length > 0) {
-        const outcallTotal = stats.outcall.reduce((sum, item) => sum + item.count, 0);
-        report += `出诊${outcallTotal}次：`;
-        const outcallParts = stats.outcall.map(item => `${item.location}${item.count}次`);
-        report += outcallParts.join('，') + '。\n';
-      }
-
-      return report.trim();
-    },
-
-    // 计算统计信息
-    calculateStats(records) {
-      const stats = {
-        total: records.length,
-        visitorTotal: 0,
-        employeeTotal: 0,
-        outcallTotal: 0
-      };
-
-      records.forEach(record => {
-        const identity = record.identity || '游客';
-        const isOutcall = record.isOutcall || record.visitType === 'outcall';
-
-        if (identity === '游客') {
-          stats.visitorTotal++;
-        } else if (identity === '员工') {
-          stats.employeeTotal++;
-        }
-
-        if (isOutcall) {
-          stats.outcallTotal++;
-        }
-      });
-
-      return stats;
-    },
-
-    // 准备表格数据
-    prepareTableData(records) {
-      const visitorData = [];
-      const employeeData = [];
-      let doctorName = '';
-      try {
-        const userInfo = uni.getStorageSync('userInfo');
-        doctorName = userInfo?.name || '';
-      } catch (err) {
-        console.error('获取用户信息失败:', err);
-      }
-
-      records.forEach(record => {
-        const identity = record.identity || '游客';
-        const diseaseName =
-          record.diseaseName ||
-          record.diagnosis ||
-          record.chiefComplaint ||
-          '未知';
-        const data = {
-          name: record.name || '',
-          diseaseName,
-          location: record.injuryLocation || '',
-          visitTime: record.visitDateTime || record.createTime || '',
-          isOutcall: record.isOutcall || record.visitType === 'outcall',
-          doctorName: doctorName
-        };
-
-        if (identity === '游客') {
-          visitorData.push(data);
-        } else if (identity === '员工') {
-          employeeData.push(data);
-        }
-      });
-
-      return {
-        visitor: visitorData,
-        employee: employeeData
-      };
     }
   }
 };

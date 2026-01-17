@@ -150,15 +150,7 @@ export default {
   },
   computed: {
     reportTitle() {
-      const locMap = {
-        land_park: '陆园',
-        water_park: '水园'
-      }
-      const locText = locMap[this.filters.location]
-      if (locText) {
-        return `北京欢乐谷医务室（${locText}）门诊登记表`
-      }
-      return '北京欢乐谷医务室门诊登记表'
+      return '门诊查询'
     },
     currentLocationLabel() {
       return this.locationOptions[this.locationIndex] || '全部园区'

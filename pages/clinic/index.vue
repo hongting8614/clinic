@@ -121,6 +121,16 @@
       <view class="date-picker-dialog" @tap.stop>
         <view class="dialog-title">选择导出时间段</view>
         
+        <!-- 园区选择 -->
+        <view class="date-range-section">
+          <view class="date-item">
+            <text class="date-label">园区</text>
+            <picker mode="selector" :range="locationOptions" :value="exportLocationIndex" @change="onExportLocationChange">
+              <view class="date-value">{{ locationOptions[exportLocationIndex] }}</view>
+            </picker>
+          </view>
+        </view>
+        
         <view class="date-range-section">
           <view class="date-item">
             <text class="date-label">开始日期</text>
@@ -162,7 +172,10 @@ export default {
       esigNoMore: false,
       showDatePicker: false,
       exportStartDate: '',
-      exportEndDate: ''
+      exportEndDate: '',
+      exportLocation: 'land_park',
+      exportLocationIndex: 0,
+      locationOptions: ['陆园', '水园']
     };
   },
   onShow() {
@@ -181,52 +194,37 @@ export default {
     // 生成今日门诊日报（与报表中心逻辑统一）
     async generateTodayReport() {
       try {
-        uni.showLoading({ title: '生成中...' })
-        
         const today = new Date()
         const year = today.getFullYear()
         const month = String(today.getMonth() + 1).padStart(2, '0')
         const day = String(today.getDate()).padStart(2, '0')
         const dateStr = `${year}-${month}-${day}`
         
-        // 获取最近使用的园区
+        // 获取用户信息和园区
         let location = 'land_park'
         try {
-          const last = uni.getStorageSync('clinic_last_location')
-          if (last === 'land_park' || last === 'water_park') location = last
-        } catch (e) {}
-        
-        // 查询今日门诊记录
-        const res = await wx.cloud.callFunction({
-          name: 'clinicRecords',
-          data: {
-            action: 'list',
-            data: {
-              location,
-              startDate: dateStr,
-              endDate: dateStr,
-              pageSize: 1000,
-              useClinicRecords: true
+          const userInfo = uni.getStorageSync('userInfo')
+          if (userInfo && userInfo.location) {
+            location = userInfo.location
+          } else {
+            // 如果用户信息中没有园区，尝试获取最近使用的园区
+            const last = uni.getStorageSync('clinic_last_location')
+            if (last === 'land_park' || last === 'water_park') {
+              location = last
             }
           }
-        })
-        
-        const records = res?.result?.data?.list || []
-        
-        uni.hideLoading()
-        
-        if (!records || records.length === 0) {
-          uni.showToast({ title: '今日暂无门诊记录', icon: 'none' })
-          return
+        } catch (e) {
+          console.error('获取园区信息失败:', e)
         }
         
-        // 跳转到门诊日报页面
+        console.log('生成日报参数:', { dateStr, location })
+        
+        // 直接跳转到门诊日报页面（无论是否有记录都生成日报）
         uni.navigateTo({
           url: `/pages-sub/report/daily?date=${dateStr}&location=${location}`
         })
       } catch (err) {
         console.error('生成日报失败:', err)
-        uni.hideLoading()
         uni.showToast({ title: '生成失败', icon: 'none' })
       }
     },
@@ -270,7 +268,32 @@ export default {
       const today = this.formatDate(new Date())
       this.exportStartDate = today
       this.exportEndDate = today
+      
+      // 获取用户园区，设置默认选择
+      try {
+        const userInfo = uni.getStorageSync('userInfo')
+        if (userInfo && userInfo.location) {
+          this.exportLocation = userInfo.location
+          this.exportLocationIndex = userInfo.location === 'land_park' ? 0 : 1
+        } else {
+          // 尝试从最近使用的园区获取
+          const last = uni.getStorageSync('clinic_last_location')
+          if (last === 'land_park' || last === 'water_park') {
+            this.exportLocation = last
+            this.exportLocationIndex = last === 'land_park' ? 0 : 1
+          }
+        }
+      } catch (e) {
+        console.error('获取园区信息失败:', e)
+      }
+      
       this.showDatePicker = true
+    },
+    
+    // 园区选择变化
+    onExportLocationChange(e) {
+      this.exportLocationIndex = e.detail.value
+      this.exportLocation = this.exportLocationIndex === 0 ? 'land_park' : 'water_park'
     },
     
     // 关闭日期选择器
@@ -354,9 +377,11 @@ export default {
     // 导出门诊登记表 Excel
     async exportClinicExcel() {
       try {
-        // 获取当前用户的园区信息
-        const userInfo = uni.getStorageSync('userInfo') || {}
-        const location = userInfo.location || 'land_park' // 默认陆园
+        console.log('开始导出Excel，参数:', {
+          startDate: this.exportStartDate,
+          endDate: this.exportEndDate,
+          location: this.exportLocation
+        })
         
         uni.showLoading({ title: '生成Excel...', mask: true })
         const res = await this.$api.callFunction('reports', {
@@ -364,35 +389,58 @@ export default {
           data: {
             startDate: this.exportStartDate,
             endDate: this.exportEndDate,
-            location: location,
-            printUser: userInfo.name || ''
+            location: this.exportLocation,
+            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
           }
         })
+        
+        console.log('云函数返回结果:', res)
         uni.hideLoading()
+        
         if (res?.success && res.fileID && res.filename) {
+          console.log('开始获取临时下载链接:', res.fileID)
+          
           const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          console.log('临时链接结果:', urlRes)
+          
           const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
           if (fileUrl) {
-            this.downloadAndSaveLocal(fileUrl, res.filename, 'Excel')
+            this.downloadAndSaveLocal(fileUrl, res.filename)
           } else {
-            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+            console.error('获取临时链接失败:', urlRes)
+            uni.showToast({ 
+              title: '获取下载链接失败', 
+              icon: 'none',
+              duration: 3000
+            })
           }
         } else {
-          uni.showToast({ title: '生成Excel失败', icon: 'none' })
+          console.error('生成Excel失败，返回结果:', res)
+          uni.showToast({ 
+            title: res?.message || '生成Excel失败', 
+            icon: 'none',
+            duration: 3000
+          })
         }
       } catch (err) {
         uni.hideLoading()
-        console.error('导出Excel失败:', err)
-        uni.showToast({ title: '导出失败', icon: 'none' })
+        console.error('导出Excel异常:', err)
+        uni.showToast({ 
+          title: `导出失败: ${err.message || '未知错误'}`, 
+          icon: 'none',
+          duration: 3000
+        })
       }
     },
     
     // 导出门诊登记表 PDF
     async exportClinicPDF() {
       try {
-        // 获取当前用户的园区信息
-        const userInfo = uni.getStorageSync('userInfo') || {}
-        const location = userInfo.location || 'land_park' // 默认陆园
+        console.log('开始导出PDF，参数:', {
+          startDate: this.exportStartDate,
+          endDate: this.exportEndDate,
+          location: this.exportLocation
+        })
         
         uni.showLoading({ title: '生成PDF...', mask: true })
         const res = await this.$api.callFunction('reports', {
@@ -400,13 +448,20 @@ export default {
           data: {
             startDate: this.exportStartDate,
             endDate: this.exportEndDate,
-            location: location,
-            printUser: userInfo.name || ''
+            location: this.exportLocation,
+            printUser: (uni.getStorageSync('userInfo') || {}).name || ''
           }
         })
+        
+        console.log('云函数返回结果:', res)
         uni.hideLoading()
+        
         if (res?.success && res.fileID) {
+          console.log('开始获取临时下载链接:', res.fileID)
+          
           const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] })
+          console.log('临时链接结果:', urlRes)
+          
           const fileUrl = urlRes?.fileList?.[0]?.tempFileURL
           let filename = ''
           if (res.fileID) {
@@ -414,43 +469,83 @@ export default {
             filename = parts[parts.length - 1] || `clinic_report_${Date.now()}.pdf`
           }
           if (fileUrl) {
-            this.downloadAndSaveLocal(fileUrl, filename, 'PDF')
+            this.downloadAndSaveLocal(fileUrl, filename)
           } else {
-            uni.showToast({ title: '获取下载链接失败', icon: 'none' })
+            console.error('获取临时链接失败:', urlRes)
+            uni.showToast({ 
+              title: '获取下载链接失败', 
+              icon: 'none',
+              duration: 3000
+            })
           }
         } else {
-          uni.showToast({ title: '生成PDF失败', icon: 'none' })
+          console.error('生成PDF失败，返回结果:', res)
+          uni.showToast({ 
+            title: res?.message || '生成PDF失败', 
+            icon: 'none',
+            duration: 3000
+          })
         }
       } catch (err) {
         uni.hideLoading()
-        console.error('导出PDF失败:', err)
-        uni.showToast({ title: '导出失败', icon: 'none' })
+        console.error('导出PDF异常:', err)
+        uni.showToast({ 
+          title: `导出失败: ${err.message || '未知错误'}`, 
+          icon: 'none',
+          duration: 3000
+        })
       }
     },
     
     downloadAndSaveLocal(fileUrl, filename) {
+      console.log('开始下载文件:', fileUrl, filename)
+      
+      if (!fileUrl) {
+        console.error('文件URL为空')
+        uni.showToast({ title: '文件地址无效', icon: 'none' })
+        return
+      }
+      
       const fs = wx.getFileSystemManager()
       const folder = `${wx.env.USER_DATA_PATH}`
       const savePath = `${folder}/${filename}`
+      
       try {
         fs.mkdirSync(folder, true)
-      } catch (e) {}
+      } catch (e) {
+        console.log('创建目录:', e)
+      }
+      
+      uni.showLoading({ title: '下载中...', mask: true })
+      
       uni.downloadFile({
         url: fileUrl,
         success: (res) => {
+          console.log('下载响应:', res)
+          
           if (res.statusCode === 200) {
+            console.log('下载成功，开始保存文件')
+            
             fs.saveFile({
               tempFilePath: res.tempFilePath,
               filePath: savePath,
               success: () => {
+                console.log('文件保存成功:', savePath)
+                uni.hideLoading()
+                
                 const lower = (filename || '').toLowerCase()
                 let fileTypeExt = 'xlsx'
                 if (lower.endsWith('.pdf')) fileTypeExt = 'pdf'
+                
                 wx.openDocument({
                   filePath: savePath,
                   fileType: fileTypeExt,
                   showMenu: true,
-                  fail: () => {
+                  success: () => {
+                    console.log('文件打开成功')
+                  },
+                  fail: (err) => {
+                    console.error('打开文件失败:', err)
                     uni.showModal({
                       title: '文件已保存',
                       content: `文件已保存到：微信-我-服务-小程序-我的文件/${filename}`,
@@ -460,16 +555,34 @@ export default {
                   }
                 })
               },
-              fail: () => {
-                uni.showToast({ title: '保存失败', icon: 'none' })
+              fail: (err) => {
+                console.error('保存文件失败:', err)
+                uni.hideLoading()
+                uni.showToast({ 
+                  title: `保存失败: ${err.errMsg || '未知错误'}`, 
+                  icon: 'none',
+                  duration: 3000
+                })
               }
             })
           } else {
-            uni.showToast({ title: '下载失败', icon: 'none' })
+            console.error('下载失败，状态码:', res.statusCode)
+            uni.hideLoading()
+            uni.showToast({ 
+              title: `下载失败(${res.statusCode})`, 
+              icon: 'none',
+              duration: 3000
+            })
           }
         },
-        fail: () => {
-          uni.showToast({ title: '文件下载失败', icon: 'none' })
+        fail: (err) => {
+          console.error('下载请求失败:', err)
+          uni.hideLoading()
+          uni.showToast({ 
+            title: `文件下载失败: ${err.errMsg || '网络错误'}`, 
+            icon: 'none',
+            duration: 3000
+          })
         }
       })
     }
@@ -820,3 +933,4 @@ export default {
   text-align: center;
 }
 </style>
+

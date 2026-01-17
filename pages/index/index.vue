@@ -558,157 +558,43 @@ export default {
 			}
 		},
 		
-		// 生成当日门诊日报并跳转
+		// 生成当日门诊日报并跳转（与门诊首页逻辑统一）
 		async generateDailyReport() {
 			try {
-				uni.showLoading({ title: '生成中...' })
-				
-				// 日期与园区
 				const today = new Date()
 				const year = today.getFullYear()
 				const month = String(today.getMonth() + 1).padStart(2, '0')
 				const day = String(today.getDate()).padStart(2, '0')
 				const dateStr = `${year}-${month}-${day}`
 				
+				// 获取用户信息和园区
 				let location = 'land_park'
 				try {
-					const last = uni.getStorageSync('clinic_last_location')
-					if (last === 'land_park' || last === 'water_park') location = last
-				} catch (e) {}
-				const locationName = location === 'land_park' ? '陆园' : '水园'
-				
-				// 查询完整门诊记录
-				const res = await callFunction('clinicRecords', {
-					action: 'list',
-					data: {
-						location,
-						startDate: dateStr,
-						endDate: dateStr,
-						pageSize: 1000,
-						useClinicRecords: true
+					const userInfo = uni.getStorageSync('userInfo')
+					if (userInfo && userInfo.location) {
+						location = userInfo.location
+					} else {
+						// 如果用户信息中没有园区，尝试获取最近使用的园区
+						const last = uni.getStorageSync('clinic_last_location')
+						if (last === 'land_park' || last === 'water_park') {
+							location = last
+						}
 					}
-				})
-				const records = res?.data?.list || res?.result?.data?.list || []
-				
-				// 若无数据
-				if (!records || records.length === 0) {
-					uni.hideLoading()
-					uni.showToast({ title: '当日无门诊记录', icon: 'none' })
-					return
+				} catch (e) {
+					console.error('获取园区信息失败:', e)
 				}
 				
-				// 复用登记页算法：在本页实现轻量版
-				const reportPkg = this.$options.methods._buildDailyReport(records, dateStr, locationName)
+				console.log('首页生成日报参数:', { dateStr, location })
 				
-				uni.hideLoading()
+				// 直接跳转到门诊日报页面（无论是否有记录都生成日报）
 				uni.navigateTo({
-					url: `/pages-sub/report/daily?content=${encodeURIComponent(reportPkg.report)}&date=${encodeURIComponent(`${year}年${month}月${day}日`)}&location=${encodeURIComponent(locationName)}&stats=${encodeURIComponent(JSON.stringify(reportPkg.stats))}&tableData=${encodeURIComponent(JSON.stringify(reportPkg.tableData))}`
+					url: `/pages-sub/report/daily?date=${dateStr}&location=${location}`
 				})
 			} catch (err) {
 				console.error('生成日报失败:', err)
-				uni.hideLoading()
 				uni.showToast({ title: '生成失败', icon: 'none' })
 			}
 		},
-		
-		// 私有：在首页也构建日报（与登记页口径一致）
-		_buildDailyReport(records, dateStr, locationName) {
-			const date = new Date(dateStr)
-			const year = date.getFullYear()
-			const month = date.getMonth() + 1
-			const day = date.getDate()
-			const dateFormatted = `${year}年${month}月${day}日`
-			
-			const statsAgg = {
-				total: records.length,
-				visitor: [],
-				employee: [],
-				outcall: []
-			}
-			
-			records.forEach(r => {
-				const identity = r.identity || '游客'
-				const disease = r.diseaseName || r.diagnosis || r.chiefComplaint || '未知'
-				const loc = r.injuryLocation || ''
-				const isOut = r.isOutcall || r.visitType === 'outcall'
-				
-				if (isOut && loc) {
-					const found = statsAgg.outcall.find(i => i.location === loc)
-					found ? found.count++ : statsAgg.outcall.push({ location: loc, count: 1 })
-				}
-				const bucket = identity === '员工' ? 'employee' : 'visitor'
-				const arr = statsAgg[bucket]
-				const ex = arr.find(i => i.disease === disease)
-				if (ex) {
-					ex.total++
-					if (bucket === 'visitor' && loc) {
-						const l = ex.locations.find(x => x.name === loc)
-						l ? l.count++ : ex.locations.push({ name: loc, count: 1 })
-					}
-				} else {
-					arr.push({
-						disease,
-						total: 1,
-						locations: bucket === 'visitor' && loc ? [{ name: loc, count: 1 }] : []
-					})
-				}
-			})
-			
-			let report = `${dateFormatted}欢乐谷医务室（${locationName}）当日接诊${statsAgg.total}人。`
-			if (statsAgg.visitor.length) {
-				const vt = statsAgg.visitor.reduce((s, i) => s + i.total, 0)
-				const parts = statsAgg.visitor.map(i => {
-					if (i.locations?.length) {
-						const lps = i.locations.map(l => `${l.name}${l.count}人`).join('，')
-						return `${i.disease}${i.total}人（${lps}）`
-					}
-					return `${i.disease}${i.total}人`
-				})
-				report += `\n游客${vt}人：${parts.join('，')}。`
-			}
-			if (statsAgg.employee.length) {
-				const et = statsAgg.employee.reduce((s, i) => s + i.total, 0)
-				report += `\n员工${et}人：${statsAgg.employee.map(i => `${i.disease}${i.total}人`).join('，')}。`
-			}
-			if (statsAgg.outcall.length) {
-				const ot = statsAgg.outcall.reduce((s, i) => s + i.count, 0)
-				report += `\n出诊${ot}次：${statsAgg.outcall.map(i => `${i.location}${i.count}次`).join('，')}。`
-			}
-			
-			// 构造表数据（按登记页逻辑）
-			let doctorName = ''
-			try {
-				const u = uni.getStorageSync('userInfo'); doctorName = u?.name || ''
-			} catch(e){}
-			const tableData = {
-				visitor: records.filter(r => (r.identity || '游客') === '游客').map(r => ({
-					name: r.name || '',
-					diseaseName: r.diseaseName || r.diagnosis || r.chiefComplaint || '未知',
-					location: r.injuryLocation || '',
-					visitTime: r.visitDateTime || r.createTime || '',
-					isOutcall: r.isOutcall || r.visitType === 'outcall',
-					doctorName
-				})),
-				employee: records.filter(r => r.identity === '员工').map(r => ({
-					name: r.name || '',
-					diseaseName: r.diseaseName || r.diagnosis || r.chiefComplaint || '未知',
-					location: r.injuryLocation || '',
-					visitTime: r.visitDateTime || r.createTime || '',
-					isOutcall: r.isOutcall || r.visitType === 'outcall',
-					doctorName
-				}))
-			}
-			
-			const statsSimple = {
-				total: statsAgg.total,
-				visitorTotal: tableData.visitor.length,
-				employeeTotal: tableData.employee.length,
-				outcallTotal: statsAgg.outcall.reduce((s,i)=>s+i.count,0)
-			}
-			
-			return { report, stats: statsSimple, tableData }
-		},
-		
 		
 		// 页面跳转
 		goToPage(url) {

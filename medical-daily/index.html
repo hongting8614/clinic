@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="医务室日报">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a1c4a">
+    <title>欢乐谷医务室日报工具</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="img/app-icon-1024.png">
+    <link rel="icon" type="image/png" href="img/app-icon-1024.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>欢乐谷医务室日报工具</h1>
+        <p>作者：于建华 | 移动版 v1.2.3</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-title">数据录入</div>
+            
+            <div class="form-group">
+                <label class="form-label">园区</label>
+                <select id="park" class="form-control">
+                    <option value="水园">水园</option>
+                    <option value="陆园">陆园</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">人员类型</label>
+                <select id="personType" class="form-control">
+                    <option value="游客">游客</option>
+                    <option value="员工">员工</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">疾病名称 <span style="color: red;">*</span></label>
+                <input type="text" id="disease" class="form-control" placeholder="请输入或选择疾病名称" inputmode="text" autocomplete="off" enterkeyhint="next">
+                <div id="diseaseSuggest" class="suggest-list"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">发病地点 <span id="placeRequired" style="color: red; display: none;">*</span></label>
+                <input type="text" id="onsetPlace" class="form-control" placeholder="请选择或输入发病地点（选填）" inputmode="text" autocomplete="off" enterkeyhint="next">
+                <div id="placeSuggest" class="suggest-list"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">医生姓名 <span style="color: red;">*</span></label>
+                <input type="text" id="doctor" class="form-control" placeholder="请输入医生姓名" inputmode="text" autocomplete="name" enterkeyhint="next">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">出诊</label>
+                <select id="visit" class="form-control">
+                    <option value="否">否</option>
+                    <option value="是">是</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="app.addRecord()">添加记录</button>
+            <button class="btn btn-danger" onclick="app.clearRecords()">清除所有记录</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">已添加记录</div>
+            <div id="recordList" class="record-list">
+                <div class="empty-state">暂无记录</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">日报生成</div>
+            <button class="btn btn-success" onclick="app.generateReport()">生成日报</button>
+            <div id="reportPreview"></div>
+            <div class="btn-group" id="reportActions" style="display: none;">
+                <button class="btn btn-info" onclick="app.copyReport()">复制日报</button>
+                <button class="btn btn-info" onclick="app.shareReport()">分享日报</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">表格生成</div>
+            <button class="btn btn-success" onclick="app.generateTable()">生成表格</button>
+            <div id="tablePreview"></div>
+            <div class="btn-group" id="tableActions" style="display: none;">
+                <button class="btn btn-info" onclick="app.copyFullTable()">复制表格</button>
+                <button class="btn btn-info" onclick="app.copyTouristTable()">复制游客表格</button>
+                <button class="btn btn-info" onclick="app.copyStaffTable()">复制员工表格</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>

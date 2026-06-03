@@ -1,0 +1,26 @@
+{
+  "name": "欢乐谷医务室日报工具",
+  "short_name": "医务室日报",
+  "description": "欢乐谷医务室日报、接诊记录和表格生成工具",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a1c4a",
+  "theme_color": "#0a1c4a",
+  "orientation": "portrait-primary",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "img/app-icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

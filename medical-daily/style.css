@@ -54,6 +54,11 @@ body {
 
 .form-group {
     margin-bottom: 15px;
+    position: relative;
+}
+
+.suggest-wrap {
+    z-index: 30;
 }
 
 .form-label {
@@ -81,18 +86,20 @@ body {
 
 .suggest-list {
     display: none;
-    margin-top: 6px;
-    max-height: 260px;
+    margin-top: 8px;
+    max-height: 280px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     touch-action: pan-y;
     background: white;
     border: 1px solid #d8deea;
-    border-radius: 10px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-    position: relative;
-    z-index: 20;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(33, 45, 80, 0.16);
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 100;
 }
 
 .suggest-list.show {
@@ -100,26 +107,52 @@ body {
 }
 
 .suggest-item {
-    min-height: 48px;
-    padding: 14px 16px;
+    min-height: 50px;
+    padding: 12px 14px;
     font-size: 15px;
     color: #2c3e50;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #edf0f5;
     cursor: pointer;
     user-select: none;
     touch-action: pan-y;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.suggest-item span {
+.suggest-main {
     pointer-events: none;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggest-main mark {
+    background: #fff0a6;
+    color: inherit;
+    border-radius: 4px;
+    padding: 0 2px;
+}
+
+.suggest-meta {
+    pointer-events: none;
+    flex: 0 0 auto;
+    color: #667eea;
+    background: #eef2ff;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 12px;
 }
 
 .suggest-item:last-child {
     border-bottom: none;
 }
 
-.suggest-item:active {
-    background: #eef2ff;
+.suggest-item:active,
+.suggest-item.active {
+    background: #f2f5ff;
 }
 
 select.form-control {

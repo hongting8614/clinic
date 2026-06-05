@@ -169,6 +169,16 @@ body {
     font-size: 12px;
 }
 
+.suggest-meta.custom {
+    color: #0f8a5f;
+    background: #e7f8ef;
+}
+
+.suggest-meta.default {
+    color: #667eea;
+    background: #eef2ff;
+}
+
 .suggest-item:last-child {
     border-bottom: none;
 }

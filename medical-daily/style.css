@@ -108,17 +108,42 @@ body {
 
 .suggest-item {
     min-height: 50px;
-    padding: 12px 14px;
+    padding: 0;
     font-size: 15px;
     color: #2c3e50;
     border-bottom: 1px solid #edf0f5;
-    cursor: pointer;
     user-select: none;
     touch-action: pan-y;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.suggest-pick {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggest-delete {
+    flex: 0 0 auto;
+    border: none;
+    border-left: 1px solid #edf0f5;
+    background: #fff5f5;
+    color: #d93025;
+    padding: 0 12px;
+    font-size: 13px;
+    cursor: pointer;
 }
 
 .suggest-main {
@@ -151,8 +176,16 @@ body {
 }
 
 .suggest-item:active,
-.suggest-item.active {
+.suggest-item.active,
+.suggest-pick:active,
+.suggest-pick:focus {
     background: #f2f5ff;
+}
+
+.suggest-delete:active,
+.suggest-delete:focus {
+    background: #ffe2e2;
+    outline: none;
 }
 
 select.form-control {

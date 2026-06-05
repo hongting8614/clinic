@@ -1,9 +1,9 @@
-const CACHE_NAME = 'happy-valley-medical-v1.2.4-pwa';
+const CACHE_NAME = 'happy-valley-medical-v1.2.5-pwa';
 const ASSETS = [
   './',
   './index.html',
-  './app.js?v=1.2.4',
-  './style.css?v=1.2.4',
+  './app.js?v=1.2.5',
+  './style.css?v=1.2.5',
   './manifest.webmanifest',
   './img/logo.png',
   './img/app-icon-1024.png'

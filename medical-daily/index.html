@@ -12,12 +12,12 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="img/app-icon-1024.png">
     <link rel="icon" type="image/png" href="img/app-icon-1024.png">
-    <link rel="stylesheet" href="style.css?v=1.2.7">
+    <link rel="stylesheet" href="style.css?v=1.2.10">
 </head>
 <body>
     <div class="header">
         <h1>欢乐谷医务室日报工具</h1>
-        <p>作者：于建华 | 移动版 v1.2.7</p>
+        <p>作者：于建华 | 移动版 v1.2.10</p>
     </div>
 
     <div class="container">
@@ -29,6 +29,7 @@
                 <select id="park" class="form-control">
                     <option value="水园">水园</option>
                     <option value="陆园">陆园</option>
+                    <option value="不分园区">不分园区（不显示园区名）</option>
                 </select>
             </div>
 
@@ -42,14 +43,17 @@
 
             <div class="form-group">
                 <label class="form-label">疾病名称 <span style="color: red;">*</span></label>
-                <input type="text" id="disease" class="form-control" placeholder="请输入或选择疾病名称" inputmode="text" autocomplete="off" enterkeyhint="next">
+                <input type="text" id="disease" class="form-control" placeholder="输入关键词搜索疾病，或填写完整新名称" inputmode="text" autocomplete="off" enterkeyhint="next">
                 <div id="diseaseSuggest" class="suggest-list"></div>
+                <button type="button" class="save-name" onclick="app.confirmSaveCustom('disease')">确认保存疾病名</button>
             </div>
 
             <div class="form-group">
                 <label class="form-label">发病地点 <span id="placeRequired" style="color: red; display: none;">*</span></label>
-                <input type="text" id="onsetPlace" class="form-control" placeholder="请选择或输入发病地点（选填）" inputmode="text" autocomplete="off" enterkeyhint="next">
+                <input type="text" id="onsetPlace" class="form-control" placeholder="输入关键词搜索地点，或填写完整新名称（选填）" inputmode="text" autocomplete="off" enterkeyhint="next">
                 <div id="placeSuggest" class="suggest-list"></div>
+                <button type="button" class="save-name" onclick="app.confirmSaveCustom('place')">确认保存地点名</button>
+                <p style="font-size: 13px; color: #666;">疾病和地点支持关键词搜索。新名称写完整后，点击“确认保存”并确认，才会加入常用列表；添加记录不会自动收录名称。三个园区共用列表，保存在当前设备浏览器。旧版误存的名称可在搜索结果中删除。</p>
             </div>
 
             <div class="form-group">
@@ -99,7 +103,7 @@
     </div>
 
     <div id="toast" class="toast"></div>
-    <script src="app.js?v=1.2.7"></script>
+    <script src="app.js?v=1.2.10"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
